@@ -1,34 +1,44 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
-import { RolesService } from './roles.service';
-import { CreateRoleDto } from './dto/create-role.dto';
-import { UpdateRoleDto } from './dto/update-role.dto';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Patch,
+  Param,
+  Delete,
+} from '@nestjs/common'
+import { RolesService } from './roles.service'
+import { CreateRoleDto } from './dto/create-role.dto'
+import { UpdateRoleDto } from './dto/update-role.dto'
+import { HttpException } from '@nestjs/common'
 
 @Controller('roles')
 export class RolesController {
   constructor(private readonly rolesService: RolesService) {}
 
-  @Post()
-  create(@Body() createRoleDto: CreateRoleDto) {
-    return this.rolesService.create(createRoleDto);
-  }
-
   @Get()
-  findAll() {
-    return this.rolesService.findAll();
+  async findAll() {
+    return this.rolesService.findAll()
   }
 
-  @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.rolesService.findOne(+id);
+  @Post()
+  async create(@Body() role: CreateRoleDto) {
+    if (!role)
+      throw new HttpException('Por favor rellene todos los campos', 400)
+
+    if (this.rolesService.findByName(role.name))
+      throw new HttpException('El rol ya existe', 400)
+
+    return this.rolesService.create(role)
   }
 
-  @Patch(':id')
-  update(@Param('id') id: string, @Body() updateRoleDto: UpdateRoleDto) {
-    return this.rolesService.update(+id, updateRoleDto);
-  }
+  @Get(':name')
+  async findOne(@Param('name') name: string) {
+    if (!name) throw new HttpException('El nombre es requerido', 400)
 
-  @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.rolesService.remove(+id);
+    const role = await this.rolesService.findByName(name)
+    if (!role) throw new HttpException('El rol no existe', 400)
+
+    return role
   }
 }
