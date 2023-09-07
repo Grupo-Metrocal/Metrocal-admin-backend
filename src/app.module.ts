@@ -3,8 +3,8 @@ import { AppController } from './app.controller'
 import { AppService } from './app.service'
 import { ConfigModule } from '@nestjs/config'
 import { TypeOrmModule } from '@nestjs/typeorm'
-import { UsersModule } from './modules/users/users.module';
-import { RolesModule } from './modules/roles/roles.module';
+import { UsersModule } from './modules/users/users.module'
+import { RolesModule } from './modules/roles/roles.module'
 
 @Module({
   imports: [
@@ -20,7 +20,7 @@ import { RolesModule } from './modules/roles/roles.module';
       password: process.env.DB_POSTGRES_PASSWORD,
       username: process.env.DB_POSTGRES_USER,
       entities: [__dirname + '/**/*.entity{.ts,.js}'],
-      synchronize: false,
+      synchronize: true,
       retryDelay: 3000,
       retryAttempts: 10,
       // ssl: {
