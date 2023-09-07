@@ -1,5 +1,5 @@
-import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm'
-
+import { Column, Entity, PrimaryGeneratedColumn, ManyToOne } from 'typeorm'
+import { Role } from 'src/modules/roles/entities/role.entity'
 @Entity('users')
 export class User {
   @PrimaryGeneratedColumn('increment', { type: 'int' })
@@ -16,4 +16,7 @@ export class User {
 
   @Column({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP' })
   createdAt: Date
+
+  @ManyToOne(() => Role, (role) => role.users)
+  roles: Role[]
 }
