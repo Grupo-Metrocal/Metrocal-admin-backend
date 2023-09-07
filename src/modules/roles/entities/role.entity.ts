@@ -1,5 +1,5 @@
-import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm'
-
+import { Column, Entity, PrimaryGeneratedColumn, OneToMany } from 'typeorm'
+import { User } from 'src/modules/users/entities/user.entity'
 @Entity('roles')
 export class Role {
   @PrimaryGeneratedColumn('increment', { type: 'int' })
@@ -13,4 +13,7 @@ export class Role {
 
   @Column({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP' })
   createdAt: Date
+
+  @OneToMany(() => User, (user) => user.roles)
+  users: User[]
 }
