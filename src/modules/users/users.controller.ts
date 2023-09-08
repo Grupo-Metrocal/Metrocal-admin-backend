@@ -22,9 +22,6 @@ export class UsersController {
   async create(@Body() user: CreateUserDto) {
     if (!user) throw new HttpException('Todos los campos son requeridos', 400)
 
-    if (this.usersService.findByEmail(user.email))
-      throw new HttpException('El usuario ya existe', 400)
-
     return this.usersService.create(user)
   }
 
@@ -37,9 +34,8 @@ export class UsersController {
   async findOne(@Param('id') id: string) {
     if (!id) throw new HttpException('El id es requerido', 400)
 
-    const user = await this.usersService.findById(+id)
-    if (!user) throw new HttpException('El usuario no existe', 400)
+    if (isNaN(+id)) throw new HttpException('El id debe ser un número', 400)
 
-    return user
+    return await this.usersService.findById(+id)
   }
 }
