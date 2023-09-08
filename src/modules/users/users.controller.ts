@@ -22,6 +22,15 @@ export class UsersController {
   async create(@Body() user: CreateUserDto) {
     if (!user) throw new HttpException('Todos los campos son requeridos', 400)
 
+    if (!user.password)
+      throw new HttpException('La contraseña es requerida', 400)
+
+    if (user.password.length < 8)
+      throw new HttpException(
+        'La contraseña debe tener al menos 8 caracteres',
+        400,
+      )
+
     return this.usersService.create(user)
   }
 
