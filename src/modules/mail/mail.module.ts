@@ -1,6 +1,5 @@
 import { Module } from '@nestjs/common'
 import { MailService } from './mail.service'
-import { MailController } from './mail.controller'
 import { MailerModule } from '@nestjs-modules/mailer'
 import { ConfigModule } from '@nestjs/config'
 import { join } from 'path'
@@ -36,7 +35,7 @@ import { HandlebarsAdapter } from '@nestjs-modules/mailer/dist/adapters/handleba
       }),
     }),
   ],
-  controllers: [MailController],
+  controllers: [],
   providers: [MailService],
   exports: [MailService],
 })
