@@ -5,11 +5,13 @@ import { InjectRepository } from '@nestjs/typeorm'
 import { Repository } from 'typeorm'
 import { compare, hash } from 'bcrypt'
 import { User } from './entities/user.entity'
+import { MailService } from '../mail/mail.service'
 
 @Injectable()
 export class UsersService {
   constructor(
     @InjectRepository(User) private readonly userRepository: Repository<User>,
+    private readonly mailService: MailService,
   ) {}
   async create(createUserDto: CreateUserDto): Promise<User> {
     const user = await this.userRepository.findOneBy({
@@ -22,6 +24,8 @@ export class UsersService {
       ...createUserDto,
       password: hashedPassword,
     })
+
+    await this.mailService.sendMailWelcomeApp(createUserDto.email)
     return await this.userRepository.save(newUser)
   }
 
