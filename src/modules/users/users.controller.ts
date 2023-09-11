@@ -13,14 +13,15 @@ import { UpdateUserDto } from './dto/update-user.dto'
 import { HttpException, UseGuards } from '@nestjs/common'
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard'
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger'
+import { PasswordRestoreDto } from './dto/password-restore.dto'
 
 @ApiBearerAuth()
 @ApiTags('users')
 @Controller('users')
-@UseGuards(JwtAuthGuard)
 export class UsersController {
   constructor(private readonly usersService: UsersService) {}
 
+  @UseGuards(JwtAuthGuard)
   @Post()
   async create(@Body() user: CreateUserDto) {
     if (!user) throw new HttpException('Todos los campos son requeridos', 400)
@@ -37,11 +38,13 @@ export class UsersController {
     return this.usersService.create(user)
   }
 
+  @UseGuards(JwtAuthGuard)
   @Get()
   async findAll() {
     return this.usersService.findAll()
   }
 
+  @UseGuards(JwtAuthGuard)
   @Get(':id')
   async findOne(@Param('id') id: string) {
     if (!id) throw new HttpException('El id es requerido', 400)
@@ -49,5 +52,17 @@ export class UsersController {
     if (isNaN(+id)) throw new HttpException('El id debe ser un número', 400)
 
     return await this.usersService.findById(+id)
+  }
+
+  @Post('password-restore-request/:email')
+  async passwordRestoreRequest(@Param('email') email: string) {
+    if (!email) throw new HttpException('El email es requerido', 400)
+
+    return await this.usersService.passwordRestoreRequest(email)
+  }
+
+  @Post('restore-password')
+  async restorePassword(@Body() passwordRestoreDto: PasswordRestoreDto) {
+    return await this.usersService.restorePassword(passwordRestoreDto)
   }
 }
