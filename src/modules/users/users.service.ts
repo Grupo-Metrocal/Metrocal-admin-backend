@@ -5,12 +5,17 @@ import { InjectRepository } from '@nestjs/typeorm'
 import { Repository } from 'typeorm'
 import { compare, hash } from 'bcrypt'
 import { User } from './entities/user.entity'
+import { ResetPassword } from './entities/reset-password.entity'
 import { MailService } from '../mail/mail.service'
+import { passwordResetCodeGenerator } from 'src/utils/codeGenerator'
+import { PasswordRestoreDto } from './dto/password-restore.dto'
 
 @Injectable()
 export class UsersService {
   constructor(
     @InjectRepository(User) private readonly userRepository: Repository<User>,
+    @InjectRepository(ResetPassword)
+    private readonly resetPasswordRepository: Repository<ResetPassword>,
     private readonly mailService: MailService,
   ) {}
   async create(createUserDto: CreateUserDto): Promise<User> {
@@ -57,8 +62,70 @@ export class UsersService {
     return await this.userRepository.save(updatedUser)
   }
 
-  async findByEmail(email: string): Promise<User | {}> {
+  async findByEmail(email: string): Promise<User> {
     const user = await this.userRepository.findOneBy({ email })
-    return user || { statusCode: 404, message: 'Usuario no encontrado' }
+    if (!user) throw new HttpException('Usuario no encontrado', 404)
+
+    return user
+  }
+
+  async passwordRestoreRequest(email: string): Promise<number> {
+    const user = await this.userRepository.findOneBy({ email })
+
+    if (!user) throw new HttpException('Usuario no encontrado', 404)
+
+    const code = passwordResetCodeGenerator({ length: 6, suffix: 'MTC' })
+    const experiedAt = new Date()
+    experiedAt.setMinutes(experiedAt.getMinutes() + 1)
+
+    const resetPassword = this.resetPasswordRepository.create({
+      email,
+      code,
+      experiedAt,
+    })
+
+    try {
+      const [reset] = await Promise.all([
+        this.resetPasswordRepository.save(resetPassword),
+        this.mailService.sendMailResetPassword(email, code),
+      ])
+
+      return reset.id
+    } catch (error) {
+      throw new HttpException('Error al enviar el correo', 500)
+    }
+  }
+
+  async restorePassword({
+    email,
+    code,
+    idCode,
+    password,
+  }: PasswordRestoreDto): Promise<void> {
+    const user = await this.findByEmail(email)
+
+    const resetPassword = await this.resetPasswordRepository.findOneBy({
+      id: idCode,
+    })
+
+    if (!resetPassword) throw new HttpException('Código no encontrado', 404)
+
+    if (resetPassword.code !== code)
+      throw new HttpException('El código no coincide', 400)
+
+    const now = new Date()
+    if (now > resetPassword.experiedAt)
+      throw new HttpException('Código expirado', 400)
+
+    const hashedPassword = await hash(password, 10)
+
+    try {
+      await Promise.all([
+        this.userRepository.update(user.id, { password: hashedPassword }),
+        this.resetPasswordRepository.delete(resetPassword.id),
+      ])
+    } catch (error) {
+      throw new HttpException('Error al actualizar la contraseña', 500)
+    }
   }
 }
