@@ -5,15 +5,24 @@ import { MailerService } from '@nestjs-modules/mailer'
 export class MailService {
   constructor(private readonly mailerService: MailerService) {}
 
-  async sendMailWelcomeApp(user: string) {
+  private async sendMail(
+    user: string,
+    subject: string,
+    template: string,
+    context: { [key: string]: any },
+  ) {
     await this.mailerService.sendMail({
       to: user,
       from: process.env.MAILER_FROM,
-      subject: 'Welcome to Metrocal 🚀',
-      template: 'welcome',
-      context: {
-        name: user,
-      },
+      subject: subject,
+      template: template,
+      context: context,
+    })
+  }
+
+  async sendMailWelcomeApp(user: string) {
+    await this.sendMail(user, 'Bienvenido a la aplicación', 'welcome', {
+      user,
     })
   }
 }
