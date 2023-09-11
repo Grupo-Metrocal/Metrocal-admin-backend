@@ -41,11 +41,24 @@ export class UsersService {
 
   async findById(id: number): Promise<User | {}> {
     const user = await this.userRepository.findOneBy({ id })
-    return user ? user : { statusCode: 404, message: 'User not found' }
+    return user ? user : { statusCode: 404, message: 'Usuario no encontrado' }
+  }
+
+  async updateById(id: number, updateUserDto: UpdateUserDto): Promise<User> {
+    const user = await this.userRepository.findOneBy({ id })
+    if (!user) throw new HttpException('Usuario no encontrado', 404)
+
+    const hashedPassword = await hash(updateUserDto.password, 10)
+    const updatedUser = this.userRepository.merge(user, {
+      ...updateUserDto,
+      password: hashedPassword,
+    })
+
+    return await this.userRepository.save(updatedUser)
   }
 
   async findByEmail(email: string): Promise<User | {}> {
     const user = await this.userRepository.findOneBy({ email })
-    return user || { statusCode: 404, message: 'User not found' }
+    return user || { statusCode: 404, message: 'Usuario no encontrado' }
   }
 }
