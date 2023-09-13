@@ -1,5 +1,15 @@
-import { Column, Entity, PrimaryGeneratedColumn, ManyToOne } from 'typeorm'
+import {
+  Column,
+  Entity,
+  PrimaryGeneratedColumn,
+  ManyToOne,
+  OneToMany,
+  ManyToMany,
+} from 'typeorm'
 import { Role } from 'src/modules/roles/entities/role.entity'
+import { QuoteRequest } from 'src/modules/quotes/entities/quote-request.entity'
+import { Quote } from 'src/modules/quotes/entities/quote.entity'
+
 @Entity('users')
 export class User {
   @PrimaryGeneratedColumn('increment', { type: 'int' })
@@ -19,4 +29,10 @@ export class User {
 
   @ManyToOne(() => Role, (role) => role.users)
   roles: Role[]
+
+  @OneToMany(() => QuoteRequest, (quoteRequest) => quoteRequest.approved_by)
+  quote_requests: QuoteRequest[]
+
+  @ManyToMany(() => Quote, (quote) => quote.workers)
+  quotes: Quote[]
 }
