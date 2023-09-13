@@ -9,6 +9,8 @@ import { AuthModule } from './modules/auth/auth.module'
 import { MailModule } from './modules/mail/mail.module'
 import { TypeOrmModuleOptions } from '@nestjs/typeorm'
 import { configEnv } from './configEnv'
+import { QuotesModule } from './modules/quotes/quotes.module';
+import { ClientsModule } from './modules/clients/clients.module';
 
 @Module({
   imports: [
@@ -21,6 +23,8 @@ import { configEnv } from './configEnv'
     RolesModule,
     AuthModule,
     MailModule,
+    QuotesModule,
+    ClientsModule,
   ],
   controllers: [AppController],
   providers: [AppService],
