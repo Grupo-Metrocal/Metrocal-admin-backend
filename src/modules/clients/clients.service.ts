@@ -14,4 +14,14 @@ export class ClientsService {
   async createClient(client: CreateClientDto): Promise<CreateClientDto> {
     return await this.clientRepository.save(client)
   }
+
+  async findById(id: number): Promise<Client> {
+    return await this.clientRepository.findOne({
+      where: { id },
+    })
+  }
+
+  async findAll(): Promise<Client[]> {
+    return await this.clientRepository.find()
+  }
 }
