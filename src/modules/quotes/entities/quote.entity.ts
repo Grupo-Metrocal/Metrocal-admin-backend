@@ -4,6 +4,7 @@ import {
   PrimaryGeneratedColumn,
   OneToOne,
   ManyToMany,
+  JoinTable,
 } from 'typeorm'
 import { QuoteRequest } from './quote-request.entity'
 import { User } from 'src/modules/users/entities/user.entity'
@@ -17,6 +18,7 @@ export class Quote {
   quote_request: QuoteRequest
 
   @ManyToMany(() => User, (user) => user.quotes)
+  @JoinTable()
   workers: User[]
 
   @Column({ type: 'varchar', default: 'active' })
