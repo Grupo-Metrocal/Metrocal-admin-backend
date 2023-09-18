@@ -17,9 +17,9 @@ export class QuoteRequest {
   // falta el campo del cliente
 
   @Column({ type: 'varchar', nullable: false, default: 'pending' })
-  status: string // 'pending' | 'waiting' | 'done'
+  status: 'pending' | 'waiting' | 'done' | 'rejected'
 
-  @OneToOne(
+  @ManyToOne(
     () => EquipmentQuoteRequest,
     (equipment_quote_request) => equipment_quote_request.quote_request,
   )
