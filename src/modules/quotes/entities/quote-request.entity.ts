@@ -4,26 +4,29 @@ import {
   PrimaryGeneratedColumn,
   ManyToOne,
   OneToOne,
+  OneToMany,
 } from 'typeorm'
 import { User } from 'src/modules/users/entities/user.entity'
 import { EquipmentQuoteRequest } from './equipment-quote-request.entity'
 import { Quote } from './quote.entity'
+import { Client } from 'src/modules/clients/entities/client.entity'
 
 @Entity('quote_requests')
 export class QuoteRequest {
   @PrimaryGeneratedColumn('increment', { type: 'int' })
   id: number
 
-  // falta el campo del cliente
+  @ManyToOne(() => Client, (client) => client.quote_requests)
+  client: Client
 
   @Column({ type: 'varchar', nullable: false, default: 'pending' })
   status: 'pending' | 'waiting' | 'done' | 'rejected'
 
-  @ManyToOne(
+  @OneToMany(
     () => EquipmentQuoteRequest,
-    (equipment_quote_request) => equipment_quote_request.quote_request,
+    (EquipmentQuoteRequest) => EquipmentQuoteRequest.quote_request,
   )
-  equipment_quote_request: EquipmentQuoteRequest
+  equipment_quote_request: EquipmentQuoteRequest[]
 
   @Column({ type: 'int', nullable: false })
   general_discount: number

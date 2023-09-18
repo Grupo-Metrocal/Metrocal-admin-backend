@@ -1,4 +1,4 @@
-import { Entity, Column, PrimaryGeneratedColumn, OneToMany } from 'typeorm'
+import { Entity, Column, PrimaryGeneratedColumn, ManyToOne } from 'typeorm'
 import { QuoteRequest } from './quote-request.entity'
 
 @Entity('equipment_quote_requests')
@@ -6,7 +6,7 @@ export class EquipmentQuoteRequest {
   @PrimaryGeneratedColumn('increment', { type: 'int' })
   id: number
 
-  @OneToMany(
+  @ManyToOne(
     () => QuoteRequest,
     (quote_request) => quote_request.equipment_quote_request,
   )
