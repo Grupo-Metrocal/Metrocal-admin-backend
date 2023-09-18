@@ -5,6 +5,7 @@ import {
   ManyToOne,
   OneToMany,
   ManyToMany,
+  JoinTable,
 } from 'typeorm'
 import { Role } from 'src/modules/roles/entities/role.entity'
 import { QuoteRequest } from 'src/modules/quotes/entities/quote-request.entity'
@@ -34,5 +35,6 @@ export class User {
   quote_requests: QuoteRequest[]
 
   @ManyToMany(() => Quote, (quote) => quote.workers)
+  @JoinTable()
   quotes: Quote[]
 }
