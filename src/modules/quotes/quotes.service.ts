@@ -1,10 +1,11 @@
 import { Injectable } from '@nestjs/common'
 import { InjectRepository } from '@nestjs/typeorm'
-import { Repository } from 'typeorm'
+import { Repository, DataSource } from 'typeorm'
 import { Quote } from './entities/quote.entity'
 import { EquipmentQuoteRequest } from './entities/equipment-quote-request.entity'
 import { QuoteRequest } from './entities/quote-request.entity'
 import { QuoteRequestDto } from './dto/quote-request.dto'
+import { ClientsService } from '../clients/clients.service'
 
 @Injectable()
 export class QuotesService {
@@ -15,26 +16,54 @@ export class QuotesService {
     private readonly quoteRequestRepository: Repository<QuoteRequest>,
     @InjectRepository(EquipmentQuoteRequest)
     private readonly equipmentQuoteRequestRepository: Repository<EquipmentQuoteRequest>,
+    private readonly clientsService: ClientsService,
+    private readonly dataSource: DataSource,
   ) {}
 
-  async createQuoteRequest(
-    quoteRequestDto: QuoteRequestDto,
-  ): Promise<QuoteRequest> {
-    const equipmentQuoteRequest =
-      await this.equipmentQuoteRequestRepository.save(
-        quoteRequestDto.equipment_quote_request,
-      )
-    const quoteRequest = await this.quoteRequestRepository.save({
-      ...quoteRequestDto,
-      equipment_quote_request: equipmentQuoteRequest,
+  async createQuoteRequest(quoteRequestDto: QuoteRequestDto) {
+    const client = await this.clientsService.findById(quoteRequestDto.client_id)
+
+    const quoteRequest = this.quoteRequestRepository.create({
+      status: quoteRequestDto.status,
+      client,
+      general_discount: quoteRequestDto.general_discount,
+      tax: quoteRequestDto.tax,
+      price: quoteRequestDto.price,
     })
-    return quoteRequest
+
+    if (!client.quote_requests) {
+      client.quote_requests = []
+    }
+
+    client.quote_requests = [...client.quote_requests, quoteRequest]
+
+    const equipmentQuoteRequest = quoteRequestDto.equipment_quote_request.map(
+      (equipmentQuoteRequest) => {
+        const equipment = this.equipmentQuoteRequestRepository.create(
+          equipmentQuoteRequest,
+        )
+        equipment.quote_request = quoteRequest
+        return equipment
+      },
+    )
+
+    quoteRequest.equipment_quote_request = equipmentQuoteRequest
+
+    try {
+      await this.dataSource.transaction(async (manager) => {
+        await manager.save(quoteRequest)
+        await manager.save(client)
+        await manager.save(equipmentQuoteRequest)
+      })
+    } catch (error) {
+      throw new Error(error)
+    }
   }
 
   async getAllQuoteRequest() {
     return await this.quoteRequestRepository.find({
       where: [{ status: 'pending' }, { status: 'waiting' }, { status: 'done' }],
-      relations: ['equipment_quote_request'],
+      relations: ['equipment_quote_request', 'client'],
     })
   }
 
