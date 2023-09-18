@@ -1,10 +1,18 @@
 import { ApiProperty } from '@nestjs/swagger'
-import { IsEmail, isNotEmpty } from 'class-validator'
+import { IsNotEmpty, IsNumber } from 'class-validator'
+import { QuoteRequest } from '../entities/quote-request.entity'
+import { User } from 'src/modules/users/entities/user.entity'
 
 export class CreateQuoteDto {
   @ApiProperty()
-  id: number
+  @IsNotEmpty()
+  quote_requests: QuoteRequest
 
   @ApiProperty()
-  quote_requests_id: number[]
+  @IsNotEmpty()
+  workers: User[]
+
+  @ApiProperty()
+  @IsNotEmpty()
+  status: 'active' | 'inactive'
 }
