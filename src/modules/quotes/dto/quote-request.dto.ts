@@ -7,8 +7,15 @@ export class QuoteRequestDto {
   status?: 'pending' | 'waiting' | 'done'
 
   @ApiProperty()
+  @IsNumber()
+  client_id?: number
+
+  @ApiProperty()
+  client?: {}
+
+  @ApiProperty({ type: [EquipmentQuoteRequestDto] })
   @IsNotEmpty()
-  equipment_quote_request: EquipmentQuoteRequestDto
+  equipment_quote_request: EquipmentQuoteRequestDto[]
 
   @ApiProperty()
   @IsNumber()
