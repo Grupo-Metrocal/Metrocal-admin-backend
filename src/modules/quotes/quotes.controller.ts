@@ -1,7 +1,6 @@
-import { Controller } from '@nestjs/common'
 import { QuotesService } from './quotes.service'
 import { ApiTags } from '@nestjs/swagger'
-import { Post, Body, Get } from '@nestjs/common'
+import { Controller, Post, Body, Get, Param } from '@nestjs/common'
 import { QuoteRequestDto } from './dto/quote-request.dto'
 
 @ApiTags('quotes')
@@ -28,5 +27,9 @@ export class QuotesController {
   @Get('request/:id')
   async getQuoteRequestById(@Body() id: number) {
     return await this.quotesService.getQuoteRequestById(id)
+  }
+  @Get('request/client/:id')
+  async getQuoteRequestByClientId(@Param('id') id: number) {
+    return await this.quotesService.getQuoteRequestByClientId(id)
   }
 }
