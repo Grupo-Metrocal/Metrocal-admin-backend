@@ -31,12 +31,6 @@ export class QuotesService {
       price: quoteRequestDto.price,
     })
 
-    if (!client.quote_requests) {
-      client.quote_requests = []
-    }
-
-    client.quote_requests = [...client.quote_requests, quoteRequest]
-
     const equipmentQuoteRequest = quoteRequestDto.equipment_quote_request.map(
       (equipmentQuoteRequest) => {
         const equipment = this.equipmentQuoteRequestRepository.create(
