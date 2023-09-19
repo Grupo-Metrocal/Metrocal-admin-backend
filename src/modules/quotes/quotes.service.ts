@@ -61,6 +61,13 @@ export class QuotesService {
     })
   }
 
+  async getQuoteRequestByClientId(id: number) {
+    return await this.quoteRequestRepository.find({
+      where: { client: { id } },
+      relations: ['equipment_quote_request', 'client'],
+    })
+  }
+
   async rejectQuoteRequest(id: number) {
     const quoteRequest = await this.quoteRequestRepository.findOne({
       where: { id },
