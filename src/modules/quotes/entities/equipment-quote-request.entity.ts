@@ -12,27 +12,27 @@ export class EquipmentQuoteRequest {
   )
   quote_request: QuoteRequest
 
-  @Column({ type: 'varchar', nullable: false })
+  @Column({ type: 'varchar' })
   name: string
 
-  @Column({ type: 'varchar', nullable: false })
+  @Column({ type: 'varchar' })
   type_service: string
 
-  @Column({ type: 'int', nullable: false })
+  @Column({ type: 'int' })
   count: number
 
-  @Column({ type: 'varchar', nullable: false })
+  @Column({ type: 'varchar' })
   model: string
 
   @Column()
-  measuring_range: boolean
+  measuring_range?: boolean
 
-  @Column({ type: 'varchar', nullable: false })
-  calibration_method: string
+  @Column({ type: 'varchar' })
+  calibration_method?: string
 
-  @Column({ type: 'varchar', nullable: false })
-  additional_remarks: string
+  @Column({ type: 'varchar' })
+  additional_remarks?: string
 
-  @Column({ type: 'int', nullable: false })
-  discount: number
+  @Column({ type: 'int' })
+  discount?: number
 }

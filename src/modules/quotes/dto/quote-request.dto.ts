@@ -4,7 +4,7 @@ import { EquipmentQuoteRequestDto } from './equipment-quote-request.dto'
 
 export class QuoteRequestDto {
   @ApiProperty()
-  status?: 'pending' | 'waiting' | 'done'
+  status?: 'pending' | 'waiting' | 'done' | 'canceled' | 'rejected'
 
   @ApiProperty()
   @IsNumber()
@@ -19,13 +19,13 @@ export class QuoteRequestDto {
 
   @ApiProperty()
   @IsNumber()
-  general_discount: number
+  general_discount?: number
 
   @ApiProperty()
   @IsNumber()
-  tax: number
+  tax?: number
 
   @ApiProperty()
   @IsNumber()
-  price: number
+  price?: number
 }

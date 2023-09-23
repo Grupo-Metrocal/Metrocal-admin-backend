@@ -20,7 +20,7 @@ export class QuoteRequest {
   client: Client
 
   @Column({ type: 'varchar', nullable: false, default: 'pending' })
-  status: 'pending' | 'waiting' | 'done' | 'rejected'
+  status: 'pending' | 'waiting' | 'done' | 'rejected' | 'canceled'
 
   @OneToMany(
     () => EquipmentQuoteRequest,
