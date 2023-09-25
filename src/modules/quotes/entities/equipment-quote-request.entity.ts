@@ -9,6 +9,10 @@ export class EquipmentQuoteRequest {
   @ManyToOne(
     () => QuoteRequest,
     (quote_request) => quote_request.equipment_quote_request,
+    {
+      onDelete: 'CASCADE',
+      onUpdate: 'CASCADE',
+    },
   )
   quote_request: QuoteRequest
 

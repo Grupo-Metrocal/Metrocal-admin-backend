@@ -25,6 +25,10 @@ export class QuoteRequest {
   @OneToMany(
     () => EquipmentQuoteRequest,
     (EquipmentQuoteRequest) => EquipmentQuoteRequest.quote_request,
+    {
+      onDelete: 'CASCADE',
+      onUpdate: 'CASCADE',
+    },
   )
   equipment_quote_request: EquipmentQuoteRequest[]
 

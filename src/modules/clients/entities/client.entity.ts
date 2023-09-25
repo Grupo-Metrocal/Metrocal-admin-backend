@@ -6,7 +6,10 @@ export class Client {
   @PrimaryGeneratedColumn('increment', { type: 'int' })
   id: number
 
-  @OneToMany(() => QuoteRequest, (quote_request) => quote_request.client)
+  @OneToMany(() => QuoteRequest, (quote_request) => quote_request.client, {
+    onDelete: 'CASCADE',
+    onUpdate: 'CASCADE',
+  })
   quote_requests: QuoteRequest[]
 
   @Column({ type: 'varchar', nullable: false })

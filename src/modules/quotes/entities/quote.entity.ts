@@ -14,7 +14,10 @@ export class Quote {
   @PrimaryGeneratedColumn('increment', { type: 'int' })
   id: number
 
-  @OneToOne(() => QuoteRequest, (quoteRequest) => quoteRequest.quote)
+  @OneToOne(() => QuoteRequest, (quoteRequest) => quoteRequest.quote, {
+    onDelete: 'CASCADE',
+    onUpdate: 'CASCADE',
+  })
   quote_request: QuoteRequest
 
   @ManyToMany(() => User, (user) => user.quotes)
