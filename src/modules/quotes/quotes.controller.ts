@@ -25,7 +25,7 @@ export class QuotesController {
   }
 
   @Get('request/:id')
-  async getQuoteRequestById(@Body() id: number) {
+  async getQuoteRequestById(@Param('id') id: number) {
     return await this.quotesService.getQuoteRequestById(id)
   }
   @Get('request/client/:id')
