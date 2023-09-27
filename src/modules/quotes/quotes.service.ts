@@ -79,7 +79,7 @@ export class QuotesService {
   async getQuoteRequestById(id: number) {
     return await this.quoteRequestRepository.findOne({
       where: { id },
-      relations: ['equipment_quote_request'],
+      relations: ['equipment_quote_request', 'client'],
     })
   }
 }
