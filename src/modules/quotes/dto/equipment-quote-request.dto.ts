@@ -33,4 +33,8 @@ export class EquipmentQuoteRequestDto {
   @ApiProperty()
   @IsNumber()
   discount: number
+
+  @ApiProperty()
+  @IsNotEmpty()
+  status?: string // done, rejected, pending
 }

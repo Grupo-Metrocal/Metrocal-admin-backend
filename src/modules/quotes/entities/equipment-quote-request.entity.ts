@@ -39,4 +39,7 @@ export class EquipmentQuoteRequest {
 
   @Column({ type: 'int' })
   discount?: number
+
+  @Column({ default: 'pending' })
+  status?: string // done, rejected, pending
 }
