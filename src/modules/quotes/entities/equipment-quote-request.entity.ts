@@ -31,10 +31,10 @@ export class EquipmentQuoteRequest {
   @Column()
   measuring_range?: boolean
 
-  @Column({ type: 'varchar' })
+  @Column({ type: 'varchar', default: '' })
   calibration_method?: string
 
-  @Column({ type: 'varchar' })
+  @Column({ type: 'varchar', default: '' })
   additional_remarks?: string
 
   @Column({ type: 'int' })
