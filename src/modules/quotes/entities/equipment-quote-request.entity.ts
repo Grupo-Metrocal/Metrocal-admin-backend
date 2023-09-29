@@ -42,4 +42,10 @@ export class EquipmentQuoteRequest {
 
   @Column({ default: 'pending' })
   status?: string // done, rejected, pending
+
+  @Column({ type: 'varchar', nullable: true })
+  comment?: string
+
+  @Column({ type: 'int', default: 0 })
+  price?: number
 }
