@@ -2,6 +2,7 @@ import { QuotesService } from './quotes.service'
 import { ApiTags } from '@nestjs/swagger'
 import { Controller, Post, Body, Get, Param } from '@nestjs/common'
 import { QuoteRequestDto } from './dto/quote-request.dto'
+import { updateEquipmentQuoteRequestDto } from './dto/update-equipment-quote-request.dto'
 
 @ApiTags('quotes')
 @Controller('quotes')
@@ -31,5 +32,14 @@ export class QuotesController {
   @Get('request/client/:id')
   async getQuoteRequestByClientId(@Param('id') id: number) {
     return await this.quotesService.getQuoteRequestByClientId(id)
+  }
+
+  @Post('request/equipment/update/')
+  async updateEquipmentQuoteRequest(
+    @Body() equipmentQuoteRequest: updateEquipmentQuoteRequestDto,
+  ) {
+    return await this.quotesService.updateEquipmentQuoteRequest(
+      equipmentQuoteRequest,
+    )
   }
 }
