@@ -6,6 +6,7 @@ import { EquipmentQuoteRequest } from './entities/equipment-quote-request.entity
 import { QuoteRequest } from './entities/quote-request.entity'
 import { QuoteRequestDto } from './dto/quote-request.dto'
 import { ClientsService } from '../clients/clients.service'
+import { updateEquipmentQuoteRequestDto } from './dto/update-equipment-quote-request.dto'
 
 @Injectable()
 export class QuotesService {
@@ -81,5 +82,21 @@ export class QuotesService {
       where: { id },
       relations: ['equipment_quote_request', 'client'],
     })
+  }
+
+  async updateEquipmentQuoteRequest(
+    equipmentQuoteRequest: updateEquipmentQuoteRequestDto,
+  ) {
+    const equipment = await this.equipmentQuoteRequestRepository.findOne({
+      where: { id: equipmentQuoteRequest.id },
+    })
+
+    if (!equipment) {
+      throw new Error('El equipo no existe')
+    }
+
+    Object.assign(equipment, equipmentQuoteRequest)
+
+    return await this.equipmentQuoteRequestRepository.save(equipment)
   }
 }
