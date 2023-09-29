@@ -23,12 +23,10 @@ export class EquipmentQuoteRequestDto {
   measuring_range: boolean
 
   @ApiProperty()
-  @IsNotEmpty()
-  calibration_method: string
+  calibration_method?: string
 
   @ApiProperty()
-  @IsNotEmpty()
-  additional_remarks: string
+  additional_remarks?: string
 
   @ApiProperty()
   @IsNumber()
