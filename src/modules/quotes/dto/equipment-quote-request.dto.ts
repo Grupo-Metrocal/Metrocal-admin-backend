@@ -43,4 +43,8 @@ export class EquipmentQuoteRequestDto {
   @ApiProperty()
   @IsNumber()
   price?: number
+
+  @ApiProperty()
+  @IsNumber()
+  total?: number
 }

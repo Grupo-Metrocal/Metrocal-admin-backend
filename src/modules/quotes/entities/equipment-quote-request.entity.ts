@@ -48,4 +48,7 @@ export class EquipmentQuoteRequest {
 
   @Column({ type: 'int', default: 0 })
   price?: number
+
+  @Column({ type: 'int', default: 0 })
+  total?: number
 }
