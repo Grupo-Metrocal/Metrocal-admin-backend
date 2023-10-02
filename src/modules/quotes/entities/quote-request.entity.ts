@@ -35,7 +35,7 @@ export class QuoteRequest {
   @Column({ type: 'int', nullable: false })
   general_discount: number
 
-  @Column({ type: 'int', nullable: false })
+  @Column({ type: 'int', nullable: false, default: 15 })
   tax: number
 
   @Column({ type: 'int', nullable: false })
