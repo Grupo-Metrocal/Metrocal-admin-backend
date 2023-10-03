@@ -46,9 +46,9 @@ export class EquipmentQuoteRequest {
   @Column({ type: 'varchar', nullable: true })
   comment?: string
 
-  @Column({ type: 'int', default: 0 })
+  @Column({ type: 'float', default: 0 })
   price?: number
 
-  @Column({ type: 'int', default: 0 })
+  @Column({ type: 'float', default: 0 })
   total?: number
 }

@@ -41,10 +41,8 @@ export class EquipmentQuoteRequestDto {
   comment?: string
 
   @ApiProperty()
-  @IsNumber()
   price?: number
 
   @ApiProperty()
-  @IsNumber()
   total?: number
 }
