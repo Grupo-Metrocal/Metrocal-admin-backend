@@ -26,6 +26,5 @@ export class QuoteRequestDto {
   tax?: number
 
   @ApiProperty()
-  @IsNumber()
   price?: number
 }
