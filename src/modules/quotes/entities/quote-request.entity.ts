@@ -38,7 +38,7 @@ export class QuoteRequest {
   @Column({ type: 'int', nullable: false, default: 15 })
   tax: number
 
-  @Column({ type: 'int', nullable: false })
+  @Column({ type: 'float', nullable: true })
   price: number
 
   @ManyToOne(() => User, (user) => user.quote_requests)
