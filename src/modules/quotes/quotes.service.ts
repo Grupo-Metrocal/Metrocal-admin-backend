@@ -7,6 +7,7 @@ import { QuoteRequest } from './entities/quote-request.entity'
 import { QuoteRequestDto } from './dto/quote-request.dto'
 import { ClientsService } from '../clients/clients.service'
 import { updateEquipmentQuoteRequestDto } from './dto/update-equipment-quote-request.dto'
+import { UpdateQuoteRequestDto } from './dto/update-quote-request.dto'
 
 @Injectable()
 export class QuotesService {
@@ -98,5 +99,29 @@ export class QuotesService {
     Object.assign(equipment, equipmentQuoteRequest)
 
     return await this.equipmentQuoteRequestRepository.save(equipment)
+  }
+
+  async updateStatusQuoteRequest(QuoteRequest: UpdateQuoteRequestDto) {
+    const quoteRequest = await this.quoteRequestRepository.findOne({
+      where: { id: QuoteRequest.id },
+      select: [
+        'id',
+        'status',
+        'tax',
+        'price',
+        'general_discount',
+        'updated_at',
+      ],
+    })
+
+    console.log(quoteRequest)
+
+    if (!quoteRequest) {
+      throw new Error('La cotización no existe')
+    }
+
+    Object.assign(quoteRequest, QuoteRequest)
+
+    return await this.quoteRequestRepository.save(quoteRequest)
   }
 }
