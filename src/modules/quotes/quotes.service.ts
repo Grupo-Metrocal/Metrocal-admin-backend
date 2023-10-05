@@ -124,7 +124,10 @@ export class QuotesService {
     }
 
     Object.assign(quoteRequest, QuoteRequest)
-    const token = this.tokenService.generateTemporaryLink(quoteRequest.id, '1m')
+    const token = this.tokenService.generateTemporaryLink(
+      quoteRequest.id,
+      '15d',
+    )
 
     let approvedQuoteRequestDto: ApprovedQuoteRequestDto
 
@@ -166,5 +169,15 @@ export class QuotesService {
     } catch (error) {
       return false
     }
+  }
+
+  async getQuoteRequestByToken(token: string) {
+    const { id } = this.tokenService.verifyTemporaryLink(token)
+
+    if (!id) {
+      return false
+    }
+
+    return await this.getQuoteRequestById(id)
   }
 }
