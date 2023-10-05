@@ -15,12 +15,11 @@ export class TokenService {
 
   verifyTemporaryLink(token: string): { id: number } {
     try {
-      const decodedToken = jwt.verify(token, this.secretKey) as {
-        id: number
-      }
-      return decodedToken
+      return jwt.verify(token, this.secretKey) as { id: number }
     } catch (error) {
-      throw new Error('Token no válido')
+      return {
+        id: null,
+      }
     }
   }
 }
