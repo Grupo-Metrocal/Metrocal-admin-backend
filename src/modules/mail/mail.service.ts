@@ -1,16 +1,22 @@
 import { Injectable } from '@nestjs/common'
 import { MailerService } from '@nestjs-modules/mailer'
+import { ApprovedQuoteRequestDto } from './dto/approved-quote-request.dto'
 
 @Injectable()
 export class MailService {
   constructor(private readonly mailerService: MailerService) {}
 
-  private async sendMail(
-    user: string,
-    subject: string,
-    template: string,
-    context: { [key: string]: any },
-  ) {
+  private async sendMail({
+    user,
+    subject,
+    template,
+    context,
+  }: {
+    user: string
+    subject: string
+    template: string
+    context: { [key: string]: any }
+  }) {
     await this.mailerService.sendMail({
       to: user,
       from: process.env.MAILER_FROM,
@@ -21,20 +27,38 @@ export class MailService {
   }
 
   async sendMailWelcomeApp(user: string) {
-    await this.sendMail(
+    await this.sendMail({
       user,
-      'Bienvenido a bordo 🚀 Metrocal te da la Bienvenida!',
-      'welcome',
-      {
+      subject: 'Bienvenido a bordo 🚀 Metrocal te da la Bienvenida!',
+      template: 'welcome',
+      context: {
         user,
       },
-    )
+    })
   }
 
   async sendMailResetPassword(user: string, code: string) {
-    await this.sendMail(user, 'Recuperar contraseña', 'restore_password', {
+    await this.sendMail({
       user,
-      code,
+      subject: 'Recuperar contraseña',
+      template: 'restore_password',
+      context: {
+        user,
+        code,
+      },
+    })
+  }
+
+  async sendMailApprovedQuoteRequest(
+    approvedQuoteRequestDto: ApprovedQuoteRequestDto,
+  ) {
+    await this.sendMail({
+      user: approvedQuoteRequestDto.email,
+      subject: 'Cotización aprobada',
+      template: 'approved_quote_request',
+      context: {
+        ...approvedQuoteRequestDto,
+      },
     })
   }
 }
