@@ -8,6 +8,9 @@ import { QuoteRequestDto } from './dto/quote-request.dto'
 import { ClientsService } from '../clients/clients.service'
 import { updateEquipmentQuoteRequestDto } from './dto/update-equipment-quote-request.dto'
 import { UpdateQuoteRequestDto } from './dto/update-quote-request.dto'
+import { MailService } from '../mail/mail.service'
+import { TokenService } from '../auth/jwt/jwt.service'
+import { ApprovedQuoteRequestDto } from '../mail/dto/approved-quote-request.dto'
 
 @Injectable()
 export class QuotesService {
@@ -20,6 +23,8 @@ export class QuotesService {
     private readonly equipmentQuoteRequestRepository: Repository<EquipmentQuoteRequest>,
     private readonly clientsService: ClientsService,
     private readonly dataSource: DataSource,
+    private readonly mailService: MailService,
+    private readonly tokenService: TokenService,
   ) {}
 
   async createQuoteRequest(quoteRequestDto: QuoteRequestDto) {
@@ -114,14 +119,52 @@ export class QuotesService {
       ],
     })
 
-    console.log(quoteRequest)
-
     if (!quoteRequest) {
       throw new Error('La cotización no existe')
     }
 
     Object.assign(quoteRequest, QuoteRequest)
+    const token = this.tokenService.generateTemporaryLink(quoteRequest.id, '1m')
 
-    return await this.quoteRequestRepository.save(quoteRequest)
+    let approvedQuoteRequestDto: ApprovedQuoteRequestDto
+
+    if (quoteRequest.status === 'waiting') {
+      const quote = await this.getQuoteRequestById(QuoteRequest.id)
+      approvedQuoteRequestDto = new ApprovedQuoteRequestDto()
+      approvedQuoteRequestDto.clientName = quote.client.company_name
+      approvedQuoteRequestDto.servicesAndEquipments =
+        quote.equipment_quote_request.map((equipment) => {
+          return {
+            service: equipment.type_service,
+            equipment: equipment.name,
+            count: equipment.count,
+            unitPrice: equipment.price,
+            subTotal: equipment.total,
+            discount: equipment.discount,
+          }
+        })
+
+      approvedQuoteRequestDto.total = quote.price
+      approvedQuoteRequestDto.token = token
+      approvedQuoteRequestDto.email = quote.client.email
+      approvedQuoteRequestDto.linkDetailQuote = `${process.env.DOMAIN}/quote/${token}`
+      approvedQuoteRequestDto.subtotal = quote.price
+      approvedQuoteRequestDto.tax = quote.tax
+      approvedQuoteRequestDto.discount = quote.general_discount
+    }
+
+    try {
+      await this.quoteRequestRepository.save(quoteRequest)
+
+      if (quoteRequest.status === 'waiting') {
+        await this.mailService.sendMailApprovedQuoteRequest(
+          approvedQuoteRequestDto,
+        )
+      }
+
+      return quoteRequest
+    } catch (error) {
+      return false
+    }
   }
 }
