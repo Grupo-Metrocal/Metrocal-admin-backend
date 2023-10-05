@@ -8,9 +8,16 @@ import { QuoteRequest } from './entities/quote-request.entity'
 import { EquipmentQuoteRequest } from './entities/equipment-quote-request.entity'
 import { User } from '../users/entities/user.entity'
 import { Client } from '../clients/entities/client.entity'
+import { MailService } from '../mail/mail.service'
+import { TokenService } from '../auth/jwt/jwt.service'
+import { ConfigModule } from '@nestjs/config'
 
 @Module({
   imports: [
+    ConfigModule.forRoot({
+      envFilePath: '.env',
+      isGlobal: true,
+    }),
     TypeOrmModule.forFeature([
       Quote,
       QuoteRequest,
@@ -20,7 +27,7 @@ import { Client } from '../clients/entities/client.entity'
     ]),
   ],
   controllers: [QuotesController],
-  providers: [QuotesService, ClientsService],
+  providers: [QuotesService, ClientsService, MailService, TokenService],
   exports: [QuotesService],
 })
 export class QuotesModule {}
