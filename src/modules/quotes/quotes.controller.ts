@@ -48,4 +48,13 @@ export class QuotesController {
   async updateStatusQuoteRequest(@Body() quoteRequest: UpdateQuoteRequestDto) {
     return await this.quotesService.updateStatusQuoteRequest(quoteRequest)
   }
+
+  @Get('request/token/:token')
+  async getQuoteRequestByToken(@Param('token') token: string) {
+    if (!token) {
+      return false
+    }
+
+    return await this.quotesService.getQuoteRequestByToken(token)
+  }
 }
