@@ -11,6 +11,7 @@ import { TypeOrmModuleOptions } from '@nestjs/typeorm'
 import { configEnv } from './configEnv'
 import { QuotesModule } from './modules/quotes/quotes.module';
 import { ClientsModule } from './modules/clients/clients.module';
+import { PdfModule } from './modules/pdf/pdf.module';
 
 @Module({
   imports: [
@@ -25,6 +26,7 @@ import { ClientsModule } from './modules/clients/clients.module';
     MailModule,
     QuotesModule,
     ClientsModule,
+    PdfModule,
   ],
   controllers: [AppController],
   providers: [AppService],
