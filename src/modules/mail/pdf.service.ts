@@ -16,9 +16,10 @@ export class PdfService {
 
     const browser = await launch({
       headless: 'new',
-      args: ['--no-sandbox'],
+      args: ['--no-sandbox', '--disable-setuid-sandbox'],
     })
-    const page = await browser.newPage()
+    const context = await browser.createIncognitoBrowserContext()
+    const page = await context.newPage()
     await page.setContent(html)
     const pdfBuffer = await page.pdf({ format: 'A4' })
 
