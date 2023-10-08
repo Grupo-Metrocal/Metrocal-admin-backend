@@ -15,7 +15,7 @@ export class PdfService {
     const html = compiledTemplate(data)
 
     const browser = await launch({
-      headless: true,
+      headless: 'new',
       args: ['--no-sandbox'],
     })
     const page = await browser.newPage()
