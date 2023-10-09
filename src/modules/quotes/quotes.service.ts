@@ -11,6 +11,7 @@ import { UpdateQuoteRequestDto } from './dto/update-quote-request.dto'
 import { MailService } from '../mail/mail.service'
 import { TokenService } from '../auth/jwt/jwt.service'
 import { ApprovedQuoteRequestDto } from '../mail/dto/approved-quote-request.dto'
+import { PdfService } from '../mail/pdf.service'
 
 @Injectable()
 export class QuotesService {
@@ -25,6 +26,7 @@ export class QuotesService {
     private readonly dataSource: DataSource,
     private readonly mailService: MailService,
     private readonly tokenService: TokenService,
+    private readonly pdfService: PdfService,
   ) {}
 
   async createQuoteRequest(quoteRequestDto: QuoteRequestDto) {
@@ -151,7 +153,10 @@ export class QuotesService {
       approvedQuoteRequestDto.token = token
       approvedQuoteRequestDto.email = quote.client.email
       approvedQuoteRequestDto.linkDetailQuote = `${process.env.DOMAIN}/quote/${token}`
-      approvedQuoteRequestDto.subtotal = quote.price
+      approvedQuoteRequestDto.subtotal = quote.equipment_quote_request.reduce(
+        (acc, equipment) => acc + equipment.total,
+        0,
+      )
       approvedQuoteRequestDto.tax = quote.tax
       approvedQuoteRequestDto.discount = quote.general_discount
     }
@@ -179,5 +184,37 @@ export class QuotesService {
     }
 
     return await this.getQuoteRequestById(id)
+  }
+
+  async getQuoteRequestPdf(template: string, id: number) {
+    const quote = await this.getQuoteRequestById(id)
+
+    if (!quote) {
+      throw new Error('La cotización no existe')
+    }
+
+    const data = {}
+
+    data['servicesAndEquipments'] = quote.equipment_quote_request.map(
+      (equipment) => {
+        return {
+          service: equipment.type_service,
+          equipment: equipment.name,
+          count: equipment.count,
+          unitPrice: equipment.price,
+          subTotal: equipment.total,
+          discount: equipment.discount,
+        }
+      },
+    )
+    data['tax'] = quote.tax
+    data['discount'] = quote.general_discount
+    data['subtotal'] = quote.equipment_quote_request.reduce(
+      (acc, equipment) => acc + equipment.total,
+      0,
+    )
+    data['total'] = quote.price
+
+    return await this.pdfService.generatePdf(template, data)
   }
 }
