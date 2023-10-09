@@ -11,6 +11,7 @@ import { Client } from '../clients/entities/client.entity'
 import { MailService } from '../mail/mail.service'
 import { TokenService } from '../auth/jwt/jwt.service'
 import { ConfigModule } from '@nestjs/config'
+import { PdfService } from '../mail/pdf.service'
 
 @Module({
   imports: [
@@ -27,7 +28,13 @@ import { ConfigModule } from '@nestjs/config'
     ]),
   ],
   controllers: [QuotesController],
-  providers: [QuotesService, ClientsService, MailService, TokenService],
+  providers: [
+    QuotesService,
+    ClientsService,
+    MailService,
+    TokenService,
+    PdfService,
+  ],
   exports: [QuotesService],
 })
 export class QuotesModule {}
