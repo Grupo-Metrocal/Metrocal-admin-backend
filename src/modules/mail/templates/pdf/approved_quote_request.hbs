@@ -1,0 +1,69 @@
+<html lang='en'>
+  <head>
+    <meta charset='UTF-8' />
+    <meta name='viewport' content='width=device-width, initial-scale=1.0' />
+    <title>Cotización Aprobada</title>
+    <link
+      href='https://fonts.googleapis.com/css?family=Montserrat:400,700'
+      rel='stylesheet'
+      type='text/css'
+    />
+
+    <style>
+      * { font-family: 'Montserrat', sans-serif; color: #333 !important;
+      font-size: 14px;} main { margin: 0 auto; max-width: 800px; padding: 20px;
+      } table { border-collapse: collapse; width: 100%; } table thead tr {
+      background-color: #f2f2f2; } table thead tr th { border: 1px solid
+      #dddddd; text-align: left; padding: 8px; } table tbody tr td { border: 1px
+      solid #dddddd; text-align: left; padding: 8px; }
+    </style>
+  </head>
+  <body>
+
+    <main>
+
+      <table>
+        <thead>
+          <tr>
+            <th>SERVICIO</th>
+            <th>EQUIPO</th>
+            <th>CANTIDAD</th>
+            <th>DESCUENTO</th>
+            <th>PRECIO UNITARIO</th>
+            <th>SUBTOTAL</th>
+          </tr>
+        </thead>
+        <tbody>
+          {{#each servicesAndEquipments}}
+            <tr>
+              <td>{{service}}</td>
+              <td>{{equipment}}</td>
+              <td>{{count}}</td>
+              <td>{{discount}}%</td>
+              <td>{{unitPrice}}$</td>
+              <td>{{subTotal}}$</td>
+            </tr>
+          {{/each}}
+
+          <tr>
+            <td colspan='5'><strong>IVA:</strong></td>
+            <td><strong>{{tax}}%</strong></td>
+          </tr>
+          <tr>
+            <td colspan='5'><strong>Descuento:</strong></td>
+            <td><strong>{{discount}}%</strong></td>
+          </tr>
+          <tr>
+            <td colspan='5'><strong>Subtotal:</strong></td>
+            <td><strong>{{subtotal}}$</strong></td>
+          </tr>
+          <tr>
+            <td colspan='5'><strong>Monto Total:</strong></td>
+            <td><strong>{{total}}$</strong></td>
+          </tr>
+        </tbody>
+      </table>
+    </main>
+
+  </body>
+</html>
