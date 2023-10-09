@@ -24,10 +24,11 @@ export class PdfService {
     try {
       const page = await browser.newPage()
       await page.setContent(html)
+      await page.waitForTimeout(1000)
       // const pdfBuffer = await page.pdf({ format: 'A4' })
       return await page.pdf({ format: 'A4' })
     } catch (e) {
-      console.log(e)
+      return false
     } finally {
       await browser.close()
     }
