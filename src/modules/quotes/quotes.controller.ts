@@ -1,9 +1,10 @@
 import { QuotesService } from './quotes.service'
 import { ApiTags } from '@nestjs/swagger'
-import { Controller, Post, Body, Get, Param } from '@nestjs/common'
+import { Controller, Post, Body, Get, Param, Res } from '@nestjs/common'
 import { QuoteRequestDto } from './dto/quote-request.dto'
 import { updateEquipmentQuoteRequestDto } from './dto/update-equipment-quote-request.dto'
 import { UpdateQuoteRequestDto } from './dto/update-quote-request.dto'
+import { Response } from 'express'
 
 @ApiTags('quotes')
 @Controller('quotes')
@@ -56,5 +57,21 @@ export class QuotesController {
     }
 
     return await this.quotesService.getQuoteRequestByToken(token)
+  }
+
+  @Get('request/pdf/:id')
+  async getQuoteRequestPdf(@Param('id') id: number, @Res() res: Response) {
+    const pdfBuffer = await this.quotesService.getQuoteRequestPdf(
+      'approved_quote_request.hbs',
+      id,
+    )
+
+    if (!pdfBuffer) {
+      return res.status(500).send('Error al generar el PDF')
+    }
+
+    res.setHeader('Content-Type', 'application/pdf')
+    res.setHeader('Content-Disposition', 'attachment; filename=Cotizacion.pdf')
+    res.send(pdfBuffer)
   }
 }
