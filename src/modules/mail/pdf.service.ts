@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common'
-import { launch } from 'puppeteer'
+import { launch, executablePath } from 'puppeteer'
 import { compile } from 'handlebars'
 import { readFileSync } from 'fs'
 import { join } from 'path'
@@ -16,6 +16,10 @@ export class PdfService {
 
     const browser = await launch({
       headless: 'new',
+      executablePath:
+        process.env.NODE_ENV === 'production'
+          ? process.env.PUPPETEER_EXEC_PATH
+          : executablePath(),
     })
     try {
       const page = await browser.newPage()
