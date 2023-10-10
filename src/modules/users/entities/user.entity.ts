@@ -34,7 +34,6 @@ export class User {
   @OneToMany(() => QuoteRequest, (quoteRequest) => quoteRequest.approved_by)
   quote_requests: QuoteRequest[]
 
-  @ManyToMany(() => Quote, (quote) => quote.workers)
-  @JoinTable()
+  @ManyToOne(() => Quote, (quote) => quote.workers)
   quotes: Quote[]
 }
