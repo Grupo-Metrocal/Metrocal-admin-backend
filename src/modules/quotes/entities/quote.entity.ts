@@ -5,6 +5,7 @@ import {
   OneToOne,
   ManyToMany,
   JoinTable,
+  OneToMany,
 } from 'typeorm'
 import { QuoteRequest } from './quote-request.entity'
 import { User } from 'src/modules/users/entities/user.entity'
@@ -14,15 +15,12 @@ export class Quote {
   @PrimaryGeneratedColumn('increment', { type: 'int' })
   id: number
 
-  @OneToOne(() => QuoteRequest, (quoteRequest) => quoteRequest.quote, {
-    onDelete: 'CASCADE',
-    onUpdate: 'CASCADE',
-  })
+  @OneToOne(() => QuoteRequest, (quoteRequest) => quoteRequest.quote)
   quote_request: QuoteRequest
 
   @ManyToMany(() => User, (user) => user.quotes)
   @JoinTable()
-  workers: User[]
+  workers?: User[]
 
   @Column({ type: 'varchar', default: 'active' })
   status: string // 'active' | 'inactive'
