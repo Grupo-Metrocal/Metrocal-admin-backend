@@ -26,7 +26,12 @@ export class PdfService {
       await page.setContent(html)
       await page.waitForTimeout(1000)
       // const pdfBuffer = await page.pdf({ format: 'A4' })
-      return await page.pdf({ format: 'A4' })
+      return await page.pdf({
+        format: 'A4',
+        printBackground: true,
+        displayHeaderFooter: true,
+        footerTemplate: `true`,
+      })
     } catch (e) {
       return false
     } finally {
