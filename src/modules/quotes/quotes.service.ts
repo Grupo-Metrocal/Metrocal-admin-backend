@@ -12,6 +12,8 @@ import { MailService } from '../mail/mail.service'
 import { TokenService } from '../auth/jwt/jwt.service'
 import { ApprovedQuoteRequestDto } from '../mail/dto/approved-quote-request.dto'
 import { PdfService } from '../mail/pdf.service'
+import { changeStatusQuoteRequestDto } from './dto/change-status-quote-request.dto'
+import { AddQuoteDto } from './dto/quote.dto'
 
 @Injectable()
 export class QuotesService {
@@ -66,14 +68,14 @@ export class QuotesService {
   async getAllQuoteRequest() {
     return await this.quoteRequestRepository.find({
       where: [{ status: 'pending' }, { status: 'waiting' }, { status: 'done' }],
-      relations: ['equipment_quote_request', 'client'],
+      relations: ['equipment_quote_request', 'client', 'quote', 'approved_by'],
     })
   }
 
   async getQuoteRequestByClientId(id: number) {
     return await this.quoteRequestRepository.find({
       where: { client: { id } },
-      relations: ['equipment_quote_request', 'client'],
+      relations: ['equipment_quote_request', 'client', 'quote', 'approved_by'],
     })
   }
 
@@ -88,7 +90,7 @@ export class QuotesService {
   async getQuoteRequestById(id: number) {
     return await this.quoteRequestRepository.findOne({
       where: { id },
-      relations: ['equipment_quote_request', 'client'],
+      relations: ['equipment_quote_request', 'client', 'quote', 'approved_by'],
     })
   }
 
@@ -214,7 +216,65 @@ export class QuotesService {
       0,
     )
     data['total'] = quote.price
+    data['client'] = quote.client
+    data['date'] = quote.created_at.toLocaleDateString('es-ES', {
+      year: 'numeric',
+      month: 'short',
+      day: 'numeric',
+    })
 
     return await this.pdfService.generatePdf(template, data)
+  }
+
+  async changeStatusQuoteRequest(
+    changeStatusQuoteRequest: changeStatusQuoteRequestDto,
+  ) {
+    const quoteRequest = await this.quoteRequestRepository.findOne({
+      where: { id: changeStatusQuoteRequest.id },
+    })
+
+    if (!quoteRequest) {
+      throw new Error('La cotización no existe')
+    }
+
+    quoteRequest.status = changeStatusQuoteRequest.status
+
+    try {
+      await this.quoteRequestRepository.save(quoteRequest)
+      return quoteRequest
+    } catch (error) {
+      return false
+    }
+  }
+
+  async addQuote(addQuoteDto: AddQuoteDto) {
+    const quoteRequest = await this.getQuoteRequestById(addQuoteDto.id)
+
+    const quote = new Quote()
+
+    quote.quote_request = quoteRequest
+    quoteRequest.quote = quote
+
+    try {
+      await this.dataSource.transaction(async (manager) => {
+        await manager.save(quoteRequest)
+        await manager.save(quote)
+      })
+      return true
+    } catch (error) {
+      return false
+    }
+  }
+
+  async getQuotes() {
+    return await this.quoteRepository.find({
+      relations: [
+        'quote_request',
+        'workers',
+        'quote_request.client',
+        'quote_request.equipment_quote_request',
+        'quote_request.approved_by',
+      ],
+    })
   }
 }
