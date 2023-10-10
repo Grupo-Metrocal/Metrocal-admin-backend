@@ -5,6 +5,7 @@ import {
   ManyToOne,
   OneToOne,
   OneToMany,
+  JoinColumn,
 } from 'typeorm'
 import { User } from 'src/modules/users/entities/user.entity'
 import { EquipmentQuoteRequest } from './equipment-quote-request.entity'
@@ -44,7 +45,10 @@ export class QuoteRequest {
   @ManyToOne(() => User, (user) => user.quote_requests)
   approved_by: User
 
-  @OneToOne(() => Quote, (quote) => quote.quote_request)
+  @OneToOne(() => Quote, (quote) => quote.quote_request, {
+    cascade: true,
+  })
+  @JoinColumn()
   quote: Quote
 
   @Column({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP' })
