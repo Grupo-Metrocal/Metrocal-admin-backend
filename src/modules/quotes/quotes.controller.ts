@@ -1,10 +1,12 @@
 import { QuotesService } from './quotes.service'
-import { ApiTags } from '@nestjs/swagger'
+import { ApiProperty, ApiTags } from '@nestjs/swagger'
 import { Controller, Post, Body, Get, Param, Res } from '@nestjs/common'
 import { QuoteRequestDto } from './dto/quote-request.dto'
 import { updateEquipmentQuoteRequestDto } from './dto/update-equipment-quote-request.dto'
 import { UpdateQuoteRequestDto } from './dto/update-quote-request.dto'
+import { changeStatusQuoteRequestDto } from './dto/change-status-quote-request.dto'
 import { Response } from 'express'
+import { AddQuoteDto } from './dto/quote.dto'
 
 @ApiTags('quotes')
 @Controller('quotes')
@@ -73,5 +75,26 @@ export class QuotesController {
     res.setHeader('Content-Type', 'application/pdf')
     res.setHeader('Content-Disposition', 'attachment; filename=Cotizacion.pdf')
     res.send(pdfBuffer)
+  }
+
+  @Post('request/change-status')
+  async changeStatusQuoteRequest(
+    @Body() quoteRequest: changeStatusQuoteRequestDto,
+  ) {
+    if (!quoteRequest) {
+      return false
+    }
+
+    return await this.quotesService.changeStatusQuoteRequest(quoteRequest)
+  }
+
+  @Get('add/:id')
+  async addQuote(@Param() addQuoteDto: AddQuoteDto) {
+    return await this.quotesService.addQuote(addQuoteDto)
+  }
+
+  @Get()
+  async getQuotes() {
+    return await this.quotesService.getQuotes()
   }
 }
