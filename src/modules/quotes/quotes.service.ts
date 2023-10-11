@@ -277,4 +277,24 @@ export class QuotesService {
       ],
     })
   }
+
+  async getQuoteRequestRegister() {
+    return await this.quoteRequestRepository
+      .createQueryBuilder('quote_request')
+      .select([
+        'quote_request.id AS id',
+        'quote_request.status',
+        'quote_request.price',
+        'quote_request.created_at',
+        `COALESCE(approved_by.username, 'Sin asignar') AS approved_by`,
+        'client.company_name',
+        'client.phone',
+      ])
+      .where('quote_request.status IN (:...statuses)', {
+        statuses: ['done', 'rejected', 'canceled'],
+      })
+      .leftJoin('quote_request.approved_by', 'approved_by')
+      .leftJoin('quote_request.client', 'client')
+      .getRawMany()
+  }
 }
