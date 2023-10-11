@@ -97,4 +97,9 @@ export class QuotesController {
   async getQuotes() {
     return await this.quotesService.getQuotes()
   }
+
+  @Get('registered')
+  async getQuoteRequestRegister() {
+    return await this.quotesService.getQuoteRequestRegister()
+  }
 }
