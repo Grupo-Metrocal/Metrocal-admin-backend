@@ -297,4 +297,23 @@ export class QuotesService {
       .leftJoin('quote_request.client', 'client')
       .getRawMany()
   }
+
+  async deleteQuoteRequest(id: number) {
+    const quoteRequest = await this.quoteRequestRepository.findOne({
+      where: { id },
+      relations: ['equipment_quote_request', 'quote', 'client', 'approved_by'],
+    })
+
+    if (!quoteRequest) {
+      throw new Error('La cotización no existe')
+    }
+
+    try {
+      await this.quoteRequestRepository.delete({ id })
+      return true
+    } catch (error) {
+      console.log(error)
+      return false
+    }
+  }
 }
