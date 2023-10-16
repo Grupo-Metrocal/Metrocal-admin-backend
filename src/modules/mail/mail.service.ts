@@ -26,13 +26,13 @@ export class MailService {
     })
   }
 
-  async sendMailWelcomeApp(user: string) {
+  async sendMailWelcomeApp({ user, name }) {
     await this.sendMail({
       user,
       subject: 'Bienvenido a bordo 🚀 Metrocal te da la Bienvenida!',
       template: 'welcome',
       context: {
-        user,
+        name,
       },
     })
   }
