@@ -18,7 +18,7 @@ export class UsersService {
     private readonly resetPasswordRepository: Repository<ResetPassword>,
     private readonly mailService: MailService,
   ) {}
-  async create(createUserDto: CreateUserDto): Promise<User> {
+  async create(createUserDto: CreateUserDto) {
     const user = await this.userRepository.findOneBy({
       email: createUserDto.email,
     })
@@ -30,7 +30,10 @@ export class UsersService {
       password: hashedPassword,
     })
 
-    await this.mailService.sendMailWelcomeApp(createUserDto.email)
+    await this.mailService.sendMailWelcomeApp({
+      user: createUserDto.email,
+      name: createUserDto.username,
+    })
     return await this.userRepository.save(newUser)
   }
 
