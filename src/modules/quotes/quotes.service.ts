@@ -151,7 +151,7 @@ export class QuotesService {
           }
         })
 
-      approvedQuoteRequestDto.total = quote.price
+      approvedQuoteRequestDto.total = QuoteRequest.price
       approvedQuoteRequestDto.token = token
       approvedQuoteRequestDto.email = quote.client.email
       approvedQuoteRequestDto.linkDetailQuote = `${process.env.DOMAIN}/quote/${token}`
@@ -159,8 +159,8 @@ export class QuotesService {
         (acc, equipment) => acc + equipment.total,
         0,
       )
-      approvedQuoteRequestDto.tax = quote.tax
-      approvedQuoteRequestDto.discount = quote.general_discount
+      approvedQuoteRequestDto.tax = QuoteRequest.tax
+      approvedQuoteRequestDto.discount = QuoteRequest.general_discount
     }
 
     try {
