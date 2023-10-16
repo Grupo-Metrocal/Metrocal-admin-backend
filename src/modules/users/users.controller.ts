@@ -21,7 +21,7 @@ import { PasswordRestoreDto } from './dto/password-restore.dto'
 export class UsersController {
   constructor(private readonly usersService: UsersService) {}
 
-  @UseGuards(JwtAuthGuard)
+  // @UseGuards(JwtAuthGuard)
   @Post()
   async create(@Body() user: CreateUserDto) {
     if (!user) throw new HttpException('Todos los campos son requeridos', 400)
@@ -35,7 +35,11 @@ export class UsersController {
         400,
       )
 
-    return this.usersService.create(user)
+    try {
+      return await this.usersService.create(user)
+    } catch (error) {
+      throw new HttpException(error.message, 400)
+    }
   }
 
   @UseGuards(JwtAuthGuard)
