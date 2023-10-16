@@ -1,6 +1,6 @@
 import { QuotesService } from './quotes.service'
 import { ApiProperty, ApiTags } from '@nestjs/swagger'
-import { Controller, Post, Body, Get, Param, Res } from '@nestjs/common'
+import { Controller, Post, Body, Get, Param, Res, Delete } from '@nestjs/common'
 import { QuoteRequestDto } from './dto/quote-request.dto'
 import { updateEquipmentQuoteRequestDto } from './dto/update-equipment-quote-request.dto'
 import { UpdateQuoteRequestDto } from './dto/update-quote-request.dto'
@@ -101,5 +101,10 @@ export class QuotesController {
   @Get('registered')
   async getQuoteRequestRegister() {
     return await this.quotesService.getQuoteRequestRegister()
+  }
+
+  @Delete(':id')
+  async delete(@Param('id') id: number) {
+    return await this.quotesService.deleteQuoteRequest(id)
   }
 }
