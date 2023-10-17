@@ -3,6 +3,8 @@ import { AppService } from './app.service'
 import { PdfService } from './modules/mail/pdf.service'
 import { Response } from 'express'
 import { ApiTags } from '@nestjs/swagger'
+import { JwtAuthGuard } from './modules/auth/guards/jwt-auth.guard'
+import { UseGuards } from '@nestjs/common'
 
 @ApiTags('App')
 @Controller()
@@ -12,9 +14,10 @@ export class AppController {
     private readonly pdfService: PdfService,
   ) {}
 
-  @Get()
-  getHello(): string {
-    return this.appService.getHello()
+  @Get('app/verify')
+  @UseGuards(JwtAuthGuard)
+  verify() {
+    return { status: 200 }
   }
 
   @Get('pdf')
