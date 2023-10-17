@@ -9,6 +9,7 @@ import { ResetPassword } from './entities/reset-password.entity'
 import { MailService } from '../mail/mail.service'
 import { passwordResetCodeGenerator } from 'src/utils/codeGenerator'
 import { PasswordRestoreDto } from './dto/password-restore.dto'
+import { handleBadresuest, handleOK } from 'src/common/handleHttp'
 
 @Injectable()
 export class UsersService {
@@ -43,8 +44,16 @@ export class UsersService {
     return await this.userRepository.remove(user)
   }
 
-  async findAll(): Promise<User[]> {
-    return await this.userRepository.find()
+  async findAll() {
+    try {
+      const users = await this.userRepository.find({
+        select: ['id', 'username', 'email', 'roles'],
+        relations: ['roles'],
+      })
+      return handleOK(users)
+    } catch (error) {
+      handleBadresuest(error)
+    }
   }
 
   async findById(id: number): Promise<User | {}> {

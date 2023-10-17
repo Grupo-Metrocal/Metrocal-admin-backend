@@ -14,6 +14,11 @@ import { ApprovedQuoteRequestDto } from '../mail/dto/approved-quote-request.dto'
 import { PdfService } from '../mail/pdf.service'
 import { changeStatusQuoteRequestDto } from './dto/change-status-quote-request.dto'
 import { AddQuoteDto } from './dto/quote.dto'
+import {
+  handleBadresuest,
+  handleInternalServerError,
+  handleOK,
+} from 'src/common/handleHttp'
 
 @Injectable()
 export class QuotesService {
@@ -34,9 +39,13 @@ export class QuotesService {
   async createQuoteRequest(quoteRequestDto: QuoteRequestDto) {
     const client = await this.clientsService.findById(quoteRequestDto.client_id)
 
+    if (client.status !== 200) {
+      return handleBadresuest(new Error('El cliente no existe'))
+    }
+
     const quoteRequest = this.quoteRequestRepository.create({
       status: quoteRequestDto.status,
-      client,
+      client: client.data,
       general_discount: quoteRequestDto.general_discount,
       tax: quoteRequestDto.tax,
       price: quoteRequestDto.price,
@@ -55,13 +64,15 @@ export class QuotesService {
     quoteRequest.equipment_quote_request = equipmentQuoteRequest
 
     try {
-      await this.dataSource.transaction(async (manager) => {
+      const response = await this.dataSource.transaction(async (manager) => {
         await manager.save(quoteRequest)
-        await manager.save(client)
+        await manager.save(client.data)
         await manager.save(equipmentQuoteRequest)
       })
+
+      return handleOK(response)
     } catch (error) {
-      throw new Error(error)
+      return handleInternalServerError(error)
     }
   }
 
@@ -107,7 +118,8 @@ export class QuotesService {
 
     Object.assign(equipment, equipmentQuoteRequest)
 
-    return await this.equipmentQuoteRequestRepository.save(equipment)
+    const response = await this.equipmentQuoteRequestRepository.save(equipment)
+    return handleOK(response.id)
   }
 
   async updateStatusQuoteRequest(QuoteRequest: UpdateQuoteRequestDto) {
@@ -124,13 +136,13 @@ export class QuotesService {
     })
 
     if (!quoteRequest) {
-      throw new Error('La cotización no existe')
+      return handleBadresuest(new Error('La cotización no existe'))
     }
 
     Object.assign(quoteRequest, QuoteRequest)
     const token = this.tokenService.generateTemporaryLink(
       quoteRequest.id,
-      '15d',
+      '30d',
     )
 
     let approvedQuoteRequestDto: ApprovedQuoteRequestDto
@@ -172,9 +184,9 @@ export class QuotesService {
         )
       }
 
-      return quoteRequest
+      return handleOK(quoteRequest)
     } catch (error) {
-      return false
+      return handleInternalServerError(error)
     }
   }
 

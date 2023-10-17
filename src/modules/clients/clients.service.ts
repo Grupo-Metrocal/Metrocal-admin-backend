@@ -5,6 +5,11 @@ import { Client } from './entities/client.entity'
 import { CreateClientDto } from './dto/client.dto'
 import { QuoteRequest } from '../quotes/entities/quote-request.entity'
 import { DataSource } from 'typeorm'
+import {
+  handleBadresuest,
+  handleInternalServerError,
+  handleOK,
+} from 'src/common/handleHttp'
 
 @Injectable()
 export class ClientsService {
@@ -16,25 +21,58 @@ export class ClientsService {
     private readonly dataSource: DataSource,
   ) {}
 
-  async createClient(client: CreateClientDto): Promise<CreateClientDto> {
-    return await this.clientRepository.save(client)
-  }
-
-  async findById(id: number): Promise<Client> {
-    return await this.clientRepository.findOne({
-      where: { id },
+  async createClient(client: CreateClientDto) {
+    const clientFound = await this.clientRepository.findOne({
+      where: [{ email: client.email }, { company_name: client.company_name }],
     })
+
+    if (clientFound) {
+      return handleBadresuest(new Error('El cliente ya existe'))
+    }
+
+    try {
+      const clientCreated = await this.clientRepository.save(client)
+      return handleOK(clientCreated)
+    } catch (error) {
+      return handleInternalServerError(error)
+    }
   }
 
-  async findAll(): Promise<Client[]> {
-    return await this.clientRepository.find()
-  }
-
-  async delete(id: number): Promise<void> {
+  async findById(id: number) {
     const client = await this.clientRepository.findOne({
       where: { id },
+    })
+
+    if (!client) {
+      return handleBadresuest(
+        new Error('El cliente no existe, verifique el id'),
+      )
+    }
+
+    return handleOK(client)
+  }
+
+  async findAll() {
+    try {
+      const clients = await this.clientRepository.find()
+      return handleOK(clients)
+    } catch (error) {
+      return handleInternalServerError(error)
+    }
+  }
+
+  async delete(id: number) {
+    const client = await this.clientRepository.findOne({
+      where: { id },
+      // si no existe el cliente, no se puede relacionar con quote_requests
       relations: ['quote_requests'],
     })
+
+    if (!client) {
+      return handleBadresuest(
+        new Error('El cliente no existe, verifique el id'),
+      )
+    }
 
     if (client.quote_requests.length > 0) {
       const equipmentQuoteRequest = await this.quoteRequestRepository.find({
@@ -48,10 +86,15 @@ export class ClientsService {
           await manager.remove(client)
         })
       } catch (error) {
-        throw new Error(error)
+        return handleInternalServerError(error)
       }
     }
 
-    await this.clientRepository.delete({ id })
+    try {
+      await this.clientRepository.delete({ id })
+      return handleOK(client)
+    } catch (error) {
+      return handleInternalServerError(error)
+    }
   }
 }

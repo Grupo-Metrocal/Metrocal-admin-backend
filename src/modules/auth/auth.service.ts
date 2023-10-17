@@ -5,6 +5,7 @@ import { InjectRepository } from '@nestjs/typeorm'
 import { User } from '../users/entities/user.entity'
 import { compare } from 'bcrypt'
 import { JwtService } from '@nestjs/jwt'
+import { handleOK } from 'src/common/handleHttp'
 
 @Injectable()
 export class AuthService {
@@ -33,9 +34,9 @@ export class AuthService {
     }
     const token = this.jwtService.sign(payload)
 
-    return {
+    return handleOK({
       username: userFound.username,
       token,
-    }
+    })
   }
 }
