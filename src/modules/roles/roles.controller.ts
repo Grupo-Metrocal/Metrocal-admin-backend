@@ -12,6 +12,7 @@ import { CreateRoleDto } from './dto/create-role.dto'
 import { UpdateRoleDto } from './dto/update-role.dto'
 import { HttpException } from '@nestjs/common'
 import { ApiTags } from '@nestjs/swagger'
+import { handleBadrequest } from 'src/common/handleHttp'
 
 @ApiTags('roles')
 @Controller('roles')
@@ -25,11 +26,7 @@ export class RolesController {
 
   @Post()
   async create(@Body() role: CreateRoleDto) {
-    if (!role)
-      throw new HttpException('Por favor rellene todos los campos', 400)
-
-    if (this.rolesService.findByName(role.name))
-      throw new HttpException('El rol ya existe', 400)
+    if (!role) return handleBadrequest(new Error('El rol es requerido'))
 
     return this.rolesService.create(role)
   }
