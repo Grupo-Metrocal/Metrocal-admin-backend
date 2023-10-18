@@ -30,6 +30,29 @@ export class RolesService {
     }
   }
 
+  async createDefaultRoles() {
+    const roles = [
+      {
+        name: 'admin',
+        description:
+          'Todos los usuarios que tengan este rol seran administradores, y tendran acceso a todas las funcionalidades del sistema',
+      },
+      {
+        name: 'user',
+        description:
+          'Todos los usuarios que tengan este rol seran usuarios, y su acceso sera limitado',
+      },
+    ]
+
+    roles.forEach(async (role) => {
+      const roleExists = await this.roleRepository.findOne({
+        where: { name: role.name },
+      })
+
+      if (!roleExists) await this.roleRepository.save(role)
+    })
+  }
+
   async findAll() {
     try {
       const roles = await this.roleRepository.find()
