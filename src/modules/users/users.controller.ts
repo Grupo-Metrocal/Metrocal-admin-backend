@@ -14,6 +14,7 @@ import { HttpException, UseGuards } from '@nestjs/common'
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard'
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger'
 import { PasswordRestoreDto } from './dto/password-restore.dto'
+import { handleBadrequest } from 'src/common/handleHttp'
 
 @ApiBearerAuth()
 @ApiTags('users')
@@ -60,7 +61,7 @@ export class UsersController {
 
   @Post('password-restore-request/:email')
   async passwordRestoreRequest(@Param('email') email: string) {
-    if (!email) throw new HttpException('El email es requerido', 400)
+    if (!email) handleBadrequest(new Error('El email es requerido'))
 
     return await this.usersService.passwordRestoreRequest(email)
   }

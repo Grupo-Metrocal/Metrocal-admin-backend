@@ -5,7 +5,7 @@ import { InjectRepository } from '@nestjs/typeorm'
 import { User } from '../users/entities/user.entity'
 import { compare } from 'bcrypt'
 import { JwtService } from '@nestjs/jwt'
-import { handleOK } from 'src/common/handleHttp'
+import { handleBadrequest, handleOK } from 'src/common/handleHttp'
 
 @Injectable()
 export class AuthService {
@@ -22,10 +22,11 @@ export class AuthService {
       select: ['id', 'username', 'password'],
       // relations: ['roles'],
     })
-    if (!userFound) throw new HttpException('Credenciales inválidas', 401)
+    if (!userFound) return handleBadrequest(new Error('Credenciales inválidas'))
 
     const isMathPassword = await compare(password, userFound.password)
-    if (!isMathPassword) throw new HttpException('Credenciales inválidas', 401)
+    if (!isMathPassword)
+      return handleBadrequest(new Error('Credenciales inválidas'))
 
     const payload = {
       sub: userFound.id,

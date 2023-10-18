@@ -9,7 +9,11 @@ import { ResetPassword } from './entities/reset-password.entity'
 import { MailService } from '../mail/mail.service'
 import { passwordResetCodeGenerator } from 'src/utils/codeGenerator'
 import { PasswordRestoreDto } from './dto/password-restore.dto'
-import { handleBadrequest, handleOK } from 'src/common/handleHttp'
+import {
+  handleBadrequest,
+  handleInternalServerError,
+  handleOK,
+} from 'src/common/handleHttp'
 
 @Injectable()
 export class UsersService {
@@ -81,10 +85,10 @@ export class UsersService {
     return user
   }
 
-  async passwordRestoreRequest(email: string): Promise<number> {
+  async passwordRestoreRequest(email: string) {
     const user = await this.userRepository.findOneBy({ email })
 
-    if (!user) throw new HttpException('Usuario no encontrado', 404)
+    if (!user) return handleBadrequest(new Error('Usuario no encontrado'))
 
     const code = passwordResetCodeGenerator({ length: 6, suffix: 'MTC' })
     const experiedAt = new Date()
@@ -102,32 +106,29 @@ export class UsersService {
         this.mailService.sendMailResetPassword(email, code),
       ])
 
-      return reset.id
+      return handleOK({
+        idCode: reset.id,
+      })
     } catch (error) {
-      throw new HttpException('Error al enviar el correo', 500)
+      handleInternalServerError(error)
     }
   }
 
-  async restorePassword({
-    email,
-    code,
-    idCode,
-    password,
-  }: PasswordRestoreDto): Promise<void> {
+  async restorePassword({ email, code, idCode, password }: PasswordRestoreDto) {
     const user = await this.findByEmail(email)
 
     const resetPassword = await this.resetPasswordRepository.findOneBy({
       id: idCode,
     })
 
-    if (!resetPassword) throw new HttpException('Código no encontrado', 404)
+    if (!resetPassword) return handleBadrequest(new Error('Código no válido'))
 
     if (resetPassword.code !== code)
-      throw new HttpException('El código no coincide', 400)
+      return handleBadrequest(new Error('Código no válido'))
 
     const now = new Date()
     if (now > resetPassword.experiedAt)
-      throw new HttpException('Código expirado', 400)
+      return handleBadrequest(new Error('Código expirado'))
 
     const hashedPassword = await hash(password, 10)
 
@@ -136,8 +137,10 @@ export class UsersService {
         this.userRepository.update(user.id, { password: hashedPassword }),
         this.resetPasswordRepository.delete(resetPassword.id),
       ])
+
+      return handleOK('Contraseña actualizada')
     } catch (error) {
-      throw new HttpException('Error al actualizar la contraseña', 500)
+      handleInternalServerError(error)
     }
   }
 }
