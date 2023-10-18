@@ -1,17 +1,17 @@
 export type ResponseHTTP<T> = {
   status: number
   message: string
+  success: boolean
   data?: T | T[]
   details?: string
-  success: boolean
 }
 
 export const handleOK = <T>(data: T): ResponseHTTP<T> => {
   return {
     status: 200,
     message: 'OK',
-    data,
     success: true,
+    data,
   }
 }
 
@@ -19,16 +19,16 @@ export const handleBadrequest = <T>(error: Error): ResponseHTTP<T> => {
   return {
     status: 400,
     message: 'Bad request',
-    details: error.message,
     success: false,
+    details: error.message,
   }
 }
 
 export const handleInternalServerError = <T>(data: T): ResponseHTTP<T> => {
   return {
     status: 500,
-    message: 'Internal Server res',
-    details: data as any,
+    message: 'Internal server error',
     success: false,
+    details: data as any,
   }
 }
