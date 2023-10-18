@@ -15,7 +15,7 @@ export const handleOK = <T>(data: T): ResponseHTTP<T> => {
   }
 }
 
-export const handleBadresuest = <T>(error: Error): ResponseHTTP<T> => {
+export const handleBadrequest = <T>(error: Error): ResponseHTTP<T> => {
   return {
     status: 400,
     message: 'Bad request',

@@ -15,7 +15,7 @@ import { PdfService } from '../mail/pdf.service'
 import { changeStatusQuoteRequestDto } from './dto/change-status-quote-request.dto'
 import { AddQuoteDto } from './dto/quote.dto'
 import {
-  handleBadresuest,
+  handleBadrequest,
   handleInternalServerError,
   handleOK,
 } from 'src/common/handleHttp'
@@ -40,7 +40,7 @@ export class QuotesService {
     const client = await this.clientsService.findById(quoteRequestDto.client_id)
 
     if (client.status !== 200) {
-      return handleBadresuest(new Error('El cliente no existe'))
+      return handleBadrequest(new Error('El cliente no existe'))
     }
 
     const quoteRequest = this.quoteRequestRepository.create({
@@ -136,7 +136,7 @@ export class QuotesService {
     })
 
     if (!quoteRequest) {
-      return handleBadresuest(new Error('La cotización no existe'))
+      return handleBadrequest(new Error('La cotización no existe'))
     }
 
     Object.assign(quoteRequest, QuoteRequest)

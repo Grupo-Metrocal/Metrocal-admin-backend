@@ -3,7 +3,7 @@ import { ClientsService } from './clients.service'
 import { ApiTags } from '@nestjs/swagger'
 import { Post, Body, Get, Param, Delete } from '@nestjs/common'
 import { CreateClientDto } from './dto/client.dto'
-import { handleBadresuest } from 'src/common/handleHttp'
+import { handleBadrequest } from 'src/common/handleHttp'
 
 @ApiTags('clients')
 @Controller('clients')
@@ -13,7 +13,7 @@ export class ClientsController {
   @Post()
   async createClient(@Body() client: CreateClientDto) {
     if (!client)
-      return handleBadresuest(
+      return handleBadrequest(
         new Error('Porfavor envie un cliente que desea registrar'),
       )
     return await this.clientsService.createClient(client)
@@ -21,7 +21,7 @@ export class ClientsController {
 
   @Get(':id')
   async findById(@Param('id') id: number) {
-    if (!id) return handleBadresuest(new Error('El id es requerido'))
+    if (!id) return handleBadrequest(new Error('El id es requerido'))
     return await this.clientsService.findById(id)
   }
 
@@ -32,7 +32,7 @@ export class ClientsController {
 
   @Delete(':id')
   async delete(@Param('id') id: number) {
-    if (!id) return handleBadresuest(new Error('El id es requerido'))
+    if (!id) return handleBadrequest(new Error('El id es requerido'))
     return await this.clientsService.delete(id)
   }
 }

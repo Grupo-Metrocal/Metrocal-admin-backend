@@ -6,7 +6,7 @@ import { CreateClientDto } from './dto/client.dto'
 import { QuoteRequest } from '../quotes/entities/quote-request.entity'
 import { DataSource } from 'typeorm'
 import {
-  handleBadresuest,
+  handleBadrequest,
   handleInternalServerError,
   handleOK,
 } from 'src/common/handleHttp'
@@ -27,7 +27,7 @@ export class ClientsService {
     })
 
     if (clientFound) {
-      return handleBadresuest(new Error('El cliente ya existe'))
+      return handleBadrequest(new Error('El cliente ya existe'))
     }
 
     try {
@@ -44,7 +44,7 @@ export class ClientsService {
     })
 
     if (!client) {
-      return handleBadresuest(
+      return handleBadrequest(
         new Error('El cliente no existe, verifique el id'),
       )
     }
@@ -69,7 +69,7 @@ export class ClientsService {
     })
 
     if (!client) {
-      return handleBadresuest(
+      return handleBadrequest(
         new Error('El cliente no existe, verifique el id'),
       )
     }

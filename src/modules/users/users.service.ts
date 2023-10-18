@@ -9,7 +9,7 @@ import { ResetPassword } from './entities/reset-password.entity'
 import { MailService } from '../mail/mail.service'
 import { passwordResetCodeGenerator } from 'src/utils/codeGenerator'
 import { PasswordRestoreDto } from './dto/password-restore.dto'
-import { handleBadresuest, handleOK } from 'src/common/handleHttp'
+import { handleBadrequest, handleOK } from 'src/common/handleHttp'
 
 @Injectable()
 export class UsersService {
@@ -52,7 +52,7 @@ export class UsersService {
       })
       return handleOK(users)
     } catch (error) {
-      handleBadresuest(error)
+      handleBadrequest(error)
     }
   }
 
