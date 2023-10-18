@@ -4,35 +4,47 @@ import { UpdateRoleDto } from './dto/update-role.dto'
 import { InjectRepository } from '@nestjs/typeorm'
 import { Repository } from 'typeorm'
 import { Role } from './entities/role.entity'
+import {
+  handleBadrequest,
+  handleInternalServerError,
+  handleOK,
+} from 'src/common/handleHttp'
 @Injectable()
 export class RolesService {
   constructor(
     @InjectRepository(Role) private readonly roleRepository: Repository<Role>,
   ) {}
 
-  async create(createRoleDto: CreateRoleDto): Promise<Role> {
+  async create(createRoleDto: CreateRoleDto) {
+    const role = await this.roleRepository.findOne({
+      where: { name: createRoleDto.name },
+    })
+
+    if (role) return handleBadrequest(new Error('El rol ya existe'))
+
     try {
-      return await this.roleRepository.save(createRoleDto)
+      const created = await this.roleRepository.save(createRoleDto)
+      return handleOK(created)
     } catch (error) {
-      throw new HttpException(error.message, 400)
+      return handleInternalServerError(error)
     }
   }
 
-  async findAll(): Promise<Role[]> {
+  async findAll() {
     try {
       const roles = await this.roleRepository.find()
-      return roles
+      return handleOK(roles)
     } catch (error) {
-      throw new HttpException(error.message, 400)
+      return handleInternalServerError(error)
     }
   }
 
-  async findByName(name: string): Promise<Role> {
+  async findByName(name: string) {
     try {
       const role = await this.roleRepository.find({ where: { name } })
-      return role[0]
+      return handleOK(role[0])
     } catch (error) {
-      throw new HttpException(error.message, 400)
+      return handleInternalServerError(error)
     }
   }
 }
