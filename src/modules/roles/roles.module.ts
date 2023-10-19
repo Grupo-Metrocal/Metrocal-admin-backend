@@ -9,5 +9,6 @@ import { RolesInitializerService } from './roles.initializer.service'
   imports: [TypeOrmModule.forFeature([Role])],
   controllers: [RolesController],
   providers: [RolesService, RolesInitializerService],
+  exports: [RolesService],
 })
 export class RolesModule {}
