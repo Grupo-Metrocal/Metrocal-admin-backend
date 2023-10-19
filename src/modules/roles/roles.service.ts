@@ -9,6 +9,7 @@ import {
   handleInternalServerError,
   handleOK,
 } from 'src/common/handleHttp'
+import { User } from '../users/entities/user.entity'
 @Injectable()
 export class RolesService {
   constructor(
@@ -61,7 +62,10 @@ export class RolesService {
 
   async findAll() {
     try {
-      const roles = await this.roleRepository.find()
+      const roles = await this.roleRepository.find({
+        relations: ['users'],
+        order: { id: 1 },
+      })
       return handleOK(roles)
     } catch (error) {
       return handleInternalServerError(error)
@@ -84,6 +88,17 @@ export class RolesService {
       if (!role) return handleBadrequest(new Error('El rol no existe'))
 
       return handleOK(role)
+    } catch (error) {
+      return handleInternalServerError(error)
+    }
+  }
+
+  async updateById(id: number, user: User) {
+    try {
+      const role = await this.roleRepository.findOneBy({ id })
+
+      const updated = await this.roleRepository.save({ ...role, ...user })
+      return handleOK(updated)
     } catch (error) {
       return handleInternalServerError(error)
     }
