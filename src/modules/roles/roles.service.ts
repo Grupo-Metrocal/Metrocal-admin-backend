@@ -53,6 +53,12 @@ export class RolesService {
     })
   }
 
+  async getDefaultsRole() {
+    const role = await this.roleRepository.findOne({ where: { name: 'user' } })
+    if (!role) return handleBadrequest(new Error('El rol user no existe'))
+    return handleOK({ ...role })
+  }
+
   async findAll() {
     try {
       const roles = await this.roleRepository.find()
@@ -66,6 +72,18 @@ export class RolesService {
     try {
       const role = await this.roleRepository.find({ where: { name } })
       return handleOK(role[0])
+    } catch (error) {
+      return handleInternalServerError(error)
+    }
+  }
+
+  async findById(id: number) {
+    try {
+      const role = await this.roleRepository.findOneBy({ id })
+
+      if (!role) return handleBadrequest(new Error('El rol no existe'))
+
+      return handleOK(role)
     } catch (error) {
       return handleInternalServerError(error)
     }
