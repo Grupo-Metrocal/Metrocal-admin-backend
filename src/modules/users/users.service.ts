@@ -15,6 +15,7 @@ import {
   handleOK,
 } from 'src/common/handleHttp'
 import { RolesService } from '../roles/roles.service'
+import { Role } from '../roles/entities/role.entity'
 
 @Injectable()
 export class UsersService {
@@ -31,23 +32,19 @@ export class UsersService {
     })
     if (user) return handleBadrequest(new Error('El usuario ya existe'))
 
-    const role = await this.rolesService.getDefaultsRole()
-    if (!role.status)
-      return handleBadrequest(new Error('El rol por defecto no existe'))
-
+    const role = (await this.rolesService.getDefaultsRole()) as any
     const hashedPassword = await hash(createUserDto.password, 10)
     const newUser = this.userRepository.create({
       ...createUserDto,
       password: hashedPassword,
-      roles: [role.data],
     })
-
     try {
       await this.mailService.sendMailWelcomeApp({
         user: createUserDto.email,
         name: createUserDto.username,
       })
       const response = await this.userRepository.save(newUser)
+      await this.assignRole(response.id, role.data.id as number)
       return handleOK({
         id: response.id,
         username: response.username,
