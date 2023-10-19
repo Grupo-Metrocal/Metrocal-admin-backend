@@ -1,4 +1,4 @@
-import { Column, Entity, PrimaryGeneratedColumn, OneToMany } from 'typeorm'
+import { Column, Entity, PrimaryGeneratedColumn, ManyToMany } from 'typeorm'
 import { User } from 'src/modules/users/entities/user.entity'
 @Entity('roles')
 export class Role {
@@ -14,6 +14,6 @@ export class Role {
   @Column({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP' })
   createdAt: Date
 
-  @OneToMany(() => User, (user) => user.roles)
+  @ManyToMany(() => User, (user) => user.roles)
   users: User[]
 }

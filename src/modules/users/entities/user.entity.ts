@@ -28,7 +28,8 @@ export class User {
   @Column({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP' })
   createdAt: Date
 
-  @ManyToOne(() => Role, (role) => role.users)
+  @ManyToMany(() => Role, (role) => role.users)
+  @JoinTable()
   roles: Role[]
 
   @OneToMany(() => QuoteRequest, (quoteRequest) => quoteRequest.approved_by)
