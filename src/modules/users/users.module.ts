@@ -6,11 +6,13 @@ import { User } from './entities/user.entity'
 import { JwtStrategy } from '../auth/jwt.strategy'
 import { MailService } from '../mail/mail.service'
 import { ResetPassword } from './entities/reset-password.entity'
+import { Role } from '../roles/entities/role.entity'
+import { RolesService } from '../roles/roles.service'
 
 @Module({
-  imports: [TypeOrmModule.forFeature([User, ResetPassword])],
+  imports: [TypeOrmModule.forFeature([User, ResetPassword, Role])],
   controllers: [UsersController],
-  providers: [UsersService, JwtStrategy, MailService],
+  providers: [UsersService, JwtStrategy, MailService, RolesService],
   exports: [UsersService],
 })
 export class UsersModule {}
