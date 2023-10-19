@@ -14,6 +14,7 @@ import {
   handleInternalServerError,
   handleOK,
 } from 'src/common/handleHttp'
+import { RolesService } from '../roles/roles.service'
 
 @Injectable()
 export class UsersService {
@@ -22,24 +23,40 @@ export class UsersService {
     @InjectRepository(ResetPassword)
     private readonly resetPasswordRepository: Repository<ResetPassword>,
     private readonly mailService: MailService,
+    private readonly rolesService: RolesService,
   ) {}
   async create(createUserDto: CreateUserDto) {
     const user = await this.userRepository.findOneBy({
       email: createUserDto.email,
     })
-    if (user) throw new HttpException('El usuario ya existe', 400)
+    if (user) return handleBadrequest(new Error('El usuario ya existe'))
+
+    const role = await this.rolesService.getDefaultsRole()
+    if (!role.status)
+      return handleBadrequest(new Error('El rol por defecto no existe'))
 
     const hashedPassword = await hash(createUserDto.password, 10)
     const newUser = this.userRepository.create({
       ...createUserDto,
       password: hashedPassword,
+      roles: [role.data],
     })
 
-    await this.mailService.sendMailWelcomeApp({
-      user: createUserDto.email,
-      name: createUserDto.username,
-    })
-    return await this.userRepository.save(newUser)
+    try {
+      await this.mailService.sendMailWelcomeApp({
+        user: createUserDto.email,
+        name: createUserDto.username,
+      })
+      const response = await this.userRepository.save(newUser)
+      return handleOK({
+        id: response.id,
+        username: response.username,
+        email: response.email,
+        roles: response.roles,
+      })
+    } catch (error) {
+      return handleInternalServerError(error.message)
+    }
   }
 
   async deleteById(id: number): Promise<User> {
@@ -51,9 +68,9 @@ export class UsersService {
   async findAll() {
     try {
       const users = await this.userRepository.find({
-        select: ['id', 'username', 'email', 'roles'],
         relations: ['roles'],
       })
+
       return handleOK(users)
     } catch (error) {
       handleBadrequest(error)
@@ -141,6 +158,40 @@ export class UsersService {
       return handleOK('Contraseña actualizada')
     } catch (error) {
       handleInternalServerError(error)
+    }
+  }
+
+  async assignRole(id: number, roleID: number) {
+    const user = await this.userRepository.findOne({
+      where: { id },
+      relations: ['roles'],
+    })
+    const role = await this.rolesService.findById(roleID)
+
+    if (!user) return handleBadrequest(new Error('Usuario no encontrado'))
+
+    if (!role.success) return handleBadrequest(new Error('Rol no encontrado'))
+
+    const roleExists = user.roles.find((role) => role.id === Number(roleID))
+    if (roleExists)
+      return handleBadrequest(new Error('El usuario ya tiene ese rol'))
+
+    try {
+      user.roles.push(role.data)
+      await this.userRepository.save(user)
+      return handleOK('Rol asignado')
+    } catch (error) {
+      return handleInternalServerError(error)
+    }
+  }
+
+  async deleteAllUsers() {
+    try {
+      const users = await this.userRepository.find()
+      await this.userRepository.remove(users)
+      return handleOK('Usuarios eliminados')
+    } catch (error) {
+      return handleInternalServerError(error)
     }
   }
 }

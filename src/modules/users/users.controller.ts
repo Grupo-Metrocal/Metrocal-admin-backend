@@ -25,22 +25,14 @@ export class UsersController {
   // @UseGuards(JwtAuthGuard)
   @Post()
   async create(@Body() user: CreateUserDto) {
-    if (!user) throw new HttpException('Todos los campos son requeridos', 400)
-
-    if (!user.password)
-      throw new HttpException('La contraseña es requerida', 400)
+    if (!user) return handleBadrequest(new Error('El usuario es requerido'))
 
     if (user.password.length < 8)
-      throw new HttpException(
-        'La contraseña debe tener al menos 8 caracteres',
-        400,
+      return handleBadrequest(
+        new Error('La contraseña debe tener al menos 8 caracteres'),
       )
 
-    try {
-      return await this.usersService.create(user)
-    } catch (error) {
-      throw new HttpException(error.message, 400)
-    }
+    return await this.usersService.create(user)
   }
 
   @UseGuards(JwtAuthGuard)
@@ -69,5 +61,17 @@ export class UsersController {
   @Post('restore-password')
   async restorePassword(@Body() passwordRestoreDto: PasswordRestoreDto) {
     return await this.usersService.restorePassword(passwordRestoreDto)
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Post('assign-role/:id/role/:roleId')
+  async assingRole(@Param('id') id: number, @Param('roleId') roleId: number) {
+    return await this.usersService.assignRole(id, roleId)
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Delete()
+  async delete() {
+    return await this.usersService.deleteAllUsers()
   }
 }
