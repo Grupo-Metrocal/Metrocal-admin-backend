@@ -22,7 +22,7 @@ import { handleBadrequest } from 'src/common/handleHttp'
 export class UsersController {
   constructor(private readonly usersService: UsersService) {}
 
-  // @UseGuards(JwtAuthGuard)
+  @UseGuards(JwtAuthGuard)
   @Post()
   async create(@Body() user: CreateUserDto) {
     if (!user) return handleBadrequest(new Error('El usuario es requerido'))
@@ -64,8 +64,11 @@ export class UsersController {
   }
 
   @UseGuards(JwtAuthGuard)
-  @Post('assign-role/:id/role/:roleId')
-  async assingRole(@Param('id') id: number, @Param('roleId') roleId: number) {
+  @Post('assign/:userId/role/:roleId')
+  async assingRole(
+    @Param('userId') id: number,
+    @Param('roleId') roleId: number,
+  ) {
     return await this.usersService.assignRole(id, roleId)
   }
 
@@ -73,5 +76,15 @@ export class UsersController {
   @Delete()
   async delete() {
     return await this.usersService.deleteAllUsers()
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Delete(':id')
+  async remove(@Param('id') id: string) {
+    if (!id) throw new HttpException('El id es requerido', 400)
+
+    if (isNaN(+id)) throw new HttpException('El id debe ser un número', 400)
+
+    return await this.usersService.remove(+id)
   }
 }
