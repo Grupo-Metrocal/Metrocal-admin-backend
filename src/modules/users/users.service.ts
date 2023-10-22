@@ -44,13 +44,9 @@ export class UsersService {
         name: createUserDto.username,
       })
       const response = await this.userRepository.save(newUser)
-      await this.assignRole(response.id, role.data.id as number)
-      return handleOK({
-        id: response.id,
-        username: response.username,
-        email: response.email,
-        roles: response.roles,
-      })
+      const saved = await this.assignRole(response.id, role.data.id as number)
+      delete saved.data.password
+      return handleOK(saved.data)
     } catch (error) {
       return handleInternalServerError(error.message)
     }
@@ -175,8 +171,8 @@ export class UsersService {
 
     try {
       user.roles.push(role.data)
-      await this.userRepository.save(user)
-      return handleOK('Rol asignado')
+      const saved = await this.userRepository.save(user)
+      return handleOK(saved)
     } catch (error) {
       return handleInternalServerError(error)
     }
@@ -190,5 +186,13 @@ export class UsersService {
     } catch (error) {
       return handleInternalServerError(error)
     }
+  }
+
+  async remove(id: number) {
+    const user = await this.userRepository.findOneBy({ id })
+    if (!user) throw new HttpException('Usuario no encontrado', 404)
+
+    const deletedUser = await this.userRepository.remove(user)
+    return handleOK(deletedUser)
   }
 }
