@@ -6,12 +6,15 @@ import { User } from '../users/entities/user.entity'
 import { compare } from 'bcrypt'
 import { JwtService } from '@nestjs/jwt'
 import { handleBadrequest, handleOK } from 'src/common/handleHttp'
+import { CreateUserDto } from '../users/dto/create-user.dto'
+import { UsersService } from '../users/users.service'
 
 @Injectable()
 export class AuthService {
   constructor(
     @InjectRepository(User) private readonly userRepository: Repository<User>,
     private jwtService: JwtService,
+    private readonly usersService: UsersService,
   ) {}
 
   async signin(user: SigninAuthDto) {
@@ -39,5 +42,21 @@ export class AuthService {
       username: userFound.username,
       token,
     })
+  }
+
+  async register(user: CreateUserDto) {
+    const userCreated = await this.usersService.create(user)
+
+    if (userCreated.success) {
+      const payload = {
+        username: userCreated.data.data.username,
+        email: userCreated.data.data.email,
+        id: userCreated.data.data.id,
+      }
+
+      return handleOK(payload)
+    }
+
+    return userCreated
   }
 }
