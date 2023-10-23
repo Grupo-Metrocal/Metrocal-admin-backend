@@ -178,6 +178,30 @@ export class UsersService {
     }
   }
 
+  async deleteRoleFromUser(idL: number, roleId: number) {
+    const user = await this.userRepository.findOne({
+      where: { id: idL },
+      relations: ['roles'],
+    })
+    const role = await this.rolesService.findById(roleId)
+
+    if (!user) return handleBadrequest(new Error('Usuario no encontrado'))
+
+    if (!role.success) return handleBadrequest(new Error('Rol no encontrado'))
+
+    const roleExists = user.roles.find((role) => role.id === Number(roleId))
+    if (!roleExists)
+      return handleBadrequest(new Error('El usuario no tiene ese rol'))
+
+    try {
+      user.roles = user.roles.filter((role) => role.id !== Number(roleId))
+      const saved = await this.userRepository.save(user)
+      return handleOK(saved)
+    } catch (error) {
+      return handleInternalServerError(error)
+    }
+  }
+
   async deleteAllUsers() {
     try {
       const users = await this.userRepository.find()

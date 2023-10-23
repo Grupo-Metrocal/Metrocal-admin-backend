@@ -73,6 +73,15 @@ export class UsersController {
   }
 
   @UseGuards(JwtAuthGuard)
+  @Post('remove/:userId/role/:roleId')
+  async removeRole(
+    @Param('userId') id: number,
+    @Param('roleId') roleId: number,
+  ) {
+    return await this.usersService.deleteRoleFromUser(id, roleId)
+  }
+
+  @UseGuards(JwtAuthGuard)
   @Delete()
   async delete() {
     return await this.usersService.deleteAllUsers()
