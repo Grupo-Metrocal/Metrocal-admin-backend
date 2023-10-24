@@ -37,11 +37,15 @@ export class RolesService {
         name: 'admin',
         description:
           'Todos los usuarios que tengan este rol seran administradores, y tendran acceso a todas las funcionalidades del sistema',
+        priority: 1,
+        label: 'Administrador',
       },
       {
         name: 'user',
         description:
           'Todos los usuarios que tengan este rol seran usuarios, y su acceso sera limitado',
+        priority: 5,
+        label: 'Usuario',
       },
     ]
 
@@ -98,6 +102,17 @@ export class RolesService {
       const role = await this.roleRepository.findOneBy({ id })
 
       const updated = await this.roleRepository.save({ ...role, ...user })
+      return handleOK(updated)
+    } catch (error) {
+      return handleInternalServerError(error)
+    }
+  }
+
+  async renameRole(id: number, label: string) {
+    try {
+      const role = await this.roleRepository.findOneBy({ id })
+
+      const updated = await this.roleRepository.save({ ...role, label })
       return handleOK(updated)
     } catch (error) {
       return handleInternalServerError(error)
