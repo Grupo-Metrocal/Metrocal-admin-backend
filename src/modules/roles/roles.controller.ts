@@ -31,4 +31,12 @@ export class RolesController {
 
     return role
   }
+
+  @Get('rename/:id/:label')
+  async rename(@Param('id') id: number, @Param('label') label: string) {
+    if (!id) handleBadrequest(new Error('El id es requerido'))
+    if (!label) handleBadrequest(new Error('El label es requerido'))
+
+    return this.rolesService.renameRole(id, label)
+  }
 }
