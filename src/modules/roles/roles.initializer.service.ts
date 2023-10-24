@@ -1,5 +1,4 @@
-import { Injectable } from '@nestjs/common'
-import { OnModuleInit } from '@nestjs/common'
+import { Injectable, OnModuleInit } from '@nestjs/common'
 import { RolesService } from './roles.service'
 
 @Injectable()
