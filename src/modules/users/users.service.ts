@@ -219,4 +219,31 @@ export class UsersService {
     const deletedUser = await this.userRepository.remove(user)
     return handleOK(deletedUser)
   }
+
+  async createDefaultUsers() {
+    const users = [
+      {
+        username: 'Metrocal',
+        email: 'jjjchico1@gmail.com',
+        password: 'Metrocal.2023',
+        role: 'admin',
+      },
+    ]
+
+    users.forEach(async (user) => {
+      const userExists = await this.userRepository.findOne({
+        where: { email: user.email },
+      })
+
+      if (!userExists) {
+        const userCreated = await this.create({
+          username: user.username,
+          email: user.email,
+          password: user.password,
+        })
+        const role = await this.rolesService.findByName(user.role)
+        await this.assignRole(userCreated.data.id, role.data.id as number)
+      }
+    })
+  }
 }

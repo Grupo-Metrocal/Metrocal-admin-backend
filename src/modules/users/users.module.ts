@@ -8,11 +8,18 @@ import { MailService } from '../mail/mail.service'
 import { ResetPassword } from './entities/reset-password.entity'
 import { Role } from '../roles/entities/role.entity'
 import { RolesService } from '../roles/roles.service'
+import { UsersInitializerService } from './users.initializer.service'
 
 @Module({
   imports: [TypeOrmModule.forFeature([User, ResetPassword, Role])],
   controllers: [UsersController],
-  providers: [UsersService, JwtStrategy, MailService, RolesService],
+  providers: [
+    UsersService,
+    JwtStrategy,
+    MailService,
+    RolesService,
+    UsersInitializerService,
+  ],
   exports: [UsersService],
 })
 export class UsersModule {}
