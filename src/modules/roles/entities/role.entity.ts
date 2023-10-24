@@ -16,4 +16,10 @@ export class Role {
 
   @ManyToMany(() => User, (user) => user.roles)
   users: User[]
+
+  @Column({ nullable: true })
+  label: string
+
+  @Column({ nullable: true })
+  priority: number
 }
