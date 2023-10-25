@@ -23,7 +23,7 @@ export class ClientsService {
 
   async createClient(client: CreateClientDto) {
     const clientFound = await this.clientRepository.findOne({
-      where: [{ email: client.email }, { company_name: client.company_name }],
+      where: { company_name: client.company_name },
     })
 
     if (clientFound) {
