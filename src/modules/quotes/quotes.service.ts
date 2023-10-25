@@ -19,6 +19,7 @@ import {
   handleInternalServerError,
   handleOK,
 } from 'src/common/handleHttp'
+import { generateQuoteRequestCode } from 'src/utils/codeGenerator'
 
 @Injectable()
 export class QuotesService {
@@ -68,6 +69,10 @@ export class QuotesService {
         await manager.save(quoteRequest)
         await manager.save(client.data)
         await manager.save(equipmentQuoteRequest)
+
+        const no = generateQuoteRequestCode(quoteRequest.id)
+        quoteRequest.no = no
+        await manager.save(quoteRequest)
       })
 
       return handleOK(response)
@@ -132,8 +137,11 @@ export class QuotesService {
         'price',
         'general_discount',
         'updated_at',
+        'approved_by',
       ],
     })
+
+    console.log(quoteRequest)
 
     if (!quoteRequest) {
       return handleBadrequest(new Error('La cotización no existe'))
