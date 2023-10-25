@@ -27,4 +27,7 @@ export class QuoteRequestDto {
 
   @ApiProperty()
   price?: number
+
+  @ApiProperty()
+  no?: string
 }

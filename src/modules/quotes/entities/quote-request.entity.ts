@@ -45,6 +45,9 @@ export class QuoteRequest {
   @ManyToOne(() => User, (user) => user.quote_requests)
   approved_by: User
 
+  @Column({ type: 'varchar', nullable: true })
+  no?: string
+
   @OneToOne(() => Quote, (quote) => quote.quote_request, {
     cascade: true,
   })
