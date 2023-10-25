@@ -8,10 +8,6 @@ export class CreateClientDto {
 
   @ApiProperty()
   @IsNotEmpty()
-  no: string
-
-  @ApiProperty()
-  @IsNotEmpty()
   phone: string
 
   @ApiProperty()
@@ -19,8 +15,7 @@ export class CreateClientDto {
   address: string
 
   @ApiProperty()
-  @IsNotEmpty()
-  no_ruc: string
+  no_ruc?: string
 
   @ApiProperty()
   @IsNotEmpty()

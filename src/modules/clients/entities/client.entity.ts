@@ -16,16 +16,13 @@ export class Client {
   company_name: string
 
   @Column({ type: 'varchar', nullable: false })
-  no: string
-
-  @Column({ type: 'varchar', nullable: false })
   phone: string
 
   @Column({ type: 'varchar', nullable: false })
   address: string
 
-  @Column({ type: 'varchar', nullable: false })
-  no_ruc: string
+  @Column({ type: 'varchar', nullable: true })
+  no_ruc?: string
 
   @Column({ type: 'varchar', nullable: false })
   email: string
