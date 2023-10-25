@@ -15,3 +15,8 @@ export const passwordResetCodeGenerator = ({
 
   return suffix ? `${suffix}_${lenghtCode}` : lenghtCode
 }
+
+export const generateQuoteRequestCode = (id: number) => {
+  const year = new Date().getFullYear()
+  return `NI-CS-${id.toString().padStart(4, '0')}-${year.toString().slice(-2)}`
+}
