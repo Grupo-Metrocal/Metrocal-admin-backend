@@ -20,6 +20,8 @@ import {
   handleOK,
 } from 'src/common/handleHttp'
 import { generateQuoteRequestCode } from 'src/utils/codeGenerator'
+import { User } from '../users/entities/user.entity'
+import { UsersService } from '../users/users.service'
 
 @Injectable()
 export class QuotesService {
@@ -35,6 +37,7 @@ export class QuotesService {
     private readonly mailService: MailService,
     private readonly tokenService: TokenService,
     private readonly pdfService: PdfService,
+    private readonly usersService: UsersService,
   ) {}
 
   async createQuoteRequest(quoteRequestDto: QuoteRequestDto) {
@@ -127,66 +130,88 @@ export class QuotesService {
     return handleOK(response.id)
   }
 
-  async updateStatusQuoteRequest(QuoteRequest: UpdateQuoteRequestDto) {
-    const quoteRequest = await this.quoteRequestRepository.findOne({
-      where: { id: QuoteRequest.id },
-      select: [
-        'id',
-        'status',
-        'tax',
-        'price',
-        'general_discount',
-        'updated_at',
-        'approved_by',
-      ],
-    })
-
-    console.log(quoteRequest)
-
-    if (!quoteRequest) {
-      return handleBadrequest(new Error('La cotización no existe'))
-    }
-
-    Object.assign(quoteRequest, QuoteRequest)
-    const token = this.tokenService.generateTemporaryLink(
-      quoteRequest.id,
-      '30d',
-    )
-
-    let approvedQuoteRequestDto: ApprovedQuoteRequestDto
-
-    if (quoteRequest.status === 'waiting') {
-      const quote = await this.getQuoteRequestById(QuoteRequest.id)
-      approvedQuoteRequestDto = new ApprovedQuoteRequestDto()
-      approvedQuoteRequestDto.clientName = quote.client.company_name
-      approvedQuoteRequestDto.servicesAndEquipments =
-        quote.equipment_quote_request.map((equipment) => {
-          return {
-            service: equipment.type_service,
-            equipment: equipment.name,
-            count: equipment.count,
-            unitPrice: equipment.price,
-            subTotal: equipment.total,
-            discount: equipment.discount,
-          }
-        })
-
-      approvedQuoteRequestDto.total = QuoteRequest.price
-      approvedQuoteRequestDto.token = token
-      approvedQuoteRequestDto.email = quote.client.email
-      approvedQuoteRequestDto.linkDetailQuote = `${process.env.DOMAIN}/quote/${token}`
-      approvedQuoteRequestDto.subtotal = quote.equipment_quote_request.reduce(
-        (acc, equipment) => acc + equipment.total,
-        0,
-      )
-      approvedQuoteRequestDto.tax = QuoteRequest.tax
-      approvedQuoteRequestDto.discount = QuoteRequest.general_discount
-    }
-
+  async updateStatusQuoteRequest(quoteRequestDto: UpdateQuoteRequestDto) {
     try {
-      await this.quoteRequestRepository.save(quoteRequest)
+      const quoteRequest = await this.quoteRequestRepository.findOne({
+        where: { id: quoteRequestDto.id },
+        relations: ['approved_by'],
+      })
+
+      if (!quoteRequest) {
+        return handleBadrequest(new Error('La cotización no existe'))
+      }
+
+      const decodeToken = this.tokenService.decodeToken(
+        quoteRequestDto.authorized_token,
+      )
+      const userResponse = await this.usersService.findById(
+        Number(decodeToken.sub),
+      )
+
+      if (!userResponse.success) {
+        return handleBadrequest(new Error('El usuario no existe'))
+      }
+
+      const user = userResponse.data as User
+
+      const circularSafeQuoteRequest = JSON.stringify(
+        quoteRequest,
+        (key, value) => {
+          if (key === 'approved_by') {
+            return undefined // Evita la relación 'approved_by'
+          }
+          return value
+        },
+      )
+
+      const parsedQuoteRequest = JSON.parse(circularSafeQuoteRequest)
+
+      parsedQuoteRequest.approved_by = user
+      user.quote_requests.push(parsedQuoteRequest)
+
+      Object.assign(quoteRequest, quoteRequestDto)
+
+      const token = this.tokenService.generateTemporaryLink(
+        quoteRequest.id,
+        '30d',
+      )
+
+      let approvedQuoteRequestDto: ApprovedQuoteRequestDto | undefined
 
       if (quoteRequest.status === 'waiting') {
+        const quote = await this.getQuoteRequestById(quoteRequestDto.id)
+        approvedQuoteRequestDto = new ApprovedQuoteRequestDto()
+        approvedQuoteRequestDto.clientName = quote.client.company_name
+        approvedQuoteRequestDto.servicesAndEquipments =
+          quote.equipment_quote_request.map((equipment) => {
+            return {
+              service: equipment.type_service,
+              equipment: equipment.name,
+              count: equipment.count,
+              unitPrice: equipment.price,
+              subTotal: equipment.total,
+              discount: equipment.discount,
+            }
+          })
+
+        approvedQuoteRequestDto.total = quoteRequestDto.price
+        approvedQuoteRequestDto.token = token
+        approvedQuoteRequestDto.email = quote.client.email
+        approvedQuoteRequestDto.linkDetailQuote = `${process.env.DOMAIN}/quote/${token}`
+        approvedQuoteRequestDto.subtotal = quote.equipment_quote_request.reduce(
+          (acc, equipment) => acc + equipment.total,
+          0,
+        )
+        approvedQuoteRequestDto.tax = quoteRequestDto.tax
+        approvedQuoteRequestDto.discount = quoteRequestDto.general_discount
+      }
+
+      await this.dataSource.transaction(async (manager) => {
+        await manager.save(quoteRequest)
+        await manager.save(User, user)
+      })
+
+      if (quoteRequest.status === 'waiting' && approvedQuoteRequestDto) {
         await this.mailService.sendMailApprovedQuoteRequest(
           approvedQuoteRequestDto,
         )
@@ -194,7 +219,7 @@ export class QuotesService {
 
       return handleOK(quoteRequest)
     } catch (error) {
-      return handleInternalServerError(error)
+      return handleInternalServerError(error.message)
     }
   }
 
