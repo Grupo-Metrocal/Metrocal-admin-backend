@@ -70,9 +70,14 @@ export class UsersService {
     }
   }
 
-  async findById(id: number): Promise<User | {}> {
-    const user = await this.userRepository.findOneBy({ id })
-    return user ? user : { statusCode: 404, message: 'Usuario no encontrado' }
+  async findById(id: number) {
+    const user = await this.userRepository.findOne({
+      where: { id },
+      relations: ['roles', 'quote_requests', 'quotes'],
+    })
+    if (!user) return handleBadrequest(new Error('Usuario no encontrado'))
+
+    return handleOK(user)
   }
 
   async updateById(id: number, updateUserDto: UpdateUserDto): Promise<User> {
