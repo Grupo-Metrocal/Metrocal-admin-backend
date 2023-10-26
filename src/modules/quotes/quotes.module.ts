@@ -12,6 +12,10 @@ import { MailService } from '../mail/mail.service'
 import { TokenService } from '../auth/jwt/jwt.service'
 import { ConfigModule } from '@nestjs/config'
 import { PdfService } from '../mail/pdf.service'
+import { UsersService } from '../users/users.service'
+import { ResetPassword } from '../users/entities/reset-password.entity'
+import { Role } from '../roles/entities/role.entity'
+import { RolesService } from '../roles/roles.service'
 
 @Module({
   imports: [
@@ -25,6 +29,8 @@ import { PdfService } from '../mail/pdf.service'
       EquipmentQuoteRequest,
       User,
       Client,
+      ResetPassword,
+      Role,
     ]),
   ],
   controllers: [QuotesController],
@@ -34,6 +40,8 @@ import { PdfService } from '../mail/pdf.service'
     MailService,
     TokenService,
     PdfService,
+    UsersService,
+    RolesService,
   ],
   exports: [QuotesService],
 })
