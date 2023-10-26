@@ -24,4 +24,8 @@ export class UpdateQuoteRequestDto {
 
   @ApiProperty()
   updated_at?: Date
+
+  @ApiProperty()
+  @IsNotEmpty()
+  authorized_token: string
 }
