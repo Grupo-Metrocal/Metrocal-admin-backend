@@ -1,12 +1,23 @@
 import { QuotesService } from './quotes.service'
 import { ApiProperty, ApiTags } from '@nestjs/swagger'
-import { Controller, Post, Body, Get, Param, Res, Delete } from '@nestjs/common'
+import {
+  Controller,
+  Post,
+  Body,
+  Get,
+  Param,
+  Res,
+  Delete,
+  UseGuards,
+} from '@nestjs/common'
 import { QuoteRequestDto } from './dto/quote-request.dto'
 import { updateEquipmentQuoteRequestDto } from './dto/update-equipment-quote-request.dto'
 import { UpdateQuoteRequestDto } from './dto/update-quote-request.dto'
 import { changeStatusQuoteRequestDto } from './dto/change-status-quote-request.dto'
 import { Response } from 'express'
 import { AddQuoteDto } from './dto/quote.dto'
+import { handleBadrequest } from 'src/common/handleHttp'
+import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard'
 
 @ApiTags('quotes')
 @Controller('quotes')
@@ -106,5 +117,14 @@ export class QuotesController {
   @Delete(':id')
   async delete(@Param('id') id: number) {
     return await this.quotesService.deleteQuoteRequest(id)
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Get('request/:id/remember')
+  async rememberQuoteRequest(@Param('id') id: number) {
+    if (!id) {
+      return handleBadrequest(new Error('Id is required'))
+    }
+    return await this.quotesService.rememberQuoteRequest(id)
   }
 }
