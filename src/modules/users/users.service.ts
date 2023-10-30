@@ -15,7 +15,7 @@ import {
   handleOK,
 } from 'src/common/handleHttp'
 import { RolesService } from '../roles/roles.service'
-import { Role } from '../roles/entities/role.entity'
+import { TokenService } from '../auth/jwt/jwt.service'
 
 @Injectable()
 export class UsersService {
@@ -25,6 +25,7 @@ export class UsersService {
     private readonly resetPasswordRepository: Repository<ResetPassword>,
     private readonly mailService: MailService,
     private readonly rolesService: RolesService,
+    private readonly tokenService: TokenService,
   ) {}
   async create(createUserDto: CreateUserDto) {
     const user = await this.userRepository.findOneBy({
@@ -80,17 +81,31 @@ export class UsersService {
     return handleOK(user)
   }
 
-  async updateById(id: number, updateUserDto: UpdateUserDto): Promise<User> {
-    const user = await this.userRepository.findOneBy({ id })
-    if (!user) throw new HttpException('Usuario no encontrado', 404)
+  async updateUserByToken(token: string, updateUserDto: UpdateUserDto) {
+    const { sub: id } = this.tokenService.decodeToken(token)
 
-    const hashedPassword = await hash(updateUserDto.password, 10)
-    const updatedUser = this.userRepository.merge(user, {
-      ...updateUserDto,
-      password: hashedPassword,
-    })
+    const user = await this.userRepository.findOneBy({ id: +id })
+    if (!user) return handleBadrequest(new Error('Usuario no encontrado'))
 
-    return await this.userRepository.save(updatedUser)
+    if (updateUserDto.email) {
+      const userExists = await this.userRepository.findOneBy({
+        email: updateUserDto.email,
+      })
+      if (userExists)
+        return handleBadrequest(new Error('El email ya está en uso'))
+    }
+
+    if (updateUserDto.password) {
+      const hashedPassword = await hash(updateUserDto.password, 10)
+      updateUserDto.password = hashedPassword
+    }
+
+    try {
+      const updated = await this.userRepository.update(+id, updateUserDto)
+      return handleOK(updated)
+    } catch (error) {
+      return handleInternalServerError(error.message)
+    }
   }
 
   async findByEmail(email: string): Promise<User> {
