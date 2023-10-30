@@ -1,12 +1,4 @@
-import {
-  Controller,
-  Get,
-  Post,
-  Body,
-  Patch,
-  Param,
-  Delete,
-} from '@nestjs/common'
+import { Controller, Get, Post, Body, Put, Param, Delete } from '@nestjs/common'
 import { UsersService } from './users.service'
 import { CreateUserDto } from './dto/create-user.dto'
 import { UpdateUserDto } from './dto/update-user.dto'
@@ -95,5 +87,11 @@ export class UsersController {
     if (isNaN(+id)) throw new HttpException('El id debe ser un número', 400)
 
     return await this.usersService.remove(+id)
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Put('profile/:token')
+  async update(@Param('token') token: string, @Body() user: UpdateUserDto) {
+    return await this.usersService.updateUserByToken(token, user)
   }
 }
