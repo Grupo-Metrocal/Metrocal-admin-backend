@@ -97,4 +97,15 @@ export class ClientsService {
       return handleInternalServerError(error)
     }
   }
+
+  async getClientsEmails() {
+    try {
+      const emails = await this.clientRepository.find({
+        select: ['id', 'email', 'company_name'],
+      })
+      return handleOK(emails)
+    } catch (error) {
+      return handleInternalServerError(error.message)
+    }
+  }
 }
