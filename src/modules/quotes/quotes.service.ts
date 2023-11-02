@@ -279,16 +279,29 @@ export class QuotesService {
     })
 
     if (!quoteRequest) {
-      throw new Error('La cotización no existe')
+      return handleBadrequest(new Error('La cotización no existe'))
+    }
+
+    if (quoteRequest.status === 'done') {
+      return handleBadrequest(
+        new Error('La cotización ya ha sido aprobada anteriormente'),
+      )
+    }
+
+    if (quoteRequest.status === 'rejected') {
+      return handleBadrequest(
+        new Error('La cotización ya ha sido rechazada anteriormente'),
+      )
     }
 
     quoteRequest.status = changeStatusQuoteRequest.status
 
     try {
       await this.quoteRequestRepository.save(quoteRequest)
-      return quoteRequest
+      await this.addQuote(changeStatusQuoteRequest)
+      return handleOK('Se ha cambiado el estado de la cotización')
     } catch (error) {
-      return false
+      return handleInternalServerError(error.message)
     }
   }
 
