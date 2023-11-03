@@ -1,6 +1,8 @@
 import { Injectable } from '@nestjs/common'
 import { MailerService } from '@nestjs-modules/mailer'
 import { ApprovedQuoteRequestDto } from './dto/approved-quote-request.dto'
+import { InvitationMail } from './dto/invitation-mail.dto'
+import { RejectedCuoteRequest } from './dto/rejected-quote-request.dto'
 
 @Injectable()
 export class MailService {
@@ -59,6 +61,30 @@ export class MailService {
       context: {
         ...approvedQuoteRequestDto,
       },
+    })
+  }
+
+  async sendMailrejectedQuoteRequest(rejected:RejectedCuoteRequest){
+    await this.mailerService.sendMail({
+      to: rejected.email,
+      from: process.env.MAILER_FROM,
+      subject:'Cotizacion rechazada',
+      template:'rejected_quote_request',
+      context:{
+        ...rejected
+      }
+    })
+  }
+
+  async sendInvitationMail(inv: InvitationMail){
+    await this.mailerService.sendMail({
+      to: inv.email,
+      from: process.env.MAILER_FROM,
+      subject: 'Cotiza con nosotros y obten el mejor precio',
+      template:'invitation_for_user',
+      context: {
+        ...inv
+      }
     })
   }
 }
