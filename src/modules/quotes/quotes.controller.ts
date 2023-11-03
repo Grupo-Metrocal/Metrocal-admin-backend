@@ -127,4 +127,18 @@ export class QuotesController {
     }
     return await this.quotesService.rememberQuoteRequest(id)
   }
+/* This endpoint is used to test that tallllll works correctly (ignore)
+  @Get('test-rejected/:email')
+  async invitationUser(@Param('email') email: string){
+
+    if(email.match(/^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$/)){
+      
+     return await this.quotesService.rejectedemail(email)
+     
+
+    }else{
+      return 'El formato del correo debe ser "example@xxx.com" '
+    }
+  }
+  */
 }
