@@ -16,6 +16,7 @@ import {
 } from 'src/common/handleHttp'
 import { RolesService } from '../roles/roles.service'
 import { TokenService } from '../auth/jwt/jwt.service'
+import { InvitationMail } from '../mail/dto/invitation-mail.dto'
 
 @Injectable()
 export class UsersService {
@@ -266,4 +267,20 @@ export class UsersService {
       }
     })
   }
+
+  async invitationForUser(email: InvitationMail){
+ console.log(email)   
+  try{
+     
+    email.linkToNewQuote = `${process.env.DOMAIN}/quote/request`
+
+    await this.mailService.sendInvitationMail(email)
+    handleOK('Ok')
+
+  }catch(error){
+
+    return handleInternalServerError(error.message)
+  
+  }
+}
 }
