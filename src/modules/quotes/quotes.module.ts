@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common'
+import { Module, forwardRef } from '@nestjs/common'
 import { QuotesService } from './quotes.service'
 import { QuotesController } from './quotes.controller'
 import { TypeOrmModule } from '@nestjs/typeorm'
@@ -16,6 +16,8 @@ import { ResetPassword } from '../users/entities/reset-password.entity'
 import { Role } from '../roles/entities/role.entity'
 import { RolesService } from '../roles/roles.service'
 import { Activity } from '../activities/entities/activities.entity'
+import { ActivitiesService } from '../activities/activities.service'
+import { ActivitiesModule } from '../activities/activities.module'
 
 @Module({
   imports: [
@@ -32,6 +34,7 @@ import { Activity } from '../activities/entities/activities.entity'
       ResetPassword,
       Role,
     ]),
+    forwardRef(() => ActivitiesModule),
   ],
   controllers: [QuotesController],
   providers: [
