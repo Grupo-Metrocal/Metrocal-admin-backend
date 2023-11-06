@@ -1,6 +1,5 @@
-import { Injectable, HttpException } from '@nestjs/common'
+import { Injectable, HttpException, forwardRef, Inject } from '@nestjs/common'
 import { CreateRoleDto } from './dto/create-role.dto'
-import { UpdateRoleDto } from './dto/update-role.dto'
 import { InjectRepository } from '@nestjs/typeorm'
 import { Repository } from 'typeorm'
 import { Role } from './entities/role.entity'
@@ -10,10 +9,14 @@ import {
   handleOK,
 } from 'src/common/handleHttp'
 import { User } from '../users/entities/user.entity'
+import { UsersService } from '../users/users.service'
+
 @Injectable()
 export class RolesService {
   constructor(
     @InjectRepository(Role) private readonly roleRepository: Repository<Role>,
+    @Inject(forwardRef(() => UsersService))
+    private readonly usersService: UsersService,
   ) {}
 
   async create(createRoleDto: CreateRoleDto) {
@@ -49,13 +52,17 @@ export class RolesService {
       },
     ]
 
-    roles.forEach(async (role) => {
+    for (const role of roles) {
       const roleExists = await this.roleRepository.findOne({
         where: { name: role.name },
       })
 
-      if (!roleExists) await this.roleRepository.save(role)
-    })
+      if (!roleExists) {
+        await this.roleRepository.save(role)
+      }
+    }
+
+    await this.usersService.createDefaultUsers()
   }
 
   async getDefaultsRole() {
