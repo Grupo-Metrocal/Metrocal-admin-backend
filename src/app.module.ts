@@ -11,6 +11,8 @@ import { TypeOrmModuleOptions } from '@nestjs/typeorm'
 import { configEnv } from './configEnv'
 import { QuotesModule } from './modules/quotes/quotes.module'
 import { ClientsModule } from './modules/clients/clients.module'
+import { ActivitiesService } from './modules/activities/activities.service';
+import { ActivitiesModule } from './modules/activities/activities.module';
 
 @Module({
   imports: [
@@ -25,8 +27,9 @@ import { ClientsModule } from './modules/clients/clients.module'
     MailModule,
     QuotesModule,
     ClientsModule,
+    ActivitiesModule,
   ],
   controllers: [AppController],
-  providers: [AppService],
+  providers: [AppService, ActivitiesService],
 })
 export class AppModule {}
