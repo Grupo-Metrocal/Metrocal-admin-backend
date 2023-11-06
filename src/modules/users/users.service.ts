@@ -262,7 +262,9 @@ export class UsersService {
           password: user.password,
         })
         const role = await this.rolesService.findByName(user.role)
-        await this.assignRole(userCreated.data.id, role.data.id as number)
+        if (role.success) {
+          await this.assignRole(userCreated.data.id, role.data.id as number)
+        }
       }
     })
   }
