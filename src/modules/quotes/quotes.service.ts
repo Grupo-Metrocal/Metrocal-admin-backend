@@ -12,7 +12,6 @@ import { TokenService } from '../auth/jwt/jwt.service'
 import { ApprovedQuoteRequestDto } from '../mail/dto/approved-quote-request.dto'
 import { PdfService } from '../mail/pdf.service'
 import { changeStatusQuoteRequestDto } from './dto/change-status-quote-request.dto'
-// import { AddQuoteDto } from './dto/quote.dto'
 import {
   handleBadrequest,
   handleInternalServerError,
