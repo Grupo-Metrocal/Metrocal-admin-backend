@@ -3,7 +3,6 @@ import { QuotesService } from './quotes.service'
 import { QuotesController } from './quotes.controller'
 import { TypeOrmModule } from '@nestjs/typeorm'
 import { ClientsService } from '../clients/clients.service'
-import { Quote } from './entities/quote.entity'
 import { QuoteRequest } from './entities/quote-request.entity'
 import { EquipmentQuoteRequest } from './entities/equipment-quote-request.entity'
 import { User } from '../users/entities/user.entity'
@@ -16,6 +15,7 @@ import { UsersService } from '../users/users.service'
 import { ResetPassword } from '../users/entities/reset-password.entity'
 import { Role } from '../roles/entities/role.entity'
 import { RolesService } from '../roles/roles.service'
+import { Activity } from '../activities/entities/activities.entity'
 
 @Module({
   imports: [
@@ -24,7 +24,7 @@ import { RolesService } from '../roles/roles.service'
       isGlobal: true,
     }),
     TypeOrmModule.forFeature([
-      Quote,
+      Activity,
       QuoteRequest,
       EquipmentQuoteRequest,
       User,
