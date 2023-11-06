@@ -3,12 +3,11 @@ import { ActivitiesService } from './activities.service'
 import { ActivitiesController } from './activities.controller'
 import { TypeOrmModule } from '@nestjs/typeorm'
 import { Activity } from './entities/activities.entity'
-import { User } from '../users/entities/user.entity'
-import { QuoteRequest } from '../quotes/entities/quote-request.entity'
 
 @Module({
-  imports: [TypeOrmModule.forFeature([Activity, User, QuoteRequest])],
+  imports: [TypeOrmModule.forFeature([Activity])],
   controllers: [ActivitiesController],
   providers: [ActivitiesService],
+  exports: [ActivitiesService],
 })
 export class ActivitiesModule {}
