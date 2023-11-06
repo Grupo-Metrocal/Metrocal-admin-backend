@@ -99,16 +99,6 @@ export class QuotesController {
     return await this.quotesService.changeStatusQuoteRequest(quoteRequest)
   }
 
-  @Get('add/:id')
-  async addQuote(@Param() addQuoteDto: AddQuoteDto) {
-    return await this.quotesService.addQuote(addQuoteDto)
-  }
-
-  @Get()
-  async getQuotes() {
-    return await this.quotesService.getQuotes()
-  }
-
   @Get('registered')
   async getQuoteRequestRegister() {
     return await this.quotesService.getQuoteRequestRegister()
