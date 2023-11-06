@@ -9,7 +9,7 @@ import {
 } from 'typeorm'
 import { User } from 'src/modules/users/entities/user.entity'
 import { EquipmentQuoteRequest } from './equipment-quote-request.entity'
-import { Quote } from './quote.entity'
+import { Activity } from 'src/modules/activities/entities/activities.entity'
 import { Client } from 'src/modules/clients/entities/client.entity'
 
 @Entity('quote_requests')
@@ -48,11 +48,11 @@ export class QuoteRequest {
   @Column({ type: 'varchar', nullable: true })
   no?: string
 
-  @OneToOne(() => Quote, (quote) => quote.quote_request, {
+  @OneToOne(() => Activity, (activity) => activity.quote_request, {
     cascade: true,
   })
   @JoinColumn()
-  quote: Quote
+  activity: Activity
 
   @Column({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP' })
   created_at: Date
