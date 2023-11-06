@@ -15,7 +15,6 @@ import { updateEquipmentQuoteRequestDto } from './dto/update-equipment-quote-req
 import { UpdateQuoteRequestDto } from './dto/update-quote-request.dto'
 import { changeStatusQuoteRequestDto } from './dto/change-status-quote-request.dto'
 import { Response } from 'express'
-import { AddQuoteDto } from './dto/quote.dto'
 import { handleBadrequest } from 'src/common/handleHttp'
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard'
 
