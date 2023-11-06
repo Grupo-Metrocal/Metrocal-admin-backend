@@ -74,7 +74,7 @@ export class UsersService {
   async findById(id: number) {
     const user = await this.userRepository.findOne({
       where: { id },
-      relations: ['roles', 'quote_requests', 'quotes'],
+      relations: ['roles', 'quote_requests', 'activities'],
     })
     if (!user) return handleBadrequest(new Error('Usuario no encontrado'))
 
