@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common'
+import { Injectable, Inject, forwardRef } from '@nestjs/common'
 import { InjectRepository } from '@nestjs/typeorm'
 import { Activity } from './entities/activities.entity'
 import { Repository, DataSource } from 'typeorm'
@@ -10,6 +10,7 @@ export class ActivitiesService {
   constructor(
     @InjectRepository(Activity)
     private readonly activityRepository: Repository<Activity>,
+    @Inject(forwardRef(() => QuotesService))
     private readonly quotesService: QuotesService,
     private readonly dataSource: DataSource,
   ) {}
@@ -36,5 +37,17 @@ export class ActivitiesService {
     } catch (error) {
       return handleInternalServerError(error.message)
     }
+  }
+
+  async getAllActivities() {
+    return await this.activityRepository.find({
+      relations: [
+        'quote_request',
+        'quote_request.client',
+        'quote_request.equipment_quote_request',
+        'quote_request.approved_by',
+        'team_members',
+      ],
+    })
   }
 }
