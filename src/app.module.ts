@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common'
+import { Module, forwardRef } from '@nestjs/common'
 import { AppController } from './app.controller'
 import { AppService } from './app.service'
 import { ConfigModule } from '@nestjs/config'
@@ -11,8 +11,7 @@ import { TypeOrmModuleOptions } from '@nestjs/typeorm'
 import { configEnv } from './configEnv'
 import { QuotesModule } from './modules/quotes/quotes.module'
 import { ClientsModule } from './modules/clients/clients.module'
-import { ActivitiesService } from './modules/activities/activities.service';
-import { ActivitiesModule } from './modules/activities/activities.module';
+import { ActivitiesModule } from './modules/activities/activities.module'
 
 @Module({
   imports: [
@@ -30,6 +29,6 @@ import { ActivitiesModule } from './modules/activities/activities.module';
     ActivitiesModule,
   ],
   controllers: [AppController],
-  providers: [AppService, ActivitiesService],
+  providers: [AppService],
 })
 export class AppModule {}
