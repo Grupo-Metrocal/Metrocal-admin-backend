@@ -7,6 +7,7 @@ import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard'
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger'
 import { PasswordRestoreDto } from './dto/password-restore.dto'
 import { handleBadrequest } from 'src/common/handleHttp'
+import { InvitationMail } from '../mail/dto/invitation-mail.dto'
 
 @ApiBearerAuth()
 @ApiTags('users')
@@ -93,5 +94,12 @@ export class UsersController {
   @Put('profile/:token')
   async update(@Param('token') token: string, @Body() user: UpdateUserDto) {
     return await this.usersService.updateUserByToken(token, user)
+  }
+ @UseGuards(JwtAuthGuard)
+  @Get('Invitation-user/:email')
+  async invitationUser(@Param('email') email: string){
+    
+     return await this.usersService.invitationForUser({email} as InvitationMail)
+     
   }
 }

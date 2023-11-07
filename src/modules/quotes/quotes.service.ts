@@ -20,7 +20,11 @@ import {
 import { generateQuoteRequestCode } from 'src/utils/codeGenerator'
 import { User } from '../users/entities/user.entity'
 import { UsersService } from '../users/users.service'
+<<<<<<< HEAD
+import { RejectedCuoteRequest } from '../mail/dto/rejected-quote-request.dto'
+=======
 import { ActivitiesService } from '../activities/activities.service'
+>>>>>>> 8bcfd4d807a6b25c4b75d6e4762b2acb813f2e07
 
 @Injectable()
 export class QuotesService {
@@ -220,6 +224,21 @@ export class QuotesService {
         approvedQuoteRequestDto.discount = quoteRequestDto.general_discount
       }
 
+let rejectedcuoterequest: RejectedCuoteRequest | undefined
+if (quoteRequest.status === 'rejected') {
+  const quote = await this.getQuoteRequestById(quoteRequestDto.id)
+    
+      
+      rejectedcuoterequest = new RejectedCuoteRequest()
+        rejectedcuoterequest.clientName= quote.client.company_name
+        rejectedcuoterequest.email = quote.client.email
+        rejectedcuoterequest.linkToNewQuote = `${process.env.DOMAIN}/quote/request`
+}
+if(quoteRequest.status=== 'rejected' && rejectedcuoterequest){
+  await this.mailService.sendMailrejectedQuoteRequest(rejectedcuoterequest)
+}
+
+
       await this.dataSource.transaction(async (manager) => {
         await manager.save(quoteRequest)
         await manager.save(User, user)
@@ -236,6 +255,21 @@ export class QuotesService {
       return handleInternalServerError(error.message)
     }
   }
+
+  /*This service is to test the correct operation of.... located in mail.service.ts (ignore this service)
+  async rejectedemail(email: string){
+    let rejectedcuoterequest: RejectedCuoteRequest | undefined
+      
+      rejectedcuoterequest = new RejectedCuoteRequest()
+        rejectedcuoterequest.clientName= 'Francisco'
+        rejectedcuoterequest.email = email
+        rejectedcuoterequest.linkToNewQuote = `${process.env.DOMAIN}/quote/request`
+
+
+        await this.mailService.sendMailrejectedQuoteRequest(rejectedcuoterequest)
+
+  }
+  */
 
   async getQuoteRequestByToken(token: string) {
     const { id } = this.tokenService.verifyTemporaryLink(token)
