@@ -1,7 +1,6 @@
-import { Injectable } from '@nestjs/common'
+import { Inject, Injectable, forwardRef } from '@nestjs/common'
 import { InjectRepository } from '@nestjs/typeorm'
 import { Repository, DataSource } from 'typeorm'
-import { Quote } from './entities/quote.entity'
 import { EquipmentQuoteRequest } from './entities/equipment-quote-request.entity'
 import { QuoteRequest } from './entities/quote-request.entity'
 import { QuoteRequestDto } from './dto/quote-request.dto'
@@ -13,7 +12,6 @@ import { TokenService } from '../auth/jwt/jwt.service'
 import { ApprovedQuoteRequestDto } from '../mail/dto/approved-quote-request.dto'
 import { PdfService } from '../mail/pdf.service'
 import { changeStatusQuoteRequestDto } from './dto/change-status-quote-request.dto'
-import { AddQuoteDto } from './dto/quote.dto'
 import {
   handleBadrequest,
   handleInternalServerError,
@@ -22,17 +20,21 @@ import {
 import { generateQuoteRequestCode } from 'src/utils/codeGenerator'
 import { User } from '../users/entities/user.entity'
 import { UsersService } from '../users/users.service'
+<<<<<<< HEAD
 import { RejectedCuoteRequest } from '../mail/dto/rejected-quote-request.dto'
+=======
+import { ActivitiesService } from '../activities/activities.service'
+>>>>>>> 8bcfd4d807a6b25c4b75d6e4762b2acb813f2e07
 
 @Injectable()
 export class QuotesService {
   constructor(
-    @InjectRepository(Quote)
-    private readonly quoteRepository: Repository<Quote>,
     @InjectRepository(QuoteRequest)
     private readonly quoteRequestRepository: Repository<QuoteRequest>,
     @InjectRepository(EquipmentQuoteRequest)
     private readonly equipmentQuoteRequestRepository: Repository<EquipmentQuoteRequest>,
+    @Inject(forwardRef(() => ActivitiesService))
+    private readonly activitiesService: ActivitiesService,
     private readonly clientsService: ClientsService,
     private readonly dataSource: DataSource,
     private readonly mailService: MailService,
@@ -88,14 +90,24 @@ export class QuotesService {
   async getAllQuoteRequest() {
     return await this.quoteRequestRepository.find({
       where: [{ status: 'pending' }, { status: 'waiting' }, { status: 'done' }],
-      relations: ['equipment_quote_request', 'client', 'quote', 'approved_by'],
+      relations: [
+        'equipment_quote_request',
+        'client',
+        'approved_by',
+        'activity',
+      ],
     })
   }
 
   async getQuoteRequestByClientId(id: number) {
     return await this.quoteRequestRepository.find({
       where: { client: { id } },
-      relations: ['equipment_quote_request', 'client', 'quote', 'approved_by'],
+      relations: [
+        'equipment_quote_request',
+        'client',
+        'approved_by',
+        'activity',
+      ],
     })
   }
 
@@ -110,7 +122,12 @@ export class QuotesService {
   async getQuoteRequestById(id: number) {
     return await this.quoteRequestRepository.findOne({
       where: { id },
-      relations: ['equipment_quote_request', 'client', 'quote', 'approved_by'],
+      relations: [
+        'equipment_quote_request',
+        'client',
+        'approved_by',
+        'activity',
+      ],
     })
   }
 
@@ -329,44 +346,17 @@ if(quoteRequest.status=== 'rejected' && rejectedcuoterequest){
 
     try {
       await this.quoteRequestRepository.save(quoteRequest)
-      await this.addQuote(changeStatusQuoteRequest)
+
+      if (quoteRequest.status === 'done') {
+        await this.activitiesService.createActivity(
+          changeStatusQuoteRequest as any,
+        )
+      }
       return handleOK('Se ha cambiado el estado de la cotización')
     } catch (error) {
       return handleInternalServerError(error.message)
     }
   }
-
-  async addQuote(addQuoteDto: AddQuoteDto) {
-    const quoteRequest = await this.getQuoteRequestById(addQuoteDto.id)
-
-    const quote = new Quote()
-
-    quote.quote_request = quoteRequest
-    quoteRequest.quote = quote
-
-    try {
-      await this.dataSource.transaction(async (manager) => {
-        await manager.save(quoteRequest)
-        await manager.save(quote)
-      })
-      return true
-    } catch (error) {
-      return false
-    }
-  }
-
-  async getQuotes() {
-    return await this.quoteRepository.find({
-      relations: [
-        'quote_request',
-        'workers',
-        'quote_request.client',
-        'quote_request.equipment_quote_request',
-        'quote_request.approved_by',
-      ],
-    })
-  }
-
   async getQuoteRequestRegister() {
     return await this.quoteRequestRepository
       .createQueryBuilder('quote_request')

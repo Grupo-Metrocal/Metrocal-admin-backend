@@ -5,25 +5,24 @@ import {
   OneToOne,
   ManyToMany,
   JoinTable,
-  OneToMany,
 } from 'typeorm'
-import { QuoteRequest } from './quote-request.entity'
 import { User } from 'src/modules/users/entities/user.entity'
+import { QuoteRequest } from 'src/modules/quotes/entities/quote-request.entity'
 
-@Entity('quotes')
-export class Quote {
+@Entity('activities')
+export class Activity {
   @PrimaryGeneratedColumn('increment', { type: 'int' })
   id: number
 
-  @OneToOne(() => QuoteRequest, (quoteRequest) => quoteRequest.quote)
+  @OneToOne(() => QuoteRequest, (quoteRequest) => quoteRequest.activity)
   quote_request: QuoteRequest
 
-  @ManyToMany(() => User, (user) => user.quotes)
+  @ManyToMany(() => User, (user) => user.activities)
   @JoinTable()
-  workers?: User[]
+  team_members?: User[]
 
-  @Column({ type: 'varchar', default: 'active' })
-  status: string // 'active' | 'inactive'
+  @Column({ type: 'varchar', default: 'pending' })
+  status: string // pending, done, canceled
 
   @Column({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP' })
   created_at: Date

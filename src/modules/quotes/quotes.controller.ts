@@ -15,7 +15,6 @@ import { updateEquipmentQuoteRequestDto } from './dto/update-equipment-quote-req
 import { UpdateQuoteRequestDto } from './dto/update-quote-request.dto'
 import { changeStatusQuoteRequestDto } from './dto/change-status-quote-request.dto'
 import { Response } from 'express'
-import { AddQuoteDto } from './dto/quote.dto'
 import { handleBadrequest } from 'src/common/handleHttp'
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard'
 
@@ -97,16 +96,6 @@ export class QuotesController {
     }
 
     return await this.quotesService.changeStatusQuoteRequest(quoteRequest)
-  }
-
-  @Get('add/:id')
-  async addQuote(@Param() addQuoteDto: AddQuoteDto) {
-    return await this.quotesService.addQuote(addQuoteDto)
-  }
-
-  @Get()
-  async getQuotes() {
-    return await this.quotesService.getQuotes()
   }
 
   @Get('registered')

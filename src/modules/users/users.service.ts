@@ -75,7 +75,7 @@ export class UsersService {
   async findById(id: number) {
     const user = await this.userRepository.findOne({
       where: { id },
-      relations: ['roles', 'quote_requests', 'quotes'],
+      relations: ['roles', 'quote_requests', 'activities'],
     })
     if (!user) return handleBadrequest(new Error('Usuario no encontrado'))
 
@@ -263,7 +263,9 @@ export class UsersService {
           password: user.password,
         })
         const role = await this.rolesService.findByName(user.role)
-        await this.assignRole(userCreated.data.id, role.data.id as number)
+        if (role.success) {
+          await this.assignRole(userCreated.data.id, role.data.id as number)
+        }
       }
     })
   }
