@@ -270,19 +270,14 @@ export class UsersService {
     })
   }
 
-  async invitationForUser(email: InvitationMail){
- console.log(email)   
-  try{
-     
-    email.linkToNewQuote = `${process.env.DOMAIN}/quote/request`
+  async invitationForUser(email: InvitationMail) {
+    try {
+      email.linkToNewQuote = `${process.env.DOMAIN}/`
 
-    await this.mailService.sendInvitationMail(email)
-    handleOK('Ok')
-
-  }catch(error){
-
-    return handleInternalServerError(error.message)
-  
+      await this.mailService.sendInvitationMail(email)
+      return handleOK('Ok')
+    } catch (error) {
+      return handleInternalServerError(error.message)
+    }
   }
-}
 }
