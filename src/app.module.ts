@@ -12,7 +12,14 @@ import { configEnv } from './configEnv'
 import { QuotesModule } from './modules/quotes/quotes.module'
 import { ClientsModule } from './modules/clients/clients.module'
 import { ActivitiesModule } from './modules/activities/activities.module'
+import { NotificationsModule } from './modules/notifications/notifications.module'
+import * as admin from 'firebase-admin'
+import type { ServiceAccount } from 'firebase-admin'
+import * as serviceAccount from './config/firebase-token-key.json'
 
+admin.initializeApp({
+  credential: admin.credential.cert(serviceAccount as ServiceAccount),
+})
 @Module({
   imports: [
     ConfigModule.forRoot({
@@ -27,6 +34,7 @@ import { ActivitiesModule } from './modules/activities/activities.module'
     QuotesModule,
     ClientsModule,
     ActivitiesModule,
+    NotificationsModule,
   ],
   controllers: [AppController],
   providers: [AppService],

@@ -95,11 +95,11 @@ export class UsersController {
   async update(@Param('token') token: string, @Body() user: UpdateUserDto) {
     return await this.usersService.updateUserByToken(token, user)
   }
- @UseGuards(JwtAuthGuard)
-  @Get('Invitation-user/:email')
-  async invitationUser(@Param('email') email: string){
-    
-     return await this.usersService.invitationForUser({email} as InvitationMail)
-     
+  @UseGuards(JwtAuthGuard)
+  @Get('invitation-user/:email')
+  async invitationUser(@Param('email') email: string) {
+    return await this.usersService.invitationForUser({
+      email,
+    } as InvitationMail)
   }
 }

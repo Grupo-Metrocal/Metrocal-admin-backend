@@ -116,5 +116,8 @@ export class QuotesController {
     }
     return await this.quotesService.rememberQuoteRequest(id)
   }
+<<<<<<< HEAD
   
+=======
+>>>>>>> 0d72bb622607fc48c357d6d44ac29eb552d1eb86
 }

@@ -20,8 +20,13 @@ import {
 import { generateQuoteRequestCode } from 'src/utils/codeGenerator'
 import { User } from '../users/entities/user.entity'
 import { UsersService } from '../users/users.service'
+<<<<<<< HEAD
 import { ActivitiesService } from '../activities/activities.service'
 import { RejectedCuoteRequest } from '../mail/dto/rejected-quote-request.dto'
+=======
+import { RejectedCuoteRequest } from '../mail/dto/rejected-quote-request.dto'
+import { ActivitiesService } from '../activities/activities.service'
+>>>>>>> 0d72bb622607fc48c357d6d44ac29eb552d1eb86
 
 @Injectable()
 export class QuotesService {
@@ -221,20 +226,20 @@ export class QuotesService {
         approvedQuoteRequestDto.discount = quoteRequestDto.general_discount
       }
 
-let rejectedcuoterequest: RejectedCuoteRequest | undefined
-if (quoteRequest.status === 'rejected') {
-  const quote = await this.getQuoteRequestById(quoteRequestDto.id)
-    
-      
-      rejectedcuoterequest = new RejectedCuoteRequest()
-        rejectedcuoterequest.clientName= quote.client.company_name
+      let rejectedcuoterequest: RejectedCuoteRequest | undefined
+      if (quoteRequest.status === 'rejected') {
+        const quote = await this.getQuoteRequestById(quoteRequestDto.id)
+
+        rejectedcuoterequest = new RejectedCuoteRequest()
+        rejectedcuoterequest.clientName = quote.client.company_name
         rejectedcuoterequest.email = quote.client.email
         rejectedcuoterequest.linkToNewQuote = `${process.env.DOMAIN}/quote/request`
-}
-if(quoteRequest.status=== 'rejected' && rejectedcuoterequest){
-  await this.mailService.sendMailrejectedQuoteRequest(rejectedcuoterequest)
-}
-
+      }
+      if (quoteRequest.status === 'rejected' && rejectedcuoterequest) {
+        await this.mailService.sendMailrejectedQuoteRequest(
+          rejectedcuoterequest,
+        )
+      }
 
       await this.dataSource.transaction(async (manager) => {
         await manager.save(quoteRequest)
