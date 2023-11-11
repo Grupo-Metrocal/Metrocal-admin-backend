@@ -20,11 +20,8 @@ import {
 import { generateQuoteRequestCode } from 'src/utils/codeGenerator'
 import { User } from '../users/entities/user.entity'
 import { UsersService } from '../users/users.service'
-<<<<<<< HEAD
-import { RejectedCuoteRequest } from '../mail/dto/rejected-quote-request.dto'
-=======
 import { ActivitiesService } from '../activities/activities.service'
->>>>>>> 8bcfd4d807a6b25c4b75d6e4762b2acb813f2e07
+import { RejectedCuoteRequest } from '../mail/dto/rejected-quote-request.dto'
 
 @Injectable()
 export class QuotesService {
@@ -255,21 +252,6 @@ if(quoteRequest.status=== 'rejected' && rejectedcuoterequest){
       return handleInternalServerError(error.message)
     }
   }
-
-  /*This service is to test the correct operation of.... located in mail.service.ts (ignore this service)
-  async rejectedemail(email: string){
-    let rejectedcuoterequest: RejectedCuoteRequest | undefined
-      
-      rejectedcuoterequest = new RejectedCuoteRequest()
-        rejectedcuoterequest.clientName= 'Francisco'
-        rejectedcuoterequest.email = email
-        rejectedcuoterequest.linkToNewQuote = `${process.env.DOMAIN}/quote/request`
-
-
-        await this.mailService.sendMailrejectedQuoteRequest(rejectedcuoterequest)
-
-  }
-  */
 
   async getQuoteRequestByToken(token: string) {
     const { id } = this.tokenService.verifyTemporaryLink(token)
