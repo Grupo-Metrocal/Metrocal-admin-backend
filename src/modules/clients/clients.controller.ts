@@ -4,7 +4,7 @@ import { ApiTags } from '@nestjs/swagger'
 import { Post, Body, Get, Param, Delete } from '@nestjs/common'
 import { CreateClientDto } from './dto/client.dto'
 import { handleBadrequest } from 'src/common/handleHttp'
-import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard'
+
 
 @ApiTags('clients')
 @Controller('clients')

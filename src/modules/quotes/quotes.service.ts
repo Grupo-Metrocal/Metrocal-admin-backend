@@ -20,13 +20,8 @@ import {
 import { generateQuoteRequestCode } from 'src/utils/codeGenerator'
 import { User } from '../users/entities/user.entity'
 import { UsersService } from '../users/users.service'
-<<<<<<< HEAD
-import { ActivitiesService } from '../activities/activities.service'
-import { RejectedCuoteRequest } from '../mail/dto/rejected-quote-request.dto'
-=======
 import { RejectedCuoteRequest } from '../mail/dto/rejected-quote-request.dto'
 import { ActivitiesService } from '../activities/activities.service'
->>>>>>> 0d72bb622607fc48c357d6d44ac29eb552d1eb86
 
 @Injectable()
 export class QuotesService {
