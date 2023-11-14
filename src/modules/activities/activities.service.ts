@@ -40,7 +40,7 @@ export class ActivitiesService {
   }
 
   async getAllActivities() {
-    return await this.activityRepository.find({
+    const response = await this.activityRepository.find({
       relations: [
         'quote_request',
         'quote_request.client',
@@ -49,5 +49,7 @@ export class ActivitiesService {
         'team_members',
       ],
     })
+
+    return handleOK(response)
   }
 }
