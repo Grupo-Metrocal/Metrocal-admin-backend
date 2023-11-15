@@ -9,6 +9,7 @@ import {
   Res,
   Delete,
   UseGuards,
+  Query,
 } from '@nestjs/common'
 import { QuoteRequestDto } from './dto/quote-request.dto'
 import { updateEquipmentQuoteRequestDto } from './dto/update-equipment-quote-request.dto'
@@ -17,6 +18,7 @@ import { changeStatusQuoteRequestDto } from './dto/change-status-quote-request.d
 import { Response } from 'express'
 import { handleBadrequest } from 'src/common/handleHttp'
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard'
+import { PaginationQueryDto } from './dto/pagination-query.dto'
 
 @ApiTags('quotes')
 @Controller('quotes')
@@ -30,8 +32,12 @@ export class QuotesController {
   }
 
   @Get('request/all')
-  async getAllQuoteRequest() {
-    return await this.quotesService.getAllQuoteRequest()
+  async getAllQuoteRequest(@Query() pagination?: PaginationQueryDto) {
+    if (isNaN(pagination.limit) || isNaN(pagination.offset)) {
+      return handleBadrequest(new Error('Limit y offset deben ser numeros'))
+    }
+
+    return await this.quotesService.getAllQuoteRequest(pagination)
   }
 
   @Post('request/reject')
