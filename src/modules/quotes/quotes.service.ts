@@ -16,12 +16,14 @@ import {
   handleBadrequest,
   handleInternalServerError,
   handleOK,
+  handlePaginate,
 } from 'src/common/handleHttp'
 import { generateQuoteRequestCode } from 'src/utils/codeGenerator'
 import { User } from '../users/entities/user.entity'
 import { UsersService } from '../users/users.service'
 import { RejectedCuoteRequest } from '../mail/dto/rejected-quote-request.dto'
 import { ActivitiesService } from '../activities/activities.service'
+import { PaginationQueryDto } from './dto/pagination-query.dto'
 
 @Injectable()
 export class QuotesService {
@@ -84,8 +86,8 @@ export class QuotesService {
     }
   }
 
-  async getAllQuoteRequest() {
-    return await this.quoteRequestRepository.find({
+  async getAllQuoteRequest({ limit, offset }: PaginationQueryDto) {
+    const quotes = await this.quoteRequestRepository.find({
       where: [{ status: 'pending' }, { status: 'waiting' }, { status: 'done' }],
       relations: [
         'equipment_quote_request',
@@ -93,7 +95,16 @@ export class QuotesService {
         'approved_by',
         'activity',
       ],
+      // order: { created_at: 'DESC' },
+      take: limit,
+      skip: offset,
     })
+
+    const total = await this.quoteRequestRepository.count({
+      where: [{ status: 'pending' }, { status: 'waiting' }, { status: 'done' }],
+    })
+
+    return handlePaginate(quotes, total, limit, offset)
   }
 
   async getQuoteRequestByClientId(id: number) {
