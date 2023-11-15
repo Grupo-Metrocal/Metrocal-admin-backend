@@ -4,6 +4,10 @@ export type ResponseHTTP<T> = {
   success: boolean
   data?: T | T[]
   details?: string
+  limit?: number
+  current_page?: number
+  total_pages?: number
+  total_data?: number
 }
 
 export const handleOK = <T>(data: T): ResponseHTTP<T> => {
@@ -30,5 +34,23 @@ export const handleInternalServerError = <T>(data: T): ResponseHTTP<T> => {
     message: 'Internal server error',
     success: false,
     details: data as any,
+  }
+}
+
+export const handlePaginate = <T>(
+  data: T,
+  total: number,
+  limit: number,
+  offset: number,
+): ResponseHTTP<T> => {
+  return {
+    status: 200,
+    message: 'OK',
+    success: true,
+    limit: +limit,
+    current_page: +offset,
+    total_pages: Math.ceil(total / limit),
+    total_data: total,
+    data,
   }
 }
