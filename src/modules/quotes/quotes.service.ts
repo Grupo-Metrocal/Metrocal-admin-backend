@@ -11,7 +11,7 @@ import { MailService } from '../mail/mail.service'
 import { TokenService } from '../auth/jwt/jwt.service'
 import { ApprovedQuoteRequestDto } from '../mail/dto/approved-quote-request.dto'
 import { PdfService } from '../mail/pdf.service'
-import { changeStatusQuoteRequestDto } from './dto/change-status-quote-request.dto'
+import { ApprovedOrRejectedQuoteByClientDto } from './dto/change-status-quote-request.dto'
 import {
   handleBadrequest,
   handleInternalServerError,
@@ -312,8 +312,8 @@ export class QuotesService {
     return await this.pdfService.generatePdf(template, data)
   }
 
-  async changeStatusQuoteRequest(
-    changeStatusQuoteRequest: changeStatusQuoteRequestDto,
+  async approvedOrRejectedQuoteByClient(
+    changeStatusQuoteRequest: ApprovedOrRejectedQuoteByClientDto,
   ) {
     const quoteRequest = await this.quoteRequestRepository.findOne({
       where: { id: changeStatusQuoteRequest.id },

@@ -14,7 +14,7 @@ import {
 import { QuoteRequestDto } from './dto/quote-request.dto'
 import { updateEquipmentQuoteRequestDto } from './dto/update-equipment-quote-request.dto'
 import { UpdateQuoteRequestDto } from './dto/update-quote-request.dto'
-import { changeStatusQuoteRequestDto } from './dto/change-status-quote-request.dto'
+import { ApprovedOrRejectedQuoteByClientDto } from './dto/change-status-quote-request.dto'
 import { Response } from 'express'
 import { handleBadrequest } from 'src/common/handleHttp'
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard'
@@ -93,15 +93,17 @@ export class QuotesController {
     res.send(pdfBuffer)
   }
 
-  @Post('request/change-status')
-  async changeStatusQuoteRequest(
-    @Body() quoteRequest: changeStatusQuoteRequestDto,
+  @Post('request/approved-rejected/client')
+  async approvedOrRejectedQuoteByClient(
+    @Body() quoteRequest: ApprovedOrRejectedQuoteByClientDto,
   ) {
     if (!quoteRequest) {
       return false
     }
 
-    return await this.quotesService.changeStatusQuoteRequest(quoteRequest)
+    return await this.quotesService.approvedOrRejectedQuoteByClient(
+      quoteRequest,
+    )
   }
 
   @Get('registered')
