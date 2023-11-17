@@ -36,7 +36,7 @@ export class User {
   @OneToMany(() => QuoteRequest, (quoteRequest) => quoteRequest.approved_by)
   quote_requests: QuoteRequest[]
 
-  @ManyToOne(() => Activity, (activity) => activity.team_members)
+  @ManyToMany(() => Activity, (activity) => activity.team_members)
   activities: Activity[]
 
   @OneToMany(() => Notifications, (notifications) => notifications.user)
