@@ -54,6 +54,12 @@ export class QuoteRequest {
   @JoinColumn()
   activity: Activity
 
+  @Column({ type: 'varchar', nullable: true })
+  rejected_comment?: string
+
+  @Column({ type: 'varchar', nullable: true })
+  rejection_options?: string[]
+
   @Column({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP' })
   created_at: Date
 

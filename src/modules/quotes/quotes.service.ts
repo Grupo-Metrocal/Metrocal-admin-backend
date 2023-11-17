@@ -55,6 +55,8 @@ export class QuotesService {
       general_discount: quoteRequestDto.general_discount,
       tax: quoteRequestDto.tax,
       price: quoteRequestDto.price,
+      rejected_comment: quoteRequestDto.rejected_comment,
+      rejection_options: quoteRequestDto.rejection_options,
     })
 
     const equipmentQuoteRequest = quoteRequestDto.equipment_quote_request.map(
@@ -336,6 +338,8 @@ export class QuotesService {
     }
 
     quoteRequest.status = changeStatusQuoteRequest.status
+    quoteRequest.rejected_comment = changeStatusQuoteRequest.comment
+    quoteRequest.rejection_options = changeStatusQuoteRequest.options
 
     try {
       await this.quoteRequestRepository.save(quoteRequest)
@@ -350,6 +354,7 @@ export class QuotesService {
       return handleInternalServerError(error.message)
     }
   }
+
   async getQuoteRequestRegister() {
     return await this.quoteRequestRepository
       .createQueryBuilder('quote_request')

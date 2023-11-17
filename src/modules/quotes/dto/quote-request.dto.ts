@@ -30,4 +30,10 @@ export class QuoteRequestDto {
 
   @ApiProperty()
   no?: string
+
+  @ApiProperty()
+  rejected_comment?: string
+
+  @ApiProperty()
+  rejection_options?: string[]
 }
