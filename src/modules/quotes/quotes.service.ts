@@ -56,7 +56,7 @@ export class QuotesService {
       tax: quoteRequestDto.tax,
       price: quoteRequestDto.price,
       rejected_comment: quoteRequestDto.rejected_comment,
-      rejection_options: quoteRequestDto.rejection_options,
+      rejected_options: quoteRequestDto.rejected_options,
     })
 
     const equipmentQuoteRequest = quoteRequestDto.equipment_quote_request.map(
@@ -339,7 +339,7 @@ export class QuotesService {
 
     quoteRequest.status = changeStatusQuoteRequest.status
     quoteRequest.rejected_comment = changeStatusQuoteRequest.comment
-    quoteRequest.rejection_options = changeStatusQuoteRequest.options
+    quoteRequest.rejected_options = changeStatusQuoteRequest.options
 
     try {
       await this.quoteRequestRepository.save(quoteRequest)

@@ -58,7 +58,7 @@ export class QuoteRequest {
   rejected_comment?: string
 
   @Column({ type: 'varchar', nullable: true })
-  rejection_options?: string[]
+  rejected_options?: string[]
 
   @Column({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP' })
   created_at: Date

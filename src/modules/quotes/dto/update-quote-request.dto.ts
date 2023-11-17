@@ -33,5 +33,5 @@ export class UpdateQuoteRequestDto {
   rejected_comment?: string
 
   @ApiProperty()
-  rejection_options?: string[]
+  rejected_options?: string[]
 }
