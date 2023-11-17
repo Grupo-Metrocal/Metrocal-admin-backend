@@ -4,10 +4,11 @@ import { ActivitiesController } from './activities.controller'
 import { TypeOrmModule } from '@nestjs/typeorm'
 import { Activity } from './entities/activities.entity'
 import { QuotesModule } from '../quotes/quotes.module'
+import { User } from '../users/entities/user.entity'
 
 @Module({
   imports: [
-    TypeOrmModule.forFeature([Activity]),
+    TypeOrmModule.forFeature([Activity, User]),
     forwardRef(() => QuotesModule),
   ],
   controllers: [ActivitiesController],
