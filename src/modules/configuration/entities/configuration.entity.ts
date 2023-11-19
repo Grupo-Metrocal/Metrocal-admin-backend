@@ -1,35 +1,39 @@
 import { Column, Entity, PrimaryGeneratedColumn} from 'typeorm'
+@Entity('configurations')
+export class Configuration {
+  @PrimaryGeneratedColumn('increment', { type: 'int' })
+  id: number
+  @Column({ type: 'float', nullable: false, default: 15 })
+  iva: number;
+}
 
-
-
-@Entity('equipmentregister')
+@Entity('equipment_register')
 export class EquipmentRegister {
   @PrimaryGeneratedColumn('increment', { type: 'int' })
   id: number
 
   @Column({ type: 'varchar', nullable: false })
-  type_service: string
+  method: string 
 
   @Column({ type: 'varchar', nullable: false })
-  equipment: string[]
+  service: string
 
   @Column({ type: 'varchar', nullable: false })
-  measuring_range: string[]
+  description: string
 
-  /*@Column({type: 'decimal', nullable: false })
-  IVA:number*/
-}
+  @Column({ type: 'varchar', nullable: false })
+  measuring_range: string
 
-@Entity('ivaregister')
-export class IvaRegister{
+  @Column({ type: 'varchar', nullable: false })
+  accuracy: string
 
-  @PrimaryGeneratedColumn('increment', { type: 'int' })
-  id: number
-  
-  @Column({ type: 'decimal', nullable: false })
-  IVA: number
+  @Column({ type: 'varchar', nullable: false })
+  document_delivered: string 
 
+  @Column({ type: 'float', nullable: false })
+  price: number
 
 }
+
 
 

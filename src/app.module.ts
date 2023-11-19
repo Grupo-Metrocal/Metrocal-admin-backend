@@ -1,4 +1,4 @@
-import { Module, forwardRef } from '@nestjs/common'
+import { Injectable, Module, forwardRef } from '@nestjs/common'
 import { AppController } from './app.controller'
 import { AppService } from './app.service'
 import { ConfigModule } from '@nestjs/config'
@@ -16,7 +16,8 @@ import { NotificationsModule } from './modules/notifications/notifications.modul
 import * as admin from 'firebase-admin'
 import type { ServiceAccount } from 'firebase-admin'
 import * as serviceAccount from './config/firebase-token-key.json'
-import { ConfigurationModule } from './modules/configuration/configurations.module'
+import { ConfigInitializer, ConfigurationModule } from './modules/configuration/configurations.module'
+import { ConfigurationService } from './modules/configuration/configurations.service'
 
 admin.initializeApp({
   credential: admin.credential.cert(serviceAccount as ServiceAccount),
@@ -39,6 +40,9 @@ admin.initializeApp({
     ConfigurationModule
   ],
   controllers: [AppController],
-  providers: [AppService],
+  providers: [AppService,ConfigInitializer],
 })
 export class AppModule {}
+
+
+

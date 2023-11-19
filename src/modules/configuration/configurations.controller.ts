@@ -2,10 +2,10 @@ import { Body, Controller, Delete, Param, Patch, Post, Put } from '@nestjs/commo
 import { ApiTags } from '@nestjs/swagger'
 import { Get } from '@nestjs/common'
 import { ConfigurationService } from './configurations.service'
-import { CreateEquipmentRegisterDto, CreateIvaRegisterDto } from './dto/configuration.dto'
+import { CreateEquipmentRegisterDto } from './dto/configuration.dto'
 import { handleBadrequest } from 'src/common/handleHttp'
 import { UpdateEquipmentRegisterDto, UpdateIvaRegisterDto } from './dto/update-configuration.dto'
-import { IvaRegister } from './entities/configuration.entity'
+
 
 @ApiTags('Configuration')
 @Controller('configuration')
@@ -34,12 +34,7 @@ export class ConfigurationController {
     
     return await this.configurationservice.createEquipment(equipment)
   }
-//equipment
-@Post('create/defaultequipment')
-  async createDefaultEquipment(){
-    return await this.configurationservice.createDefaultEquipment()
-  }
-
+  
 //equipment
  @Delete('delete/equipment/:id')
  async deleteEquipmentById(@Param('id') id: number) {
@@ -52,7 +47,7 @@ async updateEquipment(@Param('id') id: number, @Body() equipment: UpdateEquipmen
   return await this.configurationservice.updateEquipment(id, equipment)
   }
 
-  
+/* 
 //IVA
 @Get('all/iva')
 async getAllIVA(){
@@ -64,7 +59,7 @@ async getAllIVA(){
 async findIvatById(@Param('id') id : number){
   return await this.configurationservice.findIvaById(id)
 }
-/*
+
 //IVA
 @Post('/create/iva')
   async createIVA(@Body() iva: CreateIvaRegisterDto) {
