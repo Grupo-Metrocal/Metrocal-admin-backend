@@ -9,4 +9,10 @@ export class ApprovedOrRejectedQuoteByClientDto {
   @ApiProperty()
   @IsNotEmpty()
   status: 'done' | 'rejected' | 'pending' | 'waiting' | 'canceled'
+
+  @ApiProperty()
+  comment?: string
+
+  @ApiProperty()
+  options?: string[]
 }

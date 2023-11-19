@@ -28,4 +28,10 @@ export class UpdateQuoteRequestDto {
   @ApiProperty()
   @IsNotEmpty()
   authorized_token: string
+
+  @ApiProperty()
+  rejected_comment?: string
+
+  @ApiProperty()
+  rejected_options?: string[]
 }
