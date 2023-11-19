@@ -28,8 +28,8 @@ export class EquipmentQuoteRequest {
   @Column({ type: 'varchar' })
   model: string
 
-  @Column()
-  measuring_range?: boolean
+  @Column({ type: 'varchar', nullable: true })
+  measuring_range?: string
 
   @Column({ type: 'varchar', default: '' })
   calibration_method?: string

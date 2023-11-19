@@ -45,18 +45,6 @@ export class AuthService {
   }
 
   async register(user: CreateUserDto) {
-    const userCreated = await this.usersService.create(user)
-
-    if (userCreated.success) {
-      const payload = {
-        username: userCreated.data.data.username,
-        email: userCreated.data.data.email,
-        id: userCreated.data.data.id,
-      }
-
-      return handleOK(payload)
-    }
-
-    return userCreated
+    return await this.usersService.create(user)
   }
 }

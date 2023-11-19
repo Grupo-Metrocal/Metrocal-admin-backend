@@ -1,7 +1,7 @@
 import { ApiProperty } from '@nestjs/swagger'
 import { IsNotEmpty, IsNumber } from 'class-validator'
 
-export class changeStatusQuoteRequestDto {
+export class ApprovedOrRejectedQuoteByClientDto {
   @ApiProperty()
   @IsNumber()
   id: number
@@ -9,4 +9,10 @@ export class changeStatusQuoteRequestDto {
   @ApiProperty()
   @IsNotEmpty()
   status: 'done' | 'rejected' | 'pending' | 'waiting' | 'canceled'
+
+  @ApiProperty()
+  comment?: string
+
+  @ApiProperty()
+  options?: string[]
 }

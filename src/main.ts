@@ -17,7 +17,13 @@ async function bootstrap() {
   SwaggerModule.setup('docs', app, document)
 
   app.enableCors()
-  app.useGlobalPipes(new ValidationPipe())
+  app.useGlobalPipes(
+    new ValidationPipe({
+      transformOptions: {
+        enableImplicitConversion: true,
+      },
+    }),
+  )
   // app.setGlobalPrefix('api')
 
   await app.listen(3000)

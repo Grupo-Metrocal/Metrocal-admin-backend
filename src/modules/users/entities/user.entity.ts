@@ -10,6 +10,7 @@ import {
 import { Role } from 'src/modules/roles/entities/role.entity'
 import { QuoteRequest } from 'src/modules/quotes/entities/quote-request.entity'
 import { Activity } from 'src/modules/activities/entities/activities.entity'
+import { Notifications } from 'src/modules/notifications/entities/notification.entity'
 
 @Entity('users')
 export class User {
@@ -35,6 +36,12 @@ export class User {
   @OneToMany(() => QuoteRequest, (quoteRequest) => quoteRequest.approved_by)
   quote_requests: QuoteRequest[]
 
-  @ManyToOne(() => Activity, (activity) => activity.team_members)
+  @ManyToMany(() => Activity, (activity) => activity.team_members)
   activities: Activity[]
+
+  @OneToMany(() => Notifications, (notifications) => notifications.user)
+  notifications: Notifications[]
+
+  @Column({ type: 'varchar', nullable: true })
+  notification_token: string
 }
