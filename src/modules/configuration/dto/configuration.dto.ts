@@ -12,7 +12,7 @@ service: string
 
 @ApiProperty()
 @IsNotEmpty()    
-description: string
+description: string[]
 
 @ApiProperty()
 @IsNotEmpty()    
@@ -20,7 +20,7 @@ measuring_range: string
 
 @ApiProperty()
 @IsNotEmpty()    
-accuracy: string
+accuracy: string[]
 
 @ApiProperty()
 @IsNotEmpty()    
@@ -32,4 +32,7 @@ document_delivered: string
 
 }
 
-
+export class IvaRegisterDto{
+    @ApiProperty()
+    IVA:number
+  }

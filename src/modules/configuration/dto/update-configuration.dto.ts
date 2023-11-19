@@ -10,13 +10,13 @@ export class UpdateEquipmentRegisterDto {
   service: string
   
   @ApiProperty()
-  description: string
+  description: string[]
   
   @ApiProperty()
   measuring_range: string
   
   @ApiProperty()
-  accuracy: string
+  accuracy: string[]
   
   @ApiProperty()
   document_delivered: string 

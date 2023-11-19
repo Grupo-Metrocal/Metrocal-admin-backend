@@ -4,7 +4,7 @@ export class Configuration {
   @PrimaryGeneratedColumn('increment', { type: 'int' })
   id: number
   @Column({ type: 'float', nullable: false, default: 15 })
-  iva: number;
+  IVA:number
 }
 
 @Entity('equipment_register')
@@ -17,15 +17,15 @@ export class EquipmentRegister {
 
   @Column({ type: 'varchar', nullable: false })
   service: string
-
+// es un arreglo de string para los que tienen descripcion o no simplemente agregarlo cuando sea necesario
   @Column({ type: 'varchar', nullable: false })
-  description: string
+  description: string[]
 
   @Column({ type: 'varchar', nullable: false })
   measuring_range: string
 
   @Column({ type: 'varchar', nullable: false })
-  accuracy: string
+  accuracy: string[]
 
   @Column({ type: 'varchar', nullable: false })
   document_delivered: string 
@@ -34,6 +34,3 @@ export class EquipmentRegister {
   price: number
 
 }
-
-
-

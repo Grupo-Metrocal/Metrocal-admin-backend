@@ -47,7 +47,7 @@ async updateEquipment(@Param('id') id: number, @Body() equipment: UpdateEquipmen
   return await this.configurationservice.updateEquipment(id, equipment)
   }
 
-/* 
+
 //IVA
 @Get('all/iva')
 async getAllIVA(){
@@ -55,31 +55,9 @@ async getAllIVA(){
 }
 
 //IVA
-@Get('findby/iva/:id')
-async findIvatById(@Param('id') id : number){
-  return await this.configurationservice.findIvaById(id)
-}
-
-//IVA
-@Post('/create/iva')
-  async createIVA(@Body() iva: CreateIvaRegisterDto) {
-    if (!iva)
-      return handleBadrequest(
-        new Error('Porfavor envie el IVA que desea registrar'),
-      )
-    
-    return await this.configurationservice.createIva(iva)
-  }
-//IVA
- @Delete('delete/iva/:id')
- async deleteIVAById(@Param('id') id: number) {
- return await this.configurationservice.deleteIvaById(id)
-}
-
-//IVA
 @Put('update/iva/:id')
-async update(@Param('id') id: number, @Body() IVA: UpdateIvaRegisterDto) {
-  return await this.configurationservice.updateIva(id, IVA)
+async update(@Body() IVA: UpdateIvaRegisterDto) {
+  return await this.configurationservice.updateIva(1,IVA)
   }
-  */
+  
 }
