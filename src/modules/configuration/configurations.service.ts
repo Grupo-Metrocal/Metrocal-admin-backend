@@ -13,6 +13,7 @@ import {
   UpdateEquipmentRegisterDto,
   UpdateIvaRegisterDto,
 } from './dto/update-configuration.dto'
+import * as AuthorizedServicesJSON from './authorized-services.json'
 
 @Injectable()
 export class ConfigurationService {
@@ -40,180 +41,24 @@ export class ConfigurationService {
   }
 
   async createDefaultData() {
-    const equipmentregister = [
-      {
-        id: 1,
-        method: 'NI-MCIT-D-01',
-        service: 'Calibracion acreditada',
-        description: [
-          'Calibrador universal, (vernier o pie de rey) - Analogico',
-          'ACREDITADO',
-        ],
-        measuring_range: '(0 a 200) mm',
-        accuracy: ['0.01 mm'],
-        document_delivered: 'Certificado de calibracion acreditado',
-        price: 45,
-      },
-      {
-        id: 2,
-        method: 'NI-MCIT-D-01',
-        service: 'Calibracion acreditada',
-        description: [
-          'Calibracion universal, (vernier o pie de rey) - Digital',
-          'ACREDITADO',
-        ],
-        measuring_range: '(0 a 200) mm',
-        accuracy: ['0.01 mm'],
-        document_delivered: 'Certificado de calibracion acreditado',
-        price: 45,
-      },
-      {
-        id: 3,
-        method: 'NI-MCIT-D-02',
-        service: 'Calibracion acreditada',
-        description: ['Micrometro de exteriores - Analogico', 'ACREDITADO'],
-        measuring_range: '(0 a 25) mm',
-        accuracy: ['0.001 mm'],
-        document_delivered: 'Certificado de calibracion acreditado',
-        price: 45,
-      },
-      {
-        id: 4,
-        method: 'NI-MCIT-D-02',
-        service: 'Calibracion acreditada',
-        description: ['Micrometro de exteriores - Digital', 'ACREDITADO'],
-        measuring_range: '(0 a 25) mm',
-        accuracy: ['0.001 mm'],
-        document_delivered: 'Certificado de calibracion acreditado',
-        price: 45,
-      },
-      {
-        id: 4,
-        method: 'No Aplica (N/A)',
-        service: 'Calibracion intermedia',
-        description: [
-          '*Comprobacion intermedia de qeuipos de longitud',
-          'Aplica solo para equipos calibrados previamente por Metrocal (Max. 2pts de comprobacion)',
-          'NO ACREDITADO',
-        ],
-        measuring_range: '(0 a 300) mm',
-        accuracy: ['0.001 mm', '0.01 mm'],
-        document_delivered: 'Certificado trazable',
-        price: 25,
-      },
-      {
-        id: 5,
-        method: 'Comprobacion directa',
-        service: 'Calibracion no acreditada',
-        description: [
-          '*Pin de longitud',
-          'Variable con micrometros (Unidad - Válido para mas de 5)',
-          'NO ACREDITADO',
-        ],
-        measuring_range: '(0 a 200) mm',
-        accuracy: ['0.001 mm'],
-        document_delivered: 'Certificado trazable',
-        price: 25,
-      },
-      {
-        id: 6,
-        method: 'Comparacion directa',
-        service: 'Calibracion no acreditada',
-        description: ['*Compradores de caratula', 'NO ACREDITADO'],
-        measuring_range: '(0 a 300) mm',
-        accuracy: ['0.001 mm'],
-        document_delivered: 'Certificado trazable',
-        price: 45,
-      },
-      {
-        id: 7,
-        method: 'Comparacion directa',
-        service: 'Calibracion no acreditada',
-        description: ['*Medidor de altura, altimetro', 'NO ACREDITADO'],
-        measuring_range: '(0 a 300) mm',
-        accuracy: ['0.01 mm'],
-        document_delivered: 'Certificado trazable',
-        price: 70,
-      },
-      {
-        id: 8,
-        method: 'Comparacion directa',
-        service: 'Calibracion no acreditada',
-        description: ['*Medidor de profundidad', 'NO ACREDITADO'],
-        measuring_range: '(0 a 25) mm',
-        accuracy: ['0.1 mm'],
-        document_delivered: 'Certificado trazable',
-        price: 45,
-      },
-      {
-        id: 9,
-        method: 'Comparacion directa',
-        service: 'Calibracion no acreditada',
-        description: ['*Rreglas rigidas', 'NO ACREDITADO'],
-        measuring_range: '(0 a 1000) mm',
-        accuracy: ['0.1 mm'],
-        document_delivered: 'Certificado trazable',
-        price: 70,
-      },
-      {
-        id: 10,
-        method: 'Comparacion directa',
-        service: 'Calibracion no acreditada',
-        description: ['*Cintas metricas', 'NO ACREDITADO'],
-        measuring_range: '(0 a 1000) mm',
-        accuracy: ['10 mm'],
-        document_delivered: 'Certificado trazable',
-        price: 70,
-      },
-      {
-        id: 11,
-        method: 'Comparacion directa',
-        service: 'Calibracion no acreditada',
-        description: [
-          '*Calibracion de bloques longitudinales (unidad)',
-          'Valido para mas de 5 Unidades',
-          'NO ACREDITADO',
-        ],
-        measuring_range: '(0 a 100) mm',
-        accuracy: ['N/A'],
-        document_delivered: 'Certificado trazable',
-        price: 10,
-      },
-      {
-        id: 12,
-        method: 'Comparacion directa',
-        service: 'Calibracion no acreditada',
-        description: ['*Calibre pasa no pasa', 'NO ACREDITADO'],
-        measuring_range: '(0 a 200) mm',
-        accuracy: ['N/A'],
-        document_delivered: 'Certificado trazable',
-        price: 30,
-      },
-      {
-        id: 13,
-        method: 'Comparacion directa',
-        service: 'Calibracion no acreditada',
-        description: ['*Gaje para engargolado', 'NO ACREDITADO'],
-        measuring_range: '(0 a 200) mm',
-        accuracy: ['N/A'],
-        document_delivered: 'Certificado trazable',
-        price: 30,
-      },
-      {
-        id: 14,
-        method: 'Comparacion directa',
-        service: 'Calibracion no acreditada',
-        description: ['*Medidor de nivel', 'NO ACREDITADO'],
-        measuring_range: '(0 a 200) mm',
-        accuracy: ['N/A'],
-        document_delivered: 'Certificado trazable',
-        price: 70,
-      },
-    ]
+    const equipmentregister = AuthorizedServicesJSON.map((equipment) => {
+      return this.authorizedService.create({
+        ...equipment,
+      })
+    })
 
     try {
       for (const equipment of equipmentregister) {
-        await this.authorizedService.save(equipment)
+        if (
+          await this.authorizedService.findOneBy({
+            equipment: equipment.equipment,
+          })
+        )
+          continue
+
+        await this.dataSource.transaction(async (manager) => {
+          await manager.save(equipment)
+        })
       }
 
       return handleOK(equipmentregister)
@@ -224,7 +69,8 @@ export class ConfigurationService {
 
   async findAllEquipment() {
     try {
-      return await this.authorizedService.find()
+      const results = await this.authorizedService.find()
+      return handleOK(results)
     } catch (error) {
       return handleInternalServerError(error.message)
     }
@@ -235,6 +81,18 @@ export class ConfigurationService {
       return await this.authorizedService.findOne({
         where: { id },
       })
+    } catch (error) {
+      return handleInternalServerError(error.message)
+    }
+  }
+
+  async findEquipmentByService(service: string) {
+    try {
+      const results = await this.authorizedService.findOne({
+        where: { service },
+      })
+
+      return handleOK(results)
     } catch (error) {
       return handleInternalServerError(error.message)
     }
