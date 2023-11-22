@@ -2,30 +2,30 @@ import { ApiProperty } from '@nestjs/swagger'
 import { IsNotEmpty, isNotEmpty } from 'class-validator'
 
 export class UpdateEquipmentRegisterDto {
-  @ApiProperty() 
+  @ApiProperty()
   @IsNotEmpty()
-  method: string 
-  
+  method: string
+
   @ApiProperty()
   service: string
-  
+
   @ApiProperty()
-  description: string[]
-  
+  description: string
+
   @ApiProperty()
   measuring_range: string
-  
+
   @ApiProperty()
   accuracy: string[]
-  
+
   @ApiProperty()
-  document_delivered: string 
-  
+  document_delivered: string
+
   @ApiProperty()
-   price: number
+  price: number
 }
 
-export class UpdateIvaRegisterDto{
+export class UpdateIvaRegisterDto {
   @ApiProperty()
-  IVA:number
+  IVA: number
 }
