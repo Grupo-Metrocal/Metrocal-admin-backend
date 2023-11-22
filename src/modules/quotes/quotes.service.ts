@@ -21,7 +21,7 @@ import {
 import { generateQuoteRequestCode } from 'src/utils/codeGenerator'
 import { User } from '../users/entities/user.entity'
 import { UsersService } from '../users/users.service'
-import { RejectedCuoteRequest } from '../mail/dto/rejected-quote-request.dto'
+import { RejectedQuoteRequest } from '../mail/dto/rejected-quote-request.dto'
 import { ActivitiesService } from '../activities/activities.service'
 import { PaginationQueryDto } from './dto/pagination-query.dto'
 
@@ -234,18 +234,21 @@ export class QuotesService {
         approvedQuoteRequestDto.discount = quoteRequestDto.general_discount
       }
 
-      let rejectedcuoterequest: RejectedCuoteRequest | undefined
+      let rejectedquoterequest: RejectedQuoteRequest | undefined
       if (quoteRequest.status === 'rejected') {
         const quote = await this.getQuoteRequestById(quoteRequestDto.id)
 
-        rejectedcuoterequest = new RejectedCuoteRequest()
-        rejectedcuoterequest.clientName = quote.client.company_name
-        rejectedcuoterequest.email = quote.client.email
-        rejectedcuoterequest.linkToNewQuote = `${process.env.DOMAIN}/quote/request`
+        rejectedquoterequest = new RejectedQuoteRequest()
+        rejectedquoterequest.clientName = quote.client.company_name
+        rejectedquoterequest.email = quote.client.email
+        rejectedquoterequest.comment = quoteRequestDto.rejected_comment
+        rejectedquoterequest.linkToNewQuote = `${process.env.DOMAIN}`
+
+        quoteRequest.rejected_comment = quoteRequestDto.rejected_comment
       }
-      if (quoteRequest.status === 'rejected' && rejectedcuoterequest) {
+      if (quoteRequest.status === 'rejected' && rejectedquoterequest) {
         await this.mailService.sendMailrejectedQuoteRequest(
-          rejectedcuoterequest,
+          rejectedquoterequest,
         )
       }
 
