@@ -442,4 +442,26 @@ export class QuotesService {
       return handleInternalServerError(error.message)
     }
   }
+
+  async GetMonthlyQuoteRequests(lastMonths: number) {
+    try {
+      const quoteRequests = await this.quoteRequestRepository
+        .createQueryBuilder('quote_request')
+        .select([
+          `DATE_TRUNC('month', quote_request.created_at) AS month`,
+          `COUNT(quote_request.id) AS count`,
+        ])
+        .where(
+          `quote_request.created_at > NOW() - INTERVAL '${lastMonths} month'`,
+        )
+        .andWhere(`quote_request.status = 'done'`)
+        .groupBy(`month`)
+        .orderBy(`month`)
+        .getRawMany()
+
+      return handleOK(quoteRequests)
+    } catch (error) {
+      return handleInternalServerError(error.message)
+    }
+  }
 }
