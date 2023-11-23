@@ -124,4 +124,10 @@ export class QuotesController {
     }
     return await this.quotesService.rememberQuoteRequest(id)
   }
+
+  @UseGuards(JwtAuthGuard)
+  @Get('request/monthly/graphic/:lastMonths')
+  async GetMonthlyQuoteRequests(@Param('lastMonths') lastMonths: number) {
+    return await this.quotesService.GetMonthlyQuoteRequests(lastMonths)
+  }
 }
