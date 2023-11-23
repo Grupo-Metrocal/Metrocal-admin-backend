@@ -1,4 +1,4 @@
-import { Controller } from '@nestjs/common'
+import { Controller, Param } from '@nestjs/common'
 import { ActivitiesService } from './activities.service'
 import { ApiTags } from '@nestjs/swagger'
 import { Get, Post, Body } from '@nestjs/common'
@@ -19,5 +19,10 @@ export class ActivitiesController {
     @Body() assignActivityDto: AssignTeamMembersToActivityDto,
   ) {
     return await this.activitiesService.assignTeamMembers(assignActivityDto)
+  }
+
+  @Get('get-last-activities/:lastActivities')
+  async getLastActivities(@Param('lastActivities') lastActivities: number) {
+    return await this.activitiesService.getLastActivities(lastActivities)
   }
 }
