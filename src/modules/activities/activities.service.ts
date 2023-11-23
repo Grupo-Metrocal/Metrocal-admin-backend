@@ -111,4 +111,29 @@ export class ActivitiesService {
       return handleInternalServerError(error.message)
     }
   }
+
+  async getLastActivities(lastActivities: number) {
+    try {
+      const response = await this.activityRepository
+        .createQueryBuilder('activities')
+        .select([
+          'activities.id AS id',
+          'activities.created_at AS created_at',
+          'approved_by.username AS approved_by',
+          'client.company_name AS company_name',
+          'quote_request.price AS price',
+        ])
+        // .where(`activities.status = 'done'`)
+        .innerJoin('activities.quote_request', 'quote_request')
+        .innerJoin('quote_request.approved_by', 'approved_by')
+        .innerJoin('quote_request.client', 'client')
+        .orderBy('activities.created_at', 'DESC')
+        .limit(lastActivities)
+        .getRawMany()
+
+      return handleOK(response)
+    } catch (error) {
+      return handleInternalServerError(error.message)
+    }
+  }
 }
