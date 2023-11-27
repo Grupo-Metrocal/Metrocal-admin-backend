@@ -20,7 +20,7 @@ export class ActivitiesService {
   ) {}
 
   async createActivity(activity: Activity) {
-    const quoteRequest = await this.quotesService.getQuoteRequestById(
+    const { data: quoteRequest } = await this.quotesService.getQuoteRequestById(
       activity.id,
     )
 
