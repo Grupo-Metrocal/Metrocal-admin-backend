@@ -45,6 +45,7 @@ export class QuotesController {
     return await this.quotesService.rejectQuoteRequest(id)
   }
 
+  @UseGuards(JwtAuthGuard)
   @Get('request/:id')
   async getQuoteRequestById(@Param('id') id: number) {
     return await this.quotesService.getQuoteRequestById(id)
