@@ -45,6 +45,7 @@ export class QuotesController {
     return await this.quotesService.rejectQuoteRequest(id)
   }
 
+  @UseGuards(JwtAuthGuard)
   @Get('request/:id')
   async getQuoteRequestById(@Param('id') id: number) {
     return await this.quotesService.getQuoteRequestById(id)
@@ -123,5 +124,11 @@ export class QuotesController {
       return handleBadrequest(new Error('Id is required'))
     }
     return await this.quotesService.rememberQuoteRequest(id)
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Get('request/monthly/graphic/:lastMonths')
+  async GetMonthlyQuoteRequests(@Param('lastMonths') lastMonths: number) {
+    return await this.quotesService.GetMonthlyQuoteRequests(lastMonths)
   }
 }

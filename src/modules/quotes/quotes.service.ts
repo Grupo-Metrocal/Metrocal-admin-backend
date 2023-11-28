@@ -110,15 +110,21 @@ export class QuotesService {
   }
 
   async getQuoteRequestByClientId(id: number) {
-    return await this.quoteRequestRepository.find({
-      where: { client: { id } },
-      relations: [
-        'equipment_quote_request',
-        'client',
-        'approved_by',
-        'activity',
-      ],
-    })
+    try {
+      const response = await this.quoteRequestRepository.find({
+        where: { client: { id } },
+        relations: [
+          'equipment_quote_request',
+          'client',
+          'approved_by',
+          'activity',
+        ],
+      })
+
+      return handleOK(response)
+    } catch (error) {
+      return handleInternalServerError(error.message)
+    }
   }
 
   async rejectQuoteRequest(id: number) {
@@ -130,15 +136,21 @@ export class QuotesService {
   }
 
   async getQuoteRequestById(id: number) {
-    return await this.quoteRequestRepository.findOne({
-      where: { id },
-      relations: [
-        'equipment_quote_request',
-        'client',
-        'approved_by',
-        'activity',
-      ],
-    })
+    try {
+      const response = await this.quoteRequestRepository.findOne({
+        where: { id },
+        relations: [
+          'equipment_quote_request',
+          'client',
+          'approved_by',
+          'activity',
+        ],
+      })
+
+      return handleOK(response)
+    } catch (error) {
+      return handleInternalServerError(error.message)
+    }
   }
 
   async updateEquipmentQuoteRequest(
@@ -207,7 +219,9 @@ export class QuotesService {
       let approvedQuoteRequestDto: ApprovedQuoteRequestDto | undefined
 
       if (quoteRequest.status === 'waiting') {
-        const quote = await this.getQuoteRequestById(quoteRequestDto.id)
+        const { data: quote } = await this.getQuoteRequestById(
+          quoteRequestDto.id,
+        )
         approvedQuoteRequestDto = new ApprovedQuoteRequestDto()
         approvedQuoteRequestDto.clientName = quote.client.company_name
         approvedQuoteRequestDto.servicesAndEquipments =
@@ -236,7 +250,9 @@ export class QuotesService {
 
       let rejectedquoterequest: RejectedQuoteRequest | undefined
       if (quoteRequest.status === 'rejected') {
-        const quote = await this.getQuoteRequestById(quoteRequestDto.id)
+        const { data: quote } = await this.getQuoteRequestById(
+          quoteRequestDto.id,
+        )
 
         rejectedquoterequest = new RejectedQuoteRequest()
         rejectedquoterequest.clientName = quote.client.company_name
@@ -280,7 +296,7 @@ export class QuotesService {
   }
 
   async getQuoteRequestPdf(template: string, id: number) {
-    const quote = await this.getQuoteRequestById(id)
+    const { data: quote } = await this.getQuoteRequestById(id)
 
     if (!quote) {
       throw new Error('La cotización no existe')
@@ -398,7 +414,7 @@ export class QuotesService {
   }
 
   async rememberQuoteRequest(id: number) {
-    const quoteRequest = await this.getQuoteRequestById(id)
+    const { data: quoteRequest } = await this.getQuoteRequestById(id)
 
     if (!quoteRequest) {
       return handleBadrequest(new Error('La cotización no existe'))
@@ -438,6 +454,28 @@ export class QuotesService {
         approvedQuoteRequestDto,
       )
       return handleOK(true)
+    } catch (error) {
+      return handleInternalServerError(error.message)
+    }
+  }
+
+  async GetMonthlyQuoteRequests(lastMonths: number) {
+    try {
+      const quoteRequests = await this.quoteRequestRepository
+        .createQueryBuilder('quote_request')
+        .select([
+          `DATE_TRUNC('month', quote_request.created_at) AS month`,
+          `COUNT(quote_request.id) AS count`,
+        ])
+        .where(
+          `quote_request.created_at > NOW() - INTERVAL '${lastMonths} month'`,
+        )
+        .andWhere(`quote_request.status = 'done'`)
+        .groupBy(`month`)
+        .orderBy(`month`)
+        .getRawMany()
+
+      return handleOK(quoteRequests)
     } catch (error) {
       return handleInternalServerError(error.message)
     }
