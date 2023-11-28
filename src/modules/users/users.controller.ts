@@ -1,13 +1,25 @@
-import { Controller, Get, Post, Body, Put, Param, Delete } from '@nestjs/common'
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Put,
+  Param,
+  Delete,
+  UploadedFile,
+  UseInterceptors,
+  UseGuards,
+  HttpException,
+} from '@nestjs/common'
 import { UsersService } from './users.service'
 import { CreateUserDto } from './dto/create-user.dto'
 import { UpdateUserDto } from './dto/update-user.dto'
-import { HttpException, UseGuards } from '@nestjs/common'
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard'
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger'
 import { PasswordRestoreDto } from './dto/password-restore.dto'
 import { handleBadrequest } from 'src/common/handleHttp'
 import { InvitationMail } from '../mail/dto/invitation-mail.dto'
+import { FileInterceptor } from '@nestjs/platform-express'
 
 @ApiBearerAuth()
 @ApiTags('users')
@@ -92,9 +104,15 @@ export class UsersController {
 
   @UseGuards(JwtAuthGuard)
   @Put('profile/:token')
-  async update(@Param('token') token: string, @Body() user: UpdateUserDto) {
-    return await this.usersService.updateUserByToken(token, user)
+  @UseInterceptors(FileInterceptor('image'))
+  async update(
+    @Param('token') token: string,
+    @UploadedFile() image: Express.Multer.File,
+    @Body() user: UpdateUserDto,
+  ) {
+    return await this.usersService.updateUserByToken(token, user, image)
   }
+
   @UseGuards(JwtAuthGuard)
   @Get('invitation-user/:email')
   async invitationUser(@Param('email') email: string) {
