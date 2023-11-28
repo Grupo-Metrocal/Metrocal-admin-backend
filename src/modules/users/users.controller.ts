@@ -10,6 +10,7 @@ import {
   UseInterceptors,
   UseGuards,
   HttpException,
+  ParseFilePipeBuilder,
 } from '@nestjs/common'
 import { UsersService } from './users.service'
 import { CreateUserDto } from './dto/create-user.dto'
@@ -107,7 +108,15 @@ export class UsersController {
   @UseInterceptors(FileInterceptor('image'))
   async update(
     @Param('token') token: string,
-    @UploadedFile() image: Express.Multer.File,
+    @UploadedFile(
+      new ParseFilePipeBuilder().addFileTypeValidator({
+        fileType: 'image',
+      })
+      .build({
+        fileIsRequired: false,
+      })
+    )
+    image: Express.Multer.File,
     @Body() user: UpdateUserDto,
   ) {
     return await this.usersService.updateUserByToken(token, user, image)
