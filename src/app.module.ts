@@ -21,6 +21,7 @@ import { ConfigurationService } from './modules/configuration/configurations.ser
 
 admin.initializeApp({
   credential: admin.credential.cert(serviceAccount as ServiceAccount),
+  storageBucket: 'push-notifications---metrocal.appspot.com',
 })
 @Module({
   imports: [
@@ -40,9 +41,6 @@ admin.initializeApp({
     ConfigurationModule
   ],
   controllers: [AppController],
-  providers: [AppService,ConfigInitializer],
+  providers: [AppService, ConfigInitializer],
 })
 export class AppModule {}
-
-
-

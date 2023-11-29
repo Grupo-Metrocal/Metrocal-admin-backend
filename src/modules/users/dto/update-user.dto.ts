@@ -11,4 +11,7 @@ export class UpdateUserDto {
 
   @ApiProperty()
   password: string
+
+  @ApiProperty()
+  imageURL: string
 }
