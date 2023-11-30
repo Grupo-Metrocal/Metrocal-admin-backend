@@ -44,32 +44,63 @@ export class ActivitiesService {
   }
 
   async getAllActivities() {
-    const response = await this.activityRepository.find({
-      relations: [
-        'quote_request',
-        'quote_request.client',
-        'quote_request.equipment_quote_request',
-        'quote_request.approved_by',
-        'team_members',
-      ],
-    })
+    try {
+      const response = await this.activityRepository.find({
+        relations: [
+          'quote_request',
+          'quote_request.client',
+          'quote_request.equipment_quote_request',
+          'quote_request.approved_by',
+          'team_members',
+        ],
+      })
 
-    return handleOK(response)
+      const data = response.map((activity) => {
+        const teamMembers = activity.team_members.map((member) => {
+          return {
+            id: member.id,
+            username: member.username,
+            email: member.email,
+            imageURL: member.imageURL,
+          }
+        })
+
+        return {
+          ...activity,
+          team_members: teamMembers,
+        }
+      })
+
+      return handleOK(data)
+    } catch (error) {
+      return handleInternalServerError(error.message)
+    }
   }
 
   async getActivitiesByID(id: number) {
-    const response = await this.activityRepository.findOne({
-      where: { id },
-      relations: [
-        'quote_request',
-        'quote_request.client',
-        'quote_request.equipment_quote_request',
-        'quote_request.approved_by',
-        'team_members',
-      ],
-    })
+    try {
+      const response = await this.activityRepository.findOne({
+        where: { id },
+        relations: ['quote_request', 'quote_request.client', 'team_members'],
+      })
 
-    return handleOK(response)
+      const teamMembers = response.team_members.map((member) => {
+        return {
+          id: member.id,
+          username: member.username,
+          email: member.email,
+        }
+      })
+
+      const data = {
+        ...response,
+        team_members: teamMembers,
+      }
+
+      return handleOK(data)
+    } catch (error) {
+      return handleInternalServerError(error.message)
+    }
   }
 
   async assignTeamMembers({
