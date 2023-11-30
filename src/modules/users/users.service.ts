@@ -67,7 +67,24 @@ export class UsersService {
         relations: ['roles'],
       })
 
-      return handleOK(users)
+      const filteredUsers = users.map((user: User) => {
+        return {
+          id: user.id,
+          username: user.username,
+          email: user.email,
+          roles: user.roles.map((role) => {
+            return {
+              id: role.id,
+              name: role.name,
+              description: role.description,
+            }
+          }),
+          imageURL: user.imageURL,
+          creted_at: user.created_at,
+        }
+      })
+
+      return handleOK(filteredUsers)
     } catch (error) {
       handleBadrequest(error)
     }
@@ -117,7 +134,7 @@ export class UsersService {
           },
         })
 
-        createImage.on('error', (error) => {
+      createImage.on('error', (error) => {
         return handleInternalServerError(error.message)
       })
       await createImage.end(image.buffer)
