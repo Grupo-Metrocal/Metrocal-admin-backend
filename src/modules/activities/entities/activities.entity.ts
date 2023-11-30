@@ -32,4 +32,7 @@ export class Activity {
 
   @Column({ type: 'timestamp', nullable: true })
   updated_at: Date
+
+  @Column({ nullable: true })
+  responsable: number
 }
