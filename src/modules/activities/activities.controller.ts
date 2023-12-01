@@ -42,4 +42,14 @@ export class ActivitiesController {
       removeMemberDto,
     )
   }
+
+  @UseGuards(JwtAuthGuard)
+  @Post('assign-responsable')
+  async addResponsableToActivity(
+    @Body() addResponsableDto: AddResponsableToActivityDto,
+  ) {
+    return await this.activitiesService.assingResponsableToActivity(
+      addResponsableDto,
+    )
+  }
 }
