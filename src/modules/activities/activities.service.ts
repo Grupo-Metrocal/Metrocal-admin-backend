@@ -6,6 +6,8 @@ import { QuotesService } from '../quotes/quotes.service'
 import { handleInternalServerError, handleOK } from 'src/common/handleHttp'
 import { User } from '../users/entities/user.entity'
 import { AssignTeamMembersToActivityDto } from './dto/assign-activity.dt'
+import { RemoveMemberFromActivityDto } from './dto/remove-member.dto'
+import { AddResponsableToActivityDto } from './dto/add-responsable.dto'
 
 @Injectable()
 export class ActivitiesService {
@@ -107,14 +109,16 @@ export class ActivitiesService {
     activityId,
     teamMembersID,
   }: AssignTeamMembersToActivityDto) {
-    const response = await this.getActivitiesByID(activityId)
+    const activity = await this.activityRepository.findOne({
+      where: { id: activityId },
+      relations: ['team_members'],
+    })
+
     let unassignedActivityUsers = [] as number[]
 
-    if (!response.success) {
+    if (!activity) {
       return handleInternalServerError('Actividad no encontrada')
     }
-
-    const activity = response.data as Activity
 
     try {
       for (const member of teamMembersID) {
@@ -163,6 +167,40 @@ export class ActivitiesService {
         .getRawMany()
 
       return handleOK(response)
+    } catch (error) {
+      return handleInternalServerError(error.message)
+    }
+  }
+
+  async removeMemberFromActivity({
+    activityId,
+    memberId,
+  }: RemoveMemberFromActivityDto) {
+    const activity = await this.activityRepository.findOne({
+      where: { id: activityId },
+      relations: ['team_members'],
+    })
+
+    if (!activity) {
+      return handleInternalServerError('Actividad no encontrada')
+    }
+
+    try {
+      activity.team_members = activity.team_members.filter(
+        (member) => member.id !== memberId,
+      )
+
+      await this.activityRepository.save(activity)
+
+      const teamMembers = activity.team_members.map((member) => {
+        return {
+          id: member.id,
+          username: member.username,
+          email: member.email,
+        }
+      })
+
+      return handleOK(teamMembers)
     } catch (error) {
       return handleInternalServerError(error.message)
     }
