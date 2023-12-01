@@ -408,7 +408,6 @@ export class QuotesService {
       await this.quoteRequestRepository.delete({ id })
       return true
     } catch (error) {
-      console.log(error)
       return false
     }
   }

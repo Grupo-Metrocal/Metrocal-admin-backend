@@ -23,7 +23,6 @@ export class ActivitiesController {
   async assignActivity(
     @Body() assignActivityDto: AssignTeamMembersToActivityDto,
   ) {
-    console.log(assignActivityDto)
     return await this.activitiesService.assignTeamMembers(assignActivityDto)
   }
 
