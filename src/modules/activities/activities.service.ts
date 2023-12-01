@@ -185,6 +185,12 @@ export class ActivitiesService {
       return handleInternalServerError('Actividad no encontrada')
     }
 
+    if (activity.responsable === memberId) {
+      return handleInternalServerError(
+        'No puedes eliminar al responsable de la actividad',
+      )
+    }
+
     try {
       activity.team_members = activity.team_members.filter(
         (member) => member.id !== memberId,
@@ -201,6 +207,26 @@ export class ActivitiesService {
       })
 
       return handleOK(teamMembers)
+    } catch (error) {
+      return handleInternalServerError(error.message)
+    }
+  }
+
+  async assingResponsableToActivity(responsable: AddResponsableToActivityDto) {
+    const activity = await this.activityRepository.findOne({
+      where: { id: responsable.activityId },
+    })
+
+    if (!activity) {
+      return handleInternalServerError('Actividad no encontrada')
+    }
+
+    try {
+      activity.responsable = responsable.memberId
+
+      await this.activityRepository.save(activity)
+
+      return handleOK(activity)
     } catch (error) {
       return handleInternalServerError(error.message)
     }
