@@ -31,8 +31,3 @@ document_delivered: string
  price: number
 
 }
-
-export class IvaRegisterDto{
-    @ApiProperty()
-    IVA:number
-  }
