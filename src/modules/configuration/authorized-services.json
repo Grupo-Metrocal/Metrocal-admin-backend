@@ -1,0 +1,142 @@
+[
+  {
+    "method": "NI-MCIT-D-01",
+    "service": "Calibracion",
+    "equipment": "Calibrador universal, (vernier o pie de rey) - Analogico",
+    "description": "ACREDITADO",
+    "measuring_range": "(0 a 200) mm",
+    "accuracy": ["0.01 mm"],
+    "document_delivered": "Certificado de Calibracion acreditado",
+    "price": 45
+  },
+  {
+    "method": "NI-MCIT-D-01",
+    "service": "Calibracion",
+    "equipment": "Calibrador universal, (vernier o pie de rey) - Digital",
+    "description": "ACREDITADO",
+    "measuring_range": "(0 a 200) mm",
+    "accuracy": ["0.01 mm"],
+    "document_delivered": "Certificado de Calibracion acreditado",
+    "price": 45
+  },
+  {
+    "method": "NI-MCIT-D-02",
+    "service": "Calibracion",
+    "equipment": "Micrómetro de exteriores - Analógico",
+    "description": "ACREDITADO",
+    "measuring_range": "(0 a 25) mm",
+    "accuracy": ["0.001 mm"],
+    "document_delivered": "Certificado de Calibracion acreditado",
+    "price": 45
+  },
+  {
+    "method": "NI-MCIT-D-02",
+    "service": "Calibracion",
+    "equipment": "Micrometro de exteriores - Digital",
+    "description": "",
+    "measuring_range": "(0 a 25) mm",
+    "accuracy": ["0.001 mm"],
+    "document_delivered": "Certificado de Calibracion acreditado",
+    "price": 45
+  },
+  {
+    "method": "Comprobacion directa",
+    "service": "Calibracion",
+    "equipment": "*Pin de longitud",
+    "description": "Variable con micrometros (Unidad - Válido para mas de 5)",
+    "measuring_range": "(0 a 200) mm",
+    "accuracy": ["0.001 mm"],
+    "document_delivered": "Certificado trazable",
+    "price": 25
+  },
+  {
+    "method": "Comparacion directa",
+    "service": "Calibracion",
+    "equipment": "*Compradores de caratula",
+    "description": "",
+    "measuring_range": "(0 a 300) mm",
+    "accuracy": ["0.001 mm"],
+    "document_delivered": "Certificado trazable",
+    "price": 45
+  },
+  {
+    "method": "Comparacion directa",
+    "service": "Calibracion",
+    "equipment": "*Medidor de altura, altimetro",
+    "description": "",
+    "measuring_range": "(0 a 300) mm",
+    "accuracy": ["0.01 mm"],
+    "document_delivered": "Certificado trazable",
+    "price": 70
+  },
+  {
+    "method": "Comparacion directa",
+    "service": "Calibracion",
+    "equipment": "*Medidor de profundidad",
+    "description": "",
+    "measuring_range": "(0 a 25) mm",
+    "accuracy": ["0.1 mm"],
+    "document_delivered": "Certificado trazable",
+    "price": 45
+  },
+  {
+    "method": "Comparacion directa",
+    "service": "Calibracion",
+    "equipment": "*Reglas rigidas",
+    "description": "",
+    "measuring_range": "(0 a 1000) mm",
+    "accuracy": ["0.1 mm"],
+    "document_delivered": "Certificado trazable",
+    "price": 70
+  },
+  {
+    "method": "Comparacion directa",
+    "service": "Calibracion",
+    "equipment": "*Cintas metricas",
+    "description": "",
+    "measuring_range": "(0 a 1000) mm",
+    "accuracy": ["10 mm"],
+    "document_delivered": "Certificado trazable",
+    "price": 70
+  },
+  {
+    "method": "Comparacion directa",
+    "service": "Calibracion",
+    "equipment": "*Calibracion de bloques longitudinales (unidad)",
+    "description": "",
+    "measuring_range": "(0 a 100) mm",
+    "accuracy": ["N/A"],
+    "document_delivered": "Certificado trazable",
+    "price": 10
+  },
+  {
+    "method": "Comparacion directa",
+    "service": "Calibracion",
+    "equipment": "*Calibre pasa no pasa",
+    "description": "",
+    "measuring_range": "(0 a 200) mm",
+    "accuracy": ["N/A"],
+    "document_delivered": "Certificado trazable",
+    "price": 30
+  },
+  {
+    "method": "Comparacion directa",
+    "service": "Calibracion",
+    "equipment": "*Gaje para engargolado",
+    "description": "",
+    "measuring_range": "(0 a 200) mm",
+    "accuracy": ["N/A"],
+    "document_delivered": "Certificado trazable",
+    "price": 30
+  },
+  {
+    "method": "Comparacion directa",
+    "service": "Calibracion",
+    "equipment": "*Medidor de nivel",
+    "description": "",
+    "measuring_range": "(0 a 200) mm",
+    "accuracy": ["N/A"],
+    "document_delivered": "Certificado trazable",
+    "price": 70
+  }
+]

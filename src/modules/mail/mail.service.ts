@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common'
 import { MailerService } from '@nestjs-modules/mailer'
 import { ApprovedQuoteRequestDto } from './dto/approved-quote-request.dto'
 import { InvitationMail } from './dto/invitation-mail.dto'
-import { RejectedCuoteRequest } from './dto/rejected-quote-request.dto'
+import { RejectedQuoteRequest } from './dto/rejected-quote-request.dto'
 
 @Injectable()
 export class MailService {
@@ -64,7 +64,7 @@ export class MailService {
     })
   }
 
-  async sendMailrejectedQuoteRequest(rejected:RejectedCuoteRequest){
+  async sendMailrejectedQuoteRequest(rejected:RejectedQuoteRequest){
     await this.mailerService.sendMail({
       to: rejected.email,
       from: process.env.MAILER_FROM,

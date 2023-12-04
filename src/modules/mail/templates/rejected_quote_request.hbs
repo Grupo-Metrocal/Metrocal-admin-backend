@@ -1,59 +1,35 @@
-<html>
+<html lang='es'>
   <head>
-    <meta charset='utf-8' />
-    <title>cotizacion rechazada</title>
-
-    {{! font family }}
-    {{! montserrat }}
-    <link
-      href='https://fonts.googleapis.com/css?family=Montserrat:400,700'
-      rel='stylesheet'
-      type='text/css'
-    />
+    <meta charset='UTF-8' />
+    <meta name='viewport' content='width=device-width, initial-scale=1.0' />
+    <title>Cotización Rechazada</title>
+    <style>
+      body { font-family: Arial, sans-serif; background-color: #f4f4f4;
+      margin:0; padding: 0; display: flex; align-items: center; justify-content:
+      center; height: 100vh; } .container { background-color: #fff;
+      padding:20px; border-radius: 8px; box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+      width: 100%; text-align: center; } h1 { color: #e74c3c; } p { color: #333;
+      } .reason { margin-top: 20px; }
+    </style>
   </head>
   <body>
-    <h1>Cotizacion rechazada</h1>
-    <p>Estimados compañeros de {{clientName}}</p>
-    <p>Lamentamos informarle que su cotizacion a sido rechazada</p>
-    <p>por que...</p>
-    <p>Le invitamos a que nuevamente realice una cotizacion con nosotros </p>
-
-    <h3>Cotice con nosotros</h3>
-    <a
-      href='{{linkToNewQuote}}'
-      style='
-        background-color: #09f;
-        border: none;
-        color: white;
-        padding: 6px 25px;
-        text-align: center;
-        text-decoration: none;
-        display: inline-block;
-        border-radius: 5px;
-      '
-    ><h4>IR A COTIZAR NUEVAMENTE</h4></a>
-
-    <p>Si tiene alguna pregunta o necesita más información, no dude en ponerse
-      en contacto con nosotros a través de nuestro correo electrónico o número
-      de teléfono.</p>
-
-    <p>Correo electrónico:
-      <a href='mailto:jjjchico1@gmail.com'>jjjchico1@gmail.com</a>
-    </p>
-
-    <p>Teléfono: +505 1234 5678</p>
-
-    <p>Gracias por su atención.</p>
-    <p>Atentamente, METROCAL.</p>
-
-    <p
-      style='
-        font-size: 12px;
-        color: tomato;
-        text-align: center;
-        margin-top: 50px;
-      '
-    >Este mensaje fue enviado automáticamente, por favor no responda.</p>
-
+    <div class='container'>
+      <h1>Cotización Rechazada</h1>
+      <p>Estimado/a {{clientName}},</p>
+      <p>Lamentamos informarle que su cotización ha sido rechazada por el
+        siguiente motivo:</p>
+      <div class='reason'>
+        <p>{{comment}}</p>
+      </div>
+      <p>Si tiene alguna pregunta o necesita más información, no dude en ponerse
+        en contacto con nosotros Correo:
+        <a href='mailto:jjjchico1@gmail.com'>jjjchico1@gmail.com</a>
+        Celular:
+        <a href='tel:+50512345678'>+505 1234 5678</a>
+      </p>
+      <p>Por favor, no responda a este correo. Este mensaje es generado
+        automáticamente y no será recibido.</p>
+      <p>Gracias por considerarnos.</p>
+    </div>
   </body>
 </html>

@@ -27,7 +27,10 @@ export class User {
   email: string
 
   @Column({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP' })
-  createdAt: Date
+  created_at: Date
+
+  @Column({ type: 'varchar', nullable: true })
+  imageURL: string
 
   @ManyToMany(() => Role, (role) => role.users)
   @JoinTable()

@@ -8,7 +8,5 @@ export class AssignTeamMembersToActivityDto {
   activityId: number
 
   @ApiProperty()
-  @IsPositive({ each: true })
-  @IsNumber({}, { each: true })
   teamMembersID: number[]
 }

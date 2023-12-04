@@ -24,9 +24,15 @@ export class Activity {
   @Column({ type: 'varchar', default: 'pending' })
   status: string // pending, done, canceled
 
+  @Column({ nullable: true, default: 0 })
+  progress: number
+
   @Column({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP' })
   created_at: Date
 
   @Column({ type: 'timestamp', nullable: true })
   updated_at: Date
+
+  @Column({ nullable: true })
+  responsable: number
 }

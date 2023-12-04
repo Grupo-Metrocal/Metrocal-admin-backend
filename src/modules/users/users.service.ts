@@ -17,6 +17,7 @@ import {
 import { RolesService } from '../roles/roles.service'
 import { TokenService } from '../auth/jwt/jwt.service'
 import { InvitationMail } from '../mail/dto/invitation-mail.dto'
+import * as admin from 'firebase-admin'
 
 @Injectable()
 export class UsersService {
@@ -66,7 +67,24 @@ export class UsersService {
         relations: ['roles'],
       })
 
-      return handleOK(users)
+      const filteredUsers = users.map((user: User) => {
+        return {
+          id: user.id,
+          username: user.username,
+          email: user.email,
+          roles: user.roles.map((role) => {
+            return {
+              id: role.id,
+              name: role.name,
+              description: role.description,
+            }
+          }),
+          imageURL: user.imageURL,
+          creted_at: user.created_at,
+        }
+      })
+
+      return handleOK(filteredUsers)
     } catch (error) {
       handleBadrequest(error)
     }
@@ -82,7 +100,11 @@ export class UsersService {
     return handleOK(user)
   }
 
-  async updateUserByToken(token: string, updateUserDto: UpdateUserDto) {
+  async updateUserByToken(
+    token: string,
+    updateUserDto: UpdateUserDto,
+    image: Express.Multer.File,
+  ) {
     const { sub: id } = this.tokenService.decodeToken(token)
 
     const user = await this.userRepository.findOneBy({ id: +id })
@@ -99,6 +121,33 @@ export class UsersService {
     if (updateUserDto.password) {
       const hashedPassword = await hash(updateUserDto.password, 10)
       updateUserDto.password = hashedPassword
+    }
+
+    if (image) {
+      const createImage = admin
+        .storage()
+        .bucket()
+        .file(`images-users/${user.id}`)
+        .createWriteStream({
+          metadata: {
+            contentType: image.mimetype,
+          },
+        })
+
+      createImage.on('error', (error) => {
+        return handleInternalServerError(error.message)
+      })
+      await createImage.end(image.buffer)
+      const [url] = await admin
+        .storage()
+        .bucket()
+        .file(`images-users/${user.id}`)
+        .getSignedUrl({
+          version: 'v4',
+          action: 'read',
+          expires: Date.now() + 1000 * 60 * 60,
+        })
+      updateUserDto.imageURL = url
     }
 
     try {

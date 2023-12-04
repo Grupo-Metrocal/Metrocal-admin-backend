@@ -1,6 +1,6 @@
-import { IsNotEmpty, IsNumber, IsEmail } from 'class-validator'
+import { IsNotEmpty, IsNumber, IsEmail, IsString } from 'class-validator'
 
-export class RejectedCuoteRequest {
+export class RejectedQuoteRequest {
   @IsNotEmpty()
   clientName: string
 
@@ -10,4 +10,8 @@ export class RejectedCuoteRequest {
   @IsNotEmpty()
   @IsEmail()
   email: string
+
+  @IsString()
+  @IsNotEmpty()
+  comment: string
 }
