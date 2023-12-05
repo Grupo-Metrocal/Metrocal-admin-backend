@@ -31,6 +31,12 @@ export class QuotesController {
     return await this.quotesService.createQuoteRequest(quoteRequestDto)
   }
 
+  @UseGuards(JwtAuthGuard)
+  @Get('')
+  async getAll() {
+    return await this.quotesService.getAll()
+  }
+
   @Get('request/all')
   async getAllQuoteRequest(@Query() pagination?: PaginationQueryDto) {
     if (isNaN(pagination.limit) || isNaN(pagination.offset)) {
