@@ -88,6 +88,28 @@ export class QuotesService {
     }
   }
 
+  async getAll() {
+    try {
+      const quotes = await this.quoteRequestRepository.find({
+        where: [
+          { status: 'pending' },
+          { status: 'waiting' },
+          { status: 'done' },
+        ],
+        relations: [
+          'equipment_quote_request',
+          'client',
+          'approved_by',
+          'activity',
+        ],
+      })
+
+      return handleOK(quotes)
+    } catch (error) {
+      return handleInternalServerError(error.message)
+    }
+  }
+
   async getAllQuoteRequest({ limit, offset }: PaginationQueryDto) {
     const quotes = await this.quoteRequestRepository.find({
       where: [{ status: 'pending' }, { status: 'waiting' }, { status: 'done' }],
