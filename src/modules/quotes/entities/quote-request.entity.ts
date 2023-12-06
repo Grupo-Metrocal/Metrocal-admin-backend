@@ -33,10 +33,10 @@ export class QuoteRequest {
   )
   equipment_quote_request: EquipmentQuoteRequest[]
 
-  @Column({ type: 'int', nullable: false })
+  @Column({ nullable: true, type: 'float' })
   general_discount: number
 
-  @Column({ type: 'int', nullable: false, default: 15 })
+  @Column({ type: 'float', nullable: false, default: 15 })
   tax: number
 
   @Column({ type: 'float', nullable: true })
