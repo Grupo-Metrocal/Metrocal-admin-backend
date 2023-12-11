@@ -60,6 +60,9 @@ export class QuoteRequest {
   @Column({ type: 'varchar', nullable: true })
   rejected_options?: string[]
 
+  @Column({ type: 'float', nullable: true, default: 0 })
+  extras?: number
+
   @Column({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP' })
   created_at: Date
 
