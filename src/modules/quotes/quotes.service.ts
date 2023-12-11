@@ -443,34 +443,34 @@ export class QuotesService {
 
     const token = this.tokenService.generateTemporaryLink(id, '15d')
 
-    const approvedQuoteRequestDto = new ApprovedQuoteRequestDto()
-
-    approvedQuoteRequestDto.clientName = quoteRequest.client.company_name
-    approvedQuoteRequestDto.servicesAndEquipments =
-      quoteRequest.equipment_quote_request.map((equipment) => {
-        return {
-          service: equipment.type_service,
-          equipment: equipment.name,
-          count: equipment.count,
-          unitPrice: equipment.price,
-          subTotal: equipment.total,
-          discount: equipment.discount,
-        }
-      })
-
-    approvedQuoteRequestDto.total = quoteRequest.price
-    approvedQuoteRequestDto.token = token
-    approvedQuoteRequestDto.email = quoteRequest.client.email
-    approvedQuoteRequestDto.linkDetailQuote = `${process.env.DOMAIN}/quote/${token}`
-    approvedQuoteRequestDto.subtotal =
-      quoteRequest.equipment_quote_request.reduce(
-        (acc, equipment) => acc + equipment.total,
-        0,
-      )
-    approvedQuoteRequestDto.tax = quoteRequest.tax
-    approvedQuoteRequestDto.discount = quoteRequest.general_discount
-
     try {
+      const approvedQuoteRequestDto = new ApprovedQuoteRequestDto()
+
+      approvedQuoteRequestDto.clientName = quoteRequest.client.company_name
+      approvedQuoteRequestDto.servicesAndEquipments =
+        quoteRequest.equipment_quote_request.map((equipment) => {
+          return {
+            service: equipment.type_service,
+            equipment: equipment.name,
+            count: equipment.count,
+            unitPrice: equipment.price,
+            subTotal: equipment.total,
+            discount: equipment.discount,
+          }
+        })
+
+      approvedQuoteRequestDto.total = quoteRequest.price
+      approvedQuoteRequestDto.token = token
+      approvedQuoteRequestDto.email = quoteRequest.client.email
+      approvedQuoteRequestDto.linkDetailQuote = `${process.env.DOMAIN}/quote/${token}`
+      approvedQuoteRequestDto.subtotal =
+        quoteRequest.equipment_quote_request.reduce(
+          (acc, equipment) => acc + equipment.total,
+          0,
+        )
+      approvedQuoteRequestDto.tax = quoteRequest.tax
+      approvedQuoteRequestDto.discount = quoteRequest.general_discount
+
       await this.mailService.sendMailApprovedQuoteRequest(
         approvedQuoteRequestDto,
       )
