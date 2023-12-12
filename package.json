@@ -35,6 +35,7 @@
     "class-validator": "^0.14.0",
     "firebase": "^10.6.0",
     "firebase-admin": "^11.11.0",
+    "googleapis": "^129.0.0",
     "handlebars": "^4.7.8",
     "nodemailer": "^6.9.5",
     "passport-jwt": "^4.0.1",

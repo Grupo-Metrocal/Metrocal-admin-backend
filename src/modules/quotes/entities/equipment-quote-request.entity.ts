@@ -37,7 +37,7 @@ export class EquipmentQuoteRequest {
   @Column({ type: 'varchar', default: '' })
   additional_remarks?: string
 
-  @Column({ type: 'int' })
+  @Column({ type: 'float', nullable: true })
   discount?: number
 
   @Column({ default: 'pending' })

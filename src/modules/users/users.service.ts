@@ -48,7 +48,9 @@ export class UsersService {
       })
       const response = await this.userRepository.save(newUser)
       const saved = await this.assignRole(response.id, role.data.id as number)
+
       delete saved.data.password
+
       return handleOK(saved.data)
     } catch (error) {
       return handleInternalServerError(error.message)
@@ -311,9 +313,12 @@ export class UsersService {
           email: user.email,
           password: user.password,
         })
-        const role = await this.rolesService.findByName(user.role)
-        if (role.success) {
+
+        if (userCreated.success) {
+          const role = await this.rolesService.findByName(user.role)
           await this.assignRole(userCreated.data.id, role.data.id as number)
+        } else {
+          console.log('error', userCreated)
         }
       }
     })

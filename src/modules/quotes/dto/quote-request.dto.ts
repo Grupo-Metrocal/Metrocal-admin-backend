@@ -36,4 +36,7 @@ export class QuoteRequestDto {
 
   @ApiProperty()
   rejected_options?: string[]
+
+  @ApiProperty()
+  extras?: number
 }
