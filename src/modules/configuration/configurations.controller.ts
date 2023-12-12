@@ -1,4 +1,4 @@
-import { Body, Controller, Delete, Param, Post, Put } from '@nestjs/common'
+import { Body, Controller, Delete, Param, Post, Put, UseGuards } from '@nestjs/common'
 import { ApiTags } from '@nestjs/swagger'
 import { Get } from '@nestjs/common'
 import { ConfigurationService } from './configurations.service'
@@ -8,6 +8,7 @@ import {
   UpdateEquipmentRegisterDto,
   UpdateIvaRegisterDto,
 } from './dto/update-configuration.dto'
+import { AuthGuard } from '@nestjs/passport'
 
 @ApiTags('Configuration')
 @Controller('configuration')
