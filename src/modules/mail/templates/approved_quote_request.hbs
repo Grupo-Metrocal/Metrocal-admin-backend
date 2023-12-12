@@ -55,13 +55,13 @@
             >{{count}}</td>
             <td
               style='border: 1px solid #dddddd; text-align: left; padding: 8px;'
-            >{{discount}}%</td>
+            >{{discount}}</td>
             <td
               style='border: 1px solid #dddddd; text-align: left; padding: 8px;'
-            >{{unitPrice}}$</td>
+            >{{unitPrice}}</td>
             <td
               style='border: 1px solid #dddddd; text-align: left; padding: 8px;'
-            >{{subTotal}}$</td>
+            >{{subTotal}}</td>
           </tr>
         {{/each}}
 
@@ -87,10 +87,19 @@
           <td
             colspan='5'
             style='border: none; text-align: right; padding: 8px;'
+          ><strong>Extra:</strong></td>
+          <td
+            style='border: 1px solid #dddddd; text-align: left; padding: 8px;'
+          ><strong>{{extras}}</strong></td>
+        </tr>
+        <tr>
+          <td
+            colspan='5'
+            style='border: none; text-align: right; padding: 8px;'
           ><strong>Subtotal:</strong></td>
           <td
             style='border: 1px solid #dddddd; text-align: left; padding: 8px;'
-          ><strong>{{subtotal}}$</strong></td>
+          ><strong>{{subtotal}}</strong></td>
         </tr>
         <tr>
           <td
@@ -99,7 +108,7 @@
           ><strong>Monto Total:</strong></td>
           <td
             style='border: 1px solid #dddddd; text-align: left; padding: 8px;'
-          ><strong>{{total}}$</strong></td>
+          ><strong>{{total}}</strong></td>
         </tr>
       </tbody>
     </table>
