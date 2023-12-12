@@ -24,6 +24,7 @@ import { UsersService } from '../users/users.service'
 import { RejectedQuoteRequest } from '../mail/dto/rejected-quote-request.dto'
 import { ActivitiesService } from '../activities/activities.service'
 import { PaginationQueryDto } from './dto/pagination-query.dto'
+import { formatPrice } from 'src/utils/formatPrices'
 
 @Injectable()
 export class QuotesService {
@@ -252,22 +253,33 @@ export class QuotesService {
               service: equipment.type_service,
               equipment: equipment.name,
               count: equipment.count,
-              unitPrice: equipment.price,
-              subTotal: equipment.total,
-              discount: equipment.discount,
+              unitPrice:
+                equipment.status === 'done'
+                  ? formatPrice(equipment.price)
+                  : '---',
+              subTotal:
+                equipment.status === 'done'
+                  ? formatPrice(equipment.total)
+                  : 'No aprobado',
+              discount:
+                equipment.status === 'done' ? equipment.discount + '%' : '---',
             }
           })
 
-        approvedQuoteRequestDto.total = quoteRequestDto.price
+        approvedQuoteRequestDto.total = formatPrice(quoteRequestDto.price)
         approvedQuoteRequestDto.token = token
         approvedQuoteRequestDto.email = quote.client.email
         approvedQuoteRequestDto.linkDetailQuote = `${process.env.DOMAIN}/quote/${token}`
-        approvedQuoteRequestDto.subtotal = quote.equipment_quote_request.reduce(
-          (acc, equipment) => acc + equipment.total,
-          0,
-        )
-        approvedQuoteRequestDto.tax = quoteRequestDto.tax
+        ;(approvedQuoteRequestDto.subtotal = formatPrice(
+          quote?.equipment_quote_request
+            ?.map((equipment: any) =>
+              equipment.status === 'done' ? equipment.total : 0,
+            )
+            .reduce((a, b) => a + b, 0),
+        )),
+          (approvedQuoteRequestDto.tax = quoteRequestDto.tax)
         approvedQuoteRequestDto.discount = quoteRequestDto.general_discount
+        approvedQuoteRequestDto.extras = formatPrice(quoteRequestDto.extras)
       }
 
       let rejectedquoterequest: RejectedQuoteRequest | undefined
