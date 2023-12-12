@@ -13,9 +13,8 @@ export class ApprovedQuoteRequestDto {
     subTotal: number
   }[]
 
-  @IsNumber()
   @IsNotEmpty()
-  total: number
+  total: string
 
   @IsNotEmpty()
   linkDetailQuote: string
@@ -28,11 +27,14 @@ export class ApprovedQuoteRequestDto {
   token: string
 
   @IsNotEmpty()
-  subtotal: number
+  subtotal: string
 
   @IsNotEmpty()
   tax: number
 
   @IsNotEmpty()
   discount: number
+
+  @IsNotEmpty()
+  extras: string
 }
