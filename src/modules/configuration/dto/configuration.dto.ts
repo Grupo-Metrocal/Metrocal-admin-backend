@@ -34,11 +34,8 @@ export class CreateEquipmentRegisterDto {
   @IsNotEmpty()
   price: number
 }
-<<<<<<< HEAD
-=======
 
 export class IvaRegisterDto {
   @ApiProperty()
   IVA: number
 }
->>>>>>> 5c15a5cf12336f240d20a56623230422d8d6903a
