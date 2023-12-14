@@ -1,1 +1,82 @@
-<p>Bienvenido {{name}} a la plataforma de Metrocal.</p>
+<html lang='en'>
+  <head>
+    <meta charset='UTF-8' />
+    <meta name='viewport' content='width=device-width, initial-scale=1.0' />
+    <link
+      href='https://fonts.googleapis.com/css?family=Montserrat:400,700'
+      rel='stylesheet'
+      type='text/css'
+    />
+    <title>Bienvenido a Metrocal</title>
+
+  </head>
+  <body
+    style='
+      font-family: "Montserrat", sans-serif;
+      background-color: #f4f4f4;
+      color: #333;
+      margin: 0;
+      padding: 0;
+    '
+  >
+    <div
+      style='
+        max-width: 600px;
+        margin: 20px auto;
+        background-color: #fff;
+        padding: 20px;
+        border-radius: 5px;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+      '
+    >
+      <h1 style='color: #007BFF;'>Bienvenido a Metrocal</h1>
+      <p style='line-height: 1.6;'>
+        Estimado
+        {{name}},
+      </p>
+      <p style='line-height: 1.6;'>
+        ¡Gracias por unirte a Metrocal! Estamos emocionados de tenerte como
+        parte de nuestra comunidad.
+      </p>
+      <p style='line-height: 1.6;'>
+        Tu cuenta ha sido creada con éxito. A continuación, encontrarás algunos
+        detalles importantes:
+      </p>
+      <ul style='line-height: 1.6;'>
+        <li><strong>Nombre de Usuario:</strong> {{name}}</li>
+        <li><strong>Correo Electrónico:</strong> {{user}}</li>
+      </ul>
+      <p style='line-height: 1.6;'>
+        Para comenzar a utilizar nuestros servicios, inicia sesión en tu cuenta
+        haciendo clic en el siguiente botón:
+      </p>
+      <a
+        href={{loginURL}}
+        style='
+          display: inline-block;
+          padding: 10px 20px;
+          background-color: #007BFF;
+          color: #fff;
+          text-decoration: none;
+          border-radius: 3px;
+        '
+      >Iniciar Sesión</a>
+      <p style='line-height: 1.6;'>
+        Si tienes alguna pregunta o necesitas asistencia, no dudes en ponerte en
+        contacto con nuestro equipo de soporte.
+      </p>
+      <p style='line-height: 1.6;'>
+        Saludos,
+        <br />El Equipo de Metrocal
+      </p>
+    </div>
+    <p
+      style='
+        font-size: 12px;
+        color: tomato;
+        text-align: center;
+        margin-top: 50px;
+      '
+    >Este mensaje fue enviado automáticamente, por favor no responda.</p>
+  </body>
+</html>
