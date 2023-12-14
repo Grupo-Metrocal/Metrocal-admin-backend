@@ -28,13 +28,15 @@ export class MailService {
     })
   }
 
-  async sendMailWelcomeApp({ user, name }) {
+  async sendMailWelcomeApp({ user, name, loginURL }) {
     await this.sendMail({
       user,
       subject: 'Bienvenido a bordo 🚀 Metrocal te da la Bienvenida!',
       template: 'welcome',
       context: {
         name,
+        loginURL,
+        user,
       },
     })
   }
@@ -64,27 +66,27 @@ export class MailService {
     })
   }
 
-  async sendMailrejectedQuoteRequest(rejected:RejectedQuoteRequest){
+  async sendMailrejectedQuoteRequest(rejected: RejectedQuoteRequest) {
     await this.mailerService.sendMail({
       to: rejected.email,
       from: process.env.MAILER_FROM,
-      subject:'Cotizacion rechazada',
-      template:'rejected_quote_request',
-      context:{
-        ...rejected
-      }
+      subject: 'Cotizacion rechazada',
+      template: 'rejected_quote_request',
+      context: {
+        ...rejected,
+      },
     })
   }
 
-  async sendInvitationMail(inv: InvitationMail){
+  async sendInvitationMail(inv: InvitationMail) {
     await this.mailerService.sendMail({
       to: inv.email,
       from: process.env.MAILER_FROM,
       subject: 'Cotiza con nosotros y obten el mejor precio',
-      template:'invitation_for_user',
+      template: 'invitation_for_user',
       context: {
-        ...inv
-      }
+        ...inv,
+      },
     })
   }
 }
