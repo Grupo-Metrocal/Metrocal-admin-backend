@@ -465,23 +465,33 @@ export class QuotesService {
             service: equipment.type_service,
             equipment: equipment.name,
             count: equipment.count,
-            unitPrice: equipment.price,
-            subTotal: equipment.total,
-            discount: equipment.discount,
+            unitPrice:
+              equipment.status === 'done'
+                ? formatPrice(equipment.price)
+                : '---',
+            subTotal:
+              equipment.status === 'done'
+                ? formatPrice(equipment.total)
+                : 'No aprobado',
+            discount:
+              equipment.status === 'done' ? equipment.discount + '%' : '---',
           }
         })
 
-      approvedQuoteRequestDto.total = quoteRequest.price
+      approvedQuoteRequestDto.total = formatPrice(quoteRequest.price)
       approvedQuoteRequestDto.token = token
       approvedQuoteRequestDto.email = quoteRequest.client.email
       approvedQuoteRequestDto.linkDetailQuote = `${process.env.DOMAIN}/quote/${token}`
-      approvedQuoteRequestDto.subtotal =
-        quoteRequest.equipment_quote_request.reduce(
-          (acc, equipment) => acc + equipment.total,
-          0,
-        )
+      approvedQuoteRequestDto.subtotal = formatPrice(
+        quoteRequest?.equipment_quote_request
+          ?.map((equipment: any) =>
+            equipment.status === 'done' ? equipment.total : 0,
+          )
+          .reduce((a, b) => a + b, 0),
+      )
       approvedQuoteRequestDto.tax = quoteRequest.tax
       approvedQuoteRequestDto.discount = quoteRequest.general_discount
+      approvedQuoteRequestDto.extras = formatPrice(quoteRequest.extras)
 
       await this.mailService.sendMailApprovedQuoteRequest(
         approvedQuoteRequestDto,
