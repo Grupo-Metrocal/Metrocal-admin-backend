@@ -25,10 +25,7 @@ export class NotificationsService {
     }
 
     try {
-      const response = await this.messaging.send(message)
-      console.log('Successfully sent message:', response)
-    } catch (error) {
-      console.log('Error sending message:', error)
-    }
+      await this.messaging.send(message)
+    } catch (error) {}
   }
 }
