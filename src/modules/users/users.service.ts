@@ -33,6 +33,7 @@ export class UsersService {
     const user = await this.userRepository.findOneBy({
       email: createUserDto.email,
     })
+
     if (user) return handleBadrequest(new Error('El usuario ya existe'))
 
     const role = (await this.rolesService.getDefaultsRole()) as any
@@ -45,6 +46,7 @@ export class UsersService {
       await this.mailService.sendMailWelcomeApp({
         user: createUserDto.email,
         name: createUserDto.username,
+        loginURL: process.env.LOGIN_PAGE,
       })
       const response = await this.userRepository.save(newUser)
       const saved = await this.assignRole(response.id, role.data.id as number)
@@ -53,6 +55,10 @@ export class UsersService {
 
       return handleOK(saved.data)
     } catch (error) {
+      console.log(
+        `Error al crear al usuario:${createUserDto.username} ->`,
+        error.message,
+      )
       return handleInternalServerError(error.message)
     }
   }
@@ -295,18 +301,35 @@ export class UsersService {
   async createDefaultUsers() {
     const users = [
       {
-        username: 'Metrocal',
-        email: 'jjjchico1@gmail.com',
+        username: 'Francisco REGXI',
+        email: 'francisco@regxi.com',
         password: 'Metrocal.2023',
         role: 'admin',
       },
+      // {
+      //   username: 'Ramon Duriez',
+      //   email: 'ramon.duriez@metrocal.co.ni',
+      //   password: 'M3tr0c@l.2023',
+      //   role: 'admin',
+      // },
+      // {
+      //   username: 'Fredman Mendez',
+      //   email: 'fredman.mendez@metrocal.co.ni',
+      //   password: 'M3tr0c@l.2023',
+      //   role: 'admin',
+      // },
+      // {
+      //   username: 'Celina Jaenz',
+      //   email: 'celina.jaenz@metrocal.co.ni',
+      //   password: 'M3tr0c@l.2023',
+      //   role: 'admin',
+      // },
     ]
 
     users.forEach(async (user) => {
       const userExists = await this.userRepository.findOne({
         where: { email: user.email },
       })
-
       if (!userExists) {
         const userCreated = await this.create({
           username: user.username,
@@ -318,7 +341,7 @@ export class UsersService {
           const role = await this.rolesService.findByName(user.role)
           await this.assignRole(userCreated.data.id, role.data.id as number)
         } else {
-          console.log('error', userCreated)
+          return handleBadrequest(new Error('Error al crear usuario'))
         }
       }
     })
