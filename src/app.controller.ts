@@ -5,6 +5,7 @@ import { Response } from 'express'
 import { ApiTags } from '@nestjs/swagger'
 import { JwtAuthGuard } from './modules/auth/guards/jwt-auth.guard'
 import { UseGuards } from '@nestjs/common'
+import { handleOK } from './common/handleHttp'
 
 @ApiTags('App')
 @Controller()
@@ -17,7 +18,7 @@ export class AppController {
   @Get('app/verify')
   @UseGuards(JwtAuthGuard)
   verify() {
-    return { status: 200 }
+    return handleOK('ok')
   }
 
   @Get('pdf')
