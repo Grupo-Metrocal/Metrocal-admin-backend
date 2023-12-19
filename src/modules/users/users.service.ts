@@ -85,6 +85,7 @@ export class UsersService {
               id: role.id,
               name: role.name,
               description: role.description,
+              priority: role.priority,
             }
           }),
           imageURL: user.imageURL,
@@ -311,18 +312,21 @@ export class UsersService {
       //   email: 'ramon.duriez@metrocal.co.ni',
       //   password: 'M3tr0c@l.2023',
       //   role: 'admin',
+      //   ignore: process.env.NODE_ENV !== 'production',
       // },
       // {
       //   username: 'Fredman Mendez',
       //   email: 'fredman.mendez@metrocal.co.ni',
       //   password: 'M3tr0c@l.2023',
       //   role: 'admin',
+      //   ignore: process.env.NODE_ENV !== 'production',
       // },
       // {
       //   username: 'Celina Jaenz',
       //   email: 'celina.jaenz@metrocal.co.ni',
       //   password: 'M3tr0c@l.2023',
       //   role: 'admin',
+      //   ignore: process.env.NODE_ENV !== 'production',
       // },
     ]
 
@@ -331,6 +335,8 @@ export class UsersService {
         where: { email: user.email },
       })
       if (!userExists) {
+        // if (user.ignore) return
+        console.log(`Creando usuario: ${user.username}`)
         const userCreated = await this.create({
           username: user.username,
           email: user.email,
