@@ -25,6 +25,7 @@ import { RejectedQuoteRequest } from '../mail/dto/rejected-quote-request.dto'
 import { ActivitiesService } from '../activities/activities.service'
 import { PaginationQueryDto } from './dto/pagination-query.dto'
 import { formatPrice } from 'src/utils/formatPrices'
+import { MethodsService } from '../methods/methods.service'
 
 @Injectable()
 export class QuotesService {
@@ -41,6 +42,8 @@ export class QuotesService {
     private readonly tokenService: TokenService,
     private readonly pdfService: PdfService,
     private readonly usersService: UsersService,
+    @Inject(forwardRef(() => MethodsService))
+    private readonly methodsService: MethodsService,
   ) {}
 
   async createQuoteRequest(quoteRequestDto: QuoteRequestDto) {
@@ -372,17 +375,18 @@ export class QuotesService {
   ) {
     const quoteRequest = await this.quoteRequestRepository.findOne({
       where: { id: changeStatusQuoteRequest.id },
+      relations: ['equipment_quote_request', 'activity'],
     })
 
     if (!quoteRequest) {
       return handleBadrequest(new Error('La cotización no existe'))
     }
 
-    if (quoteRequest.status === 'done') {
-      return handleBadrequest(
-        new Error('La cotización ya ha sido aprobada anteriormente'),
-      )
-    }
+    // if (quoteRequest.status === 'done') {
+    //   return handleBadrequest(
+    //     new Error('La cotización ya ha sido aprobada anteriormente'),
+    //   )
+    // }
 
     if (quoteRequest.status === 'rejected') {
       return handleBadrequest(
@@ -401,8 +405,15 @@ export class QuotesService {
         await this.activitiesService.createActivity(
           changeStatusQuoteRequest as any,
         )
+
+        const response = await this.methodsService.createMethod({
+          activity_id: quoteRequest.activity.id,
+        })
+
+        return handleOK(response.data)
       }
-      return handleOK('Se ha cambiado el estado de la cotización')
+
+      return handleOK('Cotización rechazada')
     } catch (error) {
       return handleInternalServerError(error.message)
     }
@@ -519,6 +530,27 @@ export class QuotesService {
         .getRawMany()
 
       return handleOK(quoteRequests)
+    } catch (error) {
+      return handleInternalServerError(error.message)
+    }
+  }
+
+  async asyncMethodToEquipment({ methodID, equipmentID }) {
+    try {
+      const quoteRequests = await this.equipmentQuoteRequestRepository.findOne({
+        where: { id: equipmentID },
+      })
+
+      if (!quoteRequests) {
+        return handleBadrequest(new Error('El equipo no existe'))
+      }
+
+      quoteRequests.method_id = methodID
+
+      const response =
+        await this.equipmentQuoteRequestRepository.save(quoteRequests)
+
+      return handleOK(response)
     } catch (error) {
       return handleInternalServerError(error.message)
     }
