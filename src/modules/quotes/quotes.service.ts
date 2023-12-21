@@ -382,11 +382,11 @@ export class QuotesService {
       return handleBadrequest(new Error('La cotización no existe'))
     }
 
-    // if (quoteRequest.status === 'done') {
-    //   return handleBadrequest(
-    //     new Error('La cotización ya ha sido aprobada anteriormente'),
-    //   )
-    // }
+    if (quoteRequest.status === 'done') {
+      return handleBadrequest(
+        new Error('La cotización ya ha sido aprobada anteriormente'),
+      )
+    }
 
     if (quoteRequest.status === 'rejected') {
       return handleBadrequest(
