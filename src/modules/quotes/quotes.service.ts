@@ -402,12 +402,12 @@ export class QuotesService {
       await this.quoteRequestRepository.save(quoteRequest)
 
       if (quoteRequest.status === 'done') {
-        await this.activitiesService.createActivity(
+        const activity = await this.activitiesService.createActivity(
           changeStatusQuoteRequest as any,
         )
 
         const response = await this.methodsService.createMethod({
-          activity_id: quoteRequest.activity.id,
+          activity_id: activity.data.id,
         })
 
         return handleOK(response.data)
