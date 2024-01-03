@@ -23,8 +23,7 @@ export class updateEquipmentQuoteRequestDto {
   model: string
 
   @ApiProperty()
-  @IsNotEmpty()
-  measuring_range: string
+  measuring_range?: string
 
   @ApiProperty()
   calibration_method?: string

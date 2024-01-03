@@ -4,5 +4,5 @@ import { ApiProperty } from '@nestjs/swagger'
 export class CreateMethodDto {
   @ApiProperty()
   @IsNumber()
-  readonly activity_id: number
+  activity_id: number
 }
