@@ -22,7 +22,7 @@ export class EnvironmentalConditionsNI_MCIT_D_02 {
   @Column({ nullable: true })
   equipment_used?: string
 
-  @Column({ nullable: true })
+  @Column('jsonb', { nullable: true })
   time?: ITime_NI_MCIT_D_02
 
   @Column({ nullable: true })

@@ -15,7 +15,7 @@ export class AccuracyTestNI_MCIT_D_02 {
   @Column({ nullable: true })
   nominal_value?: number
 
-  @Column({ nullable: true })
+  @Column('jsonb', { nullable: true })
   measure?: IMeasure[]
 }
 
