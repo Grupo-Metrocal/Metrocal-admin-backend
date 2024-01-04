@@ -65,8 +65,13 @@ export class RolesService {
     await this.usersService.createDefaultUsers()
   }
 
-  async getDefaultsRole() {
+  async getUserRole() {
     const role = await this.roleRepository.findOne({ where: { name: 'user' } })
+    if (!role) return handleBadrequest(new Error('El rol user no existe'))
+    return handleOK({ ...role })
+  }
+  async getAdminRole() {
+    const role = await (await this.roleRepository.findOne({ where: { name: 'admin' } }))
     if (!role) return handleBadrequest(new Error('El rol user no existe'))
     return handleOK({ ...role })
   }

@@ -29,13 +29,41 @@ export class UsersService {
     private readonly rolesService: RolesService,
     private readonly tokenService: TokenService,
   ) {}
-  async create(createUserDto: CreateUserDto) {
+  async createUser(createUserDto: CreateUserDto) {
     const user = await this.userRepository.findOneBy({
       email: createUserDto.email,
     })
     if (user) return handleBadrequest(new Error('El usuario ya existe'))
 
-    const role = (await this.rolesService.getDefaultsRole()) as any
+    const role = (await this.rolesService.getUserRole()) as any
+    const hashedPassword = await hash(createUserDto.password, 10)
+    const newUser = this.userRepository.create({
+      ...createUserDto,
+      password: hashedPassword,
+    })
+    try {
+      await this.mailService.sendMailWelcomeApp({
+        user: createUserDto.email,
+        name: createUserDto.username,
+      })
+      const response = await this.userRepository.save(newUser)
+      const saved = await this.assignRole(response.id, role.data.id as number)
+
+      delete saved.data.password
+
+      return handleOK(saved.data)
+    } catch (error) {
+      return handleInternalServerError(error.message)
+    }
+  }
+
+  async createAdmin(createUserDto: CreateUserDto) {
+    const user = await this.userRepository.findOneBy({
+      email: createUserDto.email,
+    })
+    if (user) return handleBadrequest(new Error('El usuario ya existe'))
+
+    const role = (await this.rolesService.getAdminRole()) as any
     const hashedPassword = await hash(createUserDto.password, 10)
     const newUser = this.userRepository.create({
       ...createUserDto,
@@ -308,7 +336,7 @@ export class UsersService {
       })
 
       if (!userExists) {
-        const userCreated = await this.create({
+        const userCreated = await this.createUser({
           username: user.username,
           email: user.email,
           password: user.password,
@@ -334,4 +362,16 @@ export class UsersService {
       return handleInternalServerError(error.message)
     }
   }
+
+  async fubn(username: string){
+    const user = await this.userRepository.findOne({
+      where: { username },
+      relations: ['roles', 'quote_requests', 'activities'],
+    })
+    if (!user) return handleBadrequest(new Error('Usuario no encontrado'))
+
+    return handleOK(user)
+  }
+
+ 
 }

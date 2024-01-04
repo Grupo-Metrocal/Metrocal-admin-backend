@@ -28,6 +28,11 @@ import { FileInterceptor } from '@nestjs/platform-express'
 export class UsersController {
   constructor(private readonly usersService: UsersService) {}
 
+  @Get('pro')
+  async getroless(@Param('name') name:string){
+    return await this.usersService.fubn(name)
+  }
+
   @UseGuards(JwtAuthGuard)
   @Post()
   async create(@Body() user: CreateUserDto) {
@@ -38,7 +43,7 @@ export class UsersController {
         new Error('La contraseña debe tener al menos 8 caracteres'),
       )
 
-    return await this.usersService.create(user)
+    return await this.usersService.createUser(user)
   }
 
   @UseGuards(JwtAuthGuard)

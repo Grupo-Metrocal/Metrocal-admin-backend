@@ -16,14 +16,24 @@ import { CreateUserDto } from '../users/dto/create-user.dto'
 @Controller('auth')
 export class AuthController {
   constructor(private readonly authService: AuthService) {}
-
-  @Post('signin')
-  async signin(@Body() user: SigninAuthDto) {
-    return await this.authService.signin(user)
+//User
+  @Post('signinUser')
+  async signinUser(@Body() user: SigninAuthDto) {
+    return await this.authService.signinUser(user)
   }
-
-  @Post('signup')
+//User
+  @Post('signupUser')
   async register(@Body() user: CreateUserDto) {
-    return await this.authService.register(user)
+    return await this.authService.registerUser(user)
+  }
+//Admin
+  @Post('singinAdmin')
+  async singinAdmin(){
+
+  }
+  //Admin
+  @Post('singupdmin')
+  async singinadmin(@Body() user: CreateUserDto){
+    return await this.authService.registerAdmin(user)
   }
 }

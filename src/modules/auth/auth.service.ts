@@ -16,8 +16,8 @@ export class AuthService {
     private jwtService: JwtService,
     private readonly usersService: UsersService,
   ) {}
-
-  async signin(user: SigninAuthDto) {
+//User
+  async signinUser(user: SigninAuthDto) {
     const { email, password } = user
 
     const userFound = await this.userRepository.findOne({
@@ -43,8 +43,14 @@ export class AuthService {
       token,
     })
   }
-
-  async register(user: CreateUserDto) {
-    return await this.usersService.create(user)
+//User
+  async registerUser(user: CreateUserDto) {
+    return await this.usersService.createUser(user)
   }
+  //Admin
+  async registerAdmin(admin: CreateUserDto) {
+    return await this.usersService.createAdmin(admin)
+  }
+  //Admin
+  async singinAdmin(){}
 }
