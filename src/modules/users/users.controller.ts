@@ -110,8 +110,17 @@ export class UsersController {
 
   @UseGuards(JwtAuthGuard)
   @Put('profile/:token')
-  @UseInterceptors(FileInterceptor('image'))
   async update(
+    @Param('token') token: string,
+    @Body() user: UpdateUserDto,
+  ) {
+    return await this.usersService.updateUserByToken(token, user)
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Put('image-profile/:token')
+  @UseInterceptors(FileInterceptor('image'))
+  async updateImageProfile(
     @Param('token') token: string,
     @UploadedFile(
       new ParseFilePipeBuilder().addFileTypeValidator({
@@ -122,9 +131,8 @@ export class UsersController {
       })
     )
     image: Express.Multer.File,
-    @Body() user: UpdateUserDto,
   ) {
-    return await this.usersService.updateUserByToken(token, user, image)
+    return await this.usersService.updateImageProfileByToken(token, image)
   }
 
   @UseGuards(JwtAuthGuard)

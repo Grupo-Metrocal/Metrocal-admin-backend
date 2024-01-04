@@ -24,6 +24,8 @@ import { UsersService } from '../users/users.service'
 import { RejectedQuoteRequest } from '../mail/dto/rejected-quote-request.dto'
 import { ActivitiesService } from '../activities/activities.service'
 import { PaginationQueryDto } from './dto/pagination-query.dto'
+import { formatPrice } from 'src/utils/formatPrices'
+import { MethodsService } from '../methods/methods.service'
 
 @Injectable()
 export class QuotesService {
@@ -40,6 +42,8 @@ export class QuotesService {
     private readonly tokenService: TokenService,
     private readonly pdfService: PdfService,
     private readonly usersService: UsersService,
+    @Inject(forwardRef(() => MethodsService))
+    private readonly methodsService: MethodsService,
   ) {}
 
   async createQuoteRequest(quoteRequestDto: QuoteRequestDto) {
@@ -252,22 +256,33 @@ export class QuotesService {
               service: equipment.type_service,
               equipment: equipment.name,
               count: equipment.count,
-              unitPrice: equipment.price,
-              subTotal: equipment.total,
-              discount: equipment.discount,
+              unitPrice:
+                equipment.status === 'done'
+                  ? formatPrice(equipment.price)
+                  : '---',
+              subTotal:
+                equipment.status === 'done'
+                  ? formatPrice(equipment.total)
+                  : 'No aprobado',
+              discount:
+                equipment.status === 'done' ? equipment.discount + '%' : '---',
             }
           })
 
-        approvedQuoteRequestDto.total = quoteRequestDto.price
+        approvedQuoteRequestDto.total = formatPrice(quoteRequestDto.price)
         approvedQuoteRequestDto.token = token
         approvedQuoteRequestDto.email = quote.client.email
         approvedQuoteRequestDto.linkDetailQuote = `${process.env.DOMAIN}/quote/${token}`
-        approvedQuoteRequestDto.subtotal = quote.equipment_quote_request.reduce(
-          (acc, equipment) => acc + equipment.total,
-          0,
-        )
-        approvedQuoteRequestDto.tax = quoteRequestDto.tax
+        ;(approvedQuoteRequestDto.subtotal = formatPrice(
+          quote?.equipment_quote_request
+            ?.map((equipment: any) =>
+              equipment.status === 'done' ? equipment.total : 0,
+            )
+            .reduce((a, b) => a + b, 0),
+        )),
+          (approvedQuoteRequestDto.tax = quoteRequestDto.tax)
         approvedQuoteRequestDto.discount = quoteRequestDto.general_discount
+        approvedQuoteRequestDto.extras = formatPrice(quoteRequestDto.extras)
       }
 
       let rejectedquoterequest: RejectedQuoteRequest | undefined
@@ -360,6 +375,7 @@ export class QuotesService {
   ) {
     const quoteRequest = await this.quoteRequestRepository.findOne({
       where: { id: changeStatusQuoteRequest.id },
+      relations: ['equipment_quote_request', 'activity'],
     })
 
     if (!quoteRequest) {
@@ -386,11 +402,18 @@ export class QuotesService {
       await this.quoteRequestRepository.save(quoteRequest)
 
       if (quoteRequest.status === 'done') {
-        await this.activitiesService.createActivity(
+        const activity = await this.activitiesService.createActivity(
           changeStatusQuoteRequest as any,
         )
+
+        const response = await this.methodsService.createMethod({
+          activity_id: activity.data.id,
+        })
+
+        return handleOK(response.data)
       }
-      return handleOK('Se ha cambiado el estado de la cotización')
+
+      return handleOK('Cotización rechazada')
     } catch (error) {
       return handleInternalServerError(error.message)
     }
@@ -453,23 +476,33 @@ export class QuotesService {
             service: equipment.type_service,
             equipment: equipment.name,
             count: equipment.count,
-            unitPrice: equipment.price,
-            subTotal: equipment.total,
-            discount: equipment.discount,
+            unitPrice:
+              equipment.status === 'done'
+                ? formatPrice(equipment.price)
+                : '---',
+            subTotal:
+              equipment.status === 'done'
+                ? formatPrice(equipment.total)
+                : 'No aprobado',
+            discount:
+              equipment.status === 'done' ? equipment.discount + '%' : '---',
           }
         })
 
-      approvedQuoteRequestDto.total = quoteRequest.price
+      approvedQuoteRequestDto.total = formatPrice(quoteRequest.price)
       approvedQuoteRequestDto.token = token
       approvedQuoteRequestDto.email = quoteRequest.client.email
       approvedQuoteRequestDto.linkDetailQuote = `${process.env.DOMAIN}/quote/${token}`
-      approvedQuoteRequestDto.subtotal =
-        quoteRequest.equipment_quote_request.reduce(
-          (acc, equipment) => acc + equipment.total,
-          0,
-        )
+      approvedQuoteRequestDto.subtotal = formatPrice(
+        quoteRequest?.equipment_quote_request
+          ?.map((equipment: any) =>
+            equipment.status === 'done' ? equipment.total : 0,
+          )
+          .reduce((a, b) => a + b, 0),
+      )
       approvedQuoteRequestDto.tax = quoteRequest.tax
       approvedQuoteRequestDto.discount = quoteRequest.general_discount
+      approvedQuoteRequestDto.extras = formatPrice(quoteRequest.extras)
 
       await this.mailService.sendMailApprovedQuoteRequest(
         approvedQuoteRequestDto,
@@ -497,6 +530,27 @@ export class QuotesService {
         .getRawMany()
 
       return handleOK(quoteRequests)
+    } catch (error) {
+      return handleInternalServerError(error.message)
+    }
+  }
+
+  async asyncMethodToEquipment({ methodID, equipmentID }) {
+    try {
+      const quoteRequests = await this.equipmentQuoteRequestRepository.findOne({
+        where: { id: equipmentID },
+      })
+
+      if (!quoteRequests) {
+        return handleBadrequest(new Error('El equipo no existe'))
+      }
+
+      quoteRequests.method_id = methodID
+
+      const response =
+        await this.equipmentQuoteRequestRepository.save(quoteRequests)
+
+      return handleOK(response)
     } catch (error) {
       return handleInternalServerError(error.message)
     }

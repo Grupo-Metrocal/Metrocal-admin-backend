@@ -83,7 +83,12 @@ export class ActivitiesService {
     try {
       const response = await this.activityRepository.findOne({
         where: { id },
-        relations: ['quote_request', 'quote_request.client', 'team_members'],
+        relations: [
+          'quote_request',
+          'quote_request.client',
+          'team_members',
+          'quote_request.equipment_quote_request',
+        ],
       })
 
       const teamMembers = response.team_members.map((member) => {

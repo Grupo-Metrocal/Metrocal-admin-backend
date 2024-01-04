@@ -16,8 +16,8 @@ import { ResetPassword } from '../users/entities/reset-password.entity'
 import { Role } from '../roles/entities/role.entity'
 import { RolesService } from '../roles/roles.service'
 import { Activity } from '../activities/entities/activities.entity'
-import { ActivitiesService } from '../activities/activities.service'
 import { ActivitiesModule } from '../activities/activities.module'
+import { MethodsModule } from '../methods/methods.module'
 
 @Module({
   imports: [
@@ -35,6 +35,7 @@ import { ActivitiesModule } from '../activities/activities.module'
       Role,
     ]),
     forwardRef(() => ActivitiesModule),
+    forwardRef(() => MethodsModule),
   ],
   controllers: [QuotesController],
   providers: [

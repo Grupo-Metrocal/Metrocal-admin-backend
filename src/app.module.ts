@@ -16,8 +16,12 @@ import { NotificationsModule } from './modules/notifications/notifications.modul
 import * as admin from 'firebase-admin'
 import type { ServiceAccount } from 'firebase-admin'
 import * as serviceAccount from './config/firebase-token-key.json'
-import { ConfigInitializer, ConfigurationModule } from './modules/configuration/configurations.module'
+import {
+  ConfigInitializer,
+  ConfigurationModule,
+} from './modules/configuration/configurations.module'
 import { ConfigurationService } from './modules/configuration/configurations.service'
+import { MethodsModule } from './modules/methods/methods.module'
 
 admin.initializeApp({
   credential: admin.credential.cert(serviceAccount as ServiceAccount),
@@ -38,7 +42,8 @@ admin.initializeApp({
     ClientsModule,
     ActivitiesModule,
     NotificationsModule,
-    ConfigurationModule
+    ConfigurationModule,
+    MethodsModule,
   ],
   controllers: [AppController],
   providers: [AppService, ConfigInitializer],

@@ -51,4 +51,7 @@ export class EquipmentQuoteRequest {
 
   @Column({ type: 'float', default: 0 })
   total?: number
+
+  @Column({ nullable: true })
+  method_id?: number
 }

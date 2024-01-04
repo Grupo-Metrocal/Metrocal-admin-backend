@@ -33,6 +33,7 @@ export class UsersService {
     const user = await this.userRepository.findOneBy({
       email: createUserDto.email,
     })
+
     if (user) return handleBadrequest(new Error('El usuario ya existe'))
 
     const role = (await this.rolesService.getUserRole()) as any
@@ -73,6 +74,7 @@ export class UsersService {
       await this.mailService.sendMailWelcomeApp({
         user: createUserDto.email,
         name: createUserDto.username,
+        loginURL: process.env.LOGIN_PAGE,
       })
       const response = await this.userRepository.save(newUser)
       const saved = await this.assignRole(response.id, role.data.id as number)
@@ -81,6 +83,10 @@ export class UsersService {
 
       return handleOK(saved.data)
     } catch (error) {
+      console.log(
+        `Error al crear al usuario:${createUserDto.username} ->`,
+        error.message,
+      )
       return handleInternalServerError(error.message)
     }
   }
@@ -107,6 +113,7 @@ export class UsersService {
               id: role.id,
               name: role.name,
               description: role.description,
+              priority: role.priority,
             }
           }),
           imageURL: user.imageURL,
@@ -130,11 +137,7 @@ export class UsersService {
     return handleOK(user)
   }
 
-  async updateUserByToken(
-    token: string,
-    updateUserDto: UpdateUserDto,
-    image: Express.Multer.File,
-  ) {
+  async updateUserByToken(token: string, updateUserDto: UpdateUserDto) {
     const { sub: id } = this.tokenService.decodeToken(token)
 
     const user = await this.userRepository.findOneBy({ id: +id })
@@ -153,36 +156,44 @@ export class UsersService {
       updateUserDto.password = hashedPassword
     }
 
-    if (image) {
-      const createImage = admin
-        .storage()
-        .bucket()
-        .file(`images-users/${user.id}`)
-        .createWriteStream({
-          metadata: {
-            contentType: image.mimetype,
-          },
-        })
-
-      createImage.on('error', (error) => {
-        return handleInternalServerError(error.message)
-      })
-      await createImage.end(image.buffer)
-      const [url] = await admin
-        .storage()
-        .bucket()
-        .file(`images-users/${user.id}`)
-        .getSignedUrl({
-          version: 'v4',
-          action: 'read',
-          expires: Date.now() + 1000 * 60 * 60,
-        })
-      updateUserDto.imageURL = url
-    }
-
     try {
       const updated = await this.userRepository.update(+id, updateUserDto)
       return handleOK(updated)
+    } catch (error) {
+      return handleInternalServerError(error.message)
+    }
+  }
+
+  async updateImageProfileByToken(token: string, image: Express.Multer.File) {
+    const { sub: id } = this.tokenService.decodeToken(token)
+
+    const user = await this.userRepository.findOneBy({ id: +id })
+    if (!user) return handleBadrequest(new Error('Usuario no encontrado'))
+
+    try {
+      const bucket = admin.storage().bucket()
+      const fileName = `${Date.now()}-${user.id}`
+      const file = bucket.file(fileName)
+
+      const stream = file.createWriteStream({
+        metadata: {
+          contentType: image.mimetype,
+        },
+      })
+
+      stream.on('error', (error) => {
+        console.log('Error al subir la imagen ->', error.message)
+        return handleInternalServerError(error.message)
+      })
+
+      stream.on('finish', async () => {
+        const imageURL = `https://firebasestorage.googleapis.com/v0/b/${bucket.name}/o/${file.name}?alt=media`
+        const updated = await this.userRepository.update(+id, { imageURL })
+        console.log(imageURL)
+        return handleOK(updated)
+      })
+
+      stream.end(image.buffer)
     } catch (error) {
       return handleInternalServerError(error.message)
     }
@@ -323,20 +334,46 @@ export class UsersService {
   async createDefaultUsers() {
     const users = [
       {
-        username: 'Metrocal',
-        email: 'jjjchico1@gmail.com',
+        username: 'Francisco REGXI',
+        email: 'francisco@regxi.com',
         password: 'Metrocal.2023',
         role: 'admin',
       },
+      // {
+      //   username: 'Ramon Duriez',
+      //   email: 'ramon.duriez@metrocal.co.ni',
+      //   password: 'M3tr0c@l.2023',
+      //   role: 'admin',
+      //   ignore: process.env.NODE_ENV !== 'production',
+      // },
+      // {
+      //   username: 'Fredman Mendez',
+      //   email: 'fredman.mendez@metrocal.co.ni',
+      //   password: 'M3tr0c@l.2023',
+      //   role: 'admin',
+      //   ignore: process.env.NODE_ENV !== 'production',
+      // },
+      // {
+      //   username: 'Celina Jaenz',
+      //   email: 'celina.jaenz@metrocal.co.ni',
+      //   password: 'M3tr0c@l.2023',
+      //   role: 'admin',
+      //   ignore: process.env.NODE_ENV !== 'production',
+      // },
     ]
 
     users.forEach(async (user) => {
       const userExists = await this.userRepository.findOne({
         where: { email: user.email },
       })
-
       if (!userExists) {
+<<<<<<< HEAD
         const userCreated = await this.createUser({
+=======
+        // if (user.ignore) return
+        console.log(`Creando usuario: ${user.username}`)
+        const userCreated = await this.create({
+>>>>>>> 1b02da68f41cb54755cb9cbc36444b76121c62af
           username: user.username,
           email: user.email,
           password: user.password,
@@ -346,7 +383,7 @@ export class UsersService {
           const role = await this.rolesService.findByName(user.role)
           await this.assignRole(userCreated.data.id, role.data.id as number)
         } else {
-          console.log('error', userCreated)
+          return handleBadrequest(new Error('Error al crear usuario'))
         }
       }
     })
