@@ -3,7 +3,7 @@ import { NI_MCIT_P_01 } from '../NI_MCIT_P_01.entity'
 
 @Entity('equipment_information_NI_MCIT_P_01')
 export class EquipmentInformationNI_MCIT_P_01 {
-  @PrimaryGeneratedColumn('increment')
+  @PrimaryGeneratedColumn()
   id: number
 
   @OneToMany(
@@ -46,6 +46,6 @@ export class EquipmentInformationNI_MCIT_P_01 {
   @Column({ type: 'varchar', nullable: true })
   resolution?: string
 
-  @Column({ type: 'int', nullable: true })
+  @Column({ type: 'float', nullable: true })
   scale?: number
 }

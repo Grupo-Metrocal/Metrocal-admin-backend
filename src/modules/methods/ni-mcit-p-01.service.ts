@@ -43,18 +43,20 @@ export class NI_MCIT_P_01Service {
     equipment: EquipmentInformationDto,
     methodId: number,
   ) {
+    const method = await this.NI_MCIT_P_01Repository.findOne({
+      where: { id: methodId },
+      relations: ['equipment_information'],
+    })
+
+    const newEquipment =
+      this.EquipmentInformationNI_MCIT_P_01Repository.create(equipment)
+
     try {
-      const method = await this.NI_MCIT_P_01Repository.findOne({
-        where: { id: methodId },
-        relations: ['equipment_information'],
+      this.dataSource.transaction(async (manager) => {
+        await manager.save(newEquipment)
+        method.equipment_information = newEquipment
+        await manager.save(method)
       })
-
-      const newEquipment =
-        this.EquipmentInformationNI_MCIT_P_01Repository.create(equipment)
-
-      method.equipment_information = newEquipment
-
-      await this.NI_MCIT_P_01Repository.save(method)
 
       return handleOK(method)
     } catch (error) {
