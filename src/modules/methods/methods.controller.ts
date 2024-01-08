@@ -10,6 +10,7 @@ import { EnvironmentalConditionsDto } from './dto/NI_MCIT_P_01/environmental_con
 import { EquipmentInformationNI_MCIT_D_02Dto } from './dto/NI_MCIT_D_02/equipment_information.dto'
 import { EnvironmentalConditionsNI_MCIT_D_02Dto } from './dto/NI_MCIT_D_02/environmental_conditions.dto'
 import { DescriptionPatternNI_MCIT_D_02Dto } from './dto/NI_MCIT_D_02/description_pattern.dto'
+import { PreInstallationCommentNI_MCIT_D_02Dto } from './dto/NI_MCIT_D_02/pre_installation_comment.dto'
 
 @ApiTags('methods')
 @Controller('methods')
@@ -92,6 +93,17 @@ export class MethodsController {
   ) {
     return await this.ni_mcit_d_02Service.descriptionPattern(
       descriptionPattern,
+      methodId,
+    )
+  }
+
+  @Post('ni-mcit-d-02/pre-installation-comment/:methodId')
+  async createNI_MCIT_D_02PreInstallationComment(
+    @Body() preInstallationComment: PreInstallationCommentNI_MCIT_D_02Dto,
+    @Param('methodId') methodId: number,
+  ) {
+    return await this.ni_mcit_d_02Service.preInstallationComment(
+      preInstallationComment,
       methodId,
     )
   }

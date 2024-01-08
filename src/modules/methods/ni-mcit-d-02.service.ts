@@ -9,6 +9,8 @@ import { EnvironmentalConditionsNI_MCIT_D_02Dto } from './dto/NI_MCIT_D_02/envir
 import { EnvironmentalConditionsNI_MCIT_D_02 } from './entities/NI_MCIT_D_02/steps/environmental_conditions.entity'
 import { DescriptionPatternNI_MCIT_D_02 } from './entities/NI_MCIT_D_02/steps/description_pattern.entity'
 import { DescriptionPatternNI_MCIT_D_02Dto } from './dto/NI_MCIT_D_02/description_pattern.dto'
+import { PreInstallationCommentNI_MCIT_D_02Dto } from './dto/NI_MCIT_D_02/pre_installation_comment.dto'
+import { PreInstallationCommentNI_MCIT_D_02 } from './entities/NI_MCIT_D_02/steps/pre_installation_comment.entity'
 
 @Injectable()
 export class NI_MCIT_D_02Service {
@@ -23,6 +25,8 @@ export class NI_MCIT_D_02Service {
     private readonly EnvironmentalConditionsRepository: Repository<EnvironmentalConditionsNI_MCIT_D_02>,
     @InjectRepository(DescriptionPatternNI_MCIT_D_02)
     private readonly DescriptionPatternRepository: Repository<DescriptionPatternNI_MCIT_D_02>,
+    @InjectRepository(PreInstallationCommentNI_MCIT_D_02)
+    private readonly PreInstallationCommentRepository: Repository<PreInstallationCommentNI_MCIT_D_02>,
   ) {}
 
   async create() {
@@ -99,6 +103,30 @@ export class NI_MCIT_D_02Service {
       this.dataSource.transaction(async (manager) => {
         await manager.save(newDescriptionPattern)
         method.description_pattern = newDescriptionPattern
+        await manager.save(method)
+      })
+      return handleOK(method)
+    } catch (error) {
+      return handleInternalServerError(error.message)
+    }
+  }
+
+  async preInstallationComment(
+    preInstallationComment: PreInstallationCommentNI_MCIT_D_02Dto,
+    methodId: number,
+  ) {
+    const method = await this.NI_MCIT_D_02Repository.findOne({
+      where: { id: methodId },
+      relations: ['pre_installation_comment'],
+    })
+
+    const newPreInstallationComment =
+      this.PreInstallationCommentRepository.create(preInstallationComment)
+
+    try {
+      this.dataSource.transaction(async (manager) => {
+        await manager.save(newPreInstallationComment)
+        method.pre_installation_comment = newPreInstallationComment
         await manager.save(method)
       })
       return handleOK(method)
