@@ -11,6 +11,8 @@ import { DescriptionPatternNI_MCIT_D_02 } from './entities/NI_MCIT_D_02/steps/de
 import { DescriptionPatternNI_MCIT_D_02Dto } from './dto/NI_MCIT_D_02/description_pattern.dto'
 import { PreInstallationCommentNI_MCIT_D_02Dto } from './dto/NI_MCIT_D_02/pre_installation_comment.dto'
 import { PreInstallationCommentNI_MCIT_D_02 } from './entities/NI_MCIT_D_02/steps/pre_installation_comment.entity'
+import { InstrumentZeroCheckNI_MCIT_D_02Dto } from './dto/NI_MCIT_D_02/instrument_zero_check.dto'
+import { InstrumentZeroCheckNI_MCIT_D_02 } from './entities/NI_MCIT_D_02/steps/instrument_zero_check.entity'
 
 @Injectable()
 export class NI_MCIT_D_02Service {
@@ -27,6 +29,8 @@ export class NI_MCIT_D_02Service {
     private readonly DescriptionPatternRepository: Repository<DescriptionPatternNI_MCIT_D_02>,
     @InjectRepository(PreInstallationCommentNI_MCIT_D_02)
     private readonly PreInstallationCommentRepository: Repository<PreInstallationCommentNI_MCIT_D_02>,
+    @InjectRepository(InstrumentZeroCheckNI_MCIT_D_02)
+    private readonly InstrumentZeroCheckRepository: Repository<InstrumentZeroCheckNI_MCIT_D_02>,
   ) {}
 
   async create() {
@@ -127,6 +131,30 @@ export class NI_MCIT_D_02Service {
       this.dataSource.transaction(async (manager) => {
         await manager.save(newPreInstallationComment)
         method.pre_installation_comment = newPreInstallationComment
+        await manager.save(method)
+      })
+      return handleOK(method)
+    } catch (error) {
+      return handleInternalServerError(error.message)
+    }
+  }
+
+  async instrumentZeroCheck(
+    instrumentZeroCheck: InstrumentZeroCheckNI_MCIT_D_02Dto,
+    methodId: number,
+  ) {
+    const method = await this.NI_MCIT_D_02Repository.findOne({
+      where: { id: methodId },
+      relations: ['instrument_zero_check'],
+    })
+
+    const newInstrumentZeroCheck =
+      this.InstrumentZeroCheckRepository.create(instrumentZeroCheck)
+
+    try {
+      this.dataSource.transaction(async (manager) => {
+        await manager.save(newInstrumentZeroCheck)
+        method.instrument_zero_check = newInstrumentZeroCheck
         await manager.save(method)
       })
       return handleOK(method)

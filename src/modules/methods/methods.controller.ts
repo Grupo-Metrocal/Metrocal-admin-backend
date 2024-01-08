@@ -11,6 +11,7 @@ import { EquipmentInformationNI_MCIT_D_02Dto } from './dto/NI_MCIT_D_02/equipmen
 import { EnvironmentalConditionsNI_MCIT_D_02Dto } from './dto/NI_MCIT_D_02/environmental_conditions.dto'
 import { DescriptionPatternNI_MCIT_D_02Dto } from './dto/NI_MCIT_D_02/description_pattern.dto'
 import { PreInstallationCommentNI_MCIT_D_02Dto } from './dto/NI_MCIT_D_02/pre_installation_comment.dto'
+import { InstrumentZeroCheckNI_MCIT_D_02Dto } from './dto/NI_MCIT_D_02/instrument_zero_check.dto'
 
 @ApiTags('methods')
 @Controller('methods')
@@ -104,6 +105,17 @@ export class MethodsController {
   ) {
     return await this.ni_mcit_d_02Service.preInstallationComment(
       preInstallationComment,
+      methodId,
+    )
+  }
+
+  @Post('ni-mcit-d-02/instrument-zero-check/:methodId')
+  async createNI_MCIT_D_02InstrumentZeroCheck(
+    @Body() instrumentZeroCheck: InstrumentZeroCheckNI_MCIT_D_02Dto,
+    @Param('methodId') methodId: number,
+  ) {
+    return await this.ni_mcit_d_02Service.instrumentZeroCheck(
+      instrumentZeroCheck,
       methodId,
     )
   }
