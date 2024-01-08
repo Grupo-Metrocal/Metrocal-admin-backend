@@ -3,6 +3,7 @@ import { InjectRepository } from '@nestjs/typeorm'
 import { Repository, DataSource } from 'typeorm'
 import { NI_MCIT_P_01 } from './entities/NI_MCIT_P_01/NI_MCIT_P_01.entity'
 import { EquipmentInformationDto } from './dto/NI_MCIT_P_01/equipment_information.dto'
+import { EnvironmentalConditionsDto } from './dto/NI_MCIT_P_01/environmental_condition.dto'
 
 // entities
 import { EquipmentInformationNI_MCIT_P_01 } from './entities/NI_MCIT_P_01/steps/equipment_informatio.entity'
@@ -55,6 +56,33 @@ export class NI_MCIT_P_01Service {
       this.dataSource.transaction(async (manager) => {
         await manager.save(newEquipment)
         method.equipment_information = newEquipment
+        await manager.save(method)
+      })
+
+      return handleOK(method)
+    } catch (error) {
+      return handleInternalServerError(error.message)
+    }
+  }
+
+  async environmentalConditions(
+    environmentalConditions: EnvironmentalConditionsDto,
+    methodId: number,
+  ) {
+    const method = await this.NI_MCIT_P_01Repository.findOne({
+      where: { id: methodId },
+      relations: ['environmental_conditions'],
+    })
+
+    const newEnvironmentalConditions =
+      this.EnvironmentalConditionsNI_MCIT_P_01Repository.create(
+        environmentalConditions,
+      )
+
+    try {
+      this.dataSource.transaction(async (manager) => {
+        await manager.save(newEnvironmentalConditions)
+        method.environmental_conditions = newEnvironmentalConditions
         await manager.save(method)
       })
 
