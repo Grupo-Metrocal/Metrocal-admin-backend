@@ -21,6 +21,7 @@ export class EnvironmentalConditionsNI_MCIT_P_01 {
 }
 
 export interface ICycles_NI_MCIT_P_01 {
+  cicles: number
   ta: {
     tac: {
       initial: number
