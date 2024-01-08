@@ -20,7 +20,7 @@ export class NI_MCIT_D_02 {
       onUpdate: 'CASCADE',
     },
   )
-  equipment_information: EnvironmentalConditionsNI_MCIT_D_02
+  equipment_information: EquipmentInformationNI_MCIT_D_02
 
   @ManyToOne(
     () => EnvironmentalConditionsNI_MCIT_D_02,

@@ -1,6 +1,6 @@
 import { ApiProperty } from "@nestjs/swagger";
 
-export class InstrumentZeroCheckDto {
+export class InstrumentZeroCheckNI_MCIT_D_02Dto {
   @ApiProperty()
   x1: number;
 

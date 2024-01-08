@@ -1,7 +1,7 @@
 import { ApiProperty } from "@nestjs/swagger";
 import { ICycles_NI_MCIT_D_02, ITime_NI_MCIT_D_02 } from "../../entities/NI_MCIT_D_02/steps/environmental_conditions.entity";
 
-export class EnvironmentalConditionsDto {
+export class EnvironmentalConditionsNI_MCIT_D_02Dto {
     @ApiProperty()
     cycles: ICycles_NI_MCIT_D_02[];
     
