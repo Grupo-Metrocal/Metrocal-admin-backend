@@ -3,7 +3,7 @@ import { ICycles_NI_MCIT_D_02, ITime_NI_MCIT_D_02 } from "../../entities/NI_MCIT
 
 export class EnvironmentalConditionsNI_MCIT_D_02Dto {
     @ApiProperty()
-    cycles: ICycles_NI_MCIT_D_02[];
+    cycles: ICycles_NI_MCIT_D_02;
     
     @ApiProperty()
     equipment_used: string;

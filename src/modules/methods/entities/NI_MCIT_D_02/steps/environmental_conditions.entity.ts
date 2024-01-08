@@ -17,7 +17,7 @@ export class EnvironmentalConditionsNI_MCIT_D_02 {
   NI_MCIT_D_02: NI_MCIT_D_02
 
   @Column('jsonb', { nullable: true })
-  cycles?: ICycles_NI_MCIT_D_02[]
+  cycles?: ICycles_NI_MCIT_D_02
 
   @Column({ nullable: true })
   equipment_used?: string

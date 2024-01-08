@@ -2,10 +2,13 @@ import { Controller, Get, Post, Body, Param } from '@nestjs/common'
 import { MethodsService } from './methods.service'
 import { ApiTags } from '@nestjs/swagger'
 import { NI_MCIT_P_01Service } from './ni-mcit-p-01.service'
-import { EquipmentInformationDto } from './dto/NI_MCIT_P_01/equipment_information.dto'
-import { EquipmentInformationNI_MCIT_D_02Dto } from './dto/NI_MCIT_D_02/equipment_information.dto'
-import { EnvironmentalConditionsDto } from './dto/NI_MCIT_P_01/environmental_condition.dto'
 import { NI_MCIT_D_02Service } from './ni-mcit-d-02.service'
+
+import { EquipmentInformationDto } from './dto/NI_MCIT_P_01/equipment_information.dto'
+import { EnvironmentalConditionsDto } from './dto/NI_MCIT_P_01/environmental_condition.dto'
+
+import { EquipmentInformationNI_MCIT_D_02Dto } from './dto/NI_MCIT_D_02/equipment_information.dto'
+import { EnvironmentalConditionsNI_MCIT_D_02Dto } from './dto/NI_MCIT_D_02/environmental_conditions.dto'
 
 @ApiTags('methods')
 @Controller('methods')
@@ -66,6 +69,17 @@ export class MethodsController {
   ) {
     return await this.ni_mcit_d_02Service.equipmentInformation(
       equipment,
+      methodId,
+    )
+  }
+
+  @Post('ni-mcit-d-02/environmental-conditions/:methodId')
+  async createNI_MCIT_D_02EnvironmentalConditions(
+    @Body() environmentalConditions: EnvironmentalConditionsNI_MCIT_D_02Dto,
+    @Param('methodId') methodId: number,
+  ) {
+    return await this.ni_mcit_d_02Service.environmentalConditions(
+      environmentalConditions,
       methodId,
     )
   }
