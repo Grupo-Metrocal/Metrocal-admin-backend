@@ -89,7 +89,7 @@ export class MethodsService {
         relations: [
           'equipment_information',
           'environmental_conditions',
-          'pattern_description',
+          'description_pattern',
           'pre_installation_comment',
           'instrument_zero_check',
           'accuracy_test',

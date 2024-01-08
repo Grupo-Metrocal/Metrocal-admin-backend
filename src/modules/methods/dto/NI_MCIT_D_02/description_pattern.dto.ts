@@ -1,15 +1,15 @@
 import { ApiProperty } from '@nestjs/swagger'
 
-export class descriptionPatternNI_MCIT_D_02Dto {
+export class DescriptionPatternNI_MCIT_D_02Dto {
   @ApiProperty()
-  NI_MCPD_01: string
+  NI_MCPD_01: number
 
   @ApiProperty()
-  NI_MCPD_02: string
+  NI_MCPD_02: number
 
   @ApiProperty()
-  NI_MCPD_03: string
+  NI_MCPD_03: number
 
   @ApiProperty()
-  NI_MCPD_04: string
+  NI_MCPD_04: number
 }

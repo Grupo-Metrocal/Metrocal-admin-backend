@@ -9,6 +9,7 @@ import { EnvironmentalConditionsDto } from './dto/NI_MCIT_P_01/environmental_con
 
 import { EquipmentInformationNI_MCIT_D_02Dto } from './dto/NI_MCIT_D_02/equipment_information.dto'
 import { EnvironmentalConditionsNI_MCIT_D_02Dto } from './dto/NI_MCIT_D_02/environmental_conditions.dto'
+import { DescriptionPatternNI_MCIT_D_02Dto } from './dto/NI_MCIT_D_02/description_pattern.dto'
 
 @ApiTags('methods')
 @Controller('methods')
@@ -80,6 +81,17 @@ export class MethodsController {
   ) {
     return await this.ni_mcit_d_02Service.environmentalConditions(
       environmentalConditions,
+      methodId,
+    )
+  }
+
+  @Post('ni-mcit-d-02/description-pattern/:methodId')
+  async createNI_MCIT_D_02DescriptionPattern(
+    @Body() descriptionPattern: DescriptionPatternNI_MCIT_D_02Dto,
+    @Param('methodId') methodId: number,
+  ) {
+    return await this.ni_mcit_d_02Service.descriptionPattern(
+      descriptionPattern,
       methodId,
     )
   }

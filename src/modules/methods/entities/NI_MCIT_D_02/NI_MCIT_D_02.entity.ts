@@ -42,7 +42,7 @@ export class NI_MCIT_D_02 {
       onUpdate: 'CASCADE',
     },
   )
-  pattern_description: DescriptionPatternNI_MCIT_D_02
+  description_pattern: DescriptionPatternNI_MCIT_D_02
 
   @ManyToOne(
     () => PreInstallationCommentNI_MCIT_D_02,

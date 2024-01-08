@@ -8,7 +8,7 @@ export class DescriptionPatternNI_MCIT_D_02 {
 
   @OneToMany(
     () => NI_MCIT_D_02,
-    (NI_MCIT_D_02) => NI_MCIT_D_02.pattern_description,
+    (NI_MCIT_D_02) => NI_MCIT_D_02.description_pattern,
     {
       onDelete: 'CASCADE',
       onUpdate: 'CASCADE',
@@ -17,14 +17,14 @@ export class DescriptionPatternNI_MCIT_D_02 {
   NI_MCIT_D_02: NI_MCIT_D_02[]
 
   @Column({ nullable: true })
-  NI_MCPD_01?: string
+  NI_MCPD_01?: number
 
   @Column({ nullable: true })
-  NI_MCPD_02?: string
+  NI_MCPD_02?: number
 
   @Column({ nullable: true })
-  NI_MCPD_03?: string
+  NI_MCPD_03?: number
 
   @Column({ nullable: true })
-  NI_MCPD_04?: string
+  NI_MCPD_04?: number
 }
