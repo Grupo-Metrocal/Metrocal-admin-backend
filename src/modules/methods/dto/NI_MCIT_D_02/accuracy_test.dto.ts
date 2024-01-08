@@ -1,10 +1,26 @@
 import { ApiProperty } from "@nestjs/swagger";
-import { IMeasure } from "../../entities/NI_MCIT_D_02/steps/accuracy_test.entity";
 
 export class AccuracyTestNI_MCIT_D_02Dto {
   @ApiProperty()
   nominal_value: number;
+  
+  @ApiProperty({ type: () => [IMeasure] })
+  measure: IMeasure[];
+}
+
+class IMeasure {
+  @ApiProperty()
+  x1: number
 
   @ApiProperty()
-  measure: IMeasure[];
+  x2: number
+
+  @ApiProperty()
+  x3: number
+
+  @ApiProperty()
+  x4: number
+
+  @ApiProperty()
+  x5: number
 }

@@ -12,6 +12,7 @@ import { EnvironmentalConditionsNI_MCIT_D_02Dto } from './dto/NI_MCIT_D_02/envir
 import { DescriptionPatternNI_MCIT_D_02Dto } from './dto/NI_MCIT_D_02/description_pattern.dto'
 import { PreInstallationCommentNI_MCIT_D_02Dto } from './dto/NI_MCIT_D_02/pre_installation_comment.dto'
 import { InstrumentZeroCheckNI_MCIT_D_02Dto } from './dto/NI_MCIT_D_02/instrument_zero_check.dto'
+import { AccuracyTestNI_MCIT_D_02Dto } from './dto/NI_MCIT_D_02/accuracy_test.dto'
 
 @ApiTags('methods')
 @Controller('methods')
@@ -116,6 +117,17 @@ export class MethodsController {
   ) {
     return await this.ni_mcit_d_02Service.instrumentZeroCheck(
       instrumentZeroCheck,
+      methodId,
+    )
+  }
+
+  @Post('ni-mcit-d-02/accuracy-test/:methodId')
+  async createNI_MCIT_D_02AccuracyTest(
+    @Body() accuracyTest: AccuracyTestNI_MCIT_D_02Dto,
+    @Param('methodId') methodId: number,
+  ) {
+    return await this.ni_mcit_d_02Service.accuracyTest(
+      accuracyTest,
       methodId,
     )
   }
