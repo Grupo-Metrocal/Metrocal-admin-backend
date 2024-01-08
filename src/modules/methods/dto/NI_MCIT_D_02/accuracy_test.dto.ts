@@ -1,11 +1,11 @@
-import { ApiProperty } from "@nestjs/swagger";
+import { ApiProperty } from '@nestjs/swagger'
 
 export class AccuracyTestNI_MCIT_D_02Dto {
   @ApiProperty()
-  nominal_value: number;
-  
+  nominal_value: number
+
   @ApiProperty({ type: () => [IMeasure] })
-  measure: IMeasure[];
+  measure: IMeasure[]
 }
 
 class IMeasure {

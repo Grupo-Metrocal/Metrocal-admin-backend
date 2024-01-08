@@ -21,7 +21,6 @@ export class MethodsController {
     private readonly methodsService: MethodsService,
     private readonly ni_mcit_p_01Service: NI_MCIT_P_01Service,
     private readonly ni_mcit_d_02Service: NI_MCIT_D_02Service,
-
   ) {}
 
   @Get()
@@ -126,9 +125,6 @@ export class MethodsController {
     @Body() accuracyTest: AccuracyTestNI_MCIT_D_02Dto,
     @Param('methodId') methodId: number,
   ) {
-    return await this.ni_mcit_d_02Service.accuracyTest(
-      accuracyTest,
-      methodId,
-    )
+    return await this.ni_mcit_d_02Service.accuracyTest(accuracyTest, methodId)
   }
 }

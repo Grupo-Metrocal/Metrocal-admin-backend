@@ -22,7 +22,7 @@ export class NI_MCIT_D_02Service {
     private readonly dataSource: DataSource,
     @InjectRepository(NI_MCIT_D_02)
     private readonly NI_MCIT_D_02Repository: Repository<NI_MCIT_D_02>,
-  
+
     @InjectRepository(EquipmentInformationNI_MCIT_D_02)
     private readonly EquipmentInformationRepository: Repository<EquipmentInformationNI_MCIT_D_02>,
     @InjectRepository(EnvironmentalConditionsNI_MCIT_D_02)
@@ -56,8 +56,7 @@ export class NI_MCIT_D_02Service {
       relations: ['equipment_information'],
     })
 
-    const newEquipment =
-      this.EquipmentInformationRepository.create(equipment)
+    const newEquipment = this.EquipmentInformationRepository.create(equipment)
 
     try {
       this.dataSource.transaction(async (manager) => {
@@ -95,7 +94,7 @@ export class NI_MCIT_D_02Service {
     }
   }
 
-  async descriptionPattern (
+  async descriptionPattern(
     descriptionPattern: DescriptionPatternNI_MCIT_D_02Dto,
     methodId: number,
   ) {
@@ -176,8 +175,7 @@ export class NI_MCIT_D_02Service {
       relations: ['accuracy_test'],
     })
 
-    const newAccuracyTest =
-      this.AccuracyTestRepository.create(accuracyTest)
+    const newAccuracyTest = this.AccuracyTestRepository.create(accuracyTest)
 
     try {
       this.dataSource.transaction(async (manager) => {

@@ -29,18 +29,18 @@ export class EnvironmentalConditionsNI_MCIT_D_02 {
   stabilization_site?: string
 }
 
-export interface ICycles_NI_MCIT_D_02 {
+interface ICycles_NI_MCIT_D_02 {
   ta: {
     initial: number
-    final: number
+    end: number
   }
   hr: {
     initial: number
-    final: number
+    end: number
   }
 }
 
-export interface ITime_NI_MCIT_D_02 {
+interface ITime_NI_MCIT_D_02 {
   hour: number
   minute: number
 }

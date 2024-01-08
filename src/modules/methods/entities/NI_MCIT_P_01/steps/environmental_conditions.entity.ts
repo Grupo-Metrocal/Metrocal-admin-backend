@@ -25,18 +25,18 @@ export interface ICycles_NI_MCIT_P_01 {
   ta: {
     tac: {
       initial: number
-      final: number
+      end: number
     }
     hrp: {
       initial: number
-      final: number
+      end: number
     }
     equipement: string
   }
   hPa: {
     pa: {
       initial: number
-      final: number
+      end: number
     }
     equipement: string
   }

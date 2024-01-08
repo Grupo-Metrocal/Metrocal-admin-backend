@@ -19,7 +19,7 @@ export class AccuracyTestNI_MCIT_D_02 {
   measure?: IMeasure[]
 }
 
-export interface IMeasure {
+interface IMeasure {
   x1: number
   x2: number
   x3: number

@@ -1,27 +1,27 @@
-import { ApiProperty } from "@nestjs/swagger";
+import { ApiProperty } from '@nestjs/swagger'
 
 export class EquipmentInformationNI_MCIT_D_02Dto {
   @ApiProperty()
-  device: string;
+  device: string
 
   @ApiProperty()
-  maker: string;
+  maker: string
 
   @ApiProperty()
-  serial_number: string;
+  serial_number: string
 
   @ApiProperty()
-  measurement_range: string;
+  measurement_range: string
 
   @ApiProperty()
-  resolution: string;
+  resolution: string
 
   @ApiProperty()
-  model: string;
+  model: string
 
   @ApiProperty()
-  code: string;
+  code: string
 
   @ApiProperty()
-  legth: string;
+  legth: string
 }

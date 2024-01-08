@@ -8,14 +8,13 @@ export class PreInstallationCommentNI_MCIT_D_02 {
 
   @OneToMany(
     () => NI_MCIT_D_02,
-    (NI_MCIT_D_02) =>
-      NI_MCIT_D_02.pre_installation_comment,
+    (NI_MCIT_D_02) => NI_MCIT_D_02.pre_installation_comment,
     {
       onDelete: 'CASCADE',
       onUpdate: 'CASCADE',
     },
   )
-    NI_MCIT_D_02: NI_MCIT_D_02[]
+  NI_MCIT_D_02: NI_MCIT_D_02[]
 
   @Column({ nullable: true })
   comment?: string
