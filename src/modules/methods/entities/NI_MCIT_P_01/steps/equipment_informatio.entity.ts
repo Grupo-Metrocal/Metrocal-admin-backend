@@ -40,11 +40,11 @@ export class EquipmentInformationNI_MCIT_P_01 {
   @Column({ type: 'varchar', nullable: true })
   code?: string
 
-  @Column({ type: 'varchar', nullable: true })
-  height_difference?: string
+  @Column({ type: 'float', nullable: true })
+  height_difference?: number
 
-  @Column({ type: 'varchar', nullable: true })
-  resolution?: string
+  @Column({ type: 'float', nullable: true })
+  resolution?: number
 
   @Column({ type: 'float', nullable: true })
   scale?: number
