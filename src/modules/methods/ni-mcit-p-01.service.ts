@@ -49,13 +49,26 @@ export class NI_MCIT_P_01Service {
       relations: ['equipment_information'],
     })
 
-    const newEquipment =
-      this.EquipmentInformationNI_MCIT_P_01Repository.create(equipment)
+    if (!method) {
+      return handleInternalServerError('El método no existe')
+    }
+
+    const existingEquipment = method.equipment_information
+
+    if (existingEquipment) {
+      this.EquipmentInformationNI_MCIT_P_01Repository.merge(
+        existingEquipment,
+        equipment,
+      )
+    } else {
+      const newEquipment =
+        this.EquipmentInformationNI_MCIT_P_01Repository.create(equipment)
+      method.equipment_information = newEquipment
+    }
 
     try {
-      this.dataSource.transaction(async (manager) => {
-        await manager.save(newEquipment)
-        method.equipment_information = newEquipment
+      await this.dataSource.transaction(async (manager) => {
+        await manager.save(method.equipment_information)
         await manager.save(method)
       })
 
@@ -74,15 +87,28 @@ export class NI_MCIT_P_01Service {
       relations: ['environmental_conditions'],
     })
 
-    const newEnvironmentalConditions =
-      this.EnvironmentalConditionsNI_MCIT_P_01Repository.create(
+    if (!method) {
+      return handleInternalServerError('El método no existe')
+    }
+
+    const existingEnvironmentalConditions = method.environmental_conditions
+
+    if (existingEnvironmentalConditions) {
+      this.EnvironmentalConditionsNI_MCIT_P_01Repository.merge(
+        existingEnvironmentalConditions,
         environmentalConditions,
       )
+    } else {
+      const newEnvironmentalConditions =
+        this.EnvironmentalConditionsNI_MCIT_P_01Repository.create(
+          environmentalConditions,
+        )
+      method.environmental_conditions = newEnvironmentalConditions
+    }
 
     try {
-      this.dataSource.transaction(async (manager) => {
-        await manager.save(newEnvironmentalConditions)
-        method.environmental_conditions = newEnvironmentalConditions
+      await this.dataSource.transaction(async (manager) => {
+        await manager.save(method.environmental_conditions)
         await manager.save(method)
       })
 
