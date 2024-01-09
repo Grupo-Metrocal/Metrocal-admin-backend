@@ -26,10 +26,10 @@ export class EquipmentInformationDto {
   code?: string
 
   @ApiProperty()
-  height_difference?: string
+  height_difference?: number
 
   @ApiProperty()
-  resolution?: string
+  resolution?: number
 
   @ApiProperty()
   scale?: number
