@@ -4,6 +4,7 @@ import { Repository, DataSource } from 'typeorm'
 import { NI_MCIT_P_01 } from './entities/NI_MCIT_P_01/NI_MCIT_P_01.entity'
 import { EquipmentInformationDto } from './dto/NI_MCIT_P_01/equipment_information.dto'
 import { EnvironmentalConditionsDto } from './dto/NI_MCIT_P_01/environmental_condition.dto'
+import { CalibrationResultsDto } from './dto/NI_MCIT_P_01/calibraion_results.dto'
 
 // entities
 import { EquipmentInformationNI_MCIT_P_01 } from './entities/NI_MCIT_P_01/steps/equipment_informatio.entity'
@@ -109,6 +110,44 @@ export class NI_MCIT_P_01Service {
     try {
       await this.dataSource.transaction(async (manager) => {
         await manager.save(method.environmental_conditions)
+        await manager.save(method)
+      })
+
+      return handleOK(method)
+    } catch (error) {
+      return handleInternalServerError(error.message)
+    }
+  }
+
+  async calibrationResults(
+    calibrationResults: CalibrationResultsDto,
+    methodId: number,
+  ) {
+    const method = await this.NI_MCIT_P_01Repository.findOne({
+      where: { id: methodId },
+      relations: ['calibration_results'],
+    })
+
+    if (!method) {
+      return handleInternalServerError('El método no existe')
+    }
+
+    const existingCalibrationResults = method.calibration_results
+
+    if (existingCalibrationResults) {
+      this.CalibrationResultsNI_MCIT_P_01Repository.merge(
+        existingCalibrationResults,
+        calibrationResults,
+      )
+    } else {
+      const newCalibrationResults =
+        this.CalibrationResultsNI_MCIT_P_01Repository.create(calibrationResults)
+      method.calibration_results = newCalibrationResults
+    }
+
+    try {
+      await this.dataSource.transaction(async (manager) => {
+        await manager.save(method.calibration_results)
         await manager.save(method)
       })
 
