@@ -4,6 +4,7 @@ import { ApiTags } from '@nestjs/swagger'
 import { NI_MCIT_P_01Service } from './ni-mcit-p-01.service'
 import { EquipmentInformationDto } from './dto/NI_MCIT_P_01/equipment_information.dto'
 import { EnvironmentalConditionsDto } from './dto/NI_MCIT_P_01/environmental_condition.dto'
+import { CalibrationResultsDto } from './dto/NI_MCIT_P_01/calibraion_results.dto'
 
 @ApiTags('methods')
 @Controller('methods')
@@ -41,6 +42,17 @@ export class MethodsController {
   ) {
     return await this.ni_mcit_p_01Service.environmentalConditions(
       environmentalConditions,
+      methodId,
+    )
+  }
+
+  @Post('ni-mcit-p-01/calibratrion-results/:methodId')
+  async createNI_MCIT_P_01CalibratrionResults(
+    @Body() calibrations: CalibrationResultsDto,
+    @Param('methodId') methodId: number,
+  ) {
+    return await this.ni_mcit_p_01Service.calibrationResults(
+      calibrations,
       methodId,
     )
   }
