@@ -16,9 +16,6 @@ export class DescriptionPatternNI_MCIT_P_01 {
   )
   NI_MCIT_P_01: NI_MCIT_P_01[]
 
-  @Column({ type: 'varchar', nullable: true })
-  description?: string
-
   @Column({ type: 'float', nullable: true })
   ni_mcpp_1?: number
 
