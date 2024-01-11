@@ -18,6 +18,11 @@ export class ActivitiesController {
     return await this.activitiesService.getAllActivities()
   }
 
+  @Get(':id')
+  async getActivityById(@Param('id') id: number) {
+    return await this.activitiesService.getActivitiesByUser(id)
+  }
+
   @UseGuards(JwtAuthGuard)
   @Post('assign-members')
   async assignActivity(
