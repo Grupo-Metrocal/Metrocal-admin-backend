@@ -18,7 +18,7 @@ export class ActivitiesController {
     return await this.activitiesService.getAllActivities()
   }
 
-  @Get(':id')
+  @Get('user/:id')
   async getActivityById(@Param('id') id: number) {
     return await this.activitiesService.getActivitiesByUser(id)
   }
@@ -55,5 +55,11 @@ export class ActivitiesController {
     return await this.activitiesService.assingResponsableToActivity(
       addResponsableDto,
     )
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Get('get-services/:id')
+  async getActivitiesByUser(@Param('id') id: number) {
+    return await this.activitiesService.getServicesByActivity(id)
   }
 }
