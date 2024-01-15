@@ -255,6 +255,7 @@ export class ActivitiesService {
 
       const data = activities.map((activity) => {
         return {
+          id: activity.id,
           client: activity.quote_request.client.company_name,
           progress: activity.progress,
           staus: activity.status,
@@ -270,6 +271,46 @@ export class ActivitiesService {
         }
       })
 
+      return handleOK(data)
+    } catch (error) {
+      return handleInternalServerError(error.message)
+    }
+  }
+
+  async getServicesByActivity(activityID: number) {
+    try {
+      const response = await this.activityRepository
+        .createQueryBuilder('activities')
+        .innerJoinAndSelect('activities.quote_request', 'quote_request')
+        .innerJoinAndSelect(
+          'quote_request.equipment_quote_request',
+          'equipment_quote_request',
+        )
+        .where(`activities.id = ${activityID}`)
+        .getOne()
+
+      const equipments = response.quote_request.equipment_quote_request.map(
+        (service) => {
+          return {
+            id: service.id,
+            name: service.name,
+            status: service.status,
+            type_service: service.type_service,
+            count: service.count,
+            price: service.price,
+            total: service.total,
+            method_id: service.method_id,
+          }
+        },
+      )
+
+      const data = {
+        activity_id: response.id,
+        quote_request_id: response.quote_request.id,
+        status: response.status,
+        created_at: response.created_at,
+        equipment_quote_request: equipments,
+      }
       return handleOK(data)
     } catch (error) {
       return handleInternalServerError(error.message)
