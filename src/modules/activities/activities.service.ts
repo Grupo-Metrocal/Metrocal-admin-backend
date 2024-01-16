@@ -316,4 +316,54 @@ export class ActivitiesService {
       return handleInternalServerError(error.message)
     }
   }
+
+  async updateProgress(activityID: number) {
+    const activity = await this.activityRepository.findOne({
+      where: { id: activityID },
+      relations: ['quote_request', 'quote_request.equipment_quote_request'],
+    })
+
+    if (!activity) {
+      return handleInternalServerError('Actividad no encontrada')
+    }
+
+    const { equipment_quote_request } = activity.quote_request
+
+    const servicesDone = equipment_quote_request.filter(
+      (service) => service.review_status === 'done',
+    )
+
+    const progress =
+      (servicesDone.length / equipment_quote_request.length) * 100
+
+    try {
+      activity.progress = progress
+
+      await this.activityRepository.save(activity)
+
+      return handleOK(activity)
+    } catch (error) {
+      return handleInternalServerError(error.message)
+    }
+  }
+
+  async finishActivity(activityID: number) {
+    const activity = await this.activityRepository.findOne({
+      where: { id: activityID },
+    })
+
+    if (!activity) {
+      return handleInternalServerError('Actividad no encontrada')
+    }
+
+    try {
+      activity.status = 'done'
+
+      await this.activityRepository.save(activity)
+
+      return handleOK(activity)
+    } catch (error) {
+      return handleInternalServerError(error.message)
+    }
+  }
 }
