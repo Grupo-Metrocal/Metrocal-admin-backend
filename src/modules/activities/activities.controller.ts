@@ -62,4 +62,10 @@ export class ActivitiesController {
   async getActivitiesByUser(@Param('id') id: number) {
     return await this.activitiesService.getServicesByActivity(id)
   }
+
+  @UseGuards(JwtAuthGuard)
+  @Get('finished-activity/:id')
+  async finishActivity(@Param('id') id: number) {
+    return await this.activitiesService.finishActivity(id)
+  }
 }
