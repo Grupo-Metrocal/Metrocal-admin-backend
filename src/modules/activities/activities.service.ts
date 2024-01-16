@@ -29,6 +29,7 @@ export class ActivitiesService {
     const newActivity = this.activityRepository.create({
       ...activity,
       quote_request: quoteRequest,
+      status: 'pending',
     })
 
     quoteRequest.activity = newActivity
@@ -232,6 +233,85 @@ export class ActivitiesService {
       await this.activityRepository.save(activity)
 
       return handleOK(activity)
+    } catch (error) {
+      return handleInternalServerError(error.message)
+    }
+  }
+
+  async getActivitiesByUser(userID: number) {
+    try {
+      const activities = await this.activityRepository
+        .createQueryBuilder('activities')
+        .innerJoinAndSelect('activities.team_members', 'team_members')
+        .leftJoinAndSelect('activities.quote_request', 'quote_request')
+        .leftJoinAndSelect('quote_request.client', 'client')
+        .leftJoinAndSelect(
+          'quote_request.equipment_quote_request',
+          'equipment_quote_request',
+        )
+        .where(`team_members.id = ${userID}`)
+        .orderBy('activities.created_at', 'DESC')
+        .getMany()
+
+      const data = activities.map((activity) => {
+        return {
+          id: activity.id,
+          client: activity.quote_request.client.company_name,
+          progress: activity.progress,
+          status: activity.status,
+          services: activity.quote_request.equipment_quote_request.length,
+          team_members: activity.team_members.map((member) => {
+            return {
+              id: member.id,
+              username: member.username,
+              imageURL: member.imageURL,
+            }
+          }),
+          created_at: activity.created_at,
+        }
+      })
+
+      return handleOK(data)
+    } catch (error) {
+      return handleInternalServerError(error.message)
+    }
+  }
+
+  async getServicesByActivity(activityID: number) {
+    try {
+      const response = await this.activityRepository
+        .createQueryBuilder('activities')
+        .innerJoinAndSelect('activities.quote_request', 'quote_request')
+        .innerJoinAndSelect(
+          'quote_request.equipment_quote_request',
+          'equipment_quote_request',
+        )
+        .where(`activities.id = ${activityID}`)
+        .getOne()
+
+      const equipments = response.quote_request.equipment_quote_request.map(
+        (service) => {
+          return {
+            id: service.id,
+            name: service.name,
+            status: service.status,
+            type_service: service.type_service,
+            count: service.count,
+            price: service.price,
+            total: service.total,
+            method_id: service.method_id,
+          }
+        },
+      )
+
+      const data = {
+        activity_id: response.id,
+        quote_request_id: response.quote_request.id,
+        status: response.status,
+        created_at: response.created_at,
+        equipment_quote_request: equipments,
+      }
+      return handleOK(data)
     } catch (error) {
       return handleInternalServerError(error.message)
     }

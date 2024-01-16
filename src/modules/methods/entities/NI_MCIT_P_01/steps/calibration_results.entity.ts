@@ -21,10 +21,6 @@ export class CalibrationResultsNI_MCIT_P_01 {
 }
 
 export interface IResults_NI_MCIT_P_01 {
-  cycle: ICycle[]
-}
-
-interface ICycle {
   upward: {
     equipment: number
     pattern: number

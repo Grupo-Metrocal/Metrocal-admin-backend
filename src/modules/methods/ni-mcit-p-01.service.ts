@@ -3,6 +3,9 @@ import { InjectRepository } from '@nestjs/typeorm'
 import { Repository, DataSource } from 'typeorm'
 import { NI_MCIT_P_01 } from './entities/NI_MCIT_P_01/NI_MCIT_P_01.entity'
 import { EquipmentInformationDto } from './dto/NI_MCIT_P_01/equipment_information.dto'
+import { EnvironmentalConditionsDto } from './dto/NI_MCIT_P_01/environmental_condition.dto'
+import { CalibrationResultsDto } from './dto/NI_MCIT_P_01/calibraion_results.dto'
+import { DescriptionPatternDto } from './dto/NI_MCIT_P_01/description_pattern.dto'
 
 // entities
 import { EquipmentInformationNI_MCIT_P_01 } from './entities/NI_MCIT_P_01/steps/equipment_informatio.entity'
@@ -48,13 +51,142 @@ export class NI_MCIT_P_01Service {
       relations: ['equipment_information'],
     })
 
-    const newEquipment =
-      this.EquipmentInformationNI_MCIT_P_01Repository.create(equipment)
+    if (!method) {
+      return handleInternalServerError('El método no existe')
+    }
+
+    const existingEquipment = method.equipment_information
+
+    if (existingEquipment) {
+      this.EquipmentInformationNI_MCIT_P_01Repository.merge(
+        existingEquipment,
+        equipment,
+      )
+    } else {
+      const newEquipment =
+        this.EquipmentInformationNI_MCIT_P_01Repository.create(equipment)
+      method.equipment_information = newEquipment
+    }
 
     try {
-      this.dataSource.transaction(async (manager) => {
-        await manager.save(newEquipment)
-        method.equipment_information = newEquipment
+      await this.dataSource.transaction(async (manager) => {
+        await manager.save(method.equipment_information)
+        await manager.save(method)
+      })
+
+      return handleOK(method)
+    } catch (error) {
+      return handleInternalServerError(error.message)
+    }
+  }
+
+  async environmentalConditions(
+    environmentalConditions: EnvironmentalConditionsDto,
+    methodId: number,
+  ) {
+    const method = await this.NI_MCIT_P_01Repository.findOne({
+      where: { id: methodId },
+      relations: ['environmental_conditions'],
+    })
+
+    if (!method) {
+      return handleInternalServerError('El método no existe')
+    }
+
+    const existingEnvironmentalConditions = method.environmental_conditions
+
+    if (existingEnvironmentalConditions) {
+      this.EnvironmentalConditionsNI_MCIT_P_01Repository.merge(
+        existingEnvironmentalConditions,
+        environmentalConditions,
+      )
+    } else {
+      const newEnvironmentalConditions =
+        this.EnvironmentalConditionsNI_MCIT_P_01Repository.create(
+          environmentalConditions,
+        )
+      method.environmental_conditions = newEnvironmentalConditions
+    }
+
+    try {
+      await this.dataSource.transaction(async (manager) => {
+        await manager.save(method.environmental_conditions)
+        await manager.save(method)
+      })
+
+      return handleOK(method)
+    } catch (error) {
+      return handleInternalServerError(error.message)
+    }
+  }
+
+  async calibrationResults(
+    calibrationResults: CalibrationResultsDto,
+    methodId: number,
+  ) {
+    const method = await this.NI_MCIT_P_01Repository.findOne({
+      where: { id: methodId },
+      relations: ['calibration_results'],
+    })
+
+    if (!method) {
+      return handleInternalServerError('El método no existe')
+    }
+
+    const existingCalibrationResults = method.calibration_results
+
+    if (existingCalibrationResults) {
+      this.CalibrationResultsNI_MCIT_P_01Repository.merge(
+        existingCalibrationResults,
+        calibrationResults,
+      )
+    } else {
+      const newCalibrationResults =
+        this.CalibrationResultsNI_MCIT_P_01Repository.create(calibrationResults)
+      method.calibration_results = newCalibrationResults
+    }
+
+    try {
+      await this.dataSource.transaction(async (manager) => {
+        await manager.save(method.calibration_results)
+        await manager.save(method)
+      })
+
+      return handleOK(method)
+    } catch (error) {
+      return handleInternalServerError(error.message)
+    }
+  }
+
+  async descriptionPattern(
+    descriptionPattern: DescriptionPatternDto,
+    methodId: number,
+  ) {
+    const method = await this.NI_MCIT_P_01Repository.findOne({
+      where: { id: methodId },
+      relations: ['description_pattern'],
+    })
+
+    if (!method) {
+      return handleInternalServerError('El método no existe')
+    }
+
+    const existingDescriptionPattern = method.description_pattern
+
+    if (existingDescriptionPattern) {
+      this.DescriptionPatternNI_MCIT_P_01Repository.merge(
+        existingDescriptionPattern,
+        descriptionPattern,
+      )
+    } else {
+      const newDescriptionPattern =
+        this.DescriptionPatternNI_MCIT_P_01Repository.create(descriptionPattern)
+      method.description_pattern = newDescriptionPattern
+    }
+
+    try {
+      await this.dataSource.transaction(async (manager) => {
+        await manager.save(method.description_pattern)
         await manager.save(method)
       })
 
