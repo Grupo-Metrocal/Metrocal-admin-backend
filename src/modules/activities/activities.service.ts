@@ -258,7 +258,7 @@ export class ActivitiesService {
           id: activity.id,
           client: activity.quote_request.client.company_name,
           progress: activity.progress,
-          staus: activity.status,
+          status: activity.status,
           services: activity.quote_request.equipment_quote_request.length,
           team_members: activity.team_members.map((member) => {
             return {
