@@ -7,6 +7,7 @@ import { CreateMethodDto } from './dto/create-method.dto'
 import { handleBadrequest, handleOK } from 'src/common/handleHttp'
 import { Activity } from '../activities/entities/activities.entity'
 import { QuotesService } from '../quotes/quotes.service'
+import { NI_MCIT_D_01 } from './entities/NI_MCIT_D_01/NI_MCIT_D_01.entity'
 
 @Injectable()
 export class MethodsService {
@@ -15,6 +16,8 @@ export class MethodsService {
 
     @InjectRepository(NI_MCIT_P_01)
     private readonly NI_MCIT_P_01Repository: Repository<NI_MCIT_P_01>,
+    @InjectRepository(NI_MCIT_D_01)
+    private readonly NI_MCIT_D_01Repository: Repository<NI_MCIT_D_01>,
 
     @Inject(forwardRef(() => ActivitiesService))
     private readonly activitiesService: ActivitiesService,
@@ -98,4 +101,36 @@ export class MethodsService {
       return handleBadrequest(error.message)
     }
   }
+
+  //NI_MCIT_D_01
+  async getAllMethodsNI_MCIT_D_01() {
+    try {
+      const NI_MCIT_P_01 = await this.NI_MCIT_D_01Repository.find({
+        relations: [
+          'equipment_information',
+          'environmental_conditions',
+          'observation_prior_calibration',
+          'description_pattern',
+          'instrument_zero_check',
+          'external_parallelism_measurement',
+
+        ],
+      })
+      return handleOK(NI_MCIT_P_01)
+    } catch (error) {
+      return handleBadrequest(error.message)
+    }
+  }
+
+  async deleteAllMethodsNI_MCIT_D_01() {
+    try {
+      await this.dataSource.transaction(async (manager) => {
+        await manager.delete(NI_MCIT_D_01, {})
+      })
+      return handleOK('Deleted all methods')
+    } catch (error) {
+      return handleBadrequest(error.message)
+    }
+  }
+
 }

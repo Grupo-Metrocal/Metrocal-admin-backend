@@ -30,32 +30,7 @@ export class UsersService {
     private readonly tokenService: TokenService,
   ) {}
   async createUser(createUserDto: CreateUserDto) {
-    const user = await this.userRepository.findOneBy({
-      email: createUserDto.email,
-    })
-
-    if (user) return handleBadrequest(new Error('El usuario ya existe'))
-
-    const role = (await this.rolesService.getUserRole()) as any
-    const hashedPassword = await hash(createUserDto.password, 10)
-    const newUser = this.userRepository.create({
-      ...createUserDto,
-      password: hashedPassword,
-    })
-    try {
-      await this.mailService.sendMailWelcomeApp({
-        user: createUserDto.email,
-        name: createUserDto.username,
-      })
-      const response = await this.userRepository.save(newUser)
-      const saved = await this.assignRole(response.id, role.data.id as number)
-
-      delete saved.data.password
-
-      return handleOK(saved.data)
-    } catch (error) {
-      return handleInternalServerError(error.message)
-    }
+    createUserDto
   }
 
   async createAdmin(createUserDto: CreateUserDto) {
@@ -64,7 +39,7 @@ export class UsersService {
     })
     if (user) return handleBadrequest(new Error('El usuario ya existe'))
 
-    const role = (await this.rolesService.getAdminRole()) as any
+    const role = (await this.rolesService.getUserRole()) as any
     const hashedPassword = await hash(createUserDto.password, 10)
     const newUser = this.userRepository.create({
       ...createUserDto,
@@ -367,13 +342,9 @@ export class UsersService {
         where: { email: user.email },
       })
       if (!userExists) {
-<<<<<<< HEAD
-        const userCreated = await this.createUser({
-=======
         // if (user.ignore) return
         console.log(`Creando usuario: ${user.username}`)
-        const userCreated = await this.create({
->>>>>>> 1b02da68f41cb54755cb9cbc36444b76121c62af
+       /* const userCreated = await this.create({
           username: user.username,
           email: user.email,
           password: user.password,
@@ -384,7 +355,7 @@ export class UsersService {
           await this.assignRole(userCreated.data.id, role.data.id as number)
         } else {
           return handleBadrequest(new Error('Error al crear usuario'))
-        }
+        }*/
       }
     })
   }
@@ -400,15 +371,4 @@ export class UsersService {
     }
   }
 
-  async fubn(username: string){
-    const user = await this.userRepository.findOne({
-      where: { username },
-      relations: ['roles', 'quote_requests', 'activities'],
-    })
-    if (!user) return handleBadrequest(new Error('Usuario no encontrado'))
-
-    return handleOK(user)
-  }
-
- 
 }

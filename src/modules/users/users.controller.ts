@@ -28,11 +28,6 @@ import { FileInterceptor } from '@nestjs/platform-express'
 export class UsersController {
   constructor(private readonly usersService: UsersService) {}
 
-  @Get('pro')
-  async getroless(@Param('name') name:string){
-    return await this.usersService.fubn(name)
-  }
-
   @UseGuards(JwtAuthGuard)
   @Post()
   async create(@Body() user: CreateUserDto) {
