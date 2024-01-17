@@ -22,7 +22,7 @@ export class AuthService {
 
     const userFound = await this.userRepository.findOne({
       where: { email },
-      select: ['id', 'username', 'password'],
+      select: ['id', 'username', 'password', 'imageURL'],
       relations: ['roles'],
     })
     if (!userFound) return handleBadrequest(new Error('Credenciales inválidas'))
