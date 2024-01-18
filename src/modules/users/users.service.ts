@@ -86,6 +86,7 @@ export class UsersService {
               name: role.name,
               description: role.description,
               priority: role.priority,
+              label: role.label,
             }
           }),
           imageURL: user.imageURL,
