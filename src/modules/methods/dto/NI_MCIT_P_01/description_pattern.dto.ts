@@ -5,14 +5,5 @@ export class DescriptionPatternDto {
   observation?: string
 
   @ApiProperty()
-  ni_mcpp_1?: number
-
-  @ApiProperty()
-  ni_mcpp_2?: number
-
-  @ApiProperty()
-  ni_mcpp_3?: number
-
-  @ApiProperty()
-  ni_mcpve?: number
+  pattern?: string
 }
