@@ -289,20 +289,20 @@ export class ActivitiesService {
         .where(`activities.id = ${activityID}`)
         .getOne()
 
-      const equipments = response.quote_request.equipment_quote_request.map(
-        (service) => {
-          return {
-            id: service.id,
-            name: service.name,
-            status: service.status,
-            type_service: service.type_service,
-            count: service.count,
-            price: service.price,
-            total: service.total,
-            method_id: service.method_id,
-          }
-        },
-      )
+      const equipments = response.quote_request.equipment_quote_request
+        .filter(
+          (service) => service.type_service.toLowerCase() === 'calibracion',
+        )
+        .map((service) => ({
+          id: service.id,
+          name: service.name,
+          status: service.status,
+          type_service: service.type_service,
+          count: service.count,
+          price: service.price,
+          total: service.total,
+          method_id: service.method_id,
+        }))
 
       const data = {
         activity_id: response.id,
