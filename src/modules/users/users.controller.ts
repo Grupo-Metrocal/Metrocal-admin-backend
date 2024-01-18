@@ -41,7 +41,6 @@ export class UsersController {
     return await this.usersService.create(user)
   }
 
-  @UseGuards(JwtAuthGuard)
   @Get()
   async findAll() {
     return this.usersService.findAll()
@@ -105,25 +104,22 @@ export class UsersController {
 
   @UseGuards(JwtAuthGuard)
   @Put('profile/:token')
-  async update(
-    @Param('token') token: string,
-    @Body() user: UpdateUserDto,
-  ) {
+  async update(@Param('token') token: string, @Body() user: UpdateUserDto) {
     return await this.usersService.updateUserByToken(token, user)
   }
 
-  @UseGuards(JwtAuthGuard)
   @Put('image-profile/:token')
   @UseInterceptors(FileInterceptor('image'))
   async updateImageProfile(
     @Param('token') token: string,
     @UploadedFile(
-      new ParseFilePipeBuilder().addFileTypeValidator({
-        fileType: 'image',
-      })
-      .build({
-        fileIsRequired: false,
-      })
+      new ParseFilePipeBuilder()
+        .addFileTypeValidator({
+          fileType: 'image',
+        })
+        .build({
+          fileIsRequired: false,
+        }),
     )
     image: Express.Multer.File,
   ) {
