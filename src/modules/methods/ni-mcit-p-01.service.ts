@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common'
+import { Injectable, forwardRef, Inject } from '@nestjs/common'
 import { InjectRepository } from '@nestjs/typeorm'
 import { Repository, DataSource } from 'typeorm'
 import { NI_MCIT_P_01 } from './entities/NI_MCIT_P_01/NI_MCIT_P_01.entity'
@@ -6,6 +6,8 @@ import { EquipmentInformationDto } from './dto/NI_MCIT_P_01/equipment_informatio
 import { EnvironmentalConditionsDto } from './dto/NI_MCIT_P_01/environmental_condition.dto'
 import { CalibrationResultsDto } from './dto/NI_MCIT_P_01/calibraion_results.dto'
 import { DescriptionPatternDto } from './dto/NI_MCIT_P_01/description_pattern.dto'
+import { ActivitiesService } from '../activities/activities.service'
+import { Activity } from '../activities/entities/activities.entity'
 
 // entities
 import { EquipmentInformationNI_MCIT_P_01 } from './entities/NI_MCIT_P_01/steps/equipment_informatio.entity'
@@ -13,6 +15,9 @@ import { EnvironmentalConditionsNI_MCIT_P_01 } from './entities/NI_MCIT_P_01/ste
 import { CalibrationResultsNI_MCIT_P_01 } from './entities/NI_MCIT_P_01/steps/calibration_results.entity'
 import { DescriptionPatternNI_MCIT_P_01 } from './entities/NI_MCIT_P_01/steps/description_pattern.entity'
 import { handleInternalServerError, handleOK } from 'src/common/handleHttp'
+import { generateServiceCodeToMethod } from 'src/utils/codeGenerator'
+import { formatDate } from 'src/utils/formatDate'
+import { calculateEnvironmentConditions } from 'src/utils/methods/functions_P_01'
 
 @Injectable()
 export class NI_MCIT_P_01Service {
@@ -29,6 +34,9 @@ export class NI_MCIT_P_01Service {
     private readonly CalibrationResultsNI_MCIT_P_01Repository: Repository<CalibrationResultsNI_MCIT_P_01>,
     @InjectRepository(DescriptionPatternNI_MCIT_P_01)
     private readonly DescriptionPatternNI_MCIT_P_01Repository: Repository<DescriptionPatternNI_MCIT_P_01>,
+
+    @Inject(forwardRef(() => ActivitiesService))
+    private readonly activitiesService: ActivitiesService,
   ) {}
 
   async create() {
@@ -194,5 +202,63 @@ export class NI_MCIT_P_01Service {
     } catch (error) {
       return handleInternalServerError(error.message)
     }
+  }
+
+  async generateCertificate({
+    activityID,
+    methodID,
+  }: {
+    activityID: number
+    methodID: number
+  }) {
+    const method = await this.NI_MCIT_P_01Repository.findOne({
+      where: { id: methodID },
+    })
+
+    if (!method) {
+      return handleInternalServerError('El método no existe')
+    }
+
+    const dataActivity =
+      await this.activitiesService.getActivitiesByID(activityID)
+
+    if (!dataActivity) {
+      return handleInternalServerError('La actividad no existe')
+    }
+
+    const { data: activity } = dataActivity as { data: Activity }
+
+    const equipment = activity.quote_request.equipment_quote_request.filter(
+      (equipment) => equipment.method_id === method.id,
+    )
+
+    if (equipment.length === 0) {
+      return handleInternalServerError(
+        'El método no existe en la actividad seleccionada',
+      )
+    }
+
+    const certificate = {
+      equipment_information: {
+        service_code: generateServiceCodeToMethod(method.id),
+        certificate_issue_date: formatDate(new Date().toString()),
+        calibration_date: formatDate(method.updated_at.toString()),
+        object_calibrated: equipment[0].name,
+        manufacturer: method.equipment_information.maker,
+        no_series: method.equipment_information.serial_number,
+        model: method.equipment_information.model,
+        range_of_measurement: method.equipment_information.measurement_range,
+        resolution: method.equipment_information.resolution,
+        code: method.equipment_information.code,
+        applicant: activity.quote_request.client.company_name,
+        address: activity.quote_request.client.address,
+        calibration_location: method.calibration_location,
+      },
+      environmental_conditions: calculateEnvironmentConditions(
+        method.environmental_conditions,
+      ),
+    }
+
+    return handleOK(certificate)
   }
 }
