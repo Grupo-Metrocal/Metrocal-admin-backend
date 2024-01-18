@@ -57,7 +57,6 @@ export class ActivitiesController {
     )
   }
 
-  @UseGuards(JwtAuthGuard)
   @Get('get-services/:id')
   async getActivitiesByUser(@Param('id') id: number) {
     return await this.activitiesService.getServicesByActivity(id)
