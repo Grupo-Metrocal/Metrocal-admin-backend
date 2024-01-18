@@ -16,17 +16,8 @@ export class DescriptionPatternNI_MCIT_P_01 {
   )
   NI_MCIT_P_01: NI_MCIT_P_01[]
 
-  @Column({ type: 'float', nullable: true })
-  ni_mcpp_1?: number
-
-  @Column({ type: 'float', nullable: true })
-  ni_mcpp_2?: number
-
-  @Column({ type: 'float', nullable: true })
-  ni_mcpp_3?: number
-
-  @Column({ type: 'float', nullable: true })
-  ni_mcpve?: number
+  @Column({ nullable: true })
+  pattern?: string
 
   @Column({ nullable: true })
   observation?: string
