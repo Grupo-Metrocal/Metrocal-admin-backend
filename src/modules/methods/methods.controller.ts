@@ -1,4 +1,5 @@
-import { Controller, Get, Post, Body, Param } from '@nestjs/common'
+import { Controller, Get, Post, Body, Param, Res } from '@nestjs/common'
+import { Response } from 'express'
 import { MethodsService } from './methods.service'
 import { ApiTags } from '@nestjs/swagger'
 import { NI_MCIT_P_01Service } from './ni-mcit-p-01.service'
@@ -145,5 +146,22 @@ export class MethodsController {
     @Param('methodId') methodId: number,
   ) {
     return await this.ni_mcit_d_02Service.accuracyTest(accuracyTest, methodId)
+  }
+
+  @Get('test/:number1/:number2')
+  async test(
+    @Res() res: Response,
+    @Param('number1') number1: number,
+    @Param('number2') number2: number,
+  ) {
+    const file = await this.ni_mcit_p_01Service.test(number1, number2)
+
+    // download excel file
+    res.setHeader(
+      'Content-Type',
+      'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+    )
+    res.setHeader('Content-Disposition', 'attachment; filename=report.xlsx')
+    res.send(file)
   }
 }
