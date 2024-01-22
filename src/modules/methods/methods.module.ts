@@ -37,7 +37,7 @@ import { PreInstallationCommentNI_MCIT_D_02 } from './entities/NI_MCIT_D_02/step
       EnvironmentalConditionsNI_MCIT_D_02,
       EquipmentInformationNI_MCIT_D_02,
       InstrumentZeroCheckNI_MCIT_D_02,
-      PreInstallationCommentNI_MCIT_D_02
+      PreInstallationCommentNI_MCIT_D_02,
     ]),
     forwardRef(() => ActivitiesModule),
     forwardRef(() => QuotesModule),

@@ -19,6 +19,11 @@ import { generateServiceCodeToMethod } from 'src/utils/codeGenerator'
 import { formatDate } from 'src/utils/formatDate'
 import { calculateEnvironmentConditions } from 'src/utils/methods/functions_P_01'
 
+// test
+import * as excel from 'exceljs'
+import * as path from 'path'
+import * as fs from 'fs'
+
 @Injectable()
 export class NI_MCIT_P_01Service {
   constructor(
@@ -260,5 +265,37 @@ export class NI_MCIT_P_01Service {
     }
 
     return handleOK(certificate)
+  }
+
+  async test(number1: number, number2: number) {
+    const filePath = path.join(__dirname, '../mail/templates/excels/test.xlsx')
+
+    try {
+      let workbook = new excel.Workbook()
+      await workbook.xlsx.readFile(filePath)
+
+      const calculateSheet = workbook.getWorksheet(1)
+
+      calculateSheet.getCell('A1').value = Number(number1)
+      calculateSheet.getCell('B1').value = Number(number2)
+
+      workbook.calcProperties.fullCalcOnLoad = true
+
+      await workbook.xlsx.writeFile(filePath)
+
+      // download file
+      const file = fs.readFileSync(filePath)
+
+      await workbook.xlsx.writeFile(filePath)
+
+      const resultsSheet = workbook.getWorksheet(2)
+
+      const result = resultsSheet.getCell('C1').value
+      console.log(result)
+
+      return file
+    } catch (error) {
+      return handleInternalServerError(error.message)
+    }
   }
 }
