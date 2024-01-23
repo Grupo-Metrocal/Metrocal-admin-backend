@@ -1,9 +1,9 @@
-FROM ghcr.io/puppeteer/puppeteer:21.3.8
+# Utiliza la imagen oficial de Microsoft con PowerShell
+FROM mcr.microsoft.com/powershell:latest
 
+# Configura el entorno para Puppeteer
 ENV PUPPETEER_SKIP_CHROMIUM_DOWNLOAD=true \
     PUPPETEER_EXECUTABLE_PATH=/usr/bin/google-chrome-stable
-
-FROM mcr.microsoft.com/powershell:latest
 
 WORKDIR /usr/src/app
 
@@ -12,4 +12,5 @@ RUN npm ci
 COPY . .
 RUN npm run build
 
-CMD ["npm",  "run", "start:prod"]
+# Comando para ejecutar el servidor y la aplicación
+CMD ["npm", "run", "start:prod"]
