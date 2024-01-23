@@ -23,6 +23,7 @@ import { calculateEnvironmentConditions } from 'src/utils/methods/functions_P_01
 import * as excel from 'exceljs'
 import * as path from 'path'
 import * as fs from 'fs'
+import { exec } from 'child_process'
 
 @Injectable()
 export class NI_MCIT_P_01Service {
@@ -267,6 +268,25 @@ export class NI_MCIT_P_01Service {
     return handleOK(certificate)
   }
 
+  async executePowershellCommand(filePath) {
+    return new Promise((resolve, reject) => {
+      const powershellCommand = `powershell -Command "& { $excel = New-Object -ComObject Excel.Application; $workbook = $excel.Workbooks.Open('${filePath}'); $workbook.Save(); $workbook.Close(); $excel.Quit(); }"`
+
+      exec(powershellCommand, (error, stdout, stderr) => {
+        if (error) {
+          console.error(`Error al ejecutar el comando: ${error.message}`)
+          reject(error)
+        } else if (stderr) {
+          console.error(`Error en la salida estándar: ${stderr}`)
+          reject(new Error(stderr))
+        } else {
+          console.log(`Salida estándar: ${stdout}`)
+          resolve(stdout)
+        }
+      })
+    })
+  }
+
   async test(number1: number, number2: number) {
     const filePath = path.join(__dirname, '../mail/templates/excels/test.xlsx')
 
@@ -274,28 +294,28 @@ export class NI_MCIT_P_01Service {
       let workbook = new excel.Workbook()
       await workbook.xlsx.readFile(filePath)
 
-      const calculateSheet = workbook.getWorksheet(1)
+      const worksheet = workbook.getWorksheet('calculate')
 
-      calculateSheet.getCell('A1').value = Number(number1)
-      calculateSheet.getCell('B1').value = Number(number2)
+      worksheet.getCell('A1').value = Number(number1)
+      worksheet.getCell('B1').value = Number(number2)
 
+      await workbook.xlsx.writeFile(filePath)
+
+      await workbook.xlsx.readFile(filePath)
       workbook.calcProperties.fullCalcOnLoad = true
 
-      await workbook.xlsx.writeFile(filePath)
+      // Auto guarda el archivo desde Excel
+      await this.executePowershellCommand(filePath)
 
-      // download file
-      const file = fs.readFileSync(filePath)
+      await workbook.xlsx.readFile(filePath)
 
-      await workbook.xlsx.writeFile(filePath)
+      const resultSheet = workbook.getWorksheet('result')
+      const result = resultSheet.getCell('C1').value
 
-      const resultsSheet = workbook.getWorksheet(2)
-
-      const result = resultsSheet.getCell('C1').value
-      console.log(result)
-
-      return file
+      return handleOK(result)
     } catch (error) {
-      return handleInternalServerError(error.message)
+      console.error(error.message)
+      throw new Error(error.message)
     }
   }
 }
