@@ -1,39 +1,33 @@
-# Utilizar una imagen de Node.js basada en Alpine Linux
-FROM node:18-alpine
+FROM node:18.18
 
-# Crear y establecer el directorio de trabajo
 WORKDIR /app
 
-# Copiar los archivos de la aplicación
+# install puppeteer dependencies
+RUN apt-get update && apt-get install gnupg wget -y && \
+    wget --quiet --output-document=- https://dl-ssl.google.com/linux/linux_signing_key.pub | gpg --dearmor > /etc/apt/trusted.gpg.d/google-archive.gpg && \
+    sh -c 'echo "deb [arch=amd64] http://dl.google.com/linux/chrome/deb/ stable main" >> /etc/apt/sources.list.d/google.list' && \
+    apt-get update && \
+    apt-get install google-chrome-stable -y --no-install-recommends && \
+    rm -rf /var/lib/apt/lists/*
+
+ENV PUPPETEER_SKIP_CHROMIUM_DOWNLOAD=true \
+    PUPPETEER_EXECUTABLE_PATH=/usr/bin/chromium-browser
+
+RUN apt-get update
+RUN apt-get install -y wget apt-transport-https software-properties-common
+RUN wget -q https://packages.microsoft.com/config/ubuntu/20.04/packages-microsoft-prod.deb
+RUN dpkg -i packages-microsoft-prod.deb
+RUN apt-get update
+RUN apt-get install -y powershell
+
 COPY package*.json ./
 
-# Instalar las dependencias
 RUN npm install
 
-# Instalar Puppeteer y dependencias necesarias
-RUN apk add --no-cache \
-    gcompat \
-    chromium \
-    nss \
-    freetype \
-    freetype-dev \
-    harfbuzz \
-    ca-certificates \
-    ttf-freefont \
-    tini
-
-# Instalar PowerShell
-RUN apk add --no-cache \
-    powershell
-
-# Copiar el resto de los archivos de la aplicación
 COPY . .
 
-# Construir la aplicación NestJS
 RUN npm run build
 
-# Exponer el puerto de la aplicación
 EXPOSE 3000
 
-# Comando para ejecutar la aplicación
 CMD ["npm", "run", "start:prod"]
