@@ -1,34 +1,36 @@
-# Usa una imagen de Node para construir la aplicación
-# node version 18.0.0
-FROM node:18.18.0-alpine3.14 as builder
+# Utilizar una imagen de Node.js basada en Alpine Linux
+FROM node:18-alpine
 
-# Instala las dependencias de compilación
-RUN apk add --no-cache \
-    chromium \
-    chromium-chromedriver
+# Crear y establecer el directorio de trabajo
+WORKDIR /app
 
-# Configura el entorno para Puppeteer
-ENV PUPPETEER_SKIP_CHROMIUM_DOWNLOAD=true \
-    PUPPETEER_EXECUTABLE_PATH=/usr/bin/chromium-browser
-
-WORKDIR /usr/src/app
-
+# Copiar los archivos de la aplicación
 COPY package*.json ./
-RUN npm ci
+
+# Instalar las dependencias
+RUN npm install
+
+# Instalar Puppeteer y dependencias necesarias
+RUN apk add --no-cache \
+    gcompat \
+    chromium \
+    nss \
+    freetype \
+    freetype-dev \
+    harfbuzz \
+    ca-certificates \
+    ttf-freefont \
+    tini
+
+# Instalar PowerShell
+RUN apk add --no-cache \
+    powershell
+
+# Copiar el resto de los archivos de la aplicación
 COPY . .
+
+# Construir la aplicación NestJS
 RUN npm run build
 
-# Cambia a una imagen que incluya PowerShell
-FROM mcr.microsoft.com/powershell:latest
-
-WORKDIR /usr/src/app
-
-# Copia los archivos construidos desde la etapa anterior
-COPY --from=builder /usr/src/app/dist ./dist
-COPY package*.json ./
-
-# Instala las dependencias solo necesarias para la ejecución
-RUN npm ci --production
-
-# Comando para iniciar la aplicación
+# Comando para ejecutar la aplicación
 CMD ["npm", "run", "start:prod"]
