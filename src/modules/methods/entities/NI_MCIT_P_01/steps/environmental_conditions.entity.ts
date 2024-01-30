@@ -21,23 +21,23 @@ export class EnvironmentalConditionsNI_MCIT_P_01 {
 }
 
 export interface ICycles_NI_MCIT_P_01 {
-  cicles: number
+  cicle_number: number
   ta: {
     tac: {
       initial: number
-      end: number
+      final: number
     }
     hrp: {
       initial: number
-      end: number
+      final: number
     }
-    equipement: string
+    equipement: 'NI-MCPPT-01' | 'NI-MCPPT-02' | 'NI-MCPPT-03' | 'NI-MCPPT-04'
   }
   hPa: {
     pa: {
       initial: number
-      end: number
+      final: number
     }
-    equipement: string
+    equipement: 'NI-MCPPT-06'
   }
 }
