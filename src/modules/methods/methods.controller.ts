@@ -79,6 +79,17 @@ export class MethodsController {
     )
   }
 
+  @Get('ni-mcit-p-01/certificates/activity/:activityId/method/:methodId')
+  async getNI_MCIT_P_01Certificate(
+    @Param('activityId') activityId: number,
+    @Param('methodId') methodId: number,
+  ) {
+    return await this.ni_mcit_p_01Service.generateCertificate({
+      activityID: activityId,
+      methodID: methodId,
+    })
+  }
+
   @Post('ni-mcit-d-02/create')
   async createNI_MCIT_D_02() {
     return await this.ni_mcit_d_02Service.create()
@@ -145,13 +156,5 @@ export class MethodsController {
     @Param('methodId') methodId: number,
   ) {
     return await this.ni_mcit_d_02Service.accuracyTest(accuracyTest, methodId)
-  }
-
-  @Get('test/:number1/:number2')
-  async test(
-    @Param('number1') number1: number,
-    @Param('number2') number2: number,
-  ) {
-    return await this.ni_mcit_p_01Service.test(number1, number2)
   }
 }
