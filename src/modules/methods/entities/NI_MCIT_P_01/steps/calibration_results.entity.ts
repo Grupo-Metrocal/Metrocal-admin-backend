@@ -21,12 +21,16 @@ export class CalibrationResultsNI_MCIT_P_01 {
 }
 
 export interface IResults_NI_MCIT_P_01 {
-  upward: {
-    equipment: number
-    pattern: number
-  }
-  downward: {
-    equipment: number
-    pattern: number
-  }
+  cicle_number: number
+
+  calibration_factor: {
+    upward: {
+      equipment: number
+      pattern: number
+    }
+    downward: {
+      equipment: number
+      pattern: number
+    }
+  }[]
 }
