@@ -17,12 +17,9 @@ import { DescriptionPatternNI_MCIT_P_01 } from './entities/NI_MCIT_P_01/steps/de
 import { handleInternalServerError, handleOK } from 'src/common/handleHttp'
 import { generateServiceCodeToMethod } from 'src/utils/codeGenerator'
 import { formatDate } from 'src/utils/formatDate'
-import { calculateEnvironmentConditions } from 'src/utils/methods/functions_P_01'
 
-// test
-import * as excel from 'exceljs'
+import * as XlsxPopulate from 'xlsx-populate'
 import * as path from 'path'
-import * as fs from 'fs'
 import { exec } from 'child_process'
 
 @Injectable()
@@ -219,6 +216,12 @@ export class NI_MCIT_P_01Service {
   }) {
     const method = await this.NI_MCIT_P_01Repository.findOne({
       where: { id: methodID },
+      relations: [
+        'equipment_information',
+        'calibration_results',
+        'description_pattern',
+        'environmental_conditions',
+      ],
     })
 
     if (!method) {
@@ -244,78 +247,296 @@ export class NI_MCIT_P_01Service {
       )
     }
 
-    const certificate = {
-      equipment_information: {
-        service_code: generateServiceCodeToMethod(method.id),
-        certificate_issue_date: formatDate(new Date().toString()),
-        calibration_date: formatDate(method.updated_at.toString()),
-        object_calibrated: equipment[0].name,
-        manufacturer: method.equipment_information.maker,
-        no_series: method.equipment_information.serial_number,
-        model: method.equipment_information.model,
-        range_of_measurement: method.equipment_information.measurement_range,
-        resolution: method.equipment_information.resolution,
-        code: method.equipment_information.code,
-        applicant: activity.quote_request.client.company_name,
-        address: activity.quote_request.client.address,
-        calibration_location: method.calibration_location,
-      },
-      environmental_conditions: calculateEnvironmentConditions(
-        method.environmental_conditions,
-      ),
-    }
-
-    return handleOK(certificate)
-  }
-
-  async executePowershellCommand(filePath) {
-    return new Promise((resolve, reject) => {
-      const powershellCommand = `powershell -Command "& { $excel = New-Object -ComObject Excel.Application; $workbook = $excel.Workbooks.Open('${filePath}'); $workbook.Save(); $workbook.Close(); $excel.Quit(); }"`
-
-      exec(powershellCommand, (error, stdout, stderr) => {
-        if (error) {
-          console.error(`Error al ejecutar el comando: ${error.message}`)
-          reject(error)
-        } else if (stderr) {
-          console.error(`Error en la salida estándar: ${stderr}`)
-          reject(new Error(stderr))
-        } else {
-          console.log(`Salida estándar: ${stdout}`)
-          resolve(stdout)
-        }
-      })
-    })
-  }
-
-  async test(number1: number, number2: number) {
-    const filePath = path.join(__dirname, '../mail/templates/excels/test.xlsx')
+    const filePath = path.join(
+      __dirname,
+      '../mail/templates/excels/ni_mcit_p_01.xlsx',
+    )
 
     try {
-      let workbook = new excel.Workbook()
-      await workbook.xlsx.readFile(filePath)
+      const workbook = await XlsxPopulate.fromFileAsync(filePath)
 
-      const worksheet = workbook.getWorksheet('calculate')
+      if (!workbook) {
+        return handleInternalServerError('El archivo no existe')
+      }
 
-      worksheet.getCell('A1').value = Number(number1)
-      worksheet.getCell('B1').value = Number(number2)
+      // enter method selected
+      workbook
+        .sheet('Calibración')
+        .cell('I3')
+        .value(method.description_pattern.pattern)
 
-      await workbook.xlsx.writeFile(filePath)
+      // enter environmental conditions
+      const sheetEC = workbook.sheet('NI-R01-MCIT-P-01')
 
-      await workbook.xlsx.readFile(filePath)
-      workbook.calcProperties.fullCalcOnLoad = true
+      for (const result of method.environmental_conditions.cycles) {
+        const rowOffset = (result.cicle_number - 1) * 2
 
-      // Auto guarda el archivo desde Excel
-      await this.executePowershellCommand(filePath)
+        sheetEC.cell(`C${20 + rowOffset}`).value(result.ta.tac.initial)
+        sheetEC.cell(`C${21 + rowOffset}`).value(result.ta.tac.final)
 
-      await workbook.xlsx.readFile(filePath)
+        sheetEC.cell(`D${20 + rowOffset}`).value(result.ta.hrp.initial)
+        sheetEC.cell(`D${21 + rowOffset}`).value(result.ta.hrp.final)
 
-      const resultSheet = workbook.getWorksheet('result')
-      const result = resultSheet.getCell('C1').value
+        sheetEC.cell(`I${20 + rowOffset}`).value(result.hPa.pa.initial)
+        sheetEC.cell(`I${21 + rowOffset}`).value(result.hPa.pa.final)
+      }
 
-      return handleOK(result)
+      sheetEC
+        .cell('E21')
+        .value(method.environmental_conditions.cycles[0].ta.equipement)
+
+      sheetEC
+        .cell('J21')
+        .value(method.environmental_conditions.cycles[0].hPa.equipement)
+
+      // enter calibration result
+      for (const result of method.calibration_results.results) {
+        if (result.cicle_number === 1) {
+          for (const [
+            index,
+            calibrationFactor,
+          ] of result.calibration_factor.entries()) {
+            if (result.cicle_number === 1) {
+              workbook
+                .sheet('Calibración')
+                .cell(`C${15 + index}`)
+                .value(Number(calibrationFactor.upward.pattern))
+
+              workbook
+                .sheet('Calibración')
+                .cell(`D${15 + index}`)
+                .value(Number(calibrationFactor.upward.equipment))
+
+              workbook
+                .sheet('Calibración')
+                .cell(`E${15 + index}`)
+                .value(Number(calibrationFactor.downward.pattern))
+
+              workbook
+                .sheet('Calibración')
+                .cell(`F${15 + index}`)
+                .value(Number(calibrationFactor.downward.equipment))
+            }
+          }
+        }
+
+        if (result.cicle_number === 2) {
+          for (const [
+            index,
+            calibrationFactor,
+          ] of result.calibration_factor.entries()) {
+            if (result.cicle_number === 2) {
+              workbook
+                .sheet('Calibración')
+                .cell(`G${15 + index}`)
+                .value(Number(calibrationFactor.upward.pattern))
+
+              workbook
+                .sheet('Calibración')
+                .cell(`H${15 + index}`)
+                .value(Number(calibrationFactor.upward.equipment))
+
+              workbook
+                .sheet('Calibración')
+                .cell(`I${15 + index}`)
+                .value(Number(calibrationFactor.downward.pattern))
+
+              workbook
+                .sheet('Calibración')
+                .cell(`J${15 + index}`)
+                .value(Number(calibrationFactor.downward.equipment))
+            }
+          }
+        }
+
+        if (result.cicle_number === 3) {
+          for (const [
+            index,
+            calibrationFactor,
+          ] of result.calibration_factor.entries()) {
+            if (result.cicle_number === 3) {
+              workbook
+                .sheet('Calibración')
+                .cell(`K${15 + index}`)
+                .value(Number(calibrationFactor.upward.pattern))
+
+              workbook
+                .sheet('Calibración')
+                .cell(`L${15 + index}`)
+                .value(Number(calibrationFactor.upward.equipment))
+
+              workbook
+                .sheet('Calibración')
+                .cell(`M${15 + index}`)
+                .value(Number(calibrationFactor.downward.pattern))
+
+              workbook
+                .sheet('Calibración')
+                .cell(`N${15 + index}`)
+                .value(Number(calibrationFactor.downward.equipment))
+            }
+          }
+        }
+      }
+      workbook.toFileAsync(filePath)
+
+      await this.autoSaveExcel(filePath)
+
+      const workbook2 = await XlsxPopulate.fromFileAsync(filePath)
+      const sheetCER = workbook2.sheet('DA Unid-kPa (5 ptos)')
+
+      let reference_pressure = []
+      let equipment_indication = []
+      let correction = []
+      let uncertainty = []
+
+      let reference_pressureSys = []
+      let equipment_indicationSys = []
+      let correctionSys = []
+      let uncertaintySys = []
+
+      for (let i = 0; i <= 5; i++) {
+        const pressureValue = sheetCER.cell(`D${27 + i}`).value()
+        reference_pressure.push(
+          typeof pressureValue === 'number'
+            ? pressureValue.toFixed(2)
+            : pressureValue,
+        )
+
+        const indicationValue = sheetCER.cell(`F${27 + i}`).value()
+        equipment_indication.push(
+          typeof indicationValue === 'number'
+            ? indicationValue.toFixed(2)
+            : indicationValue,
+        )
+
+        const correctionValue = sheetCER.cell(`L${27 + i}`).value()
+        correction.push(
+          typeof correctionValue === 'number'
+            ? correctionValue.toFixed(2)
+            : correctionValue,
+        )
+
+        const uncertaintyValue = sheetCER.cell(`R${27 + i}`).value()
+        uncertainty.push(
+          typeof uncertaintyValue === 'number'
+            ? uncertaintyValue.toFixed(2)
+            : uncertaintyValue,
+        )
+
+        const pressureSysValue = sheetCER.cell(`D${38 + i}`).value()
+        reference_pressureSys.push(
+          typeof pressureSysValue === 'number'
+            ? pressureSysValue.toFixed(1)
+            : pressureSysValue,
+        )
+
+        const indicationSysValue = sheetCER.cell(`F${38 + i}`).value()
+        equipment_indicationSys.push(
+          typeof indicationSysValue === 'number'
+            ? indicationSysValue.toFixed(1)
+            : indicationSysValue,
+        )
+
+        const correctionSysValue = sheetCER.cell(`L${38 + i}`).value()
+        correctionSys.push(
+          typeof correctionSysValue === 'number'
+            ? correctionSysValue.toFixed(1)
+            : correctionSysValue,
+        )
+
+        const uncertaintySysValue = sheetCER.cell(`R${38 + i}`).value()
+        uncertaintySys.push(
+          typeof uncertaintySysValue === 'number'
+            ? uncertaintySysValue.toFixed(1)
+            : uncertaintySysValue,
+        )
+      }
+
+      const calibration_results = {
+        result: {
+          reference_pressure,
+          equipment_indication,
+          correction,
+          uncertainty,
+        },
+
+        result_unid_system: {
+          reference_pressure: reference_pressureSys,
+          equipment_indication: equipment_indicationSys,
+          correction: correctionSys,
+          uncertainty: uncertaintySys,
+        },
+      }
+
+      const certificate = {
+        equipment_information: {
+          service_code: generateServiceCodeToMethod(method.id),
+          certificate_issue_date: formatDate(new Date().toString()),
+          calibration_date: formatDate(method.updated_at.toString()),
+          object_calibrated: equipment[0].name,
+          manufacturer: method.equipment_information.maker,
+          no_series: method.equipment_information.serial_number,
+          model: method.equipment_information.model,
+          measurement_range: method.equipment_information.measurement_range,
+          resolution: method.equipment_information.resolution,
+          code: method.equipment_information.code,
+          applicant: activity.quote_request.client.company_name,
+          address: activity.quote_request.client.address,
+          calibration_location: method.calibration_location,
+        },
+        calibration_results,
+        environmental_conditions: {
+          atmospheric_pressure: `${sheetCER.cell('T46').value()} ± ${sheetCER
+            .cell('W46')
+            .value()}`,
+          temperature: `${sheetCER.cell('E46').value()} °C ± ${sheetCER
+            .cell('G46')
+            .value()} °C`,
+          humidity: `${sheetCER.cell('E47').value()} % ± ${sheetCER
+            .cell('G47')
+            .value()} %`,
+        },
+      }
+
+      return handleOK(certificate)
     } catch (error) {
       console.error(error.message)
-      throw new Error(error.message)
+      return handleInternalServerError(error.message)
     }
+  }
+
+  async autoSaveExcel(filePath: string) {
+    return new Promise((resolve, reject) => {
+      // save excel file from powershell
+
+      const powershellCommand = `
+      $Excel = New-Object -ComObject Excel.Application
+      $Excel.Visible = $false
+      $Excel.DisplayAlerts = $false
+      $Workbook = $Excel.Workbooks.Open('${filePath}')
+      $Workbook.Save()
+      $Workbook.Close()
+      $Excel.Quit()
+
+      `
+
+      exec(
+        powershellCommand,
+        { shell: 'powershell.exe' },
+        (error, stdout, stderr) => {
+          if (error) {
+            console.error(`Error al ejecutar el comando: ${error.message}`)
+            reject(error)
+          } else if (stderr) {
+            console.error(`Error en la salida estándar: ${stderr}`)
+            reject(new Error(stderr))
+          } else {
+            console.log(`Salida estándar: ${stdout}`)
+            resolve(stdout)
+          }
+        },
+      )
+    })
   }
 }
