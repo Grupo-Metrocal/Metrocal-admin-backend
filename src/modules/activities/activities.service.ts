@@ -80,6 +80,39 @@ export class ActivitiesService {
     }
   }
 
+  async getActivityById(id: number) {
+    try {
+      const response = await this.activityRepository.findOne({
+        where: { id },
+        relations: [
+          'quote_request',
+          'quote_request.client',
+          'quote_request.equipment_quote_request',
+          'quote_request.approved_by',
+          'team_members',
+        ],
+      })
+
+      const teamMembers = response.team_members.map((member) => {
+        return {
+          id: member.id,
+          username: member.username,
+          email: member.email,
+          imageURL: member.imageURL,
+        }
+      })
+
+      const data = {
+        ...response,
+        team_members: teamMembers,
+      }
+
+      return handleOK(data)
+    } catch (error) {
+      return handleInternalServerError(error.message)
+    }
+  }
+
   async getActivitiesByID(id: number) {
     try {
       const response = await this.activityRepository.findOne({
