@@ -30,9 +30,9 @@ export class MethodsController {
     return await this.methodsService.getAllMethods()
   }
 
-  @Get('get')
-  async getMethodsID() {
-    return await this.methodsService.getMethodsID()
+  @Get(':id')
+  async getMethodsID(@Param('id') id: number) {
+    return await this.methodsService.getMethodsID(id)
   }
 
   @Get('clear')
