@@ -1,10 +1,14 @@
 import { Injectable, Inject, forwardRef } from '@nestjs/common'
 import { InjectRepository } from '@nestjs/typeorm'
-import { Repository, DataSource } from 'typeorm'
+import { Repository, DataSource, In, Brackets } from 'typeorm'
 import { NI_MCIT_P_01 } from './entities/NI_MCIT_P_01/NI_MCIT_P_01.entity'
 import { ActivitiesService } from '../activities/activities.service'
 import { CreateMethodDto } from './dto/create-method.dto'
-import { handleBadrequest, handleOK } from 'src/common/handleHttp'
+import {
+  handleBadrequest,
+  handleInternalServerError,
+  handleOK,
+} from 'src/common/handleHttp'
 import { Activity } from '../activities/entities/activities.entity'
 import { QuotesService } from '../quotes/quotes.service'
 import { NI_MCIT_D_02 } from './entities/NI_MCIT_D_02/NI_MCIT_D_02.entity'
@@ -99,19 +103,28 @@ export class MethodsService {
 
   async getMethodsID(id: number) {
     try {
-      const method = await this.methodsRepository.find({
-        where: {
-          id,
-        },
+      const method = await this.methodsRepository.findOneBy({
+        id,
       })
 
-      const methodName = method[0].method_name.split('R')[0]
-      return handleOK({
-        ...method[0],
-        method_name: methodName,
+      if (!method) {
+        return handleBadrequest(new Error('El método no existe'))
+      }
+
+      const relations = this[method.method_name].metadata.relations.map(
+        (relation: any) => relation.propertyName,
+      )
+
+      const methodsStack = await this[method.method_name].find({
+        where: {
+          id: In(method.methodsID),
+        },
+        relations: relations,
       })
+
+      return handleOK(methodsStack)
     } catch (error) {
-      return handleBadrequest(error.message)
+      return handleInternalServerError(error.message)
     }
   }
 
@@ -136,21 +149,6 @@ export class MethodsService {
         ],
       })
       return handleOK({ NI_MCIT_P_01, NI_MCIT_D_02 })
-    } catch (error) {
-      return handleBadrequest(error.message)
-    }
-  }
-
-  async deleteAllMethods() {
-    try {
-      await this.dataSource.transaction(async (manager) => {
-        await manager.delete(NI_MCIT_P_01, {})
-        await manager.delete(NI_MCIT_D_02, {})
-        await manager.delete(Methods, {
-          methodsID: {},
-        })
-      })
-      return handleOK('Deleted all methods')
     } catch (error) {
       return handleBadrequest(error.message)
     }
