@@ -97,10 +97,19 @@ export class MethodsService {
     return method
   }
 
-  async getMethodsID() {
+  async getMethodsID(id: number) {
     try {
-      const method = await this.methodsRepository.find()
-      return handleOK(method)
+      const method = await this.methodsRepository.find({
+        where: {
+          id,
+        },
+      })
+
+      const methodName = method[0].method_name.split('R')[0]
+      return handleOK({
+        ...method[0],
+        method_name: methodName,
+      })
     } catch (error) {
       return handleBadrequest(error.message)
     }
