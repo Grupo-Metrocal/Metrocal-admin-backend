@@ -8,11 +8,15 @@ import { handleBadrequest, handleOK } from 'src/common/handleHttp'
 import { Activity } from '../activities/entities/activities.entity'
 import { QuotesService } from '../quotes/quotes.service'
 import { NI_MCIT_D_02 } from './entities/NI_MCIT_D_02/NI_MCIT_D_02.entity'
+import { Methods } from './entities/method.entity'
 
 @Injectable()
 export class MethodsService {
   constructor(
     private readonly dataSource: DataSource,
+
+    @InjectRepository(Methods)
+    private readonly methodsRepository: Repository<Methods>,
 
     @InjectRepository(NI_MCIT_P_01)
     private readonly NI_MCIT_P_01Repository: Repository<NI_MCIT_P_01>,
@@ -50,12 +54,19 @@ export class MethodsService {
                   return handleBadrequest(new Error('Method not found'))
                 }
 
-                const newMethod = await this[methodName].create()
-                await manager.save(newMethod)
+                const methodsID = [] as any
+
+                for (let i = 0; i < equipment.count; i++) {
+                  const newMethod = await this[methodName].create()
+                  await manager.save(newMethod)
+                  methodsID.push(newMethod.id)
+                }
+
+                const method = await this.createMethodID(methodsID, methodName)
 
                 await this.quotesService.asyncMethodToEquipment({
                   equipmentID: equipment.id,
-                  methodID: newMethod.id,
+                  methodID: method.id,
                 })
               }
             })
@@ -71,6 +82,26 @@ export class MethodsService {
       return handleOK(activity.quote_request.equipment_quote_request)
     } catch (error) {
       console.log(error)
+      return handleBadrequest(error.message)
+    }
+  }
+
+  async createMethodID(methodsID: number[], method_name: string) {
+    const newMethod = this.methodsRepository.create({
+      methodsID,
+      method_name,
+    })
+
+    const method = await this.methodsRepository.save(newMethod)
+
+    return method
+  }
+
+  async getMethodsID() {
+    try {
+      const method = await this.methodsRepository.find()
+      return handleOK(method)
+    } catch (error) {
       return handleBadrequest(error.message)
     }
   }
@@ -106,6 +137,9 @@ export class MethodsService {
       await this.dataSource.transaction(async (manager) => {
         await manager.delete(NI_MCIT_P_01, {})
         await manager.delete(NI_MCIT_D_02, {})
+        await manager.delete(Methods, {
+          methodsID: {},
+        })
       })
       return handleOK('Deleted all methods')
     } catch (error) {
