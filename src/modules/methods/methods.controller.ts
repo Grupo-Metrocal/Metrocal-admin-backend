@@ -30,14 +30,9 @@ export class MethodsController {
     return await this.methodsService.getAllMethods()
   }
 
-  @Get(':id')
+  @Get('get-stack/:id')
   async getMethodsID(@Param('id') id: number) {
     return await this.methodsService.getMethodsID(id)
-  }
-
-  @Get('clear')
-  async clearAll() {
-    return await this.methodsService.deleteAllMethods()
   }
 
   @Post('ni-mcit-p-01/equipment-information/:methodId')
