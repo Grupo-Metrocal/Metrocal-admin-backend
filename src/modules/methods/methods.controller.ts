@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Param } from '@nestjs/common'
+import { Controller, Get, Post, Body, Param, Delete } from '@nestjs/common'
 import { MethodsService } from './methods.service'
 import { ApiTags } from '@nestjs/swagger'
 import { NI_MCIT_P_01Service } from './ni-mcit-p-01.service'
@@ -28,6 +28,11 @@ export class MethodsController {
   @Get()
   async getAll() {
     return await this.methodsService.getAllMethods()
+  }
+
+  @Get('get')
+  async getMethodsID() {
+    return await this.methodsService.getMethodsID()
   }
 
   @Get('clear')
