@@ -21,6 +21,7 @@ import { formatDate } from 'src/utils/formatDate'
 import * as XlsxPopulate from 'xlsx-populate'
 import * as path from 'path'
 import { exec } from 'child_process'
+import * as fs from 'fs'
 
 @Injectable()
 export class NI_MCIT_P_01Service {
@@ -253,7 +254,14 @@ export class NI_MCIT_P_01Service {
     )
 
     try {
-      const workbook = await XlsxPopulate.fromFileAsync(filePath)
+      const newFilePath = path.join(
+        __dirname,
+        `../mail/templates/excels/ni_mcit_p_01_${activity.quote_request.no}.xlsx`,
+      )
+
+      fs.copyFileSync(filePath, newFilePath)
+
+      const workbook = await XlsxPopulate.fromFileAsync(newFilePath)
 
       if (!workbook) {
         return handleInternalServerError('El archivo no existe')
@@ -269,7 +277,7 @@ export class NI_MCIT_P_01Service {
       const sheetEC = workbook.sheet('NI-R01-MCIT-P-01')
 
       for (const result of method.environmental_conditions.cycles) {
-        const rowOffset = (result.cicle_number - 1) * 2
+        const rowOffset = (result.cycle_number - 1) * 2
 
         sheetEC.cell(`C${20 + rowOffset}`).value(result.ta.tac.initial)
         sheetEC.cell(`C${21 + rowOffset}`).value(result.ta.tac.final)
@@ -378,11 +386,11 @@ export class NI_MCIT_P_01Service {
           }
         }
       }
-      workbook.toFileAsync(filePath)
+      workbook.toFileAsync(newFilePath)
 
-      await this.autoSaveExcel(filePath)
+      await this.autoSaveExcel(newFilePath)
 
-      const workbook2 = await XlsxPopulate.fromFileAsync(filePath)
+      const workbook2 = await XlsxPopulate.fromFileAsync(newFilePath)
       const sheetCER = workbook2.sheet('DA Unid-kPa (5 ptos)')
 
       let reference_pressure = []
@@ -499,6 +507,7 @@ export class NI_MCIT_P_01Service {
         },
       }
 
+      fs.unlinkSync(newFilePath)
       return handleOK(certificate)
     } catch (error) {
       console.error(error.message)
