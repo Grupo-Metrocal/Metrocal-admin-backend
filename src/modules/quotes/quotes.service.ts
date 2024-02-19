@@ -555,4 +555,17 @@ export class QuotesService {
       return handleInternalServerError(error.message)
     }
   }
+
+  async getQuoteRequestByStatus(status: any) {
+    try {
+      const quotes = await this.quoteRequestRepository.find({
+        where: { status: status },
+        relations: ['equipment_quote_request', 'client', 'activity'],
+      })
+
+      return handleOK(quotes)
+    } catch (error) {
+      return handleInternalServerError(error.message)
+    }
+  }
 }

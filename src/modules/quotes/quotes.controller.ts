@@ -137,4 +137,10 @@ export class QuotesController {
   async GetMonthlyQuoteRequests(@Param('lastMonths') lastMonths: number) {
     return await this.quotesService.GetMonthlyQuoteRequests(lastMonths)
   }
+
+  @UseGuards(JwtAuthGuard)
+  @Get('get-by-status/:status')
+  async getQuoteRequestByStatus(@Param('status') status: string) {
+    return await this.quotesService.getQuoteRequestByStatus(status)
+  }
 }
