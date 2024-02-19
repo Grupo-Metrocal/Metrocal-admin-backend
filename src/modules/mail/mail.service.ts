@@ -82,7 +82,7 @@ export class MailService {
     await this.mailerService.sendMail({
       to: inv.email,
       from: process.env.MAILER_FROM,
-      subject: 'Cotiza con nosotros y obten el mejor precio',
+      subject: 'Cotización de servicios',
       template: 'invitation_for_user',
       context: {
         ...inv,
