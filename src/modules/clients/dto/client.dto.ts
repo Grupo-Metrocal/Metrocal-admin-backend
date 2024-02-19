@@ -25,4 +25,7 @@ export class CreateClientDto {
   @ApiProperty()
   @IsNotEmpty()
   requested_by: string
+
+  @ApiProperty()
+  company_phone?: string
 }
