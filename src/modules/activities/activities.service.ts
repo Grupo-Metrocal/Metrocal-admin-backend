@@ -292,6 +292,7 @@ export class ActivitiesService {
           client: activity.quote_request.client,
           progress: activity.progress,
           status: activity.status,
+          no: activity.quote_request.no,
           services: activity.quote_request.equipment_quote_request.length,
           team_members: activity.team_members.map((member) => {
             return {
