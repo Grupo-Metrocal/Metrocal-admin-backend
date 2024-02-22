@@ -3,11 +3,17 @@ import { InjectRepository } from '@nestjs/typeorm'
 import { Activity } from './entities/activities.entity'
 import { Repository, DataSource } from 'typeorm'
 import { QuotesService } from '../quotes/quotes.service'
-import { handleInternalServerError, handleOK } from 'src/common/handleHttp'
+import {
+  handleBadrequest,
+  handleInternalServerError,
+  handleOK,
+} from 'src/common/handleHttp'
 import { User } from '../users/entities/user.entity'
 import { AssignTeamMembersToActivityDto } from './dto/assign-activity.dt'
 import { RemoveMemberFromActivityDto } from './dto/remove-member.dto'
 import { AddResponsableToActivityDto } from './dto/add-responsable.dto'
+import { MethodsService } from '../methods/methods.service'
+import type { QuoteRequest } from '../quotes/entities/quote-request.entity'
 
 @Injectable()
 export class ActivitiesService {
@@ -16,9 +22,12 @@ export class ActivitiesService {
     private readonly activityRepository: Repository<Activity>,
     @Inject(forwardRef(() => QuotesService))
     private readonly quotesService: QuotesService,
-    private readonly dataSource: DataSource,
     @InjectRepository(User)
     private readonly userRepository: Repository<User>,
+    private readonly dataSource: DataSource,
+
+    @Inject(forwardRef(() => MethodsService))
+    private readonly methodsService: MethodsService,
   ) {}
 
   async createActivity(activity: Activity) {
@@ -396,6 +405,48 @@ export class ActivitiesService {
       await this.activityRepository.save(activity)
 
       return handleOK(activity)
+    } catch (error) {
+      return handleInternalServerError(error.message)
+    }
+  }
+
+  async generateActivity(id: number) {
+    try {
+      const response = await this.quotesService.getQuoteRequestById(id)
+
+      if (!response.success) {
+        return handleBadrequest(new Error(response.details))
+      }
+
+      if (response.data.status !== 'done') {
+        return handleBadrequest(
+          new Error('La cotizacion aun no ha sido aprobada'),
+        )
+      }
+
+      const { data: quoteRequest } = response as { data: QuoteRequest }
+
+      if (quoteRequest.activity) {
+        return handleBadrequest(
+          new Error('La cotizacion ya tiene una actividad asociada'),
+        )
+      }
+
+      const activity = await this.createActivity(quoteRequest as any)
+
+      if (!activity.success) {
+        return handleInternalServerError(activity.details)
+      }
+
+      const method = await this.methodsService.createMethod({
+        activity_id: activity.data.id,
+      })
+
+      if (!method.success) {
+        return handleInternalServerError(method.details)
+      }
+
+      return handleOK(activity.data)
     } catch (error) {
       return handleInternalServerError(error.message)
     }
