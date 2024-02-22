@@ -5,11 +5,13 @@ import { TypeOrmModule } from '@nestjs/typeorm'
 import { Activity } from './entities/activities.entity'
 import { QuotesModule } from '../quotes/quotes.module'
 import { User } from '../users/entities/user.entity'
+import { MethodsModule } from '../methods/methods.module'
 
 @Module({
   imports: [
     TypeOrmModule.forFeature([Activity, User]),
     forwardRef(() => QuotesModule),
+    forwardRef(() => MethodsModule),
   ],
   controllers: [ActivitiesController],
   providers: [ActivitiesService],
