@@ -446,7 +446,9 @@ export class ActivitiesService {
         return handleInternalServerError(method.details)
       }
 
-      return handleOK(activity.data)
+      const responseActivity = await this.getActivityById(activity.data.id)
+
+      return handleOK(responseActivity.data)
     } catch (error) {
       return handleInternalServerError(error.message)
     }
