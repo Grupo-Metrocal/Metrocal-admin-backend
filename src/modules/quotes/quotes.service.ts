@@ -402,15 +402,15 @@ export class QuotesService {
       await this.quoteRequestRepository.save(quoteRequest)
 
       if (quoteRequest.status === 'done') {
-        const activity = await this.activitiesService.createActivity(
-          changeStatusQuoteRequest as any,
-        )
+        // const activity = await this.activitiesService.createActivity(
+        //   changeStatusQuoteRequest as any,
+        // )
 
-        const response = await this.methodsService.createMethod({
-          activity_id: activity.data.id,
-        })
+        // const response = await this.methodsService.createMethod({
+        //   activity_id: activity.data.id,
+        // })
 
-        return handleOK(response.data)
+        return handleOK('Cotización aprobada')
       }
 
       return handleOK('Cotización rechazada')
