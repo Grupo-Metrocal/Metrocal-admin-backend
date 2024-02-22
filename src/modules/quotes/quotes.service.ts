@@ -563,7 +563,11 @@ export class QuotesService {
         relations: ['equipment_quote_request', 'client', 'activity'],
       })
 
-      return handleOK(quotes)
+      const quotesWithoutActivity = quotes.filter(
+        (quote) => quote.activity === null,
+      )
+
+      return handleOK(quotesWithoutActivity)
     } catch (error) {
       return handleInternalServerError(error.message)
     }
