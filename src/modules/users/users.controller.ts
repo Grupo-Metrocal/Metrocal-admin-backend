@@ -15,6 +15,7 @@ import {
 import { UsersService } from './users.service'
 import { CreateUserDto } from './dto/create-user.dto'
 import { UpdateUserDto } from './dto/update-user.dto'
+import { UpdateProfileImageDto } from './dto/update-profile-image.dto'
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard'
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger'
 import { PasswordRestoreDto } from './dto/password-restore.dto'
@@ -136,5 +137,30 @@ export class UsersController {
     return await this.usersService.invitationForUser({
       email,
     } as InvitationMail)
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Put('profile-image-update/:token')
+  @UseInterceptors(FileInterceptor('image'))
+  async updateProfileImage(
+    @Param('token') token: string,
+    @Body('username') userName: string,
+    @Body('imageUrl') imageUrl: string,
+    @UploadedFile(
+      new ParseFilePipeBuilder().addFileTypeValidator({
+        fileType: 'image',
+      })
+      .build({
+        fileIsRequired: false,
+      })
+    )
+    image: Express.Multer.File, ) {
+      return await this.usersService.updateProfileImageByToken(token, userName, image, imageUrl)
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Get('data-user/:token')
+  async dataUser(@Param('token') token: string) {
+    return await this.usersService.getUserData(token)
   }
 }
