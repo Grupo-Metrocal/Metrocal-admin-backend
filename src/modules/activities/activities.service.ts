@@ -453,4 +453,33 @@ export class ActivitiesService {
       return handleInternalServerError(error.message)
     }
   }
+
+  async deleteActivity(id: number) {
+    try {
+      const activity = await this.activityRepository.findOne({
+        where: { id },
+        relations: ['quote_request', 'quote_request.equipment_quote_request'],
+      })
+
+      if (!activity) {
+        return handleBadrequest(new Error('Actividad no encontrada'))
+      }
+
+      for (const equipment of activity.quote_request.equipment_quote_request) {
+        await this.methodsService.deleteStackMethods(equipment.method_id)
+      }
+
+      await this.dataSource.transaction(async (manager) => {
+        activity.quote_request.activity = null
+        await manager.save(activity.quote_request)
+
+        await manager.remove(activity)
+      })
+
+      return handleOK('Actividad eliminada')
+    } catch (error) {
+      console.log(error.message)
+      return handleInternalServerError(error.message)
+    }
+  }
 }
