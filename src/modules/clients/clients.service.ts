@@ -108,5 +108,24 @@ export class ClientsService {
       return handleInternalServerError(error.message)
     }
   }
-  
+
+  async deleteQuoteFromClient(id: number) {
+    const quoteRequest = await this.quoteRequestRepository.findOne({
+      where: { id },
+      relations: ['client'],
+    })
+
+    if (!quoteRequest) {
+      return handleBadrequest(
+        new Error('La cotización no existe, verifique el id'),
+      )
+    }
+
+    try {
+      await this.quoteRequestRepository.remove(quoteRequest)
+      return handleOK(quoteRequest)
+    } catch (error) {
+      return handleInternalServerError(error)
+    }
+  }
 }
