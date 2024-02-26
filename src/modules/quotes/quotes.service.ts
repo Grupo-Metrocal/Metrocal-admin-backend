@@ -442,7 +442,12 @@ export class QuotesService {
   async deleteQuoteRequest(id: number) {
     const quoteRequest = await this.quoteRequestRepository.findOne({
       where: { id },
-      relations: ['equipment_quote_request', 'quote', 'client', 'approved_by'],
+      relations: [
+        'equipment_quote_request',
+        'client',
+        'activity',
+        'client.quote_requests',
+      ],
     })
 
     if (!quoteRequest) {
@@ -450,10 +455,18 @@ export class QuotesService {
     }
 
     try {
-      await this.quoteRequestRepository.delete({ id })
-      return true
+      await this.dataSource.transaction(async (manager) => {
+        if (quoteRequest.activity) {
+          await this.activitiesService.deleteActivity(quoteRequest.activity.id)
+        }
+
+        await this.clientsService.deleteQuoteFromClient(quoteRequest.id)
+
+        await manager.remove(quoteRequest)
+      })
+      return handleOK(true)
     } catch (error) {
-      return false
+      return handleInternalServerError(error.message)
     }
   }
 
