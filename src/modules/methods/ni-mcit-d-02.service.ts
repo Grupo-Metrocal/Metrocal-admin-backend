@@ -15,6 +15,7 @@ import { InstrumentZeroCheckNI_MCIT_D_02Dto } from './dto/NI_MCIT_D_02/instrumen
 import { InstrumentZeroCheckNI_MCIT_D_02 } from './entities/NI_MCIT_D_02/steps/instrument_zero_check.entity'
 import { AccuracyTestNI_MCIT_D_02Dto } from './dto/NI_MCIT_D_02/accuracy_test.dto'
 import { AccuracyTestNI_MCIT_D_02 } from './entities/NI_MCIT_D_02/steps/accuracy_test.entity'
+import { executeTransaction } from 'src/utils/executeTransaction'
 
 @Injectable()
 export class NI_MCIT_D_02Service {
@@ -22,7 +23,6 @@ export class NI_MCIT_D_02Service {
     private readonly dataSource: DataSource,
     @InjectRepository(NI_MCIT_D_02)
     private readonly NI_MCIT_D_02Repository: Repository<NI_MCIT_D_02>,
-
     @InjectRepository(EquipmentInformationNI_MCIT_D_02)
     private readonly EquipmentInformationRepository: Repository<EquipmentInformationNI_MCIT_D_02>,
     @InjectRepository(EnvironmentalConditionsNI_MCIT_D_02)
@@ -42,6 +42,7 @@ export class NI_MCIT_D_02Service {
       const newNI_MCIT_D_02 = this.NI_MCIT_D_02Repository.create()
       const method = await this.NI_MCIT_D_02Repository.save(newNI_MCIT_D_02)
       return handleOK(method)
+
     } catch (error) {
       return handleInternalServerError(error.message)
     }
@@ -51,141 +52,186 @@ export class NI_MCIT_D_02Service {
     equipment: EquipmentInformationNI_MCIT_D_02Dto,
     methodId: number,
   ) {
-    const method = await this.NI_MCIT_D_02Repository.findOne({
-      where: { id: methodId },
-      relations: ['equipment_information'],
-    })
-
-    const newEquipment = this.EquipmentInformationRepository.create(equipment)
-
     try {
-      this.dataSource.transaction(async (manager) => {
-        await manager.save(newEquipment)
-        method.equipment_information = newEquipment
-        await manager.save(method)
-      })
-      return handleOK(method)
+      // Buscar el método existente
+      const method = await this.NI_MCIT_D_02Repository.findOne({
+        where: { id: methodId },
+        relations: ['equipment_information'],
+      });
+  
+ 
+      if (!method) {
+        return handleInternalServerError('El método no existe');  
+      }
+
+      const existingEquipment = method.equipment_information; 
+
+      if (existingEquipment) {
+        this.EquipmentInformationRepository.merge(existingEquipment, equipment);
+      } else {
+        const newEquipment = this.EquipmentInformationRepository.create(equipment);
+        method.equipment_information = newEquipment;
+      }
+      await executeTransaction(this.dataSource, method, method.equipment_information);
+      return handleOK(method);
+    
     } catch (error) {
-      return handleInternalServerError(error.message)
+      return handleInternalServerError(error.message);
     }
   }
+
 
   async environmentalConditions(
     environmentalConditions: EnvironmentalConditionsNI_MCIT_D_02Dto,
     methodId: number,
   ) {
-    const method = await this.NI_MCIT_D_02Repository.findOne({
-      where: { id: methodId },
-      relations: ['environmental_conditions'],
-    })
-
-    const newEnvironmentalConditions =
-      this.EnvironmentalConditionsRepository.create(environmentalConditions)
-
     try {
-      this.dataSource.transaction(async (manager) => {
-        await manager.save(newEnvironmentalConditions)
-        method.environmental_conditions = newEnvironmentalConditions
-        await manager.save(method)
-      })
-      return handleOK(method)
+      // Buscar el método existente
+      const method = await this.NI_MCIT_D_02Repository.findOne({
+        where: { id: methodId },
+        relations: ['environmental_conditions'],
+      });
+
+      if(!method){
+        return handleInternalServerError('El método no existe');
+      }
+      const existingEnvironmentalConditions = method.environmental_conditions;
+      if (existingEnvironmentalConditions) {
+        this.EnvironmentalConditionsRepository.merge(
+          existingEnvironmentalConditions,
+          environmentalConditions,
+        );
+      } else {
+        const newEnvironmentalConditions = this.EnvironmentalConditionsRepository.create(
+          environmentalConditions,
+        );
+        method.environmental_conditions = newEnvironmentalConditions;
+      }
+      
+      await executeTransaction(this.dataSource, method, method.environmental_conditions);
     } catch (error) {
-      return handleInternalServerError(error.message)
+      return handleInternalServerError(error.message);
     }
   }
+  
 
-  async descriptionPattern(
-    descriptionPattern: DescriptionPatternNI_MCIT_D_02Dto,
-    methodId: number,
-  ) {
-    const method = await this.NI_MCIT_D_02Repository.findOne({
-      where: { id: methodId },
-      relations: ['description_pattern'],
-    })
-
-    const newDescriptionPattern =
-      this.DescriptionPatternRepository.create(descriptionPattern)
-
+  async descriptionPattern(descriptionPattern: DescriptionPatternNI_MCIT_D_02Dto,methodId: number,) {
     try {
-      this.dataSource.transaction(async (manager) => {
-        await manager.save(newDescriptionPattern)
-        method.description_pattern = newDescriptionPattern
-        await manager.save(method)
-      })
-      return handleOK(method)
+      // Buscar el método existente
+      const method = await this.NI_MCIT_D_02Repository.findOne({
+        where: { id: methodId },
+        relations: ['description_pattern'],
+      });
+
+      if (!method) {
+        return handleInternalServerError('El método no existe');
+      }
+
+      const existingDescriptionPattern = method.description_pattern;
+
+      if (existingDescriptionPattern) {
+        this.DescriptionPatternRepository.merge(existingDescriptionPattern, descriptionPattern);
+      } else {
+        const newDescriptionPattern = this.DescriptionPatternRepository.create(descriptionPattern);
+        method.description_pattern = newDescriptionPattern;
+      }
+      await executeTransaction(this.dataSource, method, method.description_pattern);
+
     } catch (error) {
-      return handleInternalServerError(error.message)
+      return handleInternalServerError(error.message);
     }
   }
+  
 
   async preInstallationComment(
     preInstallationComment: PreInstallationCommentNI_MCIT_D_02Dto,
     methodId: number,
   ) {
-    const method = await this.NI_MCIT_D_02Repository.findOne({
-      where: { id: methodId },
-      relations: ['pre_installation_comment'],
-    })
-
-    const newPreInstallationComment =
-      this.PreInstallationCommentRepository.create(preInstallationComment)
-
     try {
-      this.dataSource.transaction(async (manager) => {
-        await manager.save(newPreInstallationComment)
-        method.pre_installation_comment = newPreInstallationComment
-        await manager.save(method)
-      })
-      return handleOK(method)
+      // Buscar el método existente
+      const method = await this.NI_MCIT_D_02Repository.findOne({
+        where: { id: methodId },
+        relations: ['pre_installation_comment'],
+      });
+  
+      if (!method) {
+        return handleInternalServerError('El método no existe');
+      }
+
+      const existingPreInstallationComment = method.pre_installation_comment;
+
+      if (existingPreInstallationComment) {
+        this.PreInstallationCommentRepository.merge(existingPreInstallationComment, preInstallationComment);
+      } else {
+        const newPreInstallationComment = this.PreInstallationCommentRepository.create(preInstallationComment);
+        method.pre_installation_comment = newPreInstallationComment;
+      }
+       await executeTransaction(this.dataSource, method, method.pre_installation_comment);
+
     } catch (error) {
-      return handleInternalServerError(error.message)
+      return handleInternalServerError(error.message);
     }
   }
+  
 
   async instrumentZeroCheck(
     instrumentZeroCheck: InstrumentZeroCheckNI_MCIT_D_02Dto,
     methodId: number,
   ) {
-    const method = await this.NI_MCIT_D_02Repository.findOne({
-      where: { id: methodId },
-      relations: ['instrument_zero_check'],
-    })
-
-    const newInstrumentZeroCheck =
-      this.InstrumentZeroCheckRepository.create(instrumentZeroCheck)
-
     try {
-      this.dataSource.transaction(async (manager) => {
-        await manager.save(newInstrumentZeroCheck)
-        method.instrument_zero_check = newInstrumentZeroCheck
-        await manager.save(method)
-      })
-      return handleOK(method)
+      // Buscar el método existente
+      const method = await this.NI_MCIT_D_02Repository.findOne({
+        where: { id: methodId },
+        relations: ['instrument_zero_check'],
+      });
+  
+      if (!method) {
+        return handleInternalServerError('El método no existe');
+      }
+
+      const existingInstrumentZeroCheck = method.instrument_zero_check;
+
+      if (existingInstrumentZeroCheck) {
+        this.InstrumentZeroCheckRepository.merge(existingInstrumentZeroCheck, instrumentZeroCheck);
+      } else {
+        const newInstrumentZeroCheck = this.InstrumentZeroCheckRepository.create(instrumentZeroCheck);
+        method.instrument_zero_check = newInstrumentZeroCheck;
+      }
+      await executeTransaction(this.dataSource, method, method.instrument_zero_check);
+
     } catch (error) {
-      return handleInternalServerError(error.message)
+      return handleInternalServerError(error.message);
     }
   }
-
+  
   async accuracyTest(
     accuracyTest: AccuracyTestNI_MCIT_D_02Dto,
     methodId: number,
   ) {
-    const method = await this.NI_MCIT_D_02Repository.findOne({
-      where: { id: methodId },
-      relations: ['accuracy_test'],
-    })
-
-    const newAccuracyTest = this.AccuracyTestRepository.create(accuracyTest)
-
     try {
-      this.dataSource.transaction(async (manager) => {
-        await manager.save(newAccuracyTest)
-        method.accuracy_test = newAccuracyTest
-        await manager.save(method)
-      })
-      return handleOK(method)
+      // Buscar el método existente
+      const method = await this.NI_MCIT_D_02Repository.findOne({
+        where: { id: methodId },
+        relations: ['accuracy_test'],
+      });
+  
+      if (!method) {
+        return handleInternalServerError('El método no existe');
+      }
+
+      const existingAccuracyTest = method.accuracy_test;
+
+      if (existingAccuracyTest) {
+        this.AccuracyTestRepository.merge(existingAccuracyTest, accuracyTest);
+      } else {
+        const newAccuracyTest = this.AccuracyTestRepository.create(accuracyTest);
+        method.accuracy_test = newAccuracyTest;
+      }
+
+      await executeTransaction(this.dataSource, method, method.accuracy_test);
     } catch (error) {
-      return handleInternalServerError(error.message)
+      return handleInternalServerError(error.message);
     }
   }
+  
 }

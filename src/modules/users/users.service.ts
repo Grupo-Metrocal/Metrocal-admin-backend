@@ -312,27 +312,6 @@ export class UsersService {
         password: 'Metrocal.2023',
         role: 'admin',
       },
-      // {
-      //   username: 'Ramon Duriez',
-      //   email: 'ramon.duriez@metrocal.co.ni',
-      //   password: 'M3tr0c@l.2023',
-      //   role: 'admin',
-      //   ignore: process.env.NODE_ENV !== 'production',
-      // },
-      // {
-      //   username: 'Fredman Mendez',
-      //   email: 'fredman.mendez@metrocal.co.ni',
-      //   password: 'M3tr0c@l.2023',
-      //   role: 'admin',
-      //   ignore: process.env.NODE_ENV !== 'production',
-      // },
-      // {
-      //   username: 'Celina Jaenz',
-      //   email: 'celina.jaenz@metrocal.co.ni',
-      //   password: 'M3tr0c@l.2023',
-      //   role: 'admin',
-      //   ignore: process.env.NODE_ENV !== 'production',
-      // },
     ]
 
     users.forEach(async (user) => {
@@ -368,4 +347,72 @@ export class UsersService {
       return handleInternalServerError(error.message)
     }
   }
+
+
+  async updateProfileImageByToken(token: string, userName : string, image: Express.Multer.File, imageUrl: string) {
+    const { sub: id } = this.tokenService.decodeToken(token)
+
+    const user = await this.userRepository.findOneBy({ id: +id })
+    user.username = userName
+    if (!user) return handleBadrequest(new Error('Usuario no encontrado'))
+    if(!image && !imageUrl) 
+    {
+      const updateUserDto = {
+        username: userName,
+      }
+       await this.userRepository.update(+id, updateUserDto)
+       var user1 = await this.userRepository.findOneBy({ id: +id })
+      
+      return user1
+    }
+
+     if(!image && imageUrl){
+      user.imageURL = imageUrl
+       await this.userRepository.update(+id, user)
+       var users = await this.userRepository.findOneBy({ id: +id })
+      return users
+     }else{
+      try {
+        const bucket = admin.storage().bucket()
+        const fileName = `${userName}-${Date.now()}-${user.id}`
+        const file = bucket.file(fileName)
+  
+        const stream = file.createWriteStream({
+          metadata: {
+            contentType: image.mimetype,
+          },
+        })
+  
+        stream.on('error', (error) => {
+          console.log('Error al subir la imagen ->', error.message)
+          return handleInternalServerError(error.message)
+        })
+  
+        stream.on('finish', async () => {
+          const imageURL = `https://firebasestorage.googleapis.com/v0/b/${bucket.name}/o/${file.name}?alt=media`
+          //preparar el objeto para actualizar UpdateUserDto
+          const updateUserDto = {
+            imageURL: imageURL,
+            username: userName,
+          }
+           await this.userRepository.update(+id, updateUserDto)
+           var user = await this.userRepository.findOneBy({ id: +id })
+          return user
+        })
+  
+        stream.end(image.buffer)
+      } catch (error) {
+        return handleInternalServerError(error.message)
+      }
+      
+     }
+  }
+
+  async getUserData(token: string) {
+    const { sub: id } = this.tokenService.decodeToken(token)
+    const user = await this.userRepository.findOneBy({ id: +id })
+    if (!user) return handleBadrequest(new Error('Usuario no encontrado'))
+    return user   
+  }
+
 }
