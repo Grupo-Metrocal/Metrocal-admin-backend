@@ -572,4 +572,25 @@ export class QuotesService {
       return handleInternalServerError(error.message)
     }
   }
+
+  async asyncDeleteMethodToEquipment({ methodID }: { methodID: number }) {
+    try {
+      const quoteRequests = await this.equipmentQuoteRequestRepository.findOne({
+        where: { method_id: methodID },
+      })
+
+      if (!quoteRequests) {
+        return handleBadrequest(new Error('El equipo no existe'))
+      }
+
+      quoteRequests.method_id = null
+
+      const response =
+        await this.equipmentQuoteRequestRepository.save(quoteRequests)
+
+      return handleOK(response)
+    } catch (error) {
+      return handleInternalServerError(error.message)
+    }
+  }
 }
