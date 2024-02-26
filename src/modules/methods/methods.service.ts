@@ -153,4 +153,55 @@ export class MethodsService {
       return handleBadrequest(error.message)
     }
   }
+
+  async deleteStackMethods(id: number) {
+    try {
+      const method = await this.methodsRepository.findOneBy({
+        id,
+      })
+
+      if (!method) {
+        return handleBadrequest(new Error('El método no existe'))
+      }
+
+      await this.dataSource.transaction(async (manager) => {
+        const relations = this[method.method_name].metadata.relations.map(
+          (relation: any) => relation.propertyName,
+        )
+
+        const methodsStack = await this[method.method_name].find({
+          where: {
+            id: In(method.methodsID),
+          },
+          relations: relations,
+        })
+
+        for (const methodStack of methodsStack) {
+          await this[method.method_name].delete({
+            id: methodStack.id,
+          })
+        }
+
+        for (const relation of relations) {
+          if (methodsStack[relation]) {
+            await manager.delete(relation, {
+              id: methodsStack[relation].id,
+            })
+          }
+        }
+
+        await manager.delete(Methods, {
+          id,
+        })
+
+        await this.quotesService.asyncDeleteMethodToEquipment({
+          methodID: method.id,
+        })
+      })
+
+      return handleOK('Método eliminado')
+    } catch (error) {
+      return handleInternalServerError(error.message)
+    }
+  }
 }
