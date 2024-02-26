@@ -79,4 +79,10 @@ export class ActivitiesController {
   async finishActivity(@Param('id') id: number) {
     return await this.activitiesService.finishActivity(id)
   }
+
+  @UseGuards(JwtAuthGuard)
+  @Delete('delete/:id')
+  async deleteActivity(@Param('id') id: number) {
+    return await this.activitiesService.deleteActivity(id)
+  }
 }
