@@ -15,6 +15,7 @@ import { DescriptionPatternNI_MCIT_D_02Dto } from './dto/NI_MCIT_D_02/descriptio
 import { PreInstallationCommentNI_MCIT_D_02Dto } from './dto/NI_MCIT_D_02/pre_installation_comment.dto'
 import { InstrumentZeroCheckNI_MCIT_D_02Dto } from './dto/NI_MCIT_D_02/instrument_zero_check.dto'
 import { AccuracyTestNI_MCIT_D_02Dto } from './dto/NI_MCIT_D_02/accuracy_test.dto'
+import { addOrRemoveMethodToStackDto } from './dto/add-remove-method-stack.dto'
 
 @ApiTags('methods')
 @Controller('methods')
@@ -38,6 +39,17 @@ export class MethodsController {
   @Delete('delete-stack/:id')
   async deleteStack(@Param('id') id: number) {
     return await this.methodsService.deleteStackMethods(id)
+  }
+
+  @Post('add-method-to-stack/')
+  async addMethodToStack(
+    @Body()
+    { methodsStackID, quoteRequestID }: addOrRemoveMethodToStackDto,
+  ) {
+    return await this.methodsService.addMethodToStack({
+      methodsStackID,
+      quoteRequestID,
+    })
   }
 
   @Post('ni-mcit-p-01/equipment-information/:methodId')
