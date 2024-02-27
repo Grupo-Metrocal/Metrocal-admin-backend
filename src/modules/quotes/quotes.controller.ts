@@ -143,4 +143,9 @@ export class QuotesController {
   async getQuoteRequestByStatus(@Param('status') status: string) {
     return await this.quotesService.getQuoteRequestByStatus(status)
   }
+
+  @Get('recalculate/:id')
+  async recalculateQuoteRequest(@Param('id') id: number) {
+    return await this.quotesService.recalculateQuoteRequestPrice(id)
+  }
 }
