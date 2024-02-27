@@ -13,6 +13,8 @@ import { Activity } from '../activities/entities/activities.entity'
 import { QuotesService } from '../quotes/quotes.service'
 import { NI_MCIT_D_02 } from './entities/NI_MCIT_D_02/NI_MCIT_D_02.entity'
 import { Methods } from './entities/method.entity'
+import { QuoteRequest } from '../quotes/entities/quote-request.entity'
+import { addOrRemoveMethodToStackDto } from './dto/add-remove-method-stack.dto'
 
 @Injectable()
 export class MethodsService {
@@ -200,6 +202,46 @@ export class MethodsService {
       })
 
       return handleOK('Método eliminado')
+    } catch (error) {
+      return handleInternalServerError(error.message)
+    }
+  }
+
+  async addMethodToStack({
+    methodsStackID,
+    quoteRequestID,
+  }: addOrRemoveMethodToStackDto) {
+    try {
+      const method = await this.methodsRepository.findOneBy({
+        id: methodsStackID,
+      })
+
+      if (!method) {
+        return handleBadrequest(new Error('El método no existe'))
+      }
+
+      return await this.dataSource.transaction(async (manager) => {
+        const quoteRequest =
+          await this.quotesService.getQuoteRequestById(quoteRequestID)
+
+        const { data } = quoteRequest as { data: QuoteRequest }
+
+        const newMethod = await this[method.method_name].create()
+
+        await manager.save(newMethod)
+        method.methodsID.push(newMethod.id)
+        await manager.save(method)
+
+        await this.quotesService.addOrRemvoQuantityToEquipment({
+          quoteRequestID: data.id,
+          actionType: 'add',
+          equipmentID: data.equipment_quote_request.find(
+            (equipment) => equipment.method_id === methodsStackID,
+          ).id,
+        })
+
+        return handleOK(newMethod)
+      })
     } catch (error) {
       return handleInternalServerError(error.message)
     }
