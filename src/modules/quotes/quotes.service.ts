@@ -606,4 +606,84 @@ export class QuotesService {
       return handleInternalServerError(error.message)
     }
   }
+
+  async addOrRemvoQuantityToEquipment({
+    quoteRequestID,
+    equipmentID,
+    actionType,
+  }: {
+    quoteRequestID: number
+    actionType: 'add' | 'remove'
+    equipmentID: number
+  }) {
+    try {
+      const quoteRequest = await this.quoteRequestRepository.findOne({
+        where: { id: quoteRequestID },
+        relations: ['equipment_quote_request'],
+      })
+
+      const equipment = quoteRequest.equipment_quote_request.find(
+        (equipment) => equipment.id === equipmentID,
+      )
+
+      if (actionType === 'add') {
+        equipment.count += 1
+      } else {
+        if (equipment.count === 1) {
+          return handleBadrequest(new Error('No se puede restar más'))
+        }
+
+        equipment.count -= 1
+      }
+
+      const response =
+        await this.equipmentQuoteRequestRepository.save(equipment)
+
+      await this.recalculateQuoteRequestPrice(quoteRequestID)
+
+      return handleOK(response)
+    } catch (error) {
+      return handleInternalServerError(error.message)
+    }
+  }
+
+  async recalculateQuoteRequestPrice(quoteRequestID: number) {
+    try {
+      const quoteRequest = await this.quoteRequestRepository.findOne({
+        where: { id: quoteRequestID },
+        relations: ['equipment_quote_request'],
+      })
+
+      let totalQuote = 0
+      let SubTotalEquipment = 0
+
+      await this.dataSource.transaction(async (manager) => {
+        for (const equipment of quoteRequest.equipment_quote_request) {
+          // subTotal to equipment
+          equipment.total =
+            equipment.count * equipment.price * (1 - equipment.discount / 100)
+
+          SubTotalEquipment += equipment.total
+
+          await manager.save(equipment)
+        }
+
+        totalQuote += quoteRequest.extras + SubTotalEquipment
+
+        // discount to totalQuote
+        totalQuote -= totalQuote * (quoteRequest.general_discount / 100)
+
+        // tax to totalQuote
+        totalQuote += totalQuote * (quoteRequest.tax / 100)
+
+        quoteRequest.price = totalQuote
+
+        await manager.save(quoteRequest)
+      })
+
+      return handleOK('ok')
+    } catch (error) {
+      return handleInternalServerError(error.message)
+    }
+  }
 }
