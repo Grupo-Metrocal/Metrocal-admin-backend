@@ -246,4 +246,56 @@ export class MethodsService {
       return handleInternalServerError(error.message)
     }
   }
+
+  async removeMethodToStack({
+    methodsStackID,
+    quoteRequestID,
+    methodID,
+  }: addOrRemoveMethodToStackDto) {
+    try {
+      const method = await this.methodsRepository.findOneBy({
+        id: methodsStackID,
+      })
+
+      if (!method) {
+        return handleBadrequest(new Error('El método no existe'))
+      }
+
+      return await this.dataSource.transaction(async (manager) => {
+        const quoteRequest =
+          await this.quotesService.getQuoteRequestById(quoteRequestID)
+
+        const { data } = quoteRequest as { data: QuoteRequest }
+
+        const methodStack = await this[method.method_name].findOneBy({
+          id: methodID,
+        })
+
+        if (!methodStack) {
+          return handleBadrequest(new Error('El método no existe'))
+        }
+
+        await this[method.method_name].delete({
+          id: methodID,
+        })
+
+        method.methodsID = method.methodsID.filter(
+          (id: number) => id !== methodID,
+        )
+        await manager.save(method)
+
+        await this.quotesService.addOrRemvoQuantityToEquipment({
+          quoteRequestID: data.id,
+          actionType: 'remove',
+          equipmentID: data.equipment_quote_request.find(
+            (equipment) => equipment.method_id === methodsStackID,
+          ).id,
+        })
+
+        return handleOK('Método eliminado')
+      })
+    } catch (error) {
+      return handleInternalServerError(error.message)
+    }
+  }
 }
