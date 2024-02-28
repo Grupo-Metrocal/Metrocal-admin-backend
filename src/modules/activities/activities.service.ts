@@ -134,7 +134,7 @@ export class ActivitiesService {
         ],
       })
 
-      const teamMembers = response.team_members.map((member) => {
+      const teamMembers = response?.team_members?.map((member) => {
         return {
           id: member.id,
           username: member.username,
