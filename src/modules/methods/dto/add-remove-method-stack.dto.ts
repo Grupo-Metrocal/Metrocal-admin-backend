@@ -9,4 +9,7 @@ export class addOrRemoveMethodToStackDto {
   @ApiProperty()
   @IsNumber()
   quoteRequestID: number
+
+  @ApiProperty()
+  methodID?: number
 }
