@@ -232,21 +232,28 @@ export class NI_MCIT_P_01Service {
     const dataActivity =
       await this.activitiesService.getActivitiesByID(activityID)
 
-    if (!dataActivity) {
+    if (!dataActivity.success) {
       return handleInternalServerError('La actividad no existe')
     }
 
     const { data: activity } = dataActivity as { data: Activity }
 
-    const equipment = activity.quote_request.equipment_quote_request.filter(
-      (equipment) => equipment.method_id === method.id,
-    )
+    // const equipment = activity.quote_request.equipment_quote_request.filter(
+    //   async (equipment) => {
+    //     const stack = await this.methodsService.getMethodsID(equipment.id)
 
-    if (equipment.length === 0) {
-      return handleInternalServerError(
-        'El método no existe en la actividad seleccionada',
-      )
-    }
+    //     // IS BAD, FIX IT
+    //     if (stack.success) {
+    //       return stack.data.some((method) => method.id === methodID)
+    //     }
+    //   },
+    // )
+
+    // if (equipment.length === 0) {
+    //   return handleInternalServerError(
+    //     'El método no existe en la actividad seleccionada',
+    //   )
+    // }
 
     const filePath = path.join(
       __dirname,
@@ -482,7 +489,7 @@ export class NI_MCIT_P_01Service {
           service_code: generateServiceCodeToMethod(method.id),
           certificate_issue_date: formatDate(new Date().toString()),
           calibration_date: formatDate(method.updated_at.toString()),
-          object_calibrated: equipment[0].name,
+          object_calibrated: method.equipment_information.device,
           manufacturer: method.equipment_information.maker,
           no_series: method.equipment_information.serial_number,
           model: method.equipment_information.model,
