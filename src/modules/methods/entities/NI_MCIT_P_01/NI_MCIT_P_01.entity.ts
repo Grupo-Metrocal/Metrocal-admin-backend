@@ -12,6 +12,9 @@ export class NI_MCIT_P_01 {
   @Column({ nullable: true })
   calibration_location?: string
 
+  @Column({ nullable: true, default: 'pending' })
+  status?: string // pending, done
+
   @ManyToOne(
     () => EquipmentInformationNI_MCIT_P_01,
     (EquipmentInformationNI_MCIT_P_01) =>
