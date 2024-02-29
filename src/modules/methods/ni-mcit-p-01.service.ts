@@ -173,6 +173,7 @@ export class NI_MCIT_P_01Service {
   async descriptionPattern(
     descriptionPattern: DescriptionPatternDto,
     methodId: number,
+    activityId: number,
   ) {
     const method = await this.NI_MCIT_P_01Repository.findOne({
       where: { id: methodId },
@@ -199,8 +200,13 @@ export class NI_MCIT_P_01Service {
     try {
       await this.dataSource.transaction(async (manager) => {
         await manager.save(method.description_pattern)
+
+        // update method status
+        method.status = 'done'
         await manager.save(method)
       })
+
+      this.activitiesService.updateActivityProgress(activityId)
 
       return handleOK(method)
     } catch (error) {
