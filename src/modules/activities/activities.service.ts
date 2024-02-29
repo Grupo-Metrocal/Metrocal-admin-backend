@@ -482,4 +482,58 @@ export class ActivitiesService {
       return handleInternalServerError(error.message)
     }
   }
+
+  async updateActivityProgress(activityID: number) {
+    try {
+      const activity = await this.activityRepository.findOne({
+        where: { id: activityID },
+        relations: ['quote_request', 'quote_request.equipment_quote_request'],
+      })
+
+      if (!activity) {
+        return handleInternalServerError('Actividad no encontrada')
+      }
+
+      const { equipment_quote_request } = activity.quote_request
+
+      let progress = 0
+      let totalServices = 0
+
+      totalServices = equipment_quote_request
+        .map((service) => {
+          return service.count
+        })
+        .reduce((acc, curr) => acc + curr, 0)
+
+      for (const equipment of equipment_quote_request) {
+        const stack = await this.methodsService.getMethodsID(
+          equipment.method_id,
+        )
+
+        if (!stack.success) {
+          continue
+        }
+
+        const { data: methods } = stack as { data: any }
+
+        methods.forEach((method: any) => {
+          if (method.status === 'done') {
+            progress += 1
+          }
+        })
+      }
+
+      progress = (progress / totalServices) * 100
+
+      console.log('progress', totalServices)
+
+      activity.progress = Number(progress.toFixed(0))
+
+      await this.activityRepository.save(activity)
+
+      return handleOK(activity)
+    } catch (error) {
+      return handleInternalServerError(error.message)
+    }
+  }
 }
