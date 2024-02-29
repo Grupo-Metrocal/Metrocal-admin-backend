@@ -24,7 +24,7 @@ export class Activity {
   @Column({ type: 'varchar', default: 'pending' })
   status: string // pending, done, canceled
 
-  @Column({ nullable: true, default: 0 })
+  @Column({ type: 'float', nullable: true, default: 0 })
   progress: number
 
   @Column({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP' })
