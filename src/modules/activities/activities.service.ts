@@ -299,6 +299,7 @@ export class ActivitiesService {
         return {
           id: activity.id,
           quoete_request_id: activity.quote_request.id,
+          responsable: activity.responsable,
           client: activity.quote_request.client,
           progress: activity.progress,
           status: activity.status,
