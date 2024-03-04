@@ -298,6 +298,7 @@ export class ActivitiesService {
       const data = activities.map((activity) => {
         return {
           id: activity.id,
+          quoete_request_id: activity.quote_request.id,
           client: activity.quote_request.client,
           progress: activity.progress,
           status: activity.status,
