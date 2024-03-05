@@ -295,28 +295,51 @@ export class ActivitiesService {
         .orderBy('activities.created_at', 'DESC')
         .getMany()
 
-      const data = activities.map((activity) => {
-        return {
+      const data = []
+      for (const activity of activities) {
+        const members = await this.getTeamMembersByActivity(activity.id)
+        const activityData = {
           id: activity.id,
-          quoete_request_id: activity.quote_request.id,
+          quote_request_id: activity.quote_request.id,
           responsable: activity.responsable,
           client: activity.quote_request.client,
           progress: activity.progress,
           status: activity.status,
           no: activity.quote_request.no,
           services: activity.quote_request.equipment_quote_request.length,
-          team_members: activity.team_members.map((member) => {
-            return {
-              id: member.id,
-              username: member.username,
-              imageURL: member.imageURL,
-            }
-          }),
+          team_members: members.data,
           created_at: activity.created_at,
+        }
+        data.push(activityData)
+      }
+
+      return handleOK(data)
+    } catch (error) {
+      return handleInternalServerError(error.message)
+    }
+  }
+
+  async getTeamMembersByActivity(activityID: number) {
+    try {
+      const activity = await this.activityRepository.findOne({
+        where: { id: activityID },
+        relations: ['team_members'],
+      })
+
+      if (!activity) {
+        return handleInternalServerError('Actividad no encontrada')
+      }
+
+      const teamMembers = activity.team_members.map((member) => {
+        return {
+          id: member.id,
+          username: member.username,
+          email: member.email,
+          imageURL: member.imageURL,
         }
       })
 
-      return handleOK(data)
+      return handleOK(teamMembers)
     } catch (error) {
       return handleInternalServerError(error.message)
     }
