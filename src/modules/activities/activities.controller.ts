@@ -19,6 +19,12 @@ export class ActivitiesController {
   }
 
   @UseGuards(JwtAuthGuard)
+  @Get('done')
+  async getActivitiesDoneToCertify() {
+    return await this.activitiesService.getActivitiesDoneToCertify()
+  }
+
+  @UseGuards(JwtAuthGuard)
   @Post('generate/:id')
   async generateActivity(@Param('id') id: number) {
     return await this.activitiesService.generateActivity(id)
