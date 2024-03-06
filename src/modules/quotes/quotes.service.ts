@@ -17,6 +17,7 @@ import {
   handleInternalServerError,
   handleOK,
   handlePaginate,
+  handlePaginateByPageNumber,
 } from 'src/common/handleHttp'
 import { generateQuoteRequestCode } from 'src/utils/codeGenerator'
 import { User } from '../users/entities/user.entity'
@@ -26,6 +27,7 @@ import { ActivitiesService } from '../activities/activities.service'
 import { PaginationQueryDto } from './dto/pagination-query.dto'
 import { formatPrice } from 'src/utils/formatPrices'
 import { MethodsService } from '../methods/methods.service'
+import { PaginationQueryDinamicDto } from './dto/pagination-dinamic.dto'
 
 @Injectable()
 export class QuotesService {
@@ -419,24 +421,200 @@ export class QuotesService {
     }
   }
 
-  async getQuoteRequestRegister() {
-    return await this.quoteRequestRepository
-      .createQueryBuilder('quote_request')
-      .select([
-        'quote_request.id AS id',
-        'quote_request.status',
-        'quote_request.price',
-        'quote_request.created_at',
-        `COALESCE(approved_by.username, 'Sin asignar') AS approved_by`,
-        'client.company_name',
-        'client.phone',
-      ])
-      .where('quote_request.status IN (:...statuses)', {
-        statuses: ['done', 'rejected', 'canceled'],
-      })
-      .leftJoin('quote_request.approved_by', 'approved_by')
-      .leftJoin('quote_request.client', 'client')
-      .getRawMany()
+  //pagination and filter by status and client name and company name.
+  async getQuoteRequestRegister({
+    limit,
+    offset,
+    status,
+    bussinesName,
+  }: PaginationQueryDinamicDto) {
+    const arrayStatus = status
+      .toString()
+      .split(',')
+      .filter(
+        (element) =>
+          element.trim() !== '' && element !== undefined && element !== null,
+      )
+
+    let next_expired = ''
+    let expired = ''
+    let approved = ''
+
+    arrayStatus.forEach((i) => {
+      if (i === 'next_expired') {
+        next_expired = 'next_expired'
+      }
+      if (i === 'expired') {
+        expired = 'expired'
+      }
+      if (i === 'approved') {
+        expired = 'approved'
+      }
+    })
+
+    const statusMap = arrayStatus.map((i) => {
+      if (i === 'next_expired' || i === 'expired' || i === 'approved') {
+        return 'done' // Asignar 'done' en lugar de 'next_expired' o 'expired' o 'approved'.
+      }
+      return i // Mantener el valor original si no es 'next_expired' o 'expired' o 'approved'.
+    })
+
+    // Cambiar el estado 'done' por 'next_expired', 'expired' o 'approved' según el tiempo transcurrido desde la creación.
+    const updateQuoteStatus = (quote_registered) => {
+      if (next_expired !== '' || expired !== '' || approved !== '') {
+        for (let i = 0; i < quote_registered.length; i++) {
+          if (quote_registered[i].quote_request_status === 'done') {
+            const dateNow = new Date()
+            const date = new Date(quote_registered[i].quote_request_created_at)
+            const diffTime = Math.abs(dateNow.getTime() - date.getTime())
+
+            if (
+              diffTime <= 15 * 24 * 60 * 60 * 1000 &&
+              diffTime >= 10 * 24 * 60 * 60 * 1000
+            ) {
+              quote_registered[i].quote_request_status = 'next_expired'
+            } else if (diffTime > 15 * 24 * 60 * 60 * 1000) {
+              quote_registered[i].quote_request_status = 'expired'
+            } else {
+              quote_registered[i].quote_request_status = 'approved'
+            }
+          }
+        }
+      }
+    }
+
+    /*
+      Si la solicitud incluye todos los estados posibles y no se especifica un nombre de empresa,
+      se obtienen todas las solicitudes de cotización, se actualiza el estado según el tiempo transcurrido
+      y se retorna el resultado paginado.
+    */
+    if (status.length === 47 && bussinesName === '') {
+      const quote_registered = await this.quoteRequestRepository
+        .createQueryBuilder('quote_request')
+        .select([
+          'quote_request.id AS id',
+          'quote_request.status',
+          'quote_request.price',
+          'quote_request.created_at',
+          `COALESCE(approved_by.username, 'Sin asignar') AS approved_by`,
+          'client.company_name',
+          'client.phone',
+        ]) .where('quote_request.status IN (:...status)', {
+          status: statusMap,
+        })
+        .leftJoin('quote_request.approved_by', 'approved_by')
+        .leftJoin('quote_request.client', 'client')
+        .getRawMany()
+
+      updateQuoteStatus(quote_registered)
+
+      return handlePaginateByPageNumber(quote_registered, limit, offset)
+    }
+
+    /* 
+      Si la solicitud incluye todos los estados posibles y se especifica un nombre de empresa,
+      se obtienen las solicitudes de cotización filtradas por el nombre de empresa,
+      se actualiza el estado según el tiempo transcurrido y se retorna el resultado paginado.
+    */
+    if (status.length === 47 && bussinesName !== '') {
+      const quote_registered = await this.quoteRequestRepository
+        .createQueryBuilder('quote_request')
+        .select([
+          'quote_request.id AS id',
+          'quote_request.status',
+          'quote_request.price',
+          'quote_request.created_at',
+          `COALESCE(approved_by.username, 'Sin asignar') AS approved_by`,
+          'client.company_name',
+          'client.phone',
+        ])
+        .where('client.company_name ILIKE :bussinesName', {
+          bussinesName: `%${bussinesName}%`,
+        })
+        .andWhere('quote_request.status IN (:...status)', {
+          status: statusMap,
+        })
+        .leftJoin('quote_request.approved_by', 'approved_by')
+        .leftJoin('quote_request.client', 'client')
+        .getRawMany()
+
+      updateQuoteStatus(quote_registered)
+
+      return handlePaginateByPageNumber(quote_registered, limit, offset)
+    }
+
+    /*
+      Si la solicitud tiene estados especificados y no se proporciona un nombre de empresa,
+      se registran los estados, se obtienen las solicitudes de cotización según los estados,
+      se actualiza el estado según el tiempo transcurrido y se retorna el resultado paginado.
+    */
+    if (status.length !== 0 && bussinesName === '') {
+      const quote_registered = await this.quoteRequestRepository
+        .createQueryBuilder('quote_request')
+        .select([
+          'quote_request.id AS id',
+          'quote_request.status',
+          'quote_request.price',
+          'quote_request.created_at',
+          `COALESCE(approved_by.username, 'Sin asignar') AS approved_by`,
+          'client.company_name',
+          'client.phone',
+        ])
+        .where('quote_request.status IN (:...status)', {
+          status: statusMap,
+        })
+        .leftJoin('quote_request.approved_by', 'approved_by')
+        .leftJoin('quote_request.client', 'client')
+        .getRawMany()
+
+      updateQuoteStatus(quote_registered)
+
+      return handlePaginateByPageNumber(
+        quote_registered.filter((quote) =>
+          arrayStatus.includes(quote.quote_request_status),
+        ),
+        limit,
+        offset,
+      )
+    }
+
+    /*
+      Si la solicitud tiene estados especificados y se proporciona un nombre de empresa,
+      se registran los estados, se obtienen las solicitudes de cotización según los estados y el nombre de empresa,
+      se actualiza el estado según el tiempo transcurrido y se retorna el resultado paginado.
+    */
+    if (status.length !== 0 && bussinesName !== '') {
+      const quote_registered = await this.quoteRequestRepository
+        .createQueryBuilder('quote_request')
+        .select([
+          'quote_request.id AS id',
+          'quote_request.status',
+          'quote_request.price',
+          'quote_request.created_at',
+          `COALESCE(approved_by.username, 'Sin asignar') AS approved_by`,
+          'client.company_name',
+          'client.phone',
+        ])
+        .where('quote_request.status IN (:...status)', {
+          status: statusMap,
+        })
+        .andWhere('client.company_name ILIKE :bussinesName', {
+          bussinesName: `%${bussinesName}%`,
+        })
+        .leftJoin('quote_request.approved_by', 'approved_by')
+        .leftJoin('quote_request.client', 'client')
+        .getRawMany()
+
+      updateQuoteStatus(quote_registered)
+
+      return handlePaginateByPageNumber(
+        quote_registered.filter((quote) =>
+          arrayStatus.includes(quote.quote_request_status),
+        ),
+        limit,
+        offset,
+      )
+    }
   }
 
   async deleteQuoteRequest(id: number) {
