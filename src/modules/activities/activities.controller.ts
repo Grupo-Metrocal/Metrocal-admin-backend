@@ -18,7 +18,7 @@ export class ActivitiesController {
     return await this.activitiesService.getAllActivities()
   }
 
-  @UseGuards(JwtAuthGuard)
+  // @UseGuards(JwtAuthGuard)
   @Get('done')
   async getActivitiesDoneToCertify() {
     return await this.activitiesService.getActivitiesDoneToCertify()
