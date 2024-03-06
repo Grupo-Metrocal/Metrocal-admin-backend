@@ -13,7 +13,7 @@ import { AssignTeamMembersToActivityDto } from './dto/assign-activity.dt'
 import { RemoveMemberFromActivityDto } from './dto/remove-member.dto'
 import { AddResponsableToActivityDto } from './dto/add-responsable.dto'
 import { MethodsService } from '../methods/methods.service'
-import type { QuoteRequest } from '../quotes/entities/quote-request.entity'
+import { QuoteRequest } from '../quotes/entities/quote-request.entity'
 
 @Injectable()
 export class ActivitiesService {
@@ -426,6 +426,8 @@ export class ActivitiesService {
 
     try {
       activity.status = 'done'
+      activity.updated_at = new Date()
+      activity.progress = 100
 
       await this.activityRepository.save(activity)
 
@@ -557,6 +559,63 @@ export class ActivitiesService {
       await this.activityRepository.save(activity)
 
       return handleOK(activity)
+    } catch (error) {
+      return handleInternalServerError(error.message)
+    }
+  }
+
+  async getActivitiesDoneToCertify() {
+    try {
+      const response = await this.activityRepository.find({
+        where: { status: 'done' },
+        relations: [
+          'quote_request',
+          'quote_request.equipment_quote_request',
+          'quote_request.client',
+          'team_members',
+        ],
+      })
+
+      const data = response.map((activity) => {
+        return {
+          id: activity.id,
+          created_at: activity.created_at,
+          updated_at: activity.updated_at,
+          responsable: activity.responsable,
+          progress: activity.progress,
+          quoteRequest: {
+            id: activity.quote_request.id,
+            no: activity.quote_request.no,
+            client: {
+              id: activity.quote_request.client.id,
+              company_name: activity.quote_request.client.company_name,
+              email: activity.quote_request.client.email,
+            },
+            equipment_quote_request:
+              activity.quote_request.equipment_quote_request.map((service) => {
+                return {
+                  id: service.id,
+                  name: service.name,
+                  count: service.count,
+                  type_service: service.type_service,
+                  calibration_method: service.calibration_method,
+                  total: service.total,
+                  price: service.price,
+                  method_id: service.method_id,
+                }
+              }),
+          },
+          team_members: activity.team_members.map((member) => {
+            return {
+              id: member.id,
+              username: member.username,
+              imageURL: member.imageURL,
+            }
+          }),
+        }
+      })
+
+      return handleOK(data)
     } catch (error) {
       return handleInternalServerError(error.message)
     }
