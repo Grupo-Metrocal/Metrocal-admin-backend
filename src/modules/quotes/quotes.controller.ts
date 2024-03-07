@@ -19,6 +19,7 @@ import { Response } from 'express'
 import { handleBadrequest } from 'src/common/handleHttp'
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard'
 import { PaginationQueryDto } from './dto/pagination-query.dto'
+import { PaginationQueryDinamicDto } from './dto/pagination-dinamic.dto'
 
 @ApiTags('quotes')
 @Controller('quotes')
@@ -113,9 +114,13 @@ export class QuotesController {
     )
   }
 
-  @Get('registered')
-  async getQuoteRequestRegister() {
-    return await this.quotesService.getQuoteRequestRegister()
+  //Pagintaion and filters for registered quotes
+  @Get('registered/all')
+  async getQuoteRequestRegister(@Query() pagination?: PaginationQueryDinamicDto) {
+    if (isNaN(pagination.limit) || isNaN(pagination.offset)) {
+      return handleBadrequest(new Error('Limit y offset deben ser numeros'))
+    }
+    return await this.quotesService.getQuoteRequestRegister(pagination)
   }
 
   @Delete(':id')

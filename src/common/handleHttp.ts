@@ -54,3 +54,40 @@ export const handlePaginate = <T>(
     data,
   }
 }
+
+export const handlePaginateByPageNumber = <T>(
+  data: T[],
+  limit: number,
+  pageNumber: number,
+): ResponseHTTP<T[]> => {
+  const total = data.length;
+  const totalPages = Math.ceil(total / limit);
+  
+  // Verifica si el número de página solicitado es válido
+  if (pageNumber < 1 || pageNumber > totalPages) {
+    return {
+      status: 400,
+      message: `Número de página inválido. Debe estar entre 1 y ${totalPages}.`,
+      success: false,
+      limit: limit,
+      current_page: pageNumber,
+      total_pages: totalPages,
+      total_data: total,
+      data: [],
+    };
+  }
+
+  const offset = (pageNumber - 1) * limit;
+  const paginatedData = data.slice(offset, offset + limit);
+
+  return {
+    status: 200,
+    message: 'OK',
+    success: true,
+    limit: limit,
+    current_page: pageNumber,
+    total_pages: totalPages,
+    total_data: total,
+    data: paginatedData,
+  };
+};
