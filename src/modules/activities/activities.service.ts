@@ -586,6 +586,7 @@ export class ActivitiesService {
           quoteRequest: {
             id: activity.quote_request.id,
             no: activity.quote_request.no,
+            price: activity.quote_request.price,
             client: {
               id: activity.quote_request.client.id,
               company_name: activity.quote_request.client.company_name,
