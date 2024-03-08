@@ -16,6 +16,8 @@ import { Methods } from './entities/method.entity'
 import { QuoteRequest } from '../quotes/entities/quote-request.entity'
 import { addOrRemoveMethodToStackDto } from './dto/add-remove-method-stack.dto'
 
+import { NI_MCIT_D_01 } from './entities/NI_MCIT_D_01/NI_MCIT_D_01.entity'
+
 @Injectable()
 export class MethodsService {
   constructor(
@@ -28,6 +30,8 @@ export class MethodsService {
     private readonly NI_MCIT_P_01Repository: Repository<NI_MCIT_P_01>,
     @InjectRepository(NI_MCIT_D_02)
     private readonly NI_MCIT_D_02Repository: Repository<NI_MCIT_D_02>,
+    @InjectRepository(NI_MCIT_D_01)
+    private readonly NI_MCIT_D_01Repository: Repository<NI_MCIT_D_01>,
 
     @Inject(forwardRef(() => ActivitiesService))
     private readonly activitiesService: ActivitiesService,
@@ -150,7 +154,19 @@ export class MethodsService {
           'accuracy_test',
         ],
       })
-      return handleOK({ NI_MCIT_P_01, NI_MCIT_D_02 })
+      const NI_MCIT_D_01 = await this.NI_MCIT_D_01Repository.find({
+        relations: [
+          'equipment_information',
+          'environmental_conditions',
+          'description_pattern',
+          'pre_installation_comment',
+          'instrument_zero_check',
+          'exterior_parallelism_measurement',
+          'interior_parallelism_measurement',
+          'exterior_measurement_accuracy',
+        ],
+      })
+      return handleOK({ NI_MCIT_P_01, NI_MCIT_D_02, NI_MCIT_D_01 })
     } catch (error) {
       return handleBadrequest(error.message)
     }
