@@ -64,6 +64,17 @@ export class MethodsController {
     })
   }
 
+  @Post('ni-mcit-p-01/calibration-location/:methodId')
+  async createNI_MCIT_P_01CalibrationLocation(
+    @Body() calibrationLocation: string,
+    @Param('methodId') methodId: number,
+  ) {
+    return await this.ni_mcit_p_01Service.addCalibrationLocation(
+      calibrationLocation,
+      methodId,
+    )
+  }
+
   @Post('ni-mcit-p-01/equipment-information/:methodId')
   async createNI_MCIT_P_01EquipmentInformation(
     @Body() equipment: EquipmentInformationDto,
