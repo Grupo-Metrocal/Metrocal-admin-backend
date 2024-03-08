@@ -438,7 +438,6 @@ export class QuotesService {
 
     let next_expired = ''
     let expired = ''
-    let approved = ''
 
     arrayStatus.forEach((i) => {
       if (i === 'next_expired') {
@@ -447,36 +446,40 @@ export class QuotesService {
       if (i === 'expired') {
         expired = 'expired'
       }
-      if (i === 'approved') {
-        expired = 'approved'
-      }
     })
 
     const statusMap = arrayStatus.map((i) => {
-      if (i === 'next_expired' || i === 'expired' || i === 'approved') {
-        return 'done' // Asignar 'done' en lugar de 'next_expired' o 'expired' o 'approved'.
+      if (i === 'next_expired' || i === 'expired') {
+        return 'waiting' // Asignar 'done' en lugar de 'next_expired' o 'expired'.
       }
-      return i // Mantener el valor original si no es 'next_expired' o 'expired' o 'approved'.
+      if (i === 'approved') {
+        arrayStatus.push('done')
+        return 'done'
+      }
+      return i // Mantener el valor original si no es 'next_expired' o 'expired' .
     })
 
-    // Cambiar el estado 'done' por 'next_expired', 'expired' o 'approved' según el tiempo transcurrido desde la creación.
+   
+    // Cambiar el estado 'done' por 'next_expired', 'expired'  según el tiempo transcurrido desde la creación.
     const updateQuoteStatus = (quote_registered) => {
-      if (next_expired !== '' || expired !== '' || approved !== '') {
+      if (next_expired !== '' || expired !== '') {
         for (let i = 0; i < quote_registered.length; i++) {
-          if (quote_registered[i].quote_request_status === 'done') {
+          if (quote_registered[i].quote_request_status === 'waiting') {
             const dateNow = new Date()
             const date = new Date(quote_registered[i].quote_request_created_at)
             const diffTime = Math.abs(dateNow.getTime() - date.getTime())
 
             if (
-              diffTime <= 15 * 24 * 60 * 60 * 1000 &&
-              diffTime >= 10 * 24 * 60 * 60 * 1000
+              diffTime <= 23 * 24 * 60 * 60 * 1000 &&
+              diffTime >= 22 * 24 * 60 * 60 * 1000
             ) {
               quote_registered[i].quote_request_status = 'next_expired'
-            } else if (diffTime > 15 * 24 * 60 * 60 * 1000) {
+            } else if (diffTime > 30 * 24 * 60 * 60 * 1000) {
               quote_registered[i].quote_request_status = 'expired'
             } else {
-              quote_registered[i].quote_request_status = 'approved'
+              // Si no cumple las condiciones, podemos excluirlo del resultado.
+              quote_registered.splice(i, 1)
+              i-- // Ajustamos el índice porque eliminamos un elemento.
             }
           }
         }
@@ -499,7 +502,8 @@ export class QuotesService {
           `COALESCE(approved_by.username, 'Sin asignar') AS approved_by`,
           'client.company_name',
           'client.phone',
-        ]) .where('quote_request.status IN (:...status)', {
+        ])
+        .where('quote_request.status IN (:...status)', {
           status: statusMap,
         })
         .leftJoin('quote_request.approved_by', 'approved_by')
@@ -507,7 +511,7 @@ export class QuotesService {
         .getRawMany()
 
       updateQuoteStatus(quote_registered)
-
+   
       return handlePaginateByPageNumber(quote_registered, limit, offset)
     }
 
