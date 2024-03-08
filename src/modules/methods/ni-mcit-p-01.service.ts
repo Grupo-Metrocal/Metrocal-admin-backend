@@ -92,6 +92,26 @@ export class NI_MCIT_P_01Service {
     }
   }
 
+  async addCalibrationLocation(calibrationLocation: string, methodId: number) {
+    const method = await this.NI_MCIT_P_01Repository.findOne({
+      where: { id: methodId },
+    })
+
+    if (!method) {
+      return handleInternalServerError('El método no existe')
+    }
+
+    method.calibration_location = calibrationLocation
+
+    try {
+      await this.NI_MCIT_P_01Repository.save(method)
+
+      return handleOK(method)
+    } catch (error) {
+      return handleInternalServerError(error.message)
+    }
+  }
+
   async environmentalConditions(
     environmentalConditions: EnvironmentalConditionsDto,
     methodId: number,
