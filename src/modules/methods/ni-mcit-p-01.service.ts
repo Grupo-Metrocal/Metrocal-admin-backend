@@ -514,7 +514,7 @@ export class NI_MCIT_P_01Service {
         equipment_information: {
           service_code: generateServiceCodeToMethod(method.id),
           certificate_issue_date: formatDate(new Date().toString()),
-          calibration_date: formatDate(method.updated_at.toString()),
+          calibration_date: formatDate(activity.updated_at.toString()),
           object_calibrated: method.equipment_information.device,
           manufacturer: method.equipment_information.maker,
           no_series: method.equipment_information.serial_number,
