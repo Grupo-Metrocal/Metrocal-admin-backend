@@ -27,6 +27,7 @@ import { InstrumentZeroCheckNI_MCIT_D_01Dto } from './dto/NI_MCIT_D_01/instrumen
 import { ExteriorParallelismMeasurementNI_MCIT_D_01Dto } from './dto/NI_MCIT_D_01/exterior_parallelism_measurement.dto'
 import { InteriorParallelismMeasurementNI_MCIT_D_01Dto } from './dto/NI_MCIT_D_01/interior_parallelism_measurement.dto'
 import { ExteriorMeasurementAccuracyNI_MCIT_D_01Dto } from './dto/NI_MCIT_D_01/exterior_measurement_accuracy.dto'
+import { AddLocationDto } from './dto/NI_MCIT_P_01/add_location.dto'
 
 @ApiTags('methods')
 @Controller('methods')
@@ -78,11 +79,11 @@ export class MethodsController {
 
   @Post('ni-mcit-p-01/calibration-location/:methodId')
   async createNI_MCIT_P_01CalibrationLocation(
-    @Body() calibrationLocation: string,
+    @Body() { location }: AddLocationDto,
     @Param('methodId') methodId: number,
   ) {
     return await this.ni_mcit_p_01Service.addCalibrationLocation(
-      calibrationLocation,
+      location,
       methodId,
     )
   }
