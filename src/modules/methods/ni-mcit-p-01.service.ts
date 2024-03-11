@@ -538,6 +538,7 @@ export class NI_MCIT_P_01Service {
             .cell('G47')
             .value()} %`,
         },
+        descriptionPattern: method.description_pattern,
       }
 
       fs.unlinkSync(newFilePath)
