@@ -357,27 +357,12 @@ export class ActivitiesService {
         .where(`activities.id = ${activityID}`)
         .getOne()
 
-      const equipments = response.quote_request.equipment_quote_request
-        .filter(
-          (service) => service.type_service.toLowerCase() === 'calibracion',
-        )
-        .map((service) => ({
-          id: service.id,
-          name: service.name,
-          status: service.status,
-          type_service: service.type_service,
-          count: service.count,
-          price: service.price,
-          total: service.total,
-          method_id: service.method_id,
-        }))
-
       const data = {
         activity_id: response.id,
         quote_request_id: response.quote_request.id,
         status: response.status,
         created_at: response.created_at,
-        equipment_quote_request: equipments,
+        equipment_quote_request: response.quote_request.equipment_quote_request,
       }
       return handleOK(data)
     } catch (error) {
