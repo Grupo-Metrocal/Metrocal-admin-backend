@@ -110,7 +110,7 @@ export class MethodsController {
     )
   }
 
-  @Post('ni-mcit-p-01/calibration-results/:methodId')
+  @Post('ni-mcit-p-01/calibrations-results/:methodId')
   async createNI_MCIT_P_01CalibrationResults(
     @Body() calibrations: CalibrationResultsDto,
     @Param('methodId') methodId: number,
