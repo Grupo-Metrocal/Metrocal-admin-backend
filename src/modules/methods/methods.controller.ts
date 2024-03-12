@@ -65,7 +65,7 @@ export class MethodsController {
     })
   }
 
-  @Delete('remove-method-to-stack/')
+  @Post('remove-method-to-stack/')
   async removeMethodToStack(
     @Body()
     { methodsStackID, quoteRequestID, methodID }: addOrRemoveMethodToStackDto,
