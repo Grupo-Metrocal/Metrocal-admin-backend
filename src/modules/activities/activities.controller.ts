@@ -56,7 +56,7 @@ export class ActivitiesController {
   }
 
   @UseGuards(JwtAuthGuard)
-  @Delete('remove-member')
+  @Post('remove-member')
   async removeMemberFromActivity(
     @Body() removeMemberDto: RemoveMemberFromActivityDto,
   ) {
