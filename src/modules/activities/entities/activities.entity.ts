@@ -35,4 +35,7 @@ export class Activity {
 
   @Column({ nullable: true })
   responsable: number
+
+  @Column({ type: 'varchar', nullable: true })
+  client_signature: string
 }
