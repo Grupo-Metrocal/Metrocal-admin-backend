@@ -14,6 +14,7 @@ import { RemoveMemberFromActivityDto } from './dto/remove-member.dto'
 import { AddResponsableToActivityDto } from './dto/add-responsable.dto'
 import { MethodsService } from '../methods/methods.service'
 import { QuoteRequest } from '../quotes/entities/quote-request.entity'
+import * as admin from 'firebase-admin'
 
 @Injectable()
 export class ActivitiesService {
@@ -602,6 +603,47 @@ export class ActivitiesService {
       })
 
       return handleOK(data)
+    } catch (error) {
+      return handleInternalServerError(error.message)
+    }
+  }
+
+  async addClientSignature(activityID: number, image: Express.Multer.File) {
+    try {
+      const activity = await this.activityRepository.findOne({
+        where: { id: activityID },
+      })
+
+      if (!activity) {
+        return handleBadrequest(new Error('Actividad no encontrada'))
+      }
+
+      const bucket = admin.storage().bucket()
+      const file = bucket.file(`client-signature_${activityID}_${Date.now()}`)
+
+      const stream = file.createWriteStream({
+        metadata: {
+          contentType: image.mimetype,
+        },
+      })
+
+      stream.on('error', (error) => {
+        return handleInternalServerError(error.message)
+      })
+
+      return new Promise((resolve, reject) => {
+        stream.on('finish', async () => {
+          const imageURL = `https://firebasestorage.googleapis.com/v0/b/${bucket.name}/o/${file.name}?alt=media`
+
+          activity.client_signature = imageURL
+
+          await this.activityRepository.save(activity)
+
+          resolve(handleOK({ imageURL })) // Resuelve la promesa con el resultado de la función handleOK
+        })
+
+        stream.end(image.buffer)
+      })
     } catch (error) {
       return handleInternalServerError(error.message)
     }
