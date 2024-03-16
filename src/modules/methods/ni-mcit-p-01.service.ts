@@ -286,7 +286,7 @@ export class NI_MCIT_P_01Service {
     if (method.description_pattern.pattern === 'NI-MCPP-05') {
       filePath = path.join(
         __dirname,
-        '../mail/templates/excels/ni_mcit_p_01_0555.xlsx',
+        '../mail/templates/excels/ni_mcit_p_01_5.xlsx',
       )
     } else if (method.description_pattern.pattern === 'NI-MCPP-06') {
       filePath = path.join(
@@ -555,7 +555,7 @@ export class NI_MCIT_P_01Service {
         descriptionPattern: method.description_pattern,
       }
 
-      // fs.unlinkSync(newFilePath)
+      fs.unlinkSync(newFilePath)
       return handleOK(certificate)
     } catch (error) {
       console.error(error.message)
