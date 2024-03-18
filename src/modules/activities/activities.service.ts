@@ -310,6 +310,7 @@ export class ActivitiesService {
           services: activity.quote_request.equipment_quote_request.length,
           team_members: members.data,
           created_at: activity.created_at,
+          client_signature: activity.client_signature,
         }
         data.push(activityData)
       }
