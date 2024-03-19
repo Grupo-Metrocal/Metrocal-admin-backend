@@ -589,7 +589,6 @@ export class NI_MCIT_P_01Service {
             console.error(`Error en la salida estándar: ${stderr}`)
             reject(new Error(stderr))
           } else {
-            console.log(`Salida estándar: ${stdout}`)
             resolve(stdout)
           }
         },

@@ -81,7 +81,6 @@ export class MethodsService {
               }
             })
           } catch (error) {
-            console.log(error)
             return handleBadrequest(error.message)
           }
         },
@@ -91,7 +90,6 @@ export class MethodsService {
 
       return handleOK(activity.quote_request.equipment_quote_request)
     } catch (error) {
-      console.log(error)
       return handleBadrequest(error.message)
     }
   }
@@ -321,11 +319,7 @@ export class MethodsService {
     report_messages: string,
   ) {
     try {
-      console.log('method_name', method_name)
-      console.log('method_id', method_id)
-
       const repository = `${method_name}Repository`
-      console.log('repository', repository)
       const method = await this[repository].findOne({
         where: {
           id: method_id,

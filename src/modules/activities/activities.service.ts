@@ -492,7 +492,6 @@ export class ActivitiesService {
 
       return handleOK('Actividad eliminada')
     } catch (error) {
-      console.log(error.message)
       return handleInternalServerError(error.message)
     }
   }
@@ -538,8 +537,6 @@ export class ActivitiesService {
       }
 
       progress = (progress / totalServices) * 100
-
-      console.log('progress', totalServices)
 
       activity.progress = Number(progress.toFixed(0))
 
