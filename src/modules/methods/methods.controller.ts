@@ -28,6 +28,7 @@ import { ExteriorParallelismMeasurementNI_MCIT_D_01Dto } from './dto/NI_MCIT_D_0
 import { InteriorParallelismMeasurementNI_MCIT_D_01Dto } from './dto/NI_MCIT_D_01/interior_parallelism_measurement.dto'
 import { ExteriorMeasurementAccuracyNI_MCIT_D_01Dto } from './dto/NI_MCIT_D_01/exterior_measurement_accuracy.dto'
 import { AddLocationDto } from './dto/NI_MCIT_P_01/add_location.dto'
+import { EmmitReportDto } from './dto/emmit-report.dto'
 
 @ApiTags('methods')
 @Controller('methods')
@@ -75,6 +76,18 @@ export class MethodsController {
       quoteRequestID,
       methodID,
     })
+  }
+
+  @Post('emmit-report/:id')
+  async emmitReport(
+    @Body() { method_name, report }: EmmitReportDto,
+    @Param('id') id: number,
+  ) {
+    return await this.methodsService.emmitReportToMethod(
+      method_name,
+      id,
+      report,
+    )
   }
 
   @Post('ni-mcit-p-01/calibration-location/:methodId')
