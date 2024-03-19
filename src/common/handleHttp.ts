@@ -60,9 +60,9 @@ export const handlePaginateByPageNumber = <T>(
   limit: number,
   pageNumber: number,
 ): ResponseHTTP<T[]> => {
-  const total = data.length;
-  const totalPages = Math.ceil(total / limit);
-  
+  const total = data.length
+  const totalPages = Math.ceil(total / limit)
+
   // Verifica si el número de página solicitado es válido
   if (pageNumber < 1 || pageNumber > totalPages) {
     return {
@@ -74,11 +74,11 @@ export const handlePaginateByPageNumber = <T>(
       total_pages: totalPages,
       total_data: total,
       data: [],
-    };
+    }
   }
 
-  const offset = (pageNumber - 1) * limit;
-  const paginatedData = data.slice(offset, offset + limit);
+  const offset = (pageNumber - 1) * limit
+  const paginatedData = data.slice(offset, offset + limit)
 
   return {
     status: 200,
@@ -89,5 +89,5 @@ export const handlePaginateByPageNumber = <T>(
     total_pages: totalPages,
     total_data: total,
     data: paginatedData,
-  };
-};
+  }
+}
