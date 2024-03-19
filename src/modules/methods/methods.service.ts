@@ -253,6 +253,7 @@ export class MethodsService {
             (equipment) => equipment.method_id === methodsStackID,
           ).id,
         })
+        await this.activitiesService.updateActivityProgress(data.activity.id)
 
         return handleOK(newMethod)
       })
@@ -306,6 +307,7 @@ export class MethodsService {
           ).id,
         })
 
+        await this.activitiesService.updateActivityProgress(data.activity.id)
         return handleOK('Método eliminado')
       })
     } catch (error) {
