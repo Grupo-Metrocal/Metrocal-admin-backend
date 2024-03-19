@@ -15,7 +15,7 @@ export class NI_MCIT_P_01 {
   @Column({ nullable: true, default: false, type: 'boolean' })
   report_status?: boolean
 
-  @Column({ nullable: true, type: 'varchar' })
+  @Column({ nullable: true, type: 'varchar', array: true, default: [] })
   report_messages?: string[]
 
   @Column({ nullable: true, default: 'pending' })
