@@ -314,4 +314,41 @@ export class MethodsService {
       return handleInternalServerError(error.message)
     }
   }
+
+  async emmitReportToMethod(
+    method_name: string,
+    method_id: number,
+    report_messages: string,
+  ) {
+    try {
+      console.log('method_name', method_name)
+      console.log('method_id', method_id)
+
+      const repository = `${method_name}Repository`
+      console.log('repository', repository)
+      const method = await this[repository].findOne({
+        where: {
+          id: method_id,
+        },
+      })
+
+      if (!method) {
+        return handleBadrequest(new Error('El método no existe'))
+      }
+
+      if (report_messages === '') {
+        return handleBadrequest(new Error('El reporte no puede estar vacío'))
+      }
+
+      await this.dataSource.transaction(async (manager) => {
+        method.report_status = true
+        method.report_messages.push(report_messages)
+        await manager.save(method)
+      })
+
+      return handleOK('Reporte emitido')
+    } catch (error) {
+      return handleInternalServerError(error.message)
+    }
+  }
 }
