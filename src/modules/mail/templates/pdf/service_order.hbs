@@ -1,0 +1,202 @@
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>ORDEN DE SERVICIO</title>
+    <link
+      href="https://fonts.googleapis.com/css?family=Montserrat:400,500,600,700"
+      rel="stylesheet"
+      type="text/css"
+    />
+
+    <style>
+      body {
+        font-family: "Montserrat", sans-serif;
+        font-size: 15px;
+        color: #333;
+        font-size: 1em;
+      }
+    </style>
+  </head>
+  <body>
+    <main style="width: 1100px; display: flex; flex-direction: column">
+      <header
+        style="
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          padding: 1rem;
+        "
+      >
+        <div
+          style="
+            display: flex;
+            flex-direction: column;
+            width: 200px;
+            align-items: center;
+            text-align: center;
+          "
+        >
+          <img
+            src="https://i.ibb.co/tMhsPbK/metrocal.jpg"
+            alt="metrocal_logo"
+            style="width: 80px; height: 80px"
+          />
+          <p>Metrología Consultores de Nicaragua S.A.</p>
+        </div>
+        <div style="display: flex; align-items: center; flex-direction: column">
+          <h2>METROLOGÍA CONSULTORES DE NICARAGUA, S.A.</h2>
+          <h4>No. RUC: J0310000169420</h4>
+          <p>
+            Bello Horizonte, VI Etapa, Casa No. 135 - Iglesia Pío X, 350 m este
+          </p>
+
+          <div
+            style="
+              display: flex;
+              flex-direction: row;
+              align-items: center;
+              gap: 8px;
+            "
+          >
+            <a href="tel:50522780000" style="color: #333">Tel: 2278-0000</a>
+            <a href="mailto:info@metrocal.co.ni" style="color: #333"
+              >Email: info@metrocal.co.ni</a
+            >
+            <a href="https://app-grupometrocal.com" style="color: #333"
+              >Web: app-grupometrocal.com</a
+            >
+          </div>
+        </div>
+
+        <div
+          style="
+            text-align: center;
+            display: flex;
+            flex-direction: column;
+            width: 200px;
+          "
+        >
+          <h3>Código</h3>
+          <p>NI-R03-MCPR-02</p>
+        </div>
+      </header>
+
+      <section
+        style="
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          gap: 1rem;
+        "
+      >
+        <h1>ORDEN DE SERVICIO</h1>
+
+        <div
+          style="
+            display: flex;
+            justify-content: space-between;
+            width: 90%;
+            padding: 0 2rem;
+            
+          "
+        >
+          <div style="width: 80%;">
+            <h3>INFORMACIÓN GENERAL</h3>
+            <div style="display: flex; flex-direction: column; width: 100%">
+              <p style="display: flex; gap: 1rem">
+                <strong>Fecha de emisión:</strong>
+                <span style="border-bottom: 1px solid #333; width: 70%"
+                  >{{endDate}}</span
+                >
+              </p>
+              <p style="display: flex; gap: 1rem">
+                <strong>Empresa:</strong>
+                <span style="border-bottom: 1px solid #333; width: 70%"
+                  >{{clientName}}</span
+                >
+              </p>
+              <p style="display: flex; gap: 1rem">
+                <strong>Dirección:</strong>
+                <span style="border-bottom: 1px solid #333; width: 70%"
+                  >{{address}}</span
+                >
+              </p>
+              <p style="display: flex; gap: 1rem">
+                <strong>Solicitado por:</strong>
+                <span style="border-bottom: 1px solid #333; width: 70%"
+                  >{{requestedBy}}</span
+                >
+              </p>
+              <p style="display: flex; gap: 1rem">
+                <strong>Teléfono:</strong>
+                <span style="border-bottom: 1px solid #333; width: 70%"
+                  >{{phone}}</span
+                >
+              </p>
+            </div>
+          </div>
+          <div style="width: 20%">
+            <h3>TIPO DE SERVICIO</h3>
+            <div
+              style="
+                display: flex;
+                height: 80%;
+                align-items: center;
+                justify-content: center;
+                border: 1px solid #333;
+              "
+            >
+              <p><strong>CALIBRACIÓN</strong></p>
+              <p></p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section
+        style="
+        display: flex;
+          flex-direction: column;
+          align-items: center;
+          gap: 1rem;
+          text-align: center;
+          padding: 0 2rem;
+        "
+      >
+        <h2>DATOS DEL SERVICIO</h2>
+
+        <div style="align-self: flex-start; width: 100%; text-align: start;">
+          <p style="display: flex; gap: 1rem">
+            <strong>Área de trabajo:</strong>
+            <span style="border-bottom: 1px solid #333; width: 70%;"
+              >Lorem ipsum dolor sit amet consectetur adipisicing elit. Debitis, harum.</span
+            >
+          </p>
+        </div>
+
+        <table style="width: 100%;" border="1">
+          <thead>
+            <tr >
+              <th>NO. COTIZACION</th>
+              <th>ITEM</th>
+              <th style="padding: .7rem">EQUIPO</th>
+              <th>CANTIDAD</th>
+              <th>OBSERVACIONES GENERALES</th>
+            </tr>
+          </thead>
+
+          <tbody>
+            
+            {{#each equipments}}
+            <tr style="text-align: center">
+              <td>{{quoteNumber}}</td>
+              <td>{{this.name}}</td>
+              <td>{{this.name}}</td>
+              <td>{{this.count}}</td>
+              <td>{{this.review_comment}}</td>
+          {{/each}}
+        </table>
+    </main>
+  </body>
+</html>
