@@ -14,7 +14,10 @@ import { RemoveMemberFromActivityDto } from './dto/remove-member.dto'
 import { AddResponsableToActivityDto } from './dto/add-responsable.dto'
 import { MethodsService } from '../methods/methods.service'
 import { QuoteRequest } from '../quotes/entities/quote-request.entity'
+import { PdfService } from '../mail/pdf.service'
+import { MailService } from '../mail/mail.service'
 import * as admin from 'firebase-admin'
+import { formatDate } from 'src/utils/formatDate'
 
 @Injectable()
 export class ActivitiesService {
@@ -26,9 +29,10 @@ export class ActivitiesService {
     @InjectRepository(User)
     private readonly userRepository: Repository<User>,
     private readonly dataSource: DataSource,
-
     @Inject(forwardRef(() => MethodsService))
     private readonly methodsService: MethodsService,
+    private readonly pdfService: PdfService,
+    private readonly mailService: MailService,
   ) {}
 
   async createActivity(activity: Activity) {
@@ -418,7 +422,58 @@ export class ActivitiesService {
 
       await this.activityRepository.save(activity)
 
-      return handleOK(activity)
+      return await this.generateServiceOrder(activity.id)
+    } catch (error) {
+      return handleInternalServerError(error.message)
+    }
+  }
+
+  async generateServiceOrder(activityID: number) {
+    try {
+      const activity = await this.activityRepository.findOne({
+        where: { id: activityID },
+        relations: [
+          'quote_request',
+          'quote_request.equipment_quote_request',
+          'quote_request.client',
+          'team_members',
+        ],
+      })
+
+      const data = {
+        clientName: activity.quote_request.client.company_name,
+        endDate: formatDate(activity.updated_at + ''),
+        address: activity.quote_request.client.address,
+        requestedBy: activity.quote_request.client.requested_by,
+        phone: activity.quote_request.client.phone,
+        equipments: activity.quote_request.equipment_quote_request.map(
+          (equipment) => {
+            return {
+              name: equipment.name,
+              count: equipment.count,
+              review_comment: equipment.review_comment,
+            }
+          },
+        ),
+      }
+
+      const pdf = await this.pdfService.generatePdf('service_order.hbs', data)
+
+      if (!pdf) {
+        return handleBadrequest(new Error('No se pudo generar el pdf'))
+      }
+
+      const response = await this.mailService.sendServiceOrderMail({
+        to: activity.quote_request.client.email.split(',')[0],
+        pdf,
+        clientName: activity.quote_request.client.company_name,
+        quoteNumber: activity.quote_request.no,
+        startDate: formatDate(activity.created_at + ''),
+        endDate: formatDate(activity.updated_at + ''),
+        technicians: activity.team_members.map((member) => member.username),
+      })
+
+      return handleOK(response)
     } catch (error) {
       return handleInternalServerError(error.message)
     }
