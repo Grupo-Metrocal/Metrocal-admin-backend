@@ -459,7 +459,6 @@ export class QuotesService {
       return i // Mantener el valor original si no es 'next_expired' o 'expired' .
     })
 
-   
     // Cambiar el estado 'done' por 'next_expired', 'expired'  según el tiempo transcurrido desde la creación.
     const updateQuoteStatus = (quote_registered) => {
       if (next_expired !== '' || expired !== '') {
@@ -511,7 +510,7 @@ export class QuotesService {
         .getRawMany()
 
       updateQuoteStatus(quote_registered)
-   
+
       return handlePaginateByPageNumber(quote_registered, limit, offset)
     }
 
