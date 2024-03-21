@@ -116,7 +116,9 @@ export class QuotesController {
 
   //Pagintaion and filters for registered quotes
   @Get('registered/all')
-  async getQuoteRequestRegister(@Query() pagination?: PaginationQueryDinamicDto) {
+  async getQuoteRequestRegister(
+    @Query() pagination?: PaginationQueryDinamicDto,
+  ) {
     if (isNaN(pagination.limit) || isNaN(pagination.offset)) {
       return handleBadrequest(new Error('Limit y offset deben ser numeros'))
     }
