@@ -6,6 +6,8 @@ import { Activity } from './entities/activities.entity'
 import { QuotesModule } from '../quotes/quotes.module'
 import { User } from '../users/entities/user.entity'
 import { MethodsModule } from '../methods/methods.module'
+import { PdfService } from '../mail/pdf.service'
+import { MailService } from '../mail/mail.service'
 
 @Module({
   imports: [
@@ -14,7 +16,7 @@ import { MethodsModule } from '../methods/methods.module'
     forwardRef(() => MethodsModule),
   ],
   controllers: [ActivitiesController],
-  providers: [ActivitiesService],
+  providers: [ActivitiesService, PdfService, MailService],
   exports: [ActivitiesService],
 })
 export class ActivitiesModule {}
