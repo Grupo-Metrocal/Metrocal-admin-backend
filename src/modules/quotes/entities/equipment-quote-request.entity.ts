@@ -57,4 +57,7 @@ export class EquipmentQuoteRequest {
 
   @Column({ nullable: true, default: 'pending' })
   review_status?: string // done, pending
+
+  @Column({ nullable: true })
+  review_comment?: string
 }
