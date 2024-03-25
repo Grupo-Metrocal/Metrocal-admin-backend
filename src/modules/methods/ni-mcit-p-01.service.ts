@@ -198,38 +198,41 @@ export class NI_MCIT_P_01Service {
     methodId: number,
     activityId: number,
   ) {
-    const method = await this.NI_MCIT_P_01Repository.findOne({
-      where: { id: methodId },
-      relations: ['description_pattern'],
-    })
-
-    if (!method) {
-      return handleInternalServerError('El método no existe')
-    }
-
-    const existingDescriptionPattern = method.description_pattern
-
-    if (existingDescriptionPattern) {
-      this.DescriptionPatternNI_MCIT_P_01Repository.merge(
-        existingDescriptionPattern,
-        descriptionPattern,
-      )
-    } else {
-      const newDescriptionPattern =
-        this.DescriptionPatternNI_MCIT_P_01Repository.create(descriptionPattern)
-      method.description_pattern = newDescriptionPattern
-    }
-
     try {
+      const method = await this.NI_MCIT_P_01Repository.findOne({
+        where: { id: methodId },
+        relations: ['description_pattern'],
+      })
+
+      if (!method) {
+        return handleInternalServerError('El método no existe')
+      }
+
+      const existingDescriptionPattern = method.description_pattern
+
+      if (existingDescriptionPattern) {
+        this.DescriptionPatternNI_MCIT_P_01Repository.merge(
+          existingDescriptionPattern,
+          descriptionPattern,
+        )
+      } else {
+        const newDescriptionPattern =
+          this.DescriptionPatternNI_MCIT_P_01Repository.create(
+            descriptionPattern,
+          )
+        method.description_pattern = newDescriptionPattern
+      }
+
       await this.dataSource.transaction(async (manager) => {
         await manager.save(method.description_pattern)
 
-        // update method status
         method.status = 'done'
         await manager.save(method)
       })
 
-      this.activitiesService.updateActivityProgress(activityId)
+      await this.generateCertificateCodeToMethod(method.id)
+
+      await this.activitiesService.updateActivityProgress(activityId)
 
       return handleOK(method)
     } catch (error) {
@@ -597,5 +600,32 @@ export class NI_MCIT_P_01Service {
         },
       )
     })
+  }
+
+  async generateCertificateCodeToMethod(methodID: number) {
+    try {
+      const method = await this.NI_MCIT_P_01Repository.findOne({
+        where: { id: methodID },
+      })
+
+      if (!method) {
+        return handleInternalServerError('El método no existe')
+      }
+
+      if (method.certificate_code) {
+        return handleOK('El método ya tiene un código de certificado')
+      }
+
+      const certificate = await this.certificateService.create()
+
+      method.certificate_code = certificate.data.code
+      method.certificate_id = certificate.data.id
+
+      await this.NI_MCIT_P_01Repository.save(method)
+
+      return handleOK(certificate)
+    } catch (error) {
+      return handleInternalServerError(error.message)
+    }
   }
 }
