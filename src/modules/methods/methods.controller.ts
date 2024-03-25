@@ -158,6 +158,10 @@ export class MethodsController {
     })
   }
 
+  @Get('ni-mcit-p-01/equipment/:id')
+  async getEquipmentP_01ById(@Param('id') id: number) {
+    return await this.ni_mcit_p_01Service.getMehotdById(id)
+  }
   @Post('ni-mcit-d-02/create')
   async createNI_MCIT_D_02() {
     return await this.ni_mcit_d_02Service.create()

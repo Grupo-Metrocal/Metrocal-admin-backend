@@ -628,4 +628,26 @@ export class NI_MCIT_P_01Service {
       return handleInternalServerError(error.message)
     }
   }
+
+  async getMehotdById(methodId: number) {
+    try {
+      const method = await this.NI_MCIT_P_01Repository.findOne({
+        where: { id: methodId },
+        relations: [
+          'equipment_information',
+          'environmental_conditions',
+          'calibration_results',
+          'description_pattern',
+        ],
+      })
+
+      if (!method) {
+        return handleInternalServerError('El método no existe')
+      }
+
+      return handleOK(method)
+    } catch (error) {
+      return handleInternalServerError(error.message)
+    }
+  }
 }
