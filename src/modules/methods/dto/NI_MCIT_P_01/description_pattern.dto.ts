@@ -6,4 +6,7 @@ export class DescriptionPatternDto {
 
   @ApiProperty()
   pattern?: string
+
+  @ApiProperty()
+  creditable?: boolean
 }
