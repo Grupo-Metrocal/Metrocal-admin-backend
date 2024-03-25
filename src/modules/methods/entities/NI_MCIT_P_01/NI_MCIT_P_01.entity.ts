@@ -21,6 +21,12 @@ export class NI_MCIT_P_01 {
   @Column({ nullable: true, default: 'pending' })
   status?: string // pending, done
 
+  @Column({ nullable: true })
+  certificate_id?: string
+
+  @Column({ nullable: true })
+  certificate_code?: string
+
   @ManyToOne(
     () => EquipmentInformationNI_MCIT_P_01,
     (EquipmentInformationNI_MCIT_P_01) =>
