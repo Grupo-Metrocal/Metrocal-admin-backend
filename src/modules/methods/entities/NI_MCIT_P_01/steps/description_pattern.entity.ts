@@ -21,4 +21,7 @@ export class DescriptionPatternNI_MCIT_P_01 {
 
   @Column({ nullable: true })
   observation?: string
+
+  @Column({ nullable: true })
+  creditable?: boolean
 }
