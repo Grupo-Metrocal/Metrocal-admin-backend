@@ -17,6 +17,7 @@ import { DescriptionPatternNI_MCIT_P_01 } from './entities/NI_MCIT_P_01/steps/de
 import { handleInternalServerError, handleOK } from 'src/common/handleHttp'
 import { generateServiceCodeToMethod } from 'src/utils/codeGenerator'
 import { formatDate } from 'src/utils/formatDate'
+import { CertificateService } from '../certificate/certificate.service'
 
 import * as XlsxPopulate from 'xlsx-populate'
 import * as path from 'path'
@@ -41,6 +42,8 @@ export class NI_MCIT_P_01Service {
 
     @Inject(forwardRef(() => ActivitiesService))
     private readonly activitiesService: ActivitiesService,
+
+    private readonly certificateService: CertificateService,
   ) {}
 
   async create() {
@@ -555,7 +558,7 @@ export class NI_MCIT_P_01Service {
         descriptionPattern: method.description_pattern,
       }
 
-      fs.unlinkSync(newFilePath)
+      // fs.unlinkSync(newFilePath)
       return handleOK(certificate)
     } catch (error) {
       console.error(error.message)
