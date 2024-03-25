@@ -6,6 +6,7 @@ import { TypeOrmModule } from '@nestjs/typeorm'
 import { ActivitiesModule } from '../activities/activities.module'
 import { QuotesModule } from '../quotes/quotes.module'
 import { Methods } from './entities/method.entity'
+import { CertificateModule } from '../certificate/certificate.module'
 
 import { NI_MCIT_P_01Service } from './ni-mcit-p-01.service'
 import { NI_MCIT_P_01 } from './entities/NI_MCIT_P_01/NI_MCIT_P_01.entity'
@@ -65,6 +66,7 @@ import { ExteriorMeasurementAccuracyNI_MCIT_D_01 } from './entities/NI_MCIT_D_01
     ]),
     forwardRef(() => ActivitiesModule),
     forwardRef(() => QuotesModule),
+    forwardRef(() => CertificateModule),
   ],
   controllers: [MethodsController],
   providers: [
