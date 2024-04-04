@@ -447,11 +447,13 @@ export class ActivitiesService {
         requestedBy: activity.quote_request.client.requested_by,
         phone: activity.quote_request.client.phone,
         equipments: activity.quote_request.equipment_quote_request.map(
-          (equipment) => {
+          (equipment, index) => {
             return {
               name: equipment.name,
               count: equipment.count,
               review_comment: equipment.review_comment,
+              index: index + 1,
+              quoteNumber: activity.quote_request.no,
             }
           },
         ),
