@@ -15,6 +15,7 @@ import { RemoveMemberFromActivityDto } from './dto/remove-member.dto'
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard'
 import { AddResponsableToActivityDto } from './dto/add-responsable.dto'
 import { FileInterceptor } from '@nestjs/platform-express'
+import { FinishActivityDto } from './dto/finish-activity.dto'
 
 @ApiTags('activities')
 @Controller('activities')
@@ -89,10 +90,13 @@ export class ActivitiesController {
     return await this.activitiesService.getServicesByActivity(id)
   }
 
-  @UseGuards(JwtAuthGuard)
-  @Get('finished-activity/:id')
-  async finishActivity(@Param('id') id: number) {
-    return await this.activitiesService.finishActivity(id)
+  // @UseGuards(JwtAuthGuard)
+  @Post('finished-activity/:id')
+  async finishActivity(
+    @Param('id') id: number,
+    @Body() data: FinishActivityDto,
+  ) {
+    return await this.activitiesService.finishActivity(id, data)
   }
 
   @UseGuards(JwtAuthGuard)
