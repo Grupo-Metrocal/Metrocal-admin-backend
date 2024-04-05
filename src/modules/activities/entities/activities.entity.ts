@@ -38,4 +38,10 @@ export class Activity {
 
   @Column({ type: 'varchar', nullable: true })
   client_signature: string
+
+  @Column({ type: 'varchar', nullable: true })
+  work_areas?: string[]
+
+  @Column({ type: 'varchar', nullable: true })
+  comments_insitu?: string[]
 }
