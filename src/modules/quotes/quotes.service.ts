@@ -28,6 +28,7 @@ import { PaginationQueryDto } from './dto/pagination-query.dto'
 import { formatPrice } from 'src/utils/formatPrices'
 import { MethodsService } from '../methods/methods.service'
 import { PaginationQueryDinamicDto } from './dto/pagination-dinamic.dto'
+import { ReviewEquipmentDto } from './dto/review-equipment.dto'
 
 @Injectable()
 export class QuotesService {
@@ -863,6 +864,28 @@ export class QuotesService {
       })
 
       return handleOK('ok')
+    } catch (error) {
+      return handleInternalServerError(error.message)
+    }
+  }
+
+  async reviewEquipment(id: number, review: ReviewEquipmentDto) {
+    try {
+      const equipment = await this.equipmentQuoteRequestRepository.findOne({
+        where: { id },
+      })
+
+      if (!equipment) {
+        return handleBadrequest(new Error('El equipo no existe'))
+      }
+
+      equipment.review_comment = review.review_comment
+      equipment.review_status = 'reviewed'
+
+      const response =
+        await this.equipmentQuoteRequestRepository.save(equipment)
+
+      return handleOK(response)
     } catch (error) {
       return handleInternalServerError(error.message)
     }
