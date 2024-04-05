@@ -18,6 +18,7 @@ import { PdfService } from '../mail/pdf.service'
 import { MailService } from '../mail/mail.service'
 import * as admin from 'firebase-admin'
 import { formatDate } from 'src/utils/formatDate'
+import { FinishActivityDto } from './dto/finish-activity.dto'
 
 @Injectable()
 export class ActivitiesService {
@@ -406,7 +407,7 @@ export class ActivitiesService {
     }
   }
 
-  async finishActivity(activityID: number) {
+  async finishActivity(activityID: number, data: FinishActivityDto) {
     const activity = await this.activityRepository.findOne({
       where: { id: activityID },
     })
@@ -419,6 +420,8 @@ export class ActivitiesService {
       activity.status = 'done'
       activity.updated_at = new Date()
       activity.progress = 100
+      activity.work_areas = data.work_areas
+      activity.comments_insitu = data.comments_insitu
 
       await this.activityRepository.save(activity)
 
