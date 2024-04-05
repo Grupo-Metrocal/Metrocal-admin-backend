@@ -20,6 +20,7 @@ import { handleBadrequest } from 'src/common/handleHttp'
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard'
 import { PaginationQueryDto } from './dto/pagination-query.dto'
 import { PaginationQueryDinamicDto } from './dto/pagination-dinamic.dto'
+import { ReviewEquipmentDto } from './dto/review-equipment.dto'
 
 @ApiTags('quotes')
 @Controller('quotes')
@@ -154,5 +155,13 @@ export class QuotesController {
   @Get('recalculate/:id')
   async recalculateQuoteRequest(@Param('id') id: number) {
     return await this.quotesService.recalculateQuoteRequestPrice(id)
+  }
+
+  @Post('review/equipment/:id')
+  async reviewEquipment(
+    @Param('id') id: number,
+    @Body() review: ReviewEquipmentDto,
+  ) {
+    return await this.quotesService.reviewEquipment(id, review)
   }
 }
