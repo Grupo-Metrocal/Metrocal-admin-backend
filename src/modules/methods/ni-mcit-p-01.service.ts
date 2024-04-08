@@ -287,26 +287,26 @@ export class NI_MCIT_P_01Service {
     //   )
     // }
 
-    let filePath = ''
-
-    if (method.description_pattern.pattern === 'NI-MCPP-05') {
-      filePath = path.join(
-        __dirname,
-        '../mail/templates/excels/ni_mcit_p_01_5.xlsx',
-      )
-    } else if (method.description_pattern.pattern === 'NI-MCPP-06') {
-      filePath = path.join(
-        __dirname,
-        '../mail/templates/excels/ni_mcit_p_01_06.xlsx',
-      )
-    } else {
-      filePath = path.join(
-        __dirname,
-        '../mail/templates/excels/ni_mcit_p_01.xlsx',
-      )
-    }
-
     try {
+      let filePath = ''
+
+      if (method.description_pattern.pattern === 'NI-MCPP-05') {
+        filePath = path.join(
+          __dirname,
+          '../mail/templates/excels/ni_mcit_p_01_5.xlsx',
+        )
+      } else if (method.description_pattern.pattern === 'NI-MCPP-06') {
+        filePath = path.join(
+          __dirname,
+          '../mail/templates/excels/ni_mcit_p_01_06.xlsx',
+        )
+      } else {
+        filePath = path.join(
+          __dirname,
+          '../mail/templates/excels/ni_mcit_p_01.xlsx',
+        )
+      }
+
       const newFilePath = path.join(
         __dirname,
         `../mail/templates/excels/ni_mcit_p_01_${activity.quote_request.no}.xlsx`,
@@ -325,6 +325,28 @@ export class NI_MCIT_P_01Service {
         .sheet('Calibración')
         .cell('I3')
         .value(method.description_pattern.pattern)
+
+      workbook
+        .sheet('Calibración')
+        .cell('E10')
+        .value(method.calibration_results.results.length)
+
+      console.log(method.calibration_results.results.length)
+
+      workbook
+        .sheet('General')
+        .cell('F16')
+        .value(method.equipment_information.unit)
+
+      workbook
+        .sheet('General')
+        .cell('F13')
+        .value(method.equipment_information.range_min)
+
+      workbook
+        .sheet('General')
+        .cell('F14')
+        .value(method.equipment_information.range_max)
 
       // enter environmental conditions
       const sheetEC = workbook.sheet('NI-R01-MCIT-P-01')
@@ -539,7 +561,7 @@ export class NI_MCIT_P_01Service {
           manufacturer: method.equipment_information.maker,
           no_series: method.equipment_information.serial_number,
           model: method.equipment_information.model,
-          measurement_range: method.equipment_information.measurement_range,
+          measurement_range: `De ${method.equipment_information.range_min} ${method.equipment_information.unit} a ${method.equipment_information.range_max} ${method.equipment_information.unit}`,
           resolution: method.equipment_information.resolution,
           code: method.equipment_information.code,
           applicant: activity.quote_request.client.company_name,
@@ -561,7 +583,7 @@ export class NI_MCIT_P_01Service {
         descriptionPattern: method.description_pattern,
       }
 
-      // fs.unlinkSync(newFilePath)
+      fs.unlinkSync(newFilePath)
       return handleOK(certificate)
     } catch (error) {
       console.error(error.message)
