@@ -331,8 +331,6 @@ export class NI_MCIT_P_01Service {
         .cell('E10')
         .value(method.calibration_results.results.length)
 
-      console.log(method.calibration_results.results.length)
-
       workbook
         .sheet('General')
         .cell('F16')
