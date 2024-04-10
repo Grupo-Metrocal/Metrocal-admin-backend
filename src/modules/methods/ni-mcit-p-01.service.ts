@@ -476,7 +476,11 @@ export class NI_MCIT_P_01Service {
       let correctionSys = []
       let uncertaintySys = []
 
-      for (let i = 0; i <= 5; i++) {
+      for (
+        let i = 0;
+        i <= method.calibration_results.results[0].calibration_factor.length;
+        i++
+      ) {
         const pressureValue = sheetCER.cell(`D${27 + i}`).value()
         reference_pressure.push(
           typeof pressureValue === 'number'
@@ -505,28 +509,28 @@ export class NI_MCIT_P_01Service {
             : uncertaintyValue,
         )
 
-        const pressureSysValue = sheetCER.cell(`D${38 + i}`).value()
+        const pressureSysValue = sheetCER.cell(`D${63 + i}`).value()
         reference_pressureSys.push(
           typeof pressureSysValue === 'number'
             ? pressureSysValue.toFixed(1)
             : pressureSysValue,
         )
 
-        const indicationSysValue = sheetCER.cell(`F${38 + i}`).value()
+        const indicationSysValue = sheetCER.cell(`F${63 + i}`).value()
         equipment_indicationSys.push(
           typeof indicationSysValue === 'number'
             ? indicationSysValue.toFixed(1)
             : indicationSysValue,
         )
 
-        const correctionSysValue = sheetCER.cell(`L${38 + i}`).value()
+        const correctionSysValue = sheetCER.cell(`L${63 + i}`).value()
         correctionSys.push(
           typeof correctionSysValue === 'number'
             ? correctionSysValue.toFixed(1)
             : correctionSysValue,
         )
 
-        const uncertaintySysValue = sheetCER.cell(`R${38 + i}`).value()
+        const uncertaintySysValue = sheetCER.cell(`R${63 + i}`).value()
         uncertaintySys.push(
           typeof uncertaintySysValue === 'number'
             ? uncertaintySysValue.toFixed(1)
@@ -568,15 +572,15 @@ export class NI_MCIT_P_01Service {
         },
         calibration_results,
         environmental_conditions: {
-          atmospheric_pressure: `${sheetCER.cell('T46').value()} ± ${sheetCER
-            .cell('W46')
-            .value()}`,
-          temperature: `${sheetCER.cell('E46').value()} °C ± ${sheetCER
-            .cell('G46')
-            .value()} °C`,
-          humidity: `${sheetCER.cell('E47').value()} % ± ${sheetCER
-            .cell('G47')
-            .value()} %`,
+          atmospheric_pressure: `Presión (kPa): ${sheetCER
+            .cell('T80')
+            .value()} ± ${sheetCER.cell('W80').value()}`,
+          temperature: `Temperatura: ${sheetCER
+            .cell('E80')
+            .value()} °C ± ${sheetCER.cell('G80').value()} °C`,
+          humidity: `Humedad relativa: ${sheetCER
+            .cell('E81')
+            .value()} % ± ${sheetCER.cell('G81').value()} %`,
         },
         descriptionPattern: method.description_pattern,
       }
