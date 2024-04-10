@@ -34,6 +34,8 @@ import { InstrumentZeroCheckNI_MCIT_D_01 } from './entities/NI_MCIT_D_01/steps/i
 import { ExteriorParallelismMeasurementNI_MCIT_D_01 } from './entities/NI_MCIT_D_01/steps/exterior_parallelism_measurement.entity'
 import { InteriorParallelismMeasurementNI_MCIT_D_01 } from './entities/NI_MCIT_D_01/steps/interior_parallelism_measurement.entity'
 import { ExteriorMeasurementAccuracyNI_MCIT_D_01 } from './entities/NI_MCIT_D_01/steps/exterior_measurement_accuracy.entity'
+import { PdfService } from '../mail/pdf.service'
+import { MailService } from '../mail/mail.service'
 
 @Module({
   imports: [
@@ -74,6 +76,8 @@ import { ExteriorMeasurementAccuracyNI_MCIT_D_01 } from './entities/NI_MCIT_D_01
     NI_MCIT_P_01Service,
     NI_MCIT_D_02Service,
     NI_MCIT_D_01Service,
+    PdfService,
+    MailService,
   ],
   exports: [MethodsService],
 })
