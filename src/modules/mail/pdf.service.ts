@@ -38,4 +38,59 @@ export class PdfService {
       await browser.close()
     }
   }
+
+  async generateCertificatePdf(template: string, data: any) {
+    const templatePath = join(__dirname, 'templates/pdf', template)
+    const templateContent = readFileSync(templatePath, 'utf-8')
+
+    const compiledTemplate = compile(templateContent)
+
+    const html = compiledTemplate(data)
+
+    const browser = await launch({
+      headless: 'new',
+      executablePath:
+        process.env.NODE_ENV === 'production'
+          ? process.env.PUPPETEER_EXEC_PATH
+          : executablePath(),
+    })
+    try {
+      const page = await browser.newPage()
+
+      // Agregar encabezado y pie de página
+      const headerTemplate = readFileSync(
+        join(__dirname, 'templates/pdf/certificates/header.hbs'),
+        'utf-8',
+      )
+      const footerTemplate = readFileSync(
+        join(__dirname, 'templates/pdf/certificates/footer.hbs'),
+        'utf-8',
+      )
+
+      await page.setContent(html)
+
+      const pdfBuffer = await page.pdf({
+        format: 'A4',
+        printBackground: true,
+        displayHeaderFooter: true,
+        headerTemplate,
+        footerTemplate,
+        width: '8.5in',
+        height: '11in',
+        margin: {
+          top: '1in',
+          bottom: '1in',
+          left: '0.4in',
+          right: '0.4in',
+        },
+      })
+
+      return pdfBuffer
+    } catch (error) {
+      console.error(error.message)
+      return false
+    } finally {
+      await browser.close()
+    }
+  }
 }
