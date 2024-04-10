@@ -18,11 +18,13 @@ import { handleInternalServerError, handleOK } from 'src/common/handleHttp'
 import { generateServiceCodeToMethod } from 'src/utils/codeGenerator'
 import { formatDate } from 'src/utils/formatDate'
 import { CertificateService } from '../certificate/certificate.service'
+import { PdfService } from '../mail/pdf.service'
 
 import * as XlsxPopulate from 'xlsx-populate'
 import * as path from 'path'
 import { exec } from 'child_process'
 import * as fs from 'fs'
+import { MailService } from '../mail/mail.service'
 
 @Injectable()
 export class NI_MCIT_P_01Service {
@@ -44,6 +46,8 @@ export class NI_MCIT_P_01Service {
     private readonly activitiesService: ActivitiesService,
 
     private readonly certificateService: CertificateService,
+    private readonly pdfService: PdfService,
+    private readonly mailService: MailService,
   ) {}
 
   async create() {
@@ -670,6 +674,51 @@ export class NI_MCIT_P_01Service {
       }
 
       return handleOK(method)
+    } catch (error) {
+      return handleInternalServerError(error.message)
+    }
+  }
+
+  async generatePDFCertificate(activityID: number, methodID: number) {
+    try {
+      const method = await this.NI_MCIT_P_01Repository.findOne({
+        where: { id: methodID },
+        relations: [
+          'equipment_information',
+          'environmental_conditions',
+          'calibration_results',
+          'description_pattern',
+        ],
+      })
+
+      if (!method) {
+        return handleInternalServerError('El método no existe')
+      }
+
+      const dataCertificate = await this.generateCertificate({
+        activityID,
+        methodID,
+      })
+
+      if (!dataCertificate.success) {
+        return dataCertificate
+      }
+
+      const PDF = await this.pdfService.generateCertificatePdf(
+        '/certificates/p-01.hbs',
+        dataCertificate.data,
+      )
+
+      if (!PDF) {
+        return handleInternalServerError('Error al generar el PDF')
+      }
+
+      const response = await this.mailService.sendMailCertification({
+        user: 'jjjchico1@gmail.com',
+        pdf: PDF,
+      })
+
+      return handleOK(response)
     } catch (error) {
       return handleInternalServerError(error.message)
     }
