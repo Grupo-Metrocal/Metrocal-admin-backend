@@ -752,7 +752,7 @@ export class NI_MCIT_P_01Service {
       }
 
       const response = await this.mailService.sendMailCertification({
-        user: 'jjjchico1@gmail.com',
+        user: 'francisco@regxi.com',
         pdf: PDF,
       })
 
