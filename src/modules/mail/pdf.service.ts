@@ -72,14 +72,14 @@ export class PdfService {
           join(__dirname, 'templates/pdf/certificates/header.hbs'),
           'utf-8',
         ),
-      )(data.creditable)
+      )(data)
 
       const footerTemplate = compile(
         readFileSync(
           join(__dirname, 'templates/pdf/certificates/footer.hbs'),
           'utf-8',
         ),
-      )(data.creditable)
+      )(data)
 
       await page.setContent(finalHtml)
 
