@@ -1,1 +1,78 @@
-<span>que onda perro todo piola?</span>
+<style>
+  .equipment-information { display: flex; justify-content: space-between;
+  margin-top: 20px; } .equipment-information div { width: 50%; display: flex;
+  flex-direction: column; gap: 10px; } .equipment-information .labels {
+  font-weight: bold; } .calibration-result { margin-top: 3em; } table {
+  border-collapse: collapse; width: 100%; } th, td { border: 1px solid #dddddd;
+  text-align: center; padding: 8px; } .table-title { border: 1px solid #dddddd;
+  text-align: center; font-weight: bold; }
+</style>
+
+<div class='ni-mcit-p-01'>
+  <div class='equipment-information'>
+    <div class='labels'>
+      <span>Identificación del certificado:</span>
+      <span>Código de servicio:</span>
+      <span>Fecha de calibración:</span>
+      <span>Fecha de emisión de certificado:</span>
+      <span>Objeto de calibración:</span>
+      <span>Fabricante/Marca:</span>
+      <span>Serie:</span>
+      <span>Modelo:</span>
+      <span>Rango de medida:</span>
+      <span>Resolución</span>
+      <span>Código de identificación</span>
+      <span>Solicitante</span>
+      <span>Dirección del solicitante</span>
+      <span>Lugar de calibración</span>
+    </div>
+    <div class='values'>
+      <span
+        style='font-weight: bold'
+      >{{equipment_information.service_code}}</span>
+      <span>{{equipment_information.service_code}}</span>
+      <span>{{equipment_information.calibration_date}}</span>
+      <span>{{equipment_information.certificate_issue_date}}</span>
+      <span>{{equipment_information.object_calibrated}}</span>
+      <span>{{equipment_information.manufacturer}}</span>
+      <span>{{equipment_information.no_series}}</span>
+      <span>{{equipment_information.model}}</span>
+      <span>{{equipment_information.measurement_range}}</span>
+      <span>{{equipment_information.resolution}}</span>
+      <span>{{equipment_information.code}}</span>
+      <span>{{equipment_information.applicant}}</span>
+      <span>{{equipment_information.address}}</span>
+      <span>{{equipment_information.calibration_location}}</span>
+    </div>
+  </div>
+
+  <div class='calibration-result'>
+    <strong><span>Resultados de la calibración</span></strong>
+    <br />
+    <br />
+    <table>
+      <thead>
+        <caption class='table-title' colspan='5'>
+          Tabla de resultados de calibración
+        </caption>
+        <tr>
+          <th>Presión de referencia</th>
+          <th>Indicación del equipo</th>
+          <th>Corrección</th>
+          <th>Incertidumbre expandida K = 2</th>
+        </tr>
+      </thead>
+      <tbody>
+        {{#each calibration_results.result as |data|}}
+          <tr>
+            <td>{{data.reference_pressure}}</td>
+            <td>{{data.equipment_indication}}</td>
+            <td>{{data.correction}}</td>
+            <td>{{data.uncertainty}}</td>
+          </tr>
+        {{/each}}
+
+      </tbody>
+    </table>
+  </div>
+</div>
