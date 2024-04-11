@@ -16,26 +16,28 @@ export class ExteriorParallelismMeasurementNI_MCIT_D_01 {
   )
   NI_MCIT_D_01: NI_MCIT_D_01[]
 
-  @Column({ nullable: true })
-  point_number?: number
-
   @Column('jsonb', { nullable: true })
-  x1?: IMeasurements_NI_MCIT_D_01
-
-  @Column('jsonb', { nullable: true })
-  x2?: IMeasurements_NI_MCIT_D_01
-
-  @Column('jsonb', { nullable: true })
-  x3?: IMeasurements_NI_MCIT_D_01
-
-  @Column('jsonb', { nullable: true })
-  x4?: IMeasurements_NI_MCIT_D_01
-
-  @Column('jsonb', { nullable: true })
-  x5?: IMeasurements_NI_MCIT_D_01
+  measurements: IMeasurements[]
 }
 
-interface IMeasurements_NI_MCIT_D_01 {
-  exterior: number
-  interior: number
+interface IMeasurements {
+  point_number?: IPointNumber[]
+  verification_lengths: IPlace
+}
+
+interface IPointNumber {
+  point: String
+}
+
+interface IPlace {
+  Exterior: IMedition
+  Interior: IMedition
+}
+
+interface IMedition {
+  x1: number
+  x2: number
+  x3: number
+  x4: number
+  x5: number
 }

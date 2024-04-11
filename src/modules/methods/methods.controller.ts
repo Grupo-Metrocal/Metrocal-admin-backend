@@ -172,11 +172,13 @@ export class MethodsController {
 
   //* Routing for D-01
 
+  //create method for D-01
   @Post('ni-mcit-d-01/create')
   async createNI_MCIT_D_01() {
     return await this.ni_mcit_d_01Service.create()
   }
 
+  //equipment-information
   @Post('ni-mcit-d-01/equipment-information/:methodId')
   async createNI_MCIT_D_01EquipmentInformation(
     @Body() equipment: EquipmentInformationNI_MCIT_D_01Dto,
@@ -188,6 +190,7 @@ export class MethodsController {
     )
   }
 
+  //environmental-conditions
   @Post('ni-mcit-d-01/environmental-conditions/:methodId')
   async createNI_MCIT_D_01EnvironmentalConditions(
     @Body() environmentalConditions: EnvironmentalConditionsNI_MCIT_D_01Dto,
@@ -199,6 +202,7 @@ export class MethodsController {
     )
   }
 
+  //description-pattern
   @Post('ni-mcit-d-01/description-pattern/:methodId')
   async createNI_MCIT_D_01DescriptionPattern(
     @Body() descriptionPattern: DescriptionPatternNI_MCIT_D_01Dto,
@@ -210,6 +214,7 @@ export class MethodsController {
     )
   }
 
+  //pre-installation-comment
   @Post('ni-mcit-d-01/pre-installation-comment/:methodId')
   async createNI_MCIT_D_01PreInstallationComment(
     @Body() preInstallationComment: PreInstallationCommentNI_MCIT_D_01Dto,
@@ -221,6 +226,7 @@ export class MethodsController {
     )
   }
 
+  //instrument-zero-check
   @Post('ni-mcit-d-01/instrument-zero-check/:methodId')
   async createNI_MCIT_D_01InstrumentZeroCheck(
     @Body() instrumentZeroCheck: InstrumentZeroCheckNI_MCIT_D_01Dto,
@@ -232,6 +238,7 @@ export class MethodsController {
     )
   }
 
+  //exterior-parallelism-measurement
   @Post('ni-mcit-d-01/exterior-parallelism-measurement/:methodId')
   async createNI_MCIT_D_01ExteriorParallelismMeasurement(
     @Body()
@@ -244,6 +251,7 @@ export class MethodsController {
     )
   }
 
+  //interior-parallelism-measurement
   @Post('ni-mcit-d-01/interior-parallelism-measurement/:methodId')
   async createNI_MCIT_D_01InteriorParallelismMeasurement(
     @Body()
@@ -256,6 +264,7 @@ export class MethodsController {
     )
   }
 
+  //exterior-measurement-accuracy
   @Post('ni-mcit-d-01/exterior-measurement-accuracy/:methodId')
   async createNI_MCIT_D_01ExteriorMeasurementAccuracy(
     @Body()
@@ -266,5 +275,17 @@ export class MethodsController {
       exteriorMeasurementAccuracy,
       methodId,
     )
+  }
+
+  //certificate
+  @Get('ni-mcit-d-01/certificates/activity/:activityId/method/:methodId')
+  async getNI_MCIT_D_01Certificate(
+    @Param('activityId') activityId: number,
+    @Param('methodId') methodId: number,
+  ) {
+    return await this.ni_mcit_d_01Service.generateCertificateD_01({
+      activityID: activityId,
+      methodID: methodId,
+    })
   }
 }

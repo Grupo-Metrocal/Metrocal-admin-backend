@@ -1,6 +1,10 @@
 import { ApiProperty } from '@nestjs/swagger'
 
-class IMeasure {
+class IPointNumber {
+  @ApiProperty()
+  point: string
+}
+class IMeditions {
   @ApiProperty()
   x1: number
 
@@ -17,10 +21,15 @@ class IMeasure {
   x5: number
 }
 
-export class ExteriorMeasurementAccuracyNI_MCIT_D_01Dto {
+export class IMeasures {
   @ApiProperty()
-  nominal_patron_value: number
+  nominal_patron_value: IPointNumber[]
 
-  @ApiProperty({ type: () => [IMeasure] })
-  measure: IMeasure[]
+  @ApiProperty()
+  verification_lengths: IMeditions
+}
+
+export class ExteriorMeasurementAccuracyNI_MCIT_D_01Dto {
+  @ApiProperty({ type: () => IMeasures })
+  measure: IMeasures[]
 }

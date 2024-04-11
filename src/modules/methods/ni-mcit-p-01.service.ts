@@ -92,6 +92,7 @@ export class NI_MCIT_P_01Service {
     }
   }
 
+  //EnvironmentalConditions
   async environmentalConditions(
     environmentalConditions: EnvironmentalConditionsDto,
     methodId: number,

@@ -1,29 +1,42 @@
 import { ApiProperty } from '@nestjs/swagger'
+class IPointNumber {
+  @ApiProperty()
+  point: string
+}
+class IMedition {
+  @ApiProperty()
+  x1: number
+
+  @ApiProperty()
+  x2: number
+
+  @ApiProperty()
+  x3: number
+
+  @ApiProperty()
+  x4: number
+
+  @ApiProperty()
+  x5: number
+}
+
+class IPlace {
+  @ApiProperty()
+  Exterior: IMedition
+
+  @ApiProperty()
+  Interior: IMedition
+}
 
 class IMeasurements {
   @ApiProperty()
-  exterior: number
+  point_number?: IPointNumber[]
 
   @ApiProperty()
-  interior: number
+  verification_lengths: IPlace
 }
 
 export class ExteriorParallelismMeasurementNI_MCIT_D_01Dto {
-  @ApiProperty()
-  point_number?: number
-
-  @ApiProperty()
-  x1: IMeasurements
-
-  @ApiProperty()
-  x2: IMeasurements
-
-  @ApiProperty()
-  x3: IMeasurements
-
-  @ApiProperty()
-  x4: IMeasurements
-
-  @ApiProperty()
-  x5: IMeasurements
+  @ApiProperty({ type: () => IMeasurements })
+  measurements?: IMeasurements[]
 }
