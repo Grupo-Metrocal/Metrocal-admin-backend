@@ -47,6 +47,15 @@ export class PdfService {
 
     const html = compiledTemplate(data)
 
+    const copileLayout = compile(
+      readFileSync(
+        join(__dirname, 'templates/pdf/certificates/layout.hbs'),
+        'utf-8',
+      ),
+    )
+
+    const finalHtml = copileLayout({ content: html })
+
     const browser = await launch({
       headless: 'new',
       executablePath:
@@ -58,16 +67,21 @@ export class PdfService {
       const page = await browser.newPage()
 
       // Agregar encabezado y pie de página
-      const headerTemplate = readFileSync(
-        join(__dirname, 'templates/pdf/certificates/header.hbs'),
-        'utf-8',
-      )
-      const footerTemplate = readFileSync(
-        join(__dirname, 'templates/pdf/certificates/footer.hbs'),
-        'utf-8',
-      )
+      const headerTemplate = compile(
+        readFileSync(
+          join(__dirname, 'templates/pdf/certificates/header.hbs'),
+          'utf-8',
+        ),
+      )(data.creditable)
 
-      await page.setContent(html)
+      const footerTemplate = compile(
+        readFileSync(
+          join(__dirname, 'templates/pdf/certificates/footer.hbs'),
+          'utf-8',
+        ),
+      )(data.creditable)
+
+      await page.setContent(finalHtml)
 
       const pdfBuffer = await page.pdf({
         format: 'A4',
