@@ -16,17 +16,23 @@ export class ExteriorMeasurementAccuracyNI_MCIT_D_01 {
   )
   NI_MCIT_D_01: NI_MCIT_D_01[]
 
-  @Column({ nullable: true })
-  nominal_patron_value?: number
-
   @Column('jsonb', { nullable: true })
-  measure?: IMeasure[]
+  measure?: IMeasures[]
 }
 
-interface IMeasure {
+interface IMeasures {
+  nominal_patron_value: IPointNumber[]
+  verification_lengths: IMeditions
+}
+
+interface IMeditions {
   x1: number
   x2: number
   x3: number
   x4: number
   x5: number
+}
+
+interface IPointNumber {
+  point: string
 }
