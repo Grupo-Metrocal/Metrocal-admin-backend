@@ -560,6 +560,7 @@ export class NI_MCIT_P_01Service {
 
       const certificate = {
         equipment_information: {
+          certification_code: method.certificate_code,
           service_code: generateServiceCodeToMethod(method.id),
           certificate_issue_date: formatDate(new Date().toString()),
           calibration_date: formatDate(activity.updated_at.toString()),
