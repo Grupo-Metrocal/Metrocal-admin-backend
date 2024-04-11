@@ -588,6 +588,10 @@ export class NI_MCIT_P_01Service {
         },
         descriptionPattern: method.description_pattern,
         creditable: method.description_pattern.creditable,
+        ta_eq_enviromental_conditions:
+          method.environmental_conditions.cycles[0].ta.equipement,
+        hPa_eq_enviromental_conditions:
+          method.environmental_conditions.cycles[0].hPa.equipement,
       }
 
       fs.unlinkSync(newFilePath)
