@@ -10,17 +10,19 @@
 </style>
 
 <footer>
-  <div class='creditable'>
-    <p>
-      1- Certificado de calibración emitido dentro de los alcances de
-      acreditación con código LC-002-14-R1.
-    </p>
+  {{#if creditable}}
+    <div class='creditable'>
+      <p>
+        1- Certificado de calibración emitido dentro de los alcances de
+        acreditación con código LC-002-14-R1.
+      </p>
 
-    <p>
-      2- Puntos de calibración marcados con (*). son fuera de alcance de
-      acreditación.
-    </p>
-  </div>
+      <p>
+        2- Puntos de calibración marcados con (*). son fuera de alcance de
+        acreditación.
+      </p>
+    </div>
+  {{/if}}
 
   <div class='layout-footer'>
     <p style='font-weight: bold'>
