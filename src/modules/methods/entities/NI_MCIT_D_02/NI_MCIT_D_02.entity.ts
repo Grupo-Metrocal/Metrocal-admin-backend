@@ -11,6 +11,12 @@ export class NI_MCIT_D_02 {
   @PrimaryGeneratedColumn('increment')
   id: number
 
+  @Column({ nullable: true, default: false, type: 'boolean' })
+  report_status?: boolean
+
+  @Column({ nullable: true, type: 'varchar', array: true, default: [] })
+  report_messages?: string[]
+
   @ManyToOne(
     () => EquipmentInformationNI_MCIT_D_02,
     (equipmentInformationNI_MCIT_D_02) =>

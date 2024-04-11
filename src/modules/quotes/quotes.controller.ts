@@ -20,6 +20,7 @@ import { handleBadrequest } from 'src/common/handleHttp'
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard'
 import { PaginationQueryDto } from './dto/pagination-query.dto'
 import { PaginationQueryDinamicDto } from './dto/pagination-dinamic.dto'
+import { ReviewEquipmentDto } from './dto/review-equipment.dto'
 
 @ApiTags('quotes')
 @Controller('quotes')
@@ -116,7 +117,9 @@ export class QuotesController {
 
   //Pagintaion and filters for registered quotes
   @Get('registered/all')
-  async getQuoteRequestRegister(@Query() pagination?: PaginationQueryDinamicDto) {
+  async getQuoteRequestRegister(
+    @Query() pagination?: PaginationQueryDinamicDto,
+  ) {
     if (isNaN(pagination.limit) || isNaN(pagination.offset)) {
       return handleBadrequest(new Error('Limit y offset deben ser numeros'))
     }
@@ -147,5 +150,18 @@ export class QuotesController {
   @Get('get-by-status/:status')
   async getQuoteRequestByStatus(@Param('status') status: string) {
     return await this.quotesService.getQuoteRequestByStatus(status)
+  }
+
+  @Get('recalculate/:id')
+  async recalculateQuoteRequest(@Param('id') id: number) {
+    return await this.quotesService.recalculateQuoteRequestPrice(id)
+  }
+
+  @Post('review/equipment/:id')
+  async reviewEquipment(
+    @Param('id') id: number,
+    @Body() review: ReviewEquipmentDto,
+  ) {
+    return await this.quotesService.reviewEquipment(id, review)
   }
 }

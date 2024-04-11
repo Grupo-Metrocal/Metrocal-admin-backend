@@ -12,6 +12,21 @@ export class NI_MCIT_P_01 {
   @Column({ nullable: true })
   calibration_location?: string
 
+  @Column({ nullable: true, default: false, type: 'boolean' })
+  report_status?: boolean
+
+  @Column({ nullable: true, type: 'varchar', array: true, default: [] })
+  report_messages?: string[]
+
+  @Column({ nullable: true, default: 'pending' })
+  status?: string // pending, done
+
+  @Column({ nullable: true })
+  certificate_id?: string
+
+  @Column({ nullable: true })
+  certificate_code?: string
+
   @ManyToOne(
     () => EquipmentInformationNI_MCIT_P_01,
     (EquipmentInformationNI_MCIT_P_01) =>

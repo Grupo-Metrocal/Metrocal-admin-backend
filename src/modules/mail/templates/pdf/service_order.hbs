@@ -1,0 +1,313 @@
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>ORDEN DE SERVICIO</title>
+    <link
+      href="https://fonts.googleapis.com/css?family=Montserrat:400,500,600,700"
+      rel="stylesheet"
+      type="text/css"
+    />
+
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      body {
+        font-family: "Montserrat", sans-serif;
+        font-size: 15px;
+        color: #333;
+        font-size: 1em;
+      }
+    </style>
+  </head>
+  <body>
+    <main style="width: 1100px; display: flex; flex-direction: column; margin-top: 4em;">
+      <header
+        style="
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          padding: 1rem;
+        "
+      >
+        <div
+          style="
+            display: flex;
+            flex-direction: column;
+            width: 200px;
+            align-items: center;
+            text-align: center;
+          "
+        >
+          <img
+            src="https://i.ibb.co/tMhsPbK/metrocal.jpg"
+            alt="metrocal_logo"
+            style="width: 80px; height: 80px"
+          />
+          <p>Metrología Consultores de Nicaragua S.A.</p>
+        </div>
+        <div style="display: flex; align-items: center; flex-direction: column; gap: 1em;">
+          <h2>METROLOGÍA CONSULTORES DE NICARAGUA, S.A.</h2>
+          <h4>No. RUC: J0310000169420</h4>
+          <p>
+            Bello Horizonte, VI Etapa, Casa No. 135 - Iglesia Pío X, 350 m este
+          </p>
+
+          <div
+            style="
+              display: flex;
+              flex-direction: row;
+              align-items: center;
+              gap: 8px;
+            "
+          >
+            <a href="tel:50522780000" style="color: #333">Tel: 2278-0000</a>
+            <a href="mailto:info@metrocal.co.ni" style="color: #333"
+              >Email: info@metrocal.co.ni</a
+            >
+            <a href="https://app-grupometrocal.com" style="color: #333"
+              >Web: app-grupometrocal.com</a
+            >
+          </div>
+        </div>
+
+        <div
+          style="
+            text-align: center;
+            display: flex;
+            flex-direction: column;
+            width: 200px;
+          "
+        >
+          <h3>Código</h3>
+          <p>NI-R03-MCPR-02</p>
+        </div>
+      </header>
+
+      <section
+        style="
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          gap: 2em;
+          margin-top: 1em;
+
+        "
+      >
+        <h3>ORDEN DE SERVICIO</h3>
+
+        <div
+          style="
+            display: flex;
+            justify-content: space-between;
+            width: 93%;
+          "
+        >
+          <div style="width: 80%; display: flex; flex-wrap: wrap;">
+            
+            <h3 style=" text-align: center;width: 100%; border: 1px solid #333;">INFORMACIÓN GENERAL</h3>
+
+            <div style="display: flex;
+                        flex-direction: column;
+                        height: 70%;
+                        gap: 1rem;
+                        justify-content: center;
+                        border: 1px solid #333;
+                        padding: 10px;
+                        width: 100%;
+                        height: 100%;
+                      "
+            >
+            
+              <p style="display: flex; gap: 1rem">
+                <strong>Fecha de emisión:</strong>
+                <span style="border-bottom: 1px solid #333; width: 40%;"
+                  >{{endDate}}</span
+                >
+              </p>
+              <p style="display: flex; gap: 1rem">
+                <strong>Empresa:</strong>
+                <span style="border-bottom: 1px solid #333; width: 100%"
+                  >{{clientName}}</span
+                >
+              </p>
+              <p style="display: flex; gap: 1rem">
+                <strong>Dirección:</strong>
+                <span style="border-bottom: 1px solid #333; width: 100%"
+                  >{{address}}</span
+                >
+              </p>
+              <p style="display: flex; gap: 1rem">
+                <strong>Solicitado por:</strong>
+                <span style="border-bottom: 1px solid #333; width: 60%"
+                  >{{requestedBy}}</span
+                >
+              </p>
+              <p style="display: flex; gap: 1rem">
+                <strong>Teléfono:</strong>
+                <span style="border-bottom: 1px solid #333; width: 40%"
+                  >{{phone}}</span
+                >
+              </p>
+            </div>
+          </div>
+          <div style="width: 40%; display: flex; flex-wrap: wrap; ">
+            <h3 style=" width: 100%; text-align: center; border: 1px solid #333;">TIPO DE SERVICIO</h3>
+              
+            <div
+              style="
+                display: flex;
+                flex-direction: column;
+                height: 70%;
+                gap: 1rem;
+                justify-content: center;
+                border: 1px solid #333;
+                padding: 10px;
+                width: 90%;
+                height: 100%;
+              "
+            >
+              <p><strong>CALIBRACIÓN</strong></p>
+              <p><strong>CARACTERIZACIÓN</strong></p>
+              <p><strong>CALIFICACIÓN</strong></p>
+              <p><strong>MANTENIMIENTO PREVENTIVO</strong></p>
+              <p><strong>MANTENIMIENTO CORRECTIVO</strong></p>
+              <p><strong>PROYECTO / OTRO</strong></p>
+            </div>
+
+            <div
+              style="
+                display: flex;
+                flex-direction: column;
+                height: 70%;
+                gap: 1rem;
+                justify-content: center;
+                border: 1px solid #333;
+                width: 10%;
+                height: 100%;
+              "
+            >
+              <strong style="border-bottom: 1px solid #333; text-align: center; height: 22px;">X</strong>
+              <strong style="border-bottom: 1px solid #333; text-align: center; height: 22px;"></strong>
+              <strong style="border-bottom: 1px solid #333; text-align: center; height: 22px;"></strong>
+              <strong style="border-bottom: 1px solid #333; text-align: center; height: 22px;"></strong>
+              <strong style="border-bottom: 1px solid #333; text-align: center; height: 22px;"></strong>
+              <strong style="border-bottom: 1px solid #333; text-align: center; height: 22px;"></strong>
+            </div>
+              
+          </div>
+        </div>
+      </section>
+
+      <section
+        style="
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          gap: 1rem;
+          text-align: center;
+          padding: 0 2rem;
+          margin-top: 4em;
+        "
+      >
+        <h3>DATOS DEL SERVICIO</h3>
+
+        <div style="align-self: flex-start; width: 100%; text-align: start;">
+          <p style="display: flex; gap: 1rem">
+            <strong>Área de trabajo:</strong>
+            <span style="border-bottom: 1px solid #333; width: 70%;"
+              >Lorem ipsum dolor sit amet consectetur adipisicing elit. Debitis, harum.</span
+            >
+          </p>
+        </div>
+        
+
+        <table style="width: 100%;" border="1">
+          <h3 style=" margin-top: 1em;">DESCRIPCIÓN DEL TRABAJO
+          </h3>
+          <thead>
+            <tr >
+              <th>NO. COTIZACION</th>
+              <th>ITEM</th>
+              <th style="padding: .7rem">EQUIPO</th>
+              <th>CANTIDAD</th>
+              <th>OBSERVACIONES GENERALES</th>
+            </tr>
+          </thead>
+
+          <tbody>
+            
+            {{#each equipments}}
+            <tr style="text-align: center">
+              <td>{{this.quoteNumber}}</td>
+              <td>{{this.index}}</td>
+              <td>{{this.name}}</td>
+              <td>{{this.count}}</td>
+              <td>{{this.review_comment}}</td>
+          {{/each}}
+        </table>
+
+        <div style="display: flex;">
+            <div style="width:75%;">
+              <h3 style="text-align: center; border: 1px solid #333; padding: 5px;">ENTREGA DE EQUIPOS AL CLIENTE DESPUES DE EJECUTADO EL SERVICIO: ( Aplica en
+                Servicios In Situ).
+              </h3>
+
+              <div style="text-align: start;">
+                <p style="border: 1px solid #333;padding: 5px; height: 50px;">los equipos fueron entregados al cliente funcionando adecuadamente despues de realizada las calibraciones</p>
+                <p style="border: 1px solid #333;padding: 5px; height: 50px;"></p>
+                <p style="border: 1px solid #333;padding: 5px; height: 50px;"></p>
+              </div>
+
+              <p style="padding: 10px;">Hora Inicio: <span style="border: 1px solid #333; padding: 10px;">10:00 am</span></p>
+
+              <div style="margin-top: 50px; display: flex; flex-direction: column; align-items: center;">
+                <img src="https://www.saumb.org.ar/assets/img/firmas/1154.png"
+                style="width: 100px; height: 100px; object-fit: contain;"
+                >
+                <p style="border-top: 1px solid #333; text-align: center; width: 50%;">Trabajo recibido</p>
+                <strong>POR EL CLIENTE</strong>
+              </div>
+            </div>
+
+            <div>
+              <h3 style="text-align: center; border: 1px solid #333; padding: 5px;">OBSERVACIONES PARA SERVICIOS SIN PREVIA COTIZACION
+              </h3>
+              
+              <div style="display: flex;">
+                <div style="text-align: start; width: 90%;">
+                  <p style="border: 1px solid #333; padding: 5px;">Los requisitos están adecuadamente definidos y documentados. </p>
+                  <p style="border: 1px solid #333; padding: 5px;">Nuestro laboratorio tiene la capacidad y recursos para brindar el servicio solicitado.</p>
+                  <p style="border: 1px solid #333; padding: 5px;">El método de calibración es capaz de satisfacer los requisitos del cliente.</p>
+                </div>
+
+                <div style="display: flex; flex-direction: column; flex-wrap: nowrap; width: 10%;">
+                  <strong style="border: 1px solid #333; text-align: center; padding: 14.5px 0;">X</strong>
+                  <strong style="border: 1px solid #333; text-align: center; padding: 14.5px 0;">X</strong>
+                  <strong style="border: 1px solid #333; text-align: center; padding: 14.5px 0;">X</strong>
+                </div>
+              </div>
+
+              <p style="padding: 10px;">Hora final: <span style="border: 1px solid #333; padding: 10px;">04:00 pm</span></p>
+              
+              <div style="margin-top: 50px; display: flex; flex-direction: column; align-items: center;">
+                <img src="https://www.saumb.org.ar/assets/img/firmas/1154.png"
+                style="width: 100px; height: 100px; object-fit: contain;"
+                >
+                <p style="border-top: 1px solid #333; text-align: center; width: 50%;">Trabajo realizado</p>
+                <strong>POR METROLOGÍA</strong>
+              </div>
+
+              <br>
+              <span>
+                versión 2 Aprobado en NI-MCPR-02 v7 con fecha 2019-10-18
+              </span>
+            </div>
+        </div>
+    </main>
+  </body>
+</html>

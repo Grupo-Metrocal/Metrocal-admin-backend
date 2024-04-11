@@ -3,11 +3,22 @@ import { InjectRepository } from '@nestjs/typeorm'
 import { Activity } from './entities/activities.entity'
 import { Repository, DataSource } from 'typeorm'
 import { QuotesService } from '../quotes/quotes.service'
-import { handleInternalServerError, handleOK } from 'src/common/handleHttp'
+import {
+  handleBadrequest,
+  handleInternalServerError,
+  handleOK,
+} from 'src/common/handleHttp'
 import { User } from '../users/entities/user.entity'
 import { AssignTeamMembersToActivityDto } from './dto/assign-activity.dt'
 import { RemoveMemberFromActivityDto } from './dto/remove-member.dto'
 import { AddResponsableToActivityDto } from './dto/add-responsable.dto'
+import { MethodsService } from '../methods/methods.service'
+import { QuoteRequest } from '../quotes/entities/quote-request.entity'
+import { PdfService } from '../mail/pdf.service'
+import { MailService } from '../mail/mail.service'
+import * as admin from 'firebase-admin'
+import { formatDate } from 'src/utils/formatDate'
+import { FinishActivityDto } from './dto/finish-activity.dto'
 
 @Injectable()
 export class ActivitiesService {
@@ -16,9 +27,13 @@ export class ActivitiesService {
     private readonly activityRepository: Repository<Activity>,
     @Inject(forwardRef(() => QuotesService))
     private readonly quotesService: QuotesService,
-    private readonly dataSource: DataSource,
     @InjectRepository(User)
     private readonly userRepository: Repository<User>,
+    private readonly dataSource: DataSource,
+    @Inject(forwardRef(() => MethodsService))
+    private readonly methodsService: MethodsService,
+    private readonly pdfService: PdfService,
+    private readonly mailService: MailService,
   ) {}
 
   async createActivity(activity: Activity) {
@@ -125,7 +140,7 @@ export class ActivitiesService {
         ],
       })
 
-      const teamMembers = response.team_members.map((member) => {
+      const teamMembers = response?.team_members?.map((member) => {
         return {
           id: member.id,
           username: member.username,
@@ -286,25 +301,52 @@ export class ActivitiesService {
         .orderBy('activities.created_at', 'DESC')
         .getMany()
 
-      const data = activities.map((activity) => {
-        return {
+      const data = []
+      for (const activity of activities) {
+        const members = await this.getTeamMembersByActivity(activity.id)
+        const activityData = {
           id: activity.id,
-          client: activity.quote_request.client.company_name,
+          quote_request_id: activity.quote_request.id,
+          responsable: activity.responsable,
+          client: activity.quote_request.client,
           progress: activity.progress,
           status: activity.status,
+          no: activity.quote_request.no,
           services: activity.quote_request.equipment_quote_request.length,
-          team_members: activity.team_members.map((member) => {
-            return {
-              id: member.id,
-              username: member.username,
-              imageURL: member.imageURL,
-            }
-          }),
+          team_members: members.data,
           created_at: activity.created_at,
+          client_signature: activity.client_signature,
+        }
+        data.push(activityData)
+      }
+
+      return handleOK(data)
+    } catch (error) {
+      return handleInternalServerError(error.message)
+    }
+  }
+
+  async getTeamMembersByActivity(activityID: number) {
+    try {
+      const activity = await this.activityRepository.findOne({
+        where: { id: activityID },
+        relations: ['team_members'],
+      })
+
+      if (!activity) {
+        return handleInternalServerError('Actividad no encontrada')
+      }
+
+      const teamMembers = activity.team_members.map((member) => {
+        return {
+          id: member.id,
+          username: member.username,
+          email: member.email,
+          imageURL: member.imageURL,
         }
       })
 
-      return handleOK(data)
+      return handleOK(teamMembers)
     } catch (error) {
       return handleInternalServerError(error.message)
     }
@@ -322,27 +364,14 @@ export class ActivitiesService {
         .where(`activities.id = ${activityID}`)
         .getOne()
 
-      const equipments = response.quote_request.equipment_quote_request
-        .filter(
-          (service) => service.type_service.toLowerCase() === 'calibracion',
-        )
-        .map((service) => ({
-          id: service.id,
-          name: service.name,
-          status: service.status,
-          type_service: service.type_service,
-          count: service.count,
-          price: service.price,
-          total: service.total,
-          method_id: service.method_id,
-        }))
-
       const data = {
         activity_id: response.id,
         quote_request_id: response.quote_request.id,
         status: response.status,
         created_at: response.created_at,
-        equipment_quote_request: equipments,
+        equipment_quote_request: response.quote_request.equipment_quote_request,
+        comments_insitu: response.comments_insitu,
+        work_areas: response.work_areas,
       }
       return handleOK(data)
     } catch (error) {
@@ -380,7 +409,7 @@ export class ActivitiesService {
     }
   }
 
-  async finishActivity(activityID: number) {
+  async finishActivity(activityID: number, data: FinishActivityDto) {
     const activity = await this.activityRepository.findOne({
       where: { id: activityID },
     })
@@ -391,10 +420,290 @@ export class ActivitiesService {
 
     try {
       activity.status = 'done'
+      activity.updated_at = new Date()
+      activity.progress = 100
+      activity.work_areas = data.work_areas
+      activity.comments_insitu = data.comments_insitu
+
+      await this.activityRepository.save(activity)
+
+      return await this.generateServiceOrder(activity.id)
+    } catch (error) {
+      return handleInternalServerError(error.message)
+    }
+  }
+
+  async generateServiceOrder(activityID: number) {
+    try {
+      const activity = await this.activityRepository.findOne({
+        where: { id: activityID },
+        relations: [
+          'quote_request',
+          'quote_request.equipment_quote_request',
+          'quote_request.client',
+          'team_members',
+        ],
+      })
+
+      const data = {
+        clientName: activity.quote_request.client.company_name,
+        endDate: formatDate(activity.updated_at + ''),
+        address: activity.quote_request.client.address,
+        requestedBy: activity.quote_request.client.requested_by,
+        phone: activity.quote_request.client.phone,
+        equipments: activity.quote_request.equipment_quote_request.map(
+          (equipment, index) => {
+            return {
+              name: equipment.name,
+              count: equipment.count,
+              review_comment: equipment.review_comment,
+              index: index + 1,
+              quoteNumber: activity.quote_request.no,
+            }
+          },
+        ),
+      }
+
+      const pdf = await this.pdfService.generatePdf('service_order.hbs', data)
+
+      if (!pdf) {
+        return handleBadrequest(new Error('No se pudo generar el pdf'))
+      }
+
+      const response = await this.mailService.sendServiceOrderMail({
+        to: activity.quote_request.client.email.split(',')[0],
+        pdf,
+        clientName: activity.quote_request.client.company_name,
+        quoteNumber: activity.quote_request.no,
+        startDate: formatDate(activity.created_at + ''),
+        endDate: formatDate(activity.updated_at + ''),
+        technicians: activity.team_members.map((member) => member.username),
+      })
+
+      return handleOK(response)
+    } catch (error) {
+      return handleInternalServerError(error.message)
+    }
+  }
+
+  async generateActivity(id: number) {
+    try {
+      const response = await this.quotesService.getQuoteRequestById(id)
+
+      if (!response.success) {
+        return handleBadrequest(new Error(response.details))
+      }
+
+      if (response.data.status !== 'done') {
+        return handleBadrequest(
+          new Error('La cotizacion aun no ha sido aprobada'),
+        )
+      }
+
+      const { data: quoteRequest } = response as { data: QuoteRequest }
+
+      if (quoteRequest.activity) {
+        return handleBadrequest(
+          new Error('La cotizacion ya tiene una actividad asociada'),
+        )
+      }
+
+      const activity = await this.createActivity(quoteRequest as any)
+
+      if (!activity.success) {
+        return handleInternalServerError(activity.details)
+      }
+
+      const method = await this.methodsService.createMethod({
+        activity_id: activity.data.id,
+      })
+
+      if (!method.success) {
+        return handleInternalServerError(method.details)
+      }
+
+      const responseActivity = await this.getActivityById(activity.data.id)
+
+      return handleOK(responseActivity.data)
+    } catch (error) {
+      return handleInternalServerError(error.message)
+    }
+  }
+
+  async deleteActivity(id: number) {
+    try {
+      const activity = await this.activityRepository.findOne({
+        where: { id },
+        relations: ['quote_request', 'quote_request.equipment_quote_request'],
+      })
+
+      if (!activity) {
+        return handleBadrequest(new Error('Actividad no encontrada'))
+      }
+
+      for (const equipment of activity.quote_request.equipment_quote_request) {
+        await this.methodsService.deleteStackMethods(equipment.method_id)
+      }
+
+      await this.dataSource.transaction(async (manager) => {
+        activity.quote_request.activity = null
+        await manager.save(activity.quote_request)
+
+        await manager.remove(activity)
+      })
+
+      return handleOK('Actividad eliminada')
+    } catch (error) {
+      return handleInternalServerError(error.message)
+    }
+  }
+
+  async updateActivityProgress(activityID: number) {
+    try {
+      const activity = await this.activityRepository.findOne({
+        where: { id: activityID },
+        relations: ['quote_request', 'quote_request.equipment_quote_request'],
+      })
+
+      if (!activity) {
+        return handleInternalServerError('Actividad no encontrada')
+      }
+
+      const { equipment_quote_request } = activity.quote_request
+
+      let progress = 0
+      let totalServices = 0
+
+      totalServices = equipment_quote_request
+        .map((service) => {
+          return service.count
+        })
+        .reduce((acc, curr) => acc + curr, 0)
+
+      for (const equipment of equipment_quote_request) {
+        const stack = await this.methodsService.getMethodsID(
+          equipment.method_id,
+        )
+
+        if (!stack.success) {
+          continue
+        }
+
+        const { data: methods } = stack as { data: any }
+
+        methods.forEach((method: any) => {
+          if (method.status === 'done') {
+            progress += 1
+          }
+        })
+      }
+
+      progress = (progress / totalServices) * 100
+
+      activity.progress = Number(progress.toFixed(0))
 
       await this.activityRepository.save(activity)
 
       return handleOK(activity)
+    } catch (error) {
+      return handleInternalServerError(error.message)
+    }
+  }
+
+  async getActivitiesDoneToCertify() {
+    try {
+      const response = await this.activityRepository.find({
+        where: { status: 'done' },
+        relations: [
+          'quote_request',
+          'quote_request.equipment_quote_request',
+          'quote_request.client',
+          'team_members',
+        ],
+      })
+
+      const data = response.map((activity) => {
+        return {
+          id: activity.id,
+          created_at: activity.created_at,
+          updated_at: activity.updated_at,
+          responsable: activity.responsable,
+          progress: activity.progress,
+          quoteRequest: {
+            id: activity.quote_request.id,
+            no: activity.quote_request.no,
+            price: activity.quote_request.price,
+            client: {
+              id: activity.quote_request.client.id,
+              company_name: activity.quote_request.client.company_name,
+              email: activity.quote_request.client.email,
+            },
+            equipment_quote_request:
+              activity.quote_request.equipment_quote_request.map((service) => {
+                return {
+                  id: service.id,
+                  name: service.name,
+                  count: service.count,
+                  type_service: service.type_service,
+                  calibration_method: service.calibration_method,
+                  total: service.total,
+                  price: service.price,
+                  method_id: service.method_id,
+                }
+              }),
+          },
+          team_members: activity.team_members.map((member) => {
+            return {
+              id: member.id,
+              username: member.username,
+              imageURL: member.imageURL,
+            }
+          }),
+        }
+      })
+
+      return handleOK(data)
+    } catch (error) {
+      return handleInternalServerError(error.message)
+    }
+  }
+
+  async addClientSignature(activityID: number, image: Express.Multer.File) {
+    try {
+      const activity = await this.activityRepository.findOne({
+        where: { id: activityID },
+      })
+
+      if (!activity) {
+        return handleBadrequest(new Error('Actividad no encontrada'))
+      }
+
+      const bucket = admin.storage().bucket()
+      const file = bucket.file(`client-signature_${activityID}_${Date.now()}`)
+
+      const stream = file.createWriteStream({
+        metadata: {
+          contentType: image.mimetype,
+        },
+      })
+
+      stream.on('error', (error) => {
+        return handleInternalServerError(error.message)
+      })
+
+      return new Promise((resolve, reject) => {
+        stream.on('finish', async () => {
+          const imageURL = `https://firebasestorage.googleapis.com/v0/b/${bucket.name}/o/${file.name}?alt=media`
+
+          activity.client_signature = imageURL
+
+          await this.activityRepository.save(activity)
+
+          resolve(handleOK({ imageURL })) // Resuelve la promesa con el resultado de la función handleOK
+        })
+
+        stream.end(image.buffer)
+      })
     } catch (error) {
       return handleInternalServerError(error.message)
     }

@@ -28,6 +28,12 @@ export class EquipmentInformationNI_MCIT_P_01 {
   @Column({ type: 'varchar', nullable: true })
   measurement_range?: string
 
+  @Column({ type: 'float', nullable: true })
+  range_min?: number
+
+  @Column({ type: 'float', nullable: true })
+  range_max?: number
+
   @Column({ type: 'varchar', nullable: true })
   accuracy_class?: string
 

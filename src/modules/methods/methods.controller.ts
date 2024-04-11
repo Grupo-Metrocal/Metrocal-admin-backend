@@ -17,6 +17,7 @@ import { DescriptionPatternNI_MCIT_D_02Dto } from './dto/NI_MCIT_D_02/descriptio
 import { PreInstallationCommentNI_MCIT_D_02Dto } from './dto/NI_MCIT_D_02/pre_installation_comment.dto'
 import { InstrumentZeroCheckNI_MCIT_D_02Dto } from './dto/NI_MCIT_D_02/instrument_zero_check.dto'
 import { AccuracyTestNI_MCIT_D_02Dto } from './dto/NI_MCIT_D_02/accuracy_test.dto'
+import { addOrRemoveMethodToStackDto } from './dto/add-remove-method-stack.dto'
 
 import { EquipmentInformationNI_MCIT_D_01Dto } from './dto/NI_MCIT_D_01/equipment_information.dto'
 import { EnvironmentalConditionsNI_MCIT_D_01Dto } from './dto/NI_MCIT_D_01/environmental_conditions.dto'
@@ -26,6 +27,8 @@ import { InstrumentZeroCheckNI_MCIT_D_01Dto } from './dto/NI_MCIT_D_01/instrumen
 import { ExteriorParallelismMeasurementNI_MCIT_D_01Dto } from './dto/NI_MCIT_D_01/exterior_parallelism_measurement.dto'
 import { InteriorParallelismMeasurementNI_MCIT_D_01Dto } from './dto/NI_MCIT_D_01/interior_parallelism_measurement.dto'
 import { ExteriorMeasurementAccuracyNI_MCIT_D_01Dto } from './dto/NI_MCIT_D_01/exterior_measurement_accuracy.dto'
+import { AddLocationDto } from './dto/NI_MCIT_P_01/add_location.dto'
+import { EmmitReportDto } from './dto/emmit-report.dto'
 
 @ApiTags('methods')
 @Controller('methods')
@@ -45,6 +48,57 @@ export class MethodsController {
   @Get('get-stack/:id')
   async getMethodsID(@Param('id') id: number) {
     return await this.methodsService.getMethodsID(id)
+  }
+
+  @Delete('delete-stack/:id')
+  async deleteStack(@Param('id') id: number) {
+    return await this.methodsService.deleteStackMethods(id)
+  }
+
+  @Post('add-method-to-stack/')
+  async addMethodToStack(
+    @Body()
+    { methodsStackID, quoteRequestID }: addOrRemoveMethodToStackDto,
+  ) {
+    return await this.methodsService.addMethodToStack({
+      methodsStackID,
+      quoteRequestID,
+    })
+  }
+
+  @Post('remove-method-to-stack/')
+  async removeMethodToStack(
+    @Body()
+    { methodsStackID, quoteRequestID, methodID }: addOrRemoveMethodToStackDto,
+  ) {
+    return await this.methodsService.removeMethodToStack({
+      methodsStackID,
+      quoteRequestID,
+      methodID,
+    })
+  }
+
+  @Post('emmit-report/:id')
+  async emmitReport(
+    @Body() { method_name, report }: EmmitReportDto,
+    @Param('id') id: number,
+  ) {
+    return await this.methodsService.emmitReportToMethod(
+      method_name,
+      id,
+      report,
+    )
+  }
+
+  @Post('ni-mcit-p-01/calibration-location/:methodId')
+  async createNI_MCIT_P_01CalibrationLocation(
+    @Body() { location }: AddLocationDto,
+    @Param('methodId') methodId: number,
+  ) {
+    return await this.ni_mcit_p_01Service.addCalibrationLocation(
+      location,
+      methodId,
+    )
   }
 
   @Post('ni-mcit-p-01/equipment-information/:methodId')
@@ -80,14 +134,16 @@ export class MethodsController {
     )
   }
 
-  @Post('ni-mcit-p-01/description-pattern/:methodId')
+  @Post('ni-mcit-p-01/description-pattern/:methodId/:activityId')
   async createNI_MCIT_P_01DescriptionPattern(
     @Body() descriptionPattern: DescriptionPatternDto,
     @Param('methodId') methodId: number,
+    @Param('activityId') activityId: number,
   ) {
     return await this.ni_mcit_p_01Service.descriptionPattern(
       descriptionPattern,
       methodId,
+      activityId,
     )
   }
 
@@ -100,6 +156,22 @@ export class MethodsController {
       activityID: activityId,
       methodID: methodId,
     })
+  }
+
+  @Get('ni-mcit-p-01/equipment/:id')
+  async getEquipmentP_01ById(@Param('id') id: number) {
+    return await this.ni_mcit_p_01Service.getMehotdById(id)
+  }
+
+  @Get('ni-mcit-p-01/generate-certificate/pdf/:idActivity/:idMethod')
+  async getCertificatePdf(
+    @Param('idActivity') idActivity: number,
+    @Param('idMethod') idMethod: number,
+  ) {
+    return await this.ni_mcit_p_01Service.generatePDFCertificate(
+      idActivity,
+      idMethod,
+    )
   }
 
   @Post('ni-mcit-d-02/create')

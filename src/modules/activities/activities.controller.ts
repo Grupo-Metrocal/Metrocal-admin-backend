@@ -1,4 +1,12 @@
-import { Controller, Delete, Param, UseGuards } from '@nestjs/common'
+import {
+  Controller,
+  Delete,
+  Param,
+  ParseFilePipeBuilder,
+  UploadedFile,
+  UseGuards,
+  UseInterceptors,
+} from '@nestjs/common'
 import { ActivitiesService } from './activities.service'
 import { ApiTags } from '@nestjs/swagger'
 import { Get, Post, Body } from '@nestjs/common'
@@ -6,6 +14,8 @@ import { AssignTeamMembersToActivityDto } from './dto/assign-activity.dt'
 import { RemoveMemberFromActivityDto } from './dto/remove-member.dto'
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard'
 import { AddResponsableToActivityDto } from './dto/add-responsable.dto'
+import { FileInterceptor } from '@nestjs/platform-express'
+import { FinishActivityDto } from './dto/finish-activity.dto'
 
 @ApiTags('activities')
 @Controller('activities')
@@ -16,6 +26,18 @@ export class ActivitiesController {
   @Get()
   async getAllActivities() {
     return await this.activitiesService.getAllActivities()
+  }
+
+  // @UseGuards(JwtAuthGuard)
+  @Get('done')
+  async getActivitiesDoneToCertify() {
+    return await this.activitiesService.getActivitiesDoneToCertify()
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Post('generate/:id')
+  async generateActivity(@Param('id') id: number) {
+    return await this.activitiesService.generateActivity(id)
   }
 
   @UseGuards(JwtAuthGuard)
@@ -44,7 +66,7 @@ export class ActivitiesController {
   }
 
   @UseGuards(JwtAuthGuard)
-  @Delete('remove-member')
+  @Post('remove-member')
   async removeMemberFromActivity(
     @Body() removeMemberDto: RemoveMemberFromActivityDto,
   ) {
@@ -68,9 +90,36 @@ export class ActivitiesController {
     return await this.activitiesService.getServicesByActivity(id)
   }
 
+  // @UseGuards(JwtAuthGuard)
+  @Post('finished-activity/:id')
+  async finishActivity(
+    @Param('id') id: number,
+    @Body() data: FinishActivityDto,
+  ) {
+    return await this.activitiesService.finishActivity(id, data)
+  }
+
   @UseGuards(JwtAuthGuard)
-  @Get('finished-activity/:id')
-  async finishActivity(@Param('id') id: number) {
-    return await this.activitiesService.finishActivity(id)
+  @Delete('delete/:id')
+  async deleteActivity(@Param('id') id: number) {
+    return await this.activitiesService.deleteActivity(id)
+  }
+  // @UseGuards(JwtAuthGuard)
+  @Post('client-signature/:activityID')
+  @UseInterceptors(FileInterceptor('image'))
+  async clientSignature(
+    @Param('activityID') id: number,
+    @UploadedFile(
+      new ParseFilePipeBuilder()
+        .addFileTypeValidator({
+          fileType: 'image',
+        })
+        .build({
+          fileIsRequired: false,
+        }),
+    )
+    image: Express.Multer.File,
+  ) {
+    return await this.activitiesService.addClientSignature(id, image)
   }
 }

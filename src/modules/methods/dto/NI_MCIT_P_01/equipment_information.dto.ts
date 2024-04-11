@@ -8,7 +8,10 @@ export class EquipmentInformationDto {
   serial_number?: string
 
   @ApiProperty()
-  measurement_range?: string
+  range_min?: number
+
+  @ApiProperty()
+  range_max?: number
 
   @ApiProperty()
   maker?: string

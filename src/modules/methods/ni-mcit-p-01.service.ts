@@ -17,11 +17,14 @@ import { DescriptionPatternNI_MCIT_P_01 } from './entities/NI_MCIT_P_01/steps/de
 import { handleInternalServerError, handleOK } from 'src/common/handleHttp'
 import { generateServiceCodeToMethod } from 'src/utils/codeGenerator'
 import { formatDate } from 'src/utils/formatDate'
+import { CertificateService } from '../certificate/certificate.service'
+import { PdfService } from '../mail/pdf.service'
 
 import * as XlsxPopulate from 'xlsx-populate'
 import * as path from 'path'
 import { exec } from 'child_process'
 import * as fs from 'fs'
+import { MailService } from '../mail/mail.service'
 
 @Injectable()
 export class NI_MCIT_P_01Service {
@@ -41,6 +44,10 @@ export class NI_MCIT_P_01Service {
 
     @Inject(forwardRef(() => ActivitiesService))
     private readonly activitiesService: ActivitiesService,
+
+    private readonly certificateService: CertificateService,
+    private readonly pdfService: PdfService,
+    private readonly mailService: MailService,
   ) {}
 
   async create() {
@@ -92,7 +99,26 @@ export class NI_MCIT_P_01Service {
     }
   }
 
-  //EnvironmentalConditions
+  async addCalibrationLocation(calibrationLocation: string, methodId: number) {
+    const method = await this.NI_MCIT_P_01Repository.findOne({
+      where: { id: methodId },
+    })
+
+    if (!method) {
+      return handleInternalServerError('El método no existe')
+    }
+
+    method.calibration_location = calibrationLocation
+
+    try {
+      await this.NI_MCIT_P_01Repository.save(method)
+
+      return handleOK(method)
+    } catch (error) {
+      return handleInternalServerError(error.message)
+    }
+  }
+
   async environmentalConditions(
     environmentalConditions: EnvironmentalConditionsDto,
     methodId: number,
@@ -174,34 +200,43 @@ export class NI_MCIT_P_01Service {
   async descriptionPattern(
     descriptionPattern: DescriptionPatternDto,
     methodId: number,
+    activityId: number,
   ) {
-    const method = await this.NI_MCIT_P_01Repository.findOne({
-      where: { id: methodId },
-      relations: ['description_pattern'],
-    })
-
-    if (!method) {
-      return handleInternalServerError('El método no existe')
-    }
-
-    const existingDescriptionPattern = method.description_pattern
-
-    if (existingDescriptionPattern) {
-      this.DescriptionPatternNI_MCIT_P_01Repository.merge(
-        existingDescriptionPattern,
-        descriptionPattern,
-      )
-    } else {
-      const newDescriptionPattern =
-        this.DescriptionPatternNI_MCIT_P_01Repository.create(descriptionPattern)
-      method.description_pattern = newDescriptionPattern
-    }
-
     try {
+      const method = await this.NI_MCIT_P_01Repository.findOne({
+        where: { id: methodId },
+        relations: ['description_pattern'],
+      })
+
+      if (!method) {
+        return handleInternalServerError('El método no existe')
+      }
+
+      const existingDescriptionPattern = method.description_pattern
+
+      if (existingDescriptionPattern) {
+        this.DescriptionPatternNI_MCIT_P_01Repository.merge(
+          existingDescriptionPattern,
+          descriptionPattern,
+        )
+      } else {
+        const newDescriptionPattern =
+          this.DescriptionPatternNI_MCIT_P_01Repository.create(
+            descriptionPattern,
+          )
+        method.description_pattern = newDescriptionPattern
+      }
+
       await this.dataSource.transaction(async (manager) => {
         await manager.save(method.description_pattern)
+
+        method.status = 'done'
         await manager.save(method)
       })
+
+      await this.generateCertificateCodeToMethod(method.id)
+
+      await this.activitiesService.updateActivityProgress(activityId)
 
       return handleOK(method)
     } catch (error) {
@@ -233,28 +268,49 @@ export class NI_MCIT_P_01Service {
     const dataActivity =
       await this.activitiesService.getActivitiesByID(activityID)
 
-    if (!dataActivity) {
+    if (!dataActivity.success) {
       return handleInternalServerError('La actividad no existe')
     }
 
     const { data: activity } = dataActivity as { data: Activity }
 
-    const equipment = activity.quote_request.equipment_quote_request.filter(
-      (equipment) => equipment.method_id === method.id,
-    )
+    // const equipment = activity.quote_request.equipment_quote_request.filter(
+    //   async (equipment) => {
+    //     const stack = await this.methodsService.getMethodsID(equipment.id)
 
-    if (equipment.length === 0) {
-      return handleInternalServerError(
-        'El método no existe en la actividad seleccionada',
-      )
-    }
+    //     // IS BAD, FIX IT
+    //     if (stack.success) {
+    //       return stack.data.some((method) => method.id === methodID)
+    //     }
+    //   },
+    // )
 
-    const filePath = path.join(
-      __dirname,
-      '../mail/templates/excels/ni_mcit_p_01.xlsx',
-    )
+    // if (equipment.length === 0) {
+    //   return handleInternalServerError(
+    //     'El método no existe en la actividad seleccionada',
+    //   )
+    // }
 
     try {
+      let filePath = ''
+
+      if (method.description_pattern.pattern === 'NI-MCPP-05') {
+        filePath = path.join(
+          __dirname,
+          '../mail/templates/excels/ni_mcit_p_01_5.xlsx',
+        )
+      } else if (method.description_pattern.pattern === 'NI-MCPP-06') {
+        filePath = path.join(
+          __dirname,
+          '../mail/templates/excels/ni_mcit_p_01_06.xlsx',
+        )
+      } else {
+        filePath = path.join(
+          __dirname,
+          '../mail/templates/excels/ni_mcit_p_01.xlsx',
+        )
+      }
+
       const newFilePath = path.join(
         __dirname,
         `../mail/templates/excels/ni_mcit_p_01_${activity.quote_request.no}.xlsx`,
@@ -273,6 +329,26 @@ export class NI_MCIT_P_01Service {
         .sheet('Calibración')
         .cell('I3')
         .value(method.description_pattern.pattern)
+
+      workbook
+        .sheet('Calibración')
+        .cell('E10')
+        .value(method.calibration_results.results.length)
+
+      workbook
+        .sheet('General')
+        .cell('F16')
+        .value(method.equipment_information.unit)
+
+      workbook
+        .sheet('General')
+        .cell('F13')
+        .value(method.equipment_information.range_min)
+
+      workbook
+        .sheet('General')
+        .cell('F14')
+        .value(method.equipment_information.range_max)
 
       // enter environmental conditions
       const sheetEC = workbook.sheet('NI-R01-MCIT-P-01')
@@ -404,7 +480,11 @@ export class NI_MCIT_P_01Service {
       let correctionSys = []
       let uncertaintySys = []
 
-      for (let i = 0; i <= 5; i++) {
+      for (
+        let i = 0;
+        i <= method.calibration_results.results[0].calibration_factor.length;
+        i++
+      ) {
         const pressureValue = sheetCER.cell(`D${27 + i}`).value()
         reference_pressure.push(
           typeof pressureValue === 'number'
@@ -433,28 +513,28 @@ export class NI_MCIT_P_01Service {
             : uncertaintyValue,
         )
 
-        const pressureSysValue = sheetCER.cell(`D${38 + i}`).value()
+        const pressureSysValue = sheetCER.cell(`D${64 + i}`).value()
         reference_pressureSys.push(
           typeof pressureSysValue === 'number'
             ? pressureSysValue.toFixed(1)
             : pressureSysValue,
         )
 
-        const indicationSysValue = sheetCER.cell(`F${38 + i}`).value()
+        const indicationSysValue = sheetCER.cell(`F${64 + i}`).value()
         equipment_indicationSys.push(
           typeof indicationSysValue === 'number'
             ? indicationSysValue.toFixed(1)
             : indicationSysValue,
         )
 
-        const correctionSysValue = sheetCER.cell(`L${38 + i}`).value()
+        const correctionSysValue = sheetCER.cell(`L${64 + i}`).value()
         correctionSys.push(
           typeof correctionSysValue === 'number'
             ? correctionSysValue.toFixed(1)
             : correctionSysValue,
         )
 
-        const uncertaintySysValue = sheetCER.cell(`R${38 + i}`).value()
+        const uncertaintySysValue = sheetCER.cell(`R${64 + i}`).value()
         uncertaintySys.push(
           typeof uncertaintySysValue === 'number'
             ? uncertaintySysValue.toFixed(1)
@@ -480,15 +560,16 @@ export class NI_MCIT_P_01Service {
 
       const certificate = {
         equipment_information: {
+          certification_code: method.certificate_code,
           service_code: generateServiceCodeToMethod(method.id),
           certificate_issue_date: formatDate(new Date().toString()),
-          calibration_date: formatDate(method.updated_at.toString()),
-          object_calibrated: equipment[0].name,
+          calibration_date: formatDate(activity.updated_at.toString()),
+          object_calibrated: method.equipment_information.device,
           manufacturer: method.equipment_information.maker,
           no_series: method.equipment_information.serial_number,
           model: method.equipment_information.model,
-          measurement_range: method.equipment_information.measurement_range,
-          resolution: method.equipment_information.resolution,
+          measurement_range: `De ${method.equipment_information.range_min} ${method.equipment_information.unit} a ${method.equipment_information.range_max} ${method.equipment_information.unit}`,
+          resolution: `${method.equipment_information.resolution} ${method.equipment_information.unit}`,
           code: method.equipment_information.code,
           applicant: activity.quote_request.client.company_name,
           address: activity.quote_request.client.address,
@@ -496,16 +577,22 @@ export class NI_MCIT_P_01Service {
         },
         calibration_results,
         environmental_conditions: {
-          atmospheric_pressure: `${sheetCER.cell('T46').value()} ± ${sheetCER
-            .cell('W46')
-            .value()}`,
-          temperature: `${sheetCER.cell('E46').value()} °C ± ${sheetCER
-            .cell('G46')
-            .value()} °C`,
-          humidity: `${sheetCER.cell('E47').value()} % ± ${sheetCER
-            .cell('G47')
-            .value()} %`,
+          atmospheric_pressure: `Presión (kPa): ${sheetCER
+            .cell('T80')
+            .value()} ± ${sheetCER.cell('W80').value()}`,
+          temperature: `Temperatura: ${sheetCER
+            .cell('E80')
+            .value()} °C ± ${sheetCER.cell('G80').value()} °C`,
+          humidity: `Humedad relativa: ${sheetCER
+            .cell('E81')
+            .value()} % ± ${sheetCER.cell('G81').value()} %`,
         },
+        descriptionPattern: method.description_pattern,
+        creditable: method.description_pattern.creditable,
+        ta_eq_enviromental_conditions:
+          method.environmental_conditions.cycles[0].ta.equipement,
+        hPa_eq_enviromental_conditions:
+          method.environmental_conditions.cycles[0].hPa.equipement,
       }
 
       fs.unlinkSync(newFilePath)
@@ -542,11 +629,136 @@ export class NI_MCIT_P_01Service {
             console.error(`Error en la salida estándar: ${stderr}`)
             reject(new Error(stderr))
           } else {
-            console.log(`Salida estándar: ${stdout}`)
             resolve(stdout)
           }
         },
       )
     })
+  }
+
+  async generateCertificateCodeToMethod(methodID: number) {
+    try {
+      const method = await this.NI_MCIT_P_01Repository.findOne({
+        where: { id: methodID },
+      })
+
+      if (!method) {
+        return handleInternalServerError('El método no existe')
+      }
+
+      if (method.certificate_code) {
+        return handleOK('El método ya tiene un código de certificado')
+      }
+
+      const certificate = await this.certificateService.create()
+
+      method.certificate_code = certificate.data.code
+      method.certificate_id = certificate.data.id
+
+      await this.NI_MCIT_P_01Repository.save(method)
+
+      return handleOK(certificate)
+    } catch (error) {
+      return handleInternalServerError(error.message)
+    }
+  }
+
+  async getMehotdById(methodId: number) {
+    try {
+      const method = await this.NI_MCIT_P_01Repository.findOne({
+        where: { id: methodId },
+        relations: [
+          'equipment_information',
+          'environmental_conditions',
+          'calibration_results',
+          'description_pattern',
+        ],
+      })
+
+      if (!method) {
+        return handleInternalServerError('El método no existe')
+      }
+
+      return handleOK(method)
+    } catch (error) {
+      return handleInternalServerError(error.message)
+    }
+  }
+
+  async generatePDFCertificate(activityID: number, methodID: number) {
+    try {
+      const method = await this.NI_MCIT_P_01Repository.findOne({
+        where: { id: methodID },
+        relations: [
+          'equipment_information',
+          'environmental_conditions',
+          'calibration_results',
+          'description_pattern',
+        ],
+      })
+
+      if (!method) {
+        return handleInternalServerError('El método no existe')
+      }
+
+      const dataCertificate = await this.generateCertificate({
+        activityID,
+        methodID,
+      })
+
+      if (!dataCertificate.success) {
+        return dataCertificate
+      }
+
+      dataCertificate.data.calibration_results.result =
+        dataCertificate.data.calibration_results.result.reference_pressure.map(
+          (pressure, index) => ({
+            reference_pressure: pressure,
+            equipment_indication:
+              dataCertificate.data.calibration_results.result
+                .equipment_indication[index],
+            correction:
+              dataCertificate.data.calibration_results.result.correction[index],
+            uncertainty:
+              dataCertificate.data.calibration_results.result.uncertainty[
+                index
+              ],
+          }),
+        )
+
+      dataCertificate.data.calibration_results.result_unid_system =
+        dataCertificate.data.calibration_results.result_unid_system.reference_pressure.map(
+          (pressure, index) => ({
+            reference_pressure: pressure,
+            equipment_indication:
+              dataCertificate.data.calibration_results.result_unid_system
+                .equipment_indication[index],
+            correction:
+              dataCertificate.data.calibration_results.result_unid_system
+                .correction[index],
+            uncertainty:
+              dataCertificate.data.calibration_results.result_unid_system
+                .uncertainty[index],
+          }),
+        )
+
+      const PDF = await this.pdfService.generateCertificatePdf(
+        '/certificates/p-01.hbs',
+        dataCertificate.data,
+      )
+
+      if (!PDF) {
+        return handleInternalServerError('Error al generar el PDF')
+      }
+
+      const response = await this.mailService.sendMailCertification({
+        user: 'francisco@regxi.com',
+        pdf: PDF,
+      })
+
+      return handleOK(response)
+    } catch (error) {
+      return handleInternalServerError(error.message)
+    }
   }
 }

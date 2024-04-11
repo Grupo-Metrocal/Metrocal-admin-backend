@@ -13,6 +13,8 @@ import { Activity } from '../activities/entities/activities.entity'
 import { QuotesService } from '../quotes/quotes.service'
 import { NI_MCIT_D_02 } from './entities/NI_MCIT_D_02/NI_MCIT_D_02.entity'
 import { Methods } from './entities/method.entity'
+import { QuoteRequest } from '../quotes/entities/quote-request.entity'
+import { addOrRemoveMethodToStackDto } from './dto/add-remove-method-stack.dto'
 
 import { NI_MCIT_D_01 } from './entities/NI_MCIT_D_01/NI_MCIT_D_01.entity'
 
@@ -79,7 +81,6 @@ export class MethodsService {
               }
             })
           } catch (error) {
-            console.log(error)
             return handleBadrequest(error.message)
           }
         },
@@ -89,7 +90,6 @@ export class MethodsService {
 
       return handleOK(activity.quote_request.equipment_quote_request)
     } catch (error) {
-      console.log(error)
       return handleBadrequest(error.message)
     }
   }
@@ -167,6 +167,184 @@ export class MethodsService {
       return handleOK({ NI_MCIT_P_01, NI_MCIT_D_02, NI_MCIT_D_01 })
     } catch (error) {
       return handleBadrequest(error.message)
+    }
+  }
+
+  async deleteStackMethods(id: number) {
+    try {
+      const method = await this.methodsRepository.findOneBy({
+        id,
+      })
+
+      if (!method) {
+        return handleBadrequest(new Error('El método no existe'))
+      }
+
+      await this.dataSource.transaction(async (manager) => {
+        const relations = this[method.method_name].metadata.relations.map(
+          (relation: any) => relation.propertyName,
+        )
+
+        const methodsStack = await this[method.method_name].find({
+          where: {
+            id: In(method.methodsID),
+          },
+          relations: relations,
+        })
+
+        for (const methodStack of methodsStack) {
+          await this[method.method_name].delete({
+            id: methodStack.id,
+          })
+        }
+
+        for (const relation of relations) {
+          if (methodsStack[relation]) {
+            await manager.delete(relation, {
+              id: methodsStack[relation].id,
+            })
+          }
+        }
+
+        await manager.delete(Methods, {
+          id,
+        })
+
+        await this.quotesService.asyncDeleteMethodToEquipment({
+          methodID: method.id,
+        })
+      })
+
+      return handleOK('Método eliminado')
+    } catch (error) {
+      return handleInternalServerError(error.message)
+    }
+  }
+
+  async addMethodToStack({
+    methodsStackID,
+    quoteRequestID,
+  }: addOrRemoveMethodToStackDto) {
+    try {
+      const method = await this.methodsRepository.findOneBy({
+        id: methodsStackID,
+      })
+
+      if (!method) {
+        return handleBadrequest(new Error('El método no existe'))
+      }
+
+      return await this.dataSource.transaction(async (manager) => {
+        const quoteRequest =
+          await this.quotesService.getQuoteRequestById(quoteRequestID)
+
+        const { data } = quoteRequest as { data: QuoteRequest }
+
+        const newMethod = await this[method.method_name].create()
+
+        await manager.save(newMethod)
+        method.methodsID.push(newMethod.id)
+        await manager.save(method)
+
+        await this.quotesService.addOrRemvoQuantityToEquipment({
+          quoteRequestID: data.id,
+          actionType: 'add',
+          equipmentID: data.equipment_quote_request.find(
+            (equipment) => equipment.method_id === methodsStackID,
+          ).id,
+        })
+        await this.activitiesService.updateActivityProgress(data.activity.id)
+
+        return handleOK(newMethod)
+      })
+    } catch (error) {
+      return handleInternalServerError(error.message)
+    }
+  }
+
+  async removeMethodToStack({
+    methodsStackID,
+    quoteRequestID,
+    methodID,
+  }: addOrRemoveMethodToStackDto) {
+    try {
+      const method = await this.methodsRepository.findOneBy({
+        id: methodsStackID,
+      })
+
+      if (!method) {
+        return handleBadrequest(new Error('El método no existe'))
+      }
+
+      return await this.dataSource.transaction(async (manager) => {
+        const quoteRequest =
+          await this.quotesService.getQuoteRequestById(quoteRequestID)
+
+        const { data } = quoteRequest as { data: QuoteRequest }
+
+        const methodStack = await this[method.method_name].findOneBy({
+          id: methodID,
+        })
+
+        if (!methodStack) {
+          return handleBadrequest(new Error('El método no existe'))
+        }
+
+        await this[method.method_name].delete({
+          id: methodID,
+        })
+
+        method.methodsID = method.methodsID.filter(
+          (id: number) => id !== methodID,
+        )
+        await manager.save(method)
+
+        await this.quotesService.addOrRemvoQuantityToEquipment({
+          quoteRequestID: data.id,
+          actionType: 'remove',
+          equipmentID: data.equipment_quote_request.find(
+            (equipment) => equipment.method_id === methodsStackID,
+          ).id,
+        })
+
+        await this.activitiesService.updateActivityProgress(data.activity.id)
+        return handleOK('Método eliminado')
+      })
+    } catch (error) {
+      return handleInternalServerError(error.message)
+    }
+  }
+
+  async emmitReportToMethod(
+    method_name: string,
+    method_id: number,
+    report_messages: string,
+  ) {
+    try {
+      const repository = `${method_name}Repository`
+      const method = await this[repository].findOne({
+        where: {
+          id: method_id,
+        },
+      })
+
+      if (!method) {
+        return handleBadrequest(new Error('El método no existe'))
+      }
+
+      if (report_messages === '') {
+        return handleBadrequest(new Error('El reporte no puede estar vacío'))
+      }
+
+      await this.dataSource.transaction(async (manager) => {
+        method.report_status = true
+        method.report_messages.push(report_messages)
+        await manager.save(method)
+      })
+
+      return handleOK('Reporte emitido')
+    } catch (error) {
+      return handleInternalServerError(error.message)
     }
   }
 }

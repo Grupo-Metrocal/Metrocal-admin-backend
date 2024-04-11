@@ -28,6 +28,7 @@ import { PaginationQueryDto } from './dto/pagination-query.dto'
 import { formatPrice } from 'src/utils/formatPrices'
 import { MethodsService } from '../methods/methods.service'
 import { PaginationQueryDinamicDto } from './dto/pagination-dinamic.dto'
+import { ReviewEquipmentDto } from './dto/review-equipment.dto'
 
 @Injectable()
 export class QuotesService {
@@ -404,15 +405,15 @@ export class QuotesService {
       await this.quoteRequestRepository.save(quoteRequest)
 
       if (quoteRequest.status === 'done') {
-        const activity = await this.activitiesService.createActivity(
-          changeStatusQuoteRequest as any,
-        )
+        // const activity = await this.activitiesService.createActivity(
+        //   changeStatusQuoteRequest as any,
+        // )
 
-        const response = await this.methodsService.createMethod({
-          activity_id: activity.data.id,
-        })
+        // const response = await this.methodsService.createMethod({
+        //   activity_id: activity.data.id,
+        // })
 
-        return handleOK(response.data)
+        return handleOK('Cotización aprobada')
       }
 
       return handleOK('Cotización rechazada')
@@ -459,7 +460,6 @@ export class QuotesService {
       return i // Mantener el valor original si no es 'next_expired' o 'expired' .
     })
 
-   
     // Cambiar el estado 'done' por 'next_expired', 'expired'  según el tiempo transcurrido desde la creación.
     const updateQuoteStatus = (quote_registered) => {
       if (next_expired !== '' || expired !== '') {
@@ -511,7 +511,7 @@ export class QuotesService {
         .getRawMany()
 
       updateQuoteStatus(quote_registered)
-   
+
       return handlePaginateByPageNumber(quote_registered, limit, offset)
     }
 
@@ -624,7 +624,12 @@ export class QuotesService {
   async deleteQuoteRequest(id: number) {
     const quoteRequest = await this.quoteRequestRepository.findOne({
       where: { id },
-      relations: ['equipment_quote_request', 'quote', 'client', 'approved_by'],
+      relations: [
+        'equipment_quote_request',
+        'client',
+        'activity',
+        'client.quote_requests',
+      ],
     })
 
     if (!quoteRequest) {
@@ -632,10 +637,18 @@ export class QuotesService {
     }
 
     try {
-      await this.quoteRequestRepository.delete({ id })
-      return true
+      await this.dataSource.transaction(async (manager) => {
+        if (quoteRequest.activity) {
+          await this.activitiesService.deleteActivity(quoteRequest.activity.id)
+        }
+
+        await this.clientsService.deleteQuoteFromClient(quoteRequest.id)
+
+        await manager.remove(quoteRequest)
+      })
+      return handleOK(true)
     } catch (error) {
-      return false
+      return handleInternalServerError(error.message)
     }
   }
 
@@ -745,7 +758,134 @@ export class QuotesService {
         relations: ['equipment_quote_request', 'client', 'activity'],
       })
 
-      return handleOK(quotes)
+      const quotesWithoutActivity = quotes.filter(
+        (quote) => quote.activity === null,
+      )
+
+      return handleOK(quotesWithoutActivity)
+    } catch (error) {
+      return handleInternalServerError(error.message)
+    }
+  }
+
+  async asyncDeleteMethodToEquipment({ methodID }: { methodID: number }) {
+    try {
+      const quoteRequests = await this.equipmentQuoteRequestRepository.findOne({
+        where: { method_id: methodID },
+      })
+
+      if (!quoteRequests) {
+        return handleBadrequest(new Error('El equipo no existe'))
+      }
+
+      quoteRequests.method_id = null
+
+      const response =
+        await this.equipmentQuoteRequestRepository.save(quoteRequests)
+
+      return handleOK(response)
+    } catch (error) {
+      return handleInternalServerError(error.message)
+    }
+  }
+
+  async addOrRemvoQuantityToEquipment({
+    quoteRequestID,
+    equipmentID,
+    actionType,
+  }: {
+    quoteRequestID: number
+    actionType: 'add' | 'remove'
+    equipmentID: number
+  }) {
+    try {
+      const quoteRequest = await this.quoteRequestRepository.findOne({
+        where: { id: quoteRequestID },
+        relations: ['equipment_quote_request'],
+      })
+
+      const equipment = quoteRequest.equipment_quote_request.find(
+        (equipment) => equipment.id === equipmentID,
+      )
+
+      if (actionType === 'add') {
+        equipment.count += 1
+      } else {
+        if (equipment.count === 1) {
+          return handleBadrequest(new Error('No se puede restar más'))
+        }
+
+        equipment.count -= 1
+      }
+
+      const response =
+        await this.equipmentQuoteRequestRepository.save(equipment)
+
+      await this.recalculateQuoteRequestPrice(quoteRequestID)
+
+      return handleOK(response)
+    } catch (error) {
+      return handleInternalServerError(error.message)
+    }
+  }
+
+  async recalculateQuoteRequestPrice(quoteRequestID: number) {
+    try {
+      const quoteRequest = await this.quoteRequestRepository.findOne({
+        where: { id: quoteRequestID },
+        relations: ['equipment_quote_request'],
+      })
+
+      let totalQuote = 0
+      let SubTotalEquipment = 0
+
+      await this.dataSource.transaction(async (manager) => {
+        for (const equipment of quoteRequest.equipment_quote_request) {
+          // subTotal to equipment
+          equipment.total =
+            equipment.count * equipment.price * (1 - equipment.discount / 100)
+
+          SubTotalEquipment += equipment.total
+
+          await manager.save(equipment)
+        }
+
+        totalQuote += quoteRequest.extras + SubTotalEquipment
+
+        // discount to totalQuote
+        totalQuote -= totalQuote * (quoteRequest.general_discount / 100)
+
+        // tax to totalQuote
+        totalQuote += totalQuote * (quoteRequest.tax / 100)
+
+        quoteRequest.price = totalQuote
+
+        await manager.save(quoteRequest)
+      })
+
+      return handleOK('ok')
+    } catch (error) {
+      return handleInternalServerError(error.message)
+    }
+  }
+
+  async reviewEquipment(id: number, review: ReviewEquipmentDto) {
+    try {
+      const equipment = await this.equipmentQuoteRequestRepository.findOne({
+        where: { id },
+      })
+
+      if (!equipment) {
+        return handleBadrequest(new Error('El equipo no existe'))
+      }
+
+      equipment.review_comment = review.review_comment
+      equipment.review_status = 'reviewed'
+
+      const response =
+        await this.equipmentQuoteRequestRepository.save(equipment)
+
+      return handleOK(response)
     } catch (error) {
       return handleInternalServerError(error.message)
     }

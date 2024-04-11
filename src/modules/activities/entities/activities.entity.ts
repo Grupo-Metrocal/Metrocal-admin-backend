@@ -24,7 +24,7 @@ export class Activity {
   @Column({ type: 'varchar', default: 'pending' })
   status: string // pending, done, canceled
 
-  @Column({ nullable: true, default: 0 })
+  @Column({ type: 'float', nullable: true, default: 0 })
   progress: number
 
   @Column({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP' })
@@ -35,4 +35,13 @@ export class Activity {
 
   @Column({ nullable: true })
   responsable: number
+
+  @Column({ type: 'varchar', nullable: true })
+  client_signature: string
+
+  @Column({ type: 'varchar', nullable: true })
+  work_areas?: string[]
+
+  @Column({ type: 'varchar', nullable: true })
+  comments_insitu?: string[]
 }

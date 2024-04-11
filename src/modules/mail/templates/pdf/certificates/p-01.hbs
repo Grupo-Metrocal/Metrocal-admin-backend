@@ -1,0 +1,233 @@
+<style>
+  .ni-mcit-p-01 {
+    display: flex;
+    flex-direction: column;
+    gap: 25px;
+    background-color: tomato;
+  }
+  .equipment-information {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 20px;
+  }
+  .equipment-information div {
+    width: 50%;
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+  }
+  .equipment-information .labels {
+    font-weight: bold;
+  }
+  table {
+    border-collapse: collapse;
+    width: 100%;
+  }
+  th,
+  td {
+    border: 1px solid #dddddd;
+    text-align: center;
+  }
+  .table-title {
+    border: 1px solid #dddddd;
+    text-align: center;
+    font-weight: bold;
+  }
+  .enviromental-conditions {
+    display: flex;
+    justify-content: space-between;
+  }
+  .enviromental-conditions div {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+</style>
+
+<div class="ni-mcit-p-01">
+  <div class="equipment-information">
+    <div class="labels">
+      <span>Identificación del certificado:</span>
+      <span>Código de servicio:</span>
+      <span>Fecha de calibración:</span>
+      <span>Fecha de emisión de certificado:</span>
+      <span>Objeto de calibración:</span>
+      <span>Fabricante/Marca:</span>
+      <span>Serie:</span>
+      <span>Modelo:</span>
+      <span>Rango de medida:</span>
+      <span>Resolución</span>
+      <span>Código de identificación</span>
+      <span>Solicitante</span>
+      <span>Dirección del solicitante</span>
+      <span>Lugar de calibración</span>
+    </div>
+    <div class="values">
+      <span style="font-weight: bold"
+        >{{equipment_information.certification_code}}</span
+      >
+      <span>{{equipment_information.service_code}}</span>
+      <span>{{equipment_information.calibration_date}}</span>
+      <span>{{equipment_information.certificate_issue_date}}</span>
+      <span>{{equipment_information.object_calibrated}}</span>
+      <span>{{equipment_information.manufacturer}}</span>
+      <span>{{equipment_information.no_series}}</span>
+      <span>{{equipment_information.model}}</span>
+      <span>{{equipment_information.measurement_range}}</span>
+      <span>{{equipment_information.resolution}}</span>
+      <span>{{equipment_information.code}}</span>
+      <span>{{equipment_information.applicant}}</span>
+      <span>{{equipment_information.address}}</span>
+      <span>{{equipment_information.calibration_location}}</span>
+    </div>
+  </div>
+
+  <div class="calibration-result"
+    style="height: 300px"
+  >
+    <strong><span>Resultados de la calibración</span></strong>
+    <br />
+    <table>
+      <thead>
+        <caption class="table-title" colspan="5">
+          Tabla de resultados de calibración
+        </caption>
+        <tr>
+          <th>Presión de referencia</th>
+          <th>Indicación del equipo</th>
+          <th>Corrección</th>
+          <th>Incertidumbre expandida K = 2</th>
+        </tr>
+      </thead>
+      <tbody>
+        {{#each calibration_results.result as |data|}}
+        <tr>
+          <td>{{data.reference_pressure}}</td>
+          <td>{{data.equipment_indication}}</td>
+          <td>{{data.correction}}</td>
+          <td>{{data.uncertainty}}</td>
+        </tr>
+        {{/each}}
+      </tbody>
+    </table>
+  </div>
+
+  <div class="result_unid_system"
+  style="height: 300px"
+  >
+    <strong
+      ><span
+        >Resultados en Unidad de Sistema Internacional de Unidades</span
+      ></strong
+    >
+    <br />
+    <table>
+      <thead>
+        <caption class="table-title" colspan="5">
+          Tabla de resultados de calibració
+        </caption>
+        <tr>
+          <th>Presión de referencia</th>
+          <th>Indicación del equipo</th>
+          <th>Corrección</th>
+          <th>Incertidumbre expandida K = 2</th>
+        </tr>
+      </thead>
+      <tbody>
+        {{#each calibration_results.result_unid_system as |data|}}
+        <tr>
+          <td>{{data.reference_pressure}}</td>
+          <td>{{data.equipment_indication}}</td>
+          <td>{{data.correction}}</td>
+          <td>{{data.uncertainty}}</td>
+        </tr>
+        {{/each}}
+      </tbody>
+    </table>
+  </div>
+
+  <div class="enviromental-conditions">
+    <div>
+      <strong
+        ><span
+          >Condiciones ambientales Higrotermómetro
+          {{ta_eq_enviromental_conditions}}</span
+        ></strong
+      >
+      <span>{{environmental_conditions.temperature}}</span>
+      <span>{{environmental_conditions.humidity}}</span>
+    </div>
+
+    <div>
+      <strong><span>Presión atmosférica</span></strong>
+      <span>{{environmental_conditions.atmospheric_pressure}}</span>
+    </div>
+  </div>
+
+  <div class="calibration-method">
+    <strong><span>Método de calibración</span></strong>
+    <br>
+    <span>Las pruebas se realizaron según {{descriptionPattern.pattern}} Intrucción para calibración de instrumentos de presión.
+  </div>
+
+  <div class="uncertainty">
+    <strong><span>Incertidumbre de los datos</span></strong>
+    <br>
+    <span>
+      La incertidumbre de las medición se obtuvo multiplicando la incertidumbre estándar combinada por un factor de cobertura k = 2, con el que se alcanza un nivel de confianza de al menos 95 %. La incertidumbre estándar de la medición se determinó conforme a la Guía para la Expresión de la Incertidumbre de la Medida, BIPM-IEC-IFCC-ISO-IUPAC-IUPAP-OIML, en la cual se toma en cuenta la incertidumbre de los patrones, del método de calibración, de las condiciones durante la calibración y del equipo sujeto a calibración.
+    </span>
+  </div>
+
+  <div class="used_pattern">
+    <strong><span>Descripción de patrones utilizados</span></strong>
+    <br>
+
+    <!-- tabla -->
+    <table>
+      <thead>
+        <tr>
+          <th style="background-color: #dddddd;">Equipo</th>
+          <th style="background-color: #dddddd;">Código</th>
+          <th style="background-color: #dddddd;">Certificado</th>
+          <th style="background-color: #dddddd;">Trazabilidad</th>
+          <th style="background-color: #dddddd;">Próxima calibración</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>Modulo de presión</td>
+          <td>{{descriptionPattern.pattern}}</td>
+          <td>20190819-28-40</td>
+          <td>SCM</td>
+          <td>2022-08-22</td>
+        </tr>
+
+        <tr>
+          <td>Calibrador de proceso</td>
+          <td>{{descriptionPattern.pattern}}</td>
+          <td>20180625-48-1-2</td>
+          <td>SCM</td>
+          <td>2022-08-22</td>
+        </tr>
+
+        <tr>
+          <td>Higrotermómetro</td>
+          <td>{{ta_eq_enviromental_conditions}}</td>
+          <td>20190513-102-2</td>
+          <td>SCM</td>
+          <td>2022-08-22</td>
+        </tr>
+      <tbody>
+        
+      </tbody>
+    </table>
+  </div>
+
+  <div class="observations">
+    <strong><span>Observaciones</span></strong>
+    <br>
+    <span>
+      {{descriptionPattern.observation}}
+    </span>
+  </div>
+</div>

@@ -6,6 +6,7 @@ import { TypeOrmModule } from '@nestjs/typeorm'
 import { ActivitiesModule } from '../activities/activities.module'
 import { QuotesModule } from '../quotes/quotes.module'
 import { Methods } from './entities/method.entity'
+import { CertificateModule } from '../certificate/certificate.module'
 
 import { NI_MCIT_P_01Service } from './ni-mcit-p-01.service'
 import { NI_MCIT_P_01 } from './entities/NI_MCIT_P_01/NI_MCIT_P_01.entity'
@@ -33,6 +34,8 @@ import { ExteriorParallelismMeasurementNI_MCIT_D_01 } from './entities/NI_MCIT_D
 import { InteriorParallelismMeasurementNI_MCIT_D_01 } from './entities/NI_MCIT_D_01/steps/interior_parallelism_measurement.entity'
 import { ExteriorMeasurementAccuracyNI_MCIT_D_01 } from './entities/NI_MCIT_D_01/steps/exterior_measurement_accuracy.entity'
 import { NI_MCIT_D_01Service } from './ni-mcit-d-01.service'
+import { PdfService } from '../mail/pdf.service'
+import { MailService } from '../mail/mail.service'
 
 @Module({
   imports: [
@@ -65,6 +68,7 @@ import { NI_MCIT_D_01Service } from './ni-mcit-d-01.service'
     ]),
     forwardRef(() => ActivitiesModule),
     forwardRef(() => QuotesModule),
+    forwardRef(() => CertificateModule),
   ],
   controllers: [MethodsController],
   providers: [
@@ -72,6 +76,8 @@ import { NI_MCIT_D_01Service } from './ni-mcit-d-01.service'
     NI_MCIT_P_01Service,
     NI_MCIT_D_02Service,
     NI_MCIT_D_01Service,
+    PdfService,
+    MailService,
   ],
   exports: [MethodsService],
 })

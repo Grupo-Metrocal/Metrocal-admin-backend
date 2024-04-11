@@ -3,6 +3,7 @@ import { MailerService } from '@nestjs-modules/mailer'
 import { ApprovedQuoteRequestDto } from './dto/approved-quote-request.dto'
 import { InvitationMail } from './dto/invitation-mail.dto'
 import { RejectedQuoteRequest } from './dto/rejected-quote-request.dto'
+import { ServiceOrderDto } from './dto/service-order.dto'
 
 @Injectable()
 export class MailService {
@@ -82,11 +83,57 @@ export class MailService {
     await this.mailerService.sendMail({
       to: inv.email,
       from: process.env.MAILER_FROM,
-      subject: 'Cotiza con nosotros y obten el mejor precio',
+      subject: 'Cotización de servicios',
       template: 'invitation_for_user',
       context: {
         ...inv,
       },
+    })
+  }
+
+  async sendServiceOrderMail({
+    to,
+    pdf,
+    clientName,
+    quoteNumber,
+    startDate,
+    endDate,
+    technicians,
+  }: ServiceOrderDto) {
+    await this.mailerService.sendMail({
+      to,
+      from: process.env.MAILER_FROM,
+      subject: 'Orden de servicio',
+      template: 'service_order',
+      context: {
+        clientName,
+        quoteNumber,
+        startDate,
+        endDate,
+        technicians,
+      },
+      attachments: [
+        {
+          filename: 'Orden de servicio.pdf',
+          content: pdf,
+        },
+      ],
+    })
+  }
+
+  async sendMailCertification({ user, pdf }: { user: string; pdf: Buffer }) {
+    return await this.mailerService.sendMail({
+      to: user,
+      from: process.env.MAILER_FROM,
+      subject: 'Certificación de actividad',
+      template: 'certification',
+      context: {},
+      attachments: [
+        {
+          filename: 'Certificado.pdf',
+          content: pdf,
+        },
+      ],
     })
   }
 }
