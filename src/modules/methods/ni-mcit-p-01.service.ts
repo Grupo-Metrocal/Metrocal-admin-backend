@@ -513,28 +513,28 @@ export class NI_MCIT_P_01Service {
             : uncertaintyValue,
         )
 
-        const pressureSysValue = sheetCER.cell(`D${63 + i}`).value()
+        const pressureSysValue = sheetCER.cell(`D${64 + i}`).value()
         reference_pressureSys.push(
           typeof pressureSysValue === 'number'
             ? pressureSysValue.toFixed(1)
             : pressureSysValue,
         )
 
-        const indicationSysValue = sheetCER.cell(`F${63 + i}`).value()
+        const indicationSysValue = sheetCER.cell(`F${64 + i}`).value()
         equipment_indicationSys.push(
           typeof indicationSysValue === 'number'
             ? indicationSysValue.toFixed(1)
             : indicationSysValue,
         )
 
-        const correctionSysValue = sheetCER.cell(`L${63 + i}`).value()
+        const correctionSysValue = sheetCER.cell(`L${64 + i}`).value()
         correctionSys.push(
           typeof correctionSysValue === 'number'
             ? correctionSysValue.toFixed(1)
             : correctionSysValue,
         )
 
-        const uncertaintySysValue = sheetCER.cell(`R${63 + i}`).value()
+        const uncertaintySysValue = sheetCER.cell(`R${64 + i}`).value()
         uncertaintySys.push(
           typeof uncertaintySysValue === 'number'
             ? uncertaintySysValue.toFixed(1)
@@ -721,7 +721,21 @@ export class NI_MCIT_P_01Service {
           }),
         )
 
-      console.log(dataCertificate.data)
+      dataCertificate.data.calibration_results.result_unid_system =
+        dataCertificate.data.calibration_results.result_unid_system.reference_pressure.map(
+          (pressure, index) => ({
+            reference_pressure: pressure,
+            equipment_indication:
+              dataCertificate.data.calibration_results.result_unid_system
+                .equipment_indication[index],
+            correction:
+              dataCertificate.data.calibration_results.result_unid_system
+                .correction[index],
+            uncertainty:
+              dataCertificate.data.calibration_results.result_unid_system
+                .uncertainty[index],
+          }),
+        )
 
       const PDF = await this.pdfService.generateCertificatePdf(
         '/certificates/p-01.hbs',
