@@ -587,6 +587,7 @@ export class NI_MCIT_P_01Service {
             .value()} % ± ${sheetCER.cell('G81').value()} %`,
         },
         descriptionPattern: method.description_pattern,
+        creditable: method.description_pattern.creditable,
       }
 
       fs.unlinkSync(newFilePath)
@@ -703,6 +704,24 @@ export class NI_MCIT_P_01Service {
       if (!dataCertificate.success) {
         return dataCertificate
       }
+
+      dataCertificate.data.calibration_results.result =
+        dataCertificate.data.calibration_results.result.reference_pressure.map(
+          (pressure, index) => ({
+            reference_pressure: pressure,
+            equipment_indication:
+              dataCertificate.data.calibration_results.result
+                .equipment_indication[index],
+            correction:
+              dataCertificate.data.calibration_results.result.correction[index],
+            uncertainty:
+              dataCertificate.data.calibration_results.result.uncertainty[
+                index
+              ],
+          }),
+        )
+
+      console.log(dataCertificate.data)
 
       const PDF = await this.pdfService.generateCertificatePdf(
         '/certificates/p-01.hbs',
