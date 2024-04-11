@@ -1,6 +1,6 @@
 interface GenerateCertCodeProps {
   id: number
-  modificationsNumber: number
+  modificationsNumber?: number
   prefix: string
 }
 export const generateCertCode = ({
@@ -14,4 +14,10 @@ export const generateCertCode = ({
     .padStart(4, '0')}-${modificationsNumber
     .toString()
     .padStart(2, '0')}-${year}`
+}
+
+export const deleteModificationFromCertCode = (code: string) => {
+  const codeSplited = code.split('-')
+  codeSplited.splice(3, 1)
+  return codeSplited.join('-')
 }
