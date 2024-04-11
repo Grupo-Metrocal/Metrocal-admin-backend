@@ -6,6 +6,9 @@
   font-weight: bold; } table { border-collapse: collapse; width: 100%; } th, td
   { border: 1px solid #dddddd; text-align: center; padding: 8px; } .table-title
   { border: 1px solid #dddddd; text-align: center; font-weight: bold; }
+  .enviromental-conditions { display: flex; justify-content: space-between; }
+  .enviromental-conditions div { display: flex; flex-direction: column; gap:
+  10px; }
 </style>
 
 <div class='ni-mcit-p-01'>
@@ -102,5 +105,19 @@
         {{/each}}
       </tbody>
     </table>
+  </div>
+
+  <div class='enviromental-conditions'>
+    <div>
+      <strong><span>Condiciones ambientales Higrotermómetro
+          {{ta_eq_enviromental_conditions}}</span></strong>
+      <span>{{environmental_conditions.temperature}}</span>
+      <span>{{environmental_conditions.humidity}}</span>
+    </div>
+
+    <div>
+      <strong><span>Presión atmosférica</span></strong>
+      <span>{{environmental_conditions.atmospheric_pressure}}</span>
+    </div>
   </div>
 </div>
