@@ -568,7 +568,7 @@ export class NI_MCIT_P_01Service {
           no_series: method.equipment_information.serial_number,
           model: method.equipment_information.model,
           measurement_range: `De ${method.equipment_information.range_min} ${method.equipment_information.unit} a ${method.equipment_information.range_max} ${method.equipment_information.unit}`,
-          resolution: method.equipment_information.resolution,
+          resolution: `${method.equipment_information.resolution} ${method.equipment_information.unit}`,
           code: method.equipment_information.code,
           applicant: activity.quote_request.client.company_name,
           address: activity.quote_request.client.address,
