@@ -2,7 +2,8 @@
   .ni-mcit-p-01 {
     display: flex;
     flex-direction: column;
-    gap: 6em;
+    gap: 25px;
+    background-color: tomato;
   }
   .equipment-information {
     display: flex;
@@ -13,7 +14,7 @@
     width: 50%;
     display: flex;
     flex-direction: column;
-    gap: 10px;
+    gap: 5px;
   }
   .equipment-information .labels {
     font-weight: bold;
@@ -26,7 +27,6 @@
   td {
     border: 1px solid #dddddd;
     text-align: center;
-    padding: 8px;
   }
   .table-title {
     border: 1px solid #dddddd;
@@ -64,7 +64,7 @@
     </div>
     <div class="values">
       <span style="font-weight: bold"
-        >{{equipment_information.service_code}}</span
+        >{{equipment_information.certification_code}}</span
       >
       <span>{{equipment_information.service_code}}</span>
       <span>{{equipment_information.calibration_date}}</span>
@@ -82,9 +82,10 @@
     </div>
   </div>
 
-  <div class="calibration-result">
+  <div class="calibration-result"
+    style="height: 300px"
+  >
     <strong><span>Resultados de la calibración</span></strong>
-    <br />
     <br />
     <table>
       <thead>
@@ -111,13 +112,14 @@
     </table>
   </div>
 
-  <div class="result_unid_system">
+  <div class="result_unid_system"
+  style="height: 300px"
+  >
     <strong
       ><span
         >Resultados en Unidad de Sistema Internacional de Unidades</span
       ></strong
     >
-    <br />
     <br />
     <table>
       <thead>
@@ -162,16 +164,8 @@
     </div>
   </div>
 
-  <div class="id_certificate">
-    <strong><span>Identificación del certificado</span></strong>
-    <strong
-      style="margin-left: 5em;"
-    ><span>{{equipment_information.service_code}}</span></strong>
-  </div>
-
   <div class="calibration-method">
     <strong><span>Método de calibración</span></strong>
-    <br>
     <br>
     <span>Las pruebas se realizaron según {{descriptionPattern.pattern}} Intrucción para calibración de instrumentos de presión.
   </div>
@@ -179,15 +173,13 @@
   <div class="uncertainty">
     <strong><span>Incertidumbre de los datos</span></strong>
     <br>
-    <br>
     <span>
-      Lorem ipsum dolor sit amet consectetur, adipisicing elit. Hic harum accusantium odit aperiam vero sapiente non ex qui tempora, reiciendis cupiditate? Eos neque quis dolores voluptatum! Harum cumque fuga inventore?
+      La incertidumbre de las medición se obtuvo multiplicando la incertidumbre estándar combinada por un factor de cobertura k = 2, con el que se alcanza un nivel de confianza de al menos 95 %. La incertidumbre estándar de la medición se determinó conforme a la Guía para la Expresión de la Incertidumbre de la Medida, BIPM-IEC-IFCC-ISO-IUPAC-IUPAP-OIML, en la cual se toma en cuenta la incertidumbre de los patrones, del método de calibración, de las condiciones durante la calibración y del equipo sujeto a calibración.
     </span>
   </div>
 
   <div class="used_pattern">
     <strong><span>Descripción de patrones utilizados</span></strong>
-    <br>
     <br>
 
     <!-- tabla -->
@@ -233,7 +225,6 @@
 
   <div class="observations">
     <strong><span>Observaciones</span></strong>
-    <br>
     <br>
     <span>
       {{descriptionPattern.observation}}
