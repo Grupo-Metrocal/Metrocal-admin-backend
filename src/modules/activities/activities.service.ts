@@ -370,6 +370,8 @@ export class ActivitiesService {
         status: response.status,
         created_at: response.created_at,
         equipment_quote_request: response.quote_request.equipment_quote_request,
+        comments_insitu: response.comments_insitu,
+        work_areas: response.work_areas,
       }
       return handleOK(data)
     } catch (error) {
