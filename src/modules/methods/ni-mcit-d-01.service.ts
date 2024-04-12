@@ -26,7 +26,6 @@ import * as XlsxPopulate from 'xlsx-populate'
 import * as path from 'path'
 import { exec } from 'child_process'
 import * as fs from 'fs'
-import { PDFDocument, StandardFonts } from 'pdf-lib'
 import { handleInternalServerError, handleOK } from 'src/common/handleHttp'
 import {
   getPosition,
