@@ -3,7 +3,6 @@
     display: flex;
     flex-direction: column;
     gap: 25px;
-    background-color: tomato;
   }
   .equipment-information {
     display: flex;
@@ -83,7 +82,7 @@
   </div>
 
   <div class="calibration-result"
-    style="height: 300px"
+    style="height: 230px;"
   >
     <strong><span>Resultados de la calibración</span></strong>
     <br />
@@ -113,7 +112,7 @@
   </div>
 
   <div class="result_unid_system"
-  style="height: 300px"
+  style="height: 230px;"
   >
     <strong
       ><span
@@ -164,10 +163,17 @@
     </div>
   </div>
 
+  <div class="id_certificate">
+    <strong><span>Identificación del certificado:</span></strong>
+    <strong style="margin-left: 10px"
+      ><span>{{equipment_information.certification_code}}</span></strong
+    >
+  </div>
+
   <div class="calibration-method">
     <strong><span>Método de calibración</span></strong>
     <br>
-    <span>Las pruebas se realizaron según {{descriptionPattern.pattern}} Intrucción para calibración de instrumentos de presión.
+    <span>Las pruebas se realizaron según {{pattern}} Intrucción para calibración de instrumentos de presión.
   </div>
 
   <div class="uncertainty">
@@ -225,9 +231,8 @@
 
   <div class="observations">
     <strong><span>Observaciones</span></strong>
-    <br>
-    <span>
-      {{descriptionPattern.observation}}
-    </span>
+    <div style="white-space: pre-line; margin-top: -1em;">
+      {{observations}}
+    </div>
   </div>
 </div>
