@@ -341,6 +341,11 @@ export class NI_MCIT_P_01Service {
         .value(method.equipment_information.unit)
 
       workbook
+        .sheet('NI-R01-MCIT-P-01')
+        .cell('I10')
+        .value(method.equipment_information.unit)
+
+      workbook
         .sheet('General')
         .cell('F13')
         .value(method.equipment_information.range_min)
@@ -559,6 +564,7 @@ export class NI_MCIT_P_01Service {
       }
 
       const certificate = {
+        pattern: 'NI-MCIT-P-01',
         equipment_information: {
           certification_code: method.certificate_code,
           service_code: generateServiceCodeToMethod(method.id),
@@ -568,7 +574,7 @@ export class NI_MCIT_P_01Service {
           manufacturer: method.equipment_information.maker,
           no_series: method.equipment_information.serial_number,
           model: method.equipment_information.model,
-          measurement_range: `De ${method.equipment_information.range_min} ${method.equipment_information.unit} a ${method.equipment_information.range_max} ${method.equipment_information.unit}`,
+          measurement_range: `${method.equipment_information.range_min} ${method.equipment_information.unit} a ${method.equipment_information.range_max} ${method.equipment_information.unit}`,
           resolution: `${method.equipment_information.resolution} ${method.equipment_information.unit}`,
           code: method.equipment_information.code,
           applicant: activity.quote_request.client.company_name,
@@ -593,6 +599,16 @@ export class NI_MCIT_P_01Service {
           method.environmental_conditions.cycles[0].ta.equipement,
         hPa_eq_enviromental_conditions:
           method.environmental_conditions.cycles[0].hPa.equipement,
+        observations: `
+          ${method.description_pattern.observation}
+          Es responsabilidad del encargado del instrumento establecer la frecuencia del servicio de calibración.
+          La corrección corresponde al valor del patrón menos la indicación del equipo.
+          ${sheetCER.cell('A113').value()}
+          Los resultados emitidos en este certificado corresponden únicamente al objeto calibrado y a las magnitudes especificadas al momento de realizar el servicio.
+          Este certificado de calibración no debe ser reproducido sin la aprobación del laboratorio, excepto cuando se reproduce en su totalidad.
+          ${sheetCER.cell('A119').value()}
+          De acuerdo a lo establecido en NTON 07-004-01 Norma Metrológica del Sistema Internacional de Unidades (SI).
+        `,
       }
 
       fs.unlinkSync(newFilePath)
