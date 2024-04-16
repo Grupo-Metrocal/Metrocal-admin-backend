@@ -22,7 +22,8 @@ import {
 } from './modules/configuration/configurations.module'
 import { ConfigurationService } from './modules/configuration/configurations.service'
 import { MethodsModule } from './modules/methods/methods.module'
-import { CertificateModule } from './modules/certificate/certificate.module';
+import { CertificateModule } from './modules/certificate/certificate.module'
+import { PatternsModule } from './modules/patterns/patterns.module'
 
 admin.initializeApp({
   credential: admin.credential.cert(serviceAccount as ServiceAccount),
@@ -46,6 +47,7 @@ admin.initializeApp({
     ConfigurationModule,
     MethodsModule,
     CertificateModule,
+    PatternsModule,
   ],
   controllers: [AppController],
   providers: [AppService, ConfigInitializer],
