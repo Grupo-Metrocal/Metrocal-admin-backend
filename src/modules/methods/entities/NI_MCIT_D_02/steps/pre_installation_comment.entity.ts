@@ -18,4 +18,7 @@ export class PreInstallationCommentNI_MCIT_D_02 {
 
   @Column({ nullable: true })
   comment?: string
+
+  @Column({ nullable: true })
+  accredited: boolean
 }

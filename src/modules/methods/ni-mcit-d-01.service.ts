@@ -1,4 +1,3 @@
-import { PdfService } from './../mail/pdf.service'
 import { Inject, Injectable, forwardRef, Get } from '@nestjs/common'
 import { NI_MCIT_D_01 } from './entities/NI_MCIT_D_01/NI_MCIT_D_01.entity'
 import { InjectRepository } from '@nestjs/typeorm'
@@ -354,7 +353,7 @@ export class NI_MCIT_D_01Service {
   }
 
   //excel
-  async generateCertificateD_01({
+  async generateCertificateData({
     activityID,
     methodID,
   }: {
@@ -784,24 +783,73 @@ export class NI_MCIT_D_01Service {
 
       await this.autoSaveExcel(newFilePath)
 
-      // /*GENERAR PDF DE LA CERTIFICACION*/
-      // const sheet1Pdf = workbook.sheet('NI-R01-MCIT-D-01').usedRange().value()
-      // const sheet2Pdf = workbook.sheet('DA (mm)').usedRange().value()
-      // const sheet3Pdf = workbook.sheet('FA (mm)').usedRange().value()
+      const workbook2 = await XlsxPopulate.fromFileAsync(newFilePath)
+      const sheetTomaDatos = workbook2.sheet('NI-R01-MCIT-D-01')
+      const sheetDA = workbook2.sheet('DA (mm)')
+      const sheetFA = workbook2.sheet('FA (mm)')
 
-      // let combineData = []
-      // if (method.pre_installation_comment.accredited) {
-      //   combineData = [...sheet1Pdf, ...sheet2Pdf]
-      // } else {
-      //   combineData = [...sheet1Pdf, ...sheet3Pdf]
-      // }
-
-      // //tomar los sheet combineData y generar el pdf con la libreria pdf-lib
-
-      // const pdfFilePath = path.join(
-      //   __dirname,
-      //   `../mail/templates/excels/ni_mcit_d_01_${activityID}_${methodID}.pdf`,
-      // )
+      //lectura de datos para pdf
+      const data = {
+        client: {
+          name: dataClient.company_name,
+          address: dataClient.address,
+          email: dataClient.email,
+          phone: dataClient.phone,
+        },
+        quote: {
+          no: dataQuote.no,
+          equipment: equipment[0],
+        },
+        method: {
+          maker: method.equipment_information.maker,
+          serial_number: method.equipment_information.serial_number,
+          measurement_range: method.equipment_information.measurement_range,
+          resolution: method.equipment_information.resolution,
+          model: method.equipment_information.model,
+          code: method.equipment_information.code,
+          length: method.equipment_information.length,
+          stabilization_site:
+            method.environmental_conditions.stabilization_site,
+          cycles: {
+            hr: {
+              initial: method.environmental_conditions.cycles.hr.initial,
+              end: method.environmental_conditions.cycles.hr.end,
+            },
+            ta: {
+              initial: method.environmental_conditions.cycles.ta.initial,
+              end: method.environmental_conditions.cycles.ta.end,
+            },
+          },
+          time: {
+            minute: method.environmental_conditions.time.minute,
+          },
+          pre_installation_comment: method.pre_installation_comment.comment,
+          instrument_zero_check: {
+            nominal_value: method.instrument_zero_check.nominal_value,
+            x1: method.instrument_zero_check.x1,
+            x2: method.instrument_zero_check.x2,
+            x3: method.instrument_zero_check.x3,
+            x4: method.instrument_zero_check.x4,
+            x5: method.instrument_zero_check.x5,
+          },
+          exterior_parallelism_measurement:
+            method.exterior_parallelism_measurement.measurements,
+          interior_parallelism_measurement:
+            method.interior_parallelism_measurement.measurements,
+          exterior_measurement_accuracy:
+            method.exterior_measurement_accuracy.measure,
+        },
+        data: {
+          DA: {
+            data: [],
+            equipment_used: method.environmental_conditions.equipment_used,
+          },
+          FA: {
+            data: [],
+            equipment_used: method.environmental_conditions.equipment_used,
+          },
+        },
+      }
 
       return handleOK('Archivo generado correctamente')
     } catch (error) {
@@ -841,5 +889,42 @@ export class NI_MCIT_D_01Service {
         },
       )
     })
+  }
+
+  async generateCertificateD_01({
+    activityID,
+    methodID,
+  }: {
+    activityID: number
+    methodID: number
+  }) {
+    try {
+      const method = await this.NI_MCIT_D_01Repository.findOne({
+        where: { id: methodID },
+        relations: [
+          'equipment_information',
+          'environmental_conditions',
+          'description_pattern',
+          'pre_installation_comment',
+          'instrument_zero_check',
+          'exterior_parallelism_measurement',
+          'interior_parallelism_measurement',
+          'exterior_measurement_accuracy',
+        ],
+      })
+
+      if (!method) {
+        return handleInternalServerError('El método no existe')
+      }
+
+      const dataCertificate = await this.generateCertificateData({
+        activityID,
+        methodID,
+      })
+
+      return handleOK('Archivo generado correctamente')
+    } catch (error) {
+      return handleInternalServerError('Error al generar el certificado')
+    }
   }
 }

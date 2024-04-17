@@ -17,9 +17,6 @@ class ICycles_NI_MCIT_D_02 {
 
 class ITime_NI_MCIT_D_02 {
   @ApiProperty()
-  hour: number
-
-  @ApiProperty()
   minute: number
 }
 

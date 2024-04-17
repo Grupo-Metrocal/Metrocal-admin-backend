@@ -17,7 +17,7 @@ export class InstrumentZeroCheckNI_MCIT_D_01 {
   NI_MCIT_D_01: NI_MCIT_D_01[]
 
   @Column({ nullable: true })
-  nominal_value?: number
+  nominal_value: number
 
   @Column({ nullable: true })
   x1?: number

@@ -12,17 +12,28 @@ export class AccuracyTestNI_MCIT_D_02 {
   })
   NI_MCIT_D_02: NI_MCIT_D_02[]
 
-  @Column({ nullable: true })
-  nominal_value?: number
-
   @Column('jsonb', { nullable: true })
   measure?: IMeasure[]
 }
 
 interface IMeasure {
+  nominal_value: IPointNumber[]
+  varification_lengths: IMedition
+}
+
+interface IPointNumber {
+  point: string
+}
+
+interface IMedition {
   x1: number
   x2: number
   x3: number
   x4: number
   x5: number
+  x6: number
+  x7: number
+  x8: number
+  x9: number
+  x10: number
 }
