@@ -59,6 +59,15 @@ export class NI_MCIT_D_02 {
       onUpdate: 'CASCADE',
     },
   )
+  @ManyToOne(
+    () => PreInstallationCommentNI_MCIT_D_02,
+    (preInstallationCommentNI_MCIT_D_02) =>
+      preInstallationCommentNI_MCIT_D_02.NI_MCIT_D_02,
+    {
+      onDelete: 'CASCADE',
+      onUpdate: 'CASCADE',
+    },
+  )
   pre_installation_comment: PreInstallationCommentNI_MCIT_D_02
 
   @ManyToOne(
