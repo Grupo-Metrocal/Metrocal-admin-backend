@@ -25,6 +25,7 @@ import * as path from 'path'
 import { exec } from 'child_process'
 import * as fs from 'fs'
 import { MailService } from '../mail/mail.service'
+import { PatternsService } from '../patterns/patterns.service'
 
 @Injectable()
 export class NI_MCIT_P_01Service {
@@ -44,6 +45,9 @@ export class NI_MCIT_P_01Service {
 
     @Inject(forwardRef(() => ActivitiesService))
     private readonly activitiesService: ActivitiesService,
+
+    @Inject(forwardRef(() => PatternsService))
+    private readonly patternsService: PatternsService,
 
     private readonly certificateService: CertificateService,
     private readonly pdfService: PdfService,
@@ -563,8 +567,19 @@ export class NI_MCIT_P_01Service {
         },
       }
 
+      const ta_eq_enviromental_conditions =
+        await this.patternsService.findByCodeAndMethod(
+          method.environmental_conditions.cycles[0].ta.equipement,
+          'NI-MCIT-P-01',
+        )
+      const pressurePattern = await this.patternsService.findByCodeAndMethod(
+        method.description_pattern.pattern,
+        'NI-MCIT-P-01',
+      )
+
       const certificate = {
         pattern: 'NI-MCIT-P-01',
+        email: activity.quote_request.client.email,
         equipment_information: {
           certification_code: method.certificate_code,
           service_code: generateServiceCodeToMethod(method.id),
@@ -594,6 +609,10 @@ export class NI_MCIT_P_01Service {
             .value()} % ± ${sheetCER.cell('G81').value()} %`,
         },
         descriptionPattern: method.description_pattern,
+        used_patterns: {
+          ta_eq_enviromental_conditions: ta_eq_enviromental_conditions.data,
+          pressurePattern: pressurePattern.data,
+        },
         creditable: method.description_pattern.creditable,
         ta_eq_enviromental_conditions:
           method.environmental_conditions.cycles[0].ta.equipement,
@@ -768,7 +787,7 @@ export class NI_MCIT_P_01Service {
       }
 
       const response = await this.mailService.sendMailCertification({
-        user: 'francisco@regxi.com',
+        user: dataCertificate.data.email,
         pdf: PDF,
       })
 
