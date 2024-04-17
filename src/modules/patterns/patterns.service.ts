@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common'
 import { InjectRepository } from '@nestjs/typeorm'
 import { Pattern } from './entities/pattern.entity'
-import { Repository } from 'typeorm'
+import { Equal, ILike, Repository } from 'typeorm'
 import {
   handleBadrequest,
   handleInternalServerError,
@@ -46,6 +46,24 @@ export class PatternsService {
     return handleOK(pattern)
   }
 
+  async findByCodeAndMethod(code: string, method: string) {
+    try {
+      const pattern = await this.patternRepository
+        .createQueryBuilder('pattern')
+        .where('pattern.code = :code', { code })
+        .andWhere('pattern.method = :method', { method })
+        .getOne()
+
+      if (!pattern) {
+        return handleBadrequest(new Error('El patron no existe'))
+      }
+
+      return handleOK(pattern)
+    } catch (error) {
+      return handleInternalServerError(error)
+    }
+  }
+
   async getAll() {
     try {
       const patterns = await this.patternRepository.find()
@@ -88,7 +106,7 @@ export class PatternsService {
       for (const pattern of patterns) {
         if (
           await this.patternRepository.findOne({
-            where: { code: pattern.code },
+            where: { code: pattern.code, method: pattern.method },
           })
         )
           continue
