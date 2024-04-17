@@ -17,6 +17,7 @@ import { QuoteRequest } from '../quotes/entities/quote-request.entity'
 import { addOrRemoveMethodToStackDto } from './dto/add-remove-method-stack.dto'
 
 import { NI_MCIT_D_01 } from './entities/NI_MCIT_D_01/NI_MCIT_D_01.entity'
+import { PatternsService } from '../patterns/patterns.service'
 
 @Injectable()
 export class MethodsService {
@@ -37,6 +38,9 @@ export class MethodsService {
     private readonly activitiesService: ActivitiesService,
     @Inject(forwardRef(() => QuotesService))
     private readonly quotesService: QuotesService,
+
+    @Inject(forwardRef(() => PatternsService))
+    private readonly patternsService: PatternsService,
   ) {}
 
   async createMethod(createMethod: CreateMethodDto) {
@@ -346,5 +350,14 @@ export class MethodsService {
     } catch (error) {
       return handleInternalServerError(error.message)
     }
+  }
+
+  async getPatternsByMethodAndCode(method_name: string, code: string) {
+    const patterns = await this.patternsService.findByCodeAndMethod(
+      code,
+      method_name,
+    )
+
+    return patterns
   }
 }
