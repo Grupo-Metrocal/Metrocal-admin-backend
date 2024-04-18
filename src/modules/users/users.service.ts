@@ -17,7 +17,6 @@ import {
 import { RolesService } from '../roles/roles.service'
 import { TokenService } from '../auth/jwt/jwt.service'
 import { InvitationMail } from '../mail/dto/invitation-mail.dto'
-import * as admin from 'firebase-admin'
 
 @Injectable()
 export class UsersService {
@@ -128,39 +127,6 @@ export class UsersService {
     try {
       const updated = await this.userRepository.update(+id, updateUserDto)
       return handleOK(updated)
-    } catch (error) {
-      return handleInternalServerError(error.message)
-    }
-  }
-
-  async updateImageProfileByToken(token: string, image: Express.Multer.File) {
-    const { sub: id } = this.tokenService.decodeToken(token)
-
-    const user = await this.userRepository.findOneBy({ id: +id })
-    if (!user) return handleBadrequest(new Error('Usuario no encontrado'))
-
-    try {
-      const bucket = admin.storage().bucket()
-      const fileName = `${Date.now()}-${user.id}`
-      const file = bucket.file(fileName)
-
-      const stream = file.createWriteStream({
-        metadata: {
-          contentType: image.mimetype,
-        },
-      })
-
-      stream.on('error', (error) => {
-        return handleInternalServerError(error.message)
-      })
-
-      stream.on('finish', async () => {
-        const imageURL = `https://firebasestorage.googleapis.com/v0/b/${bucket.name}/o/${file.name}?alt=media`
-        const updated = await this.userRepository.update(+id, { imageURL })
-        return handleOK(updated)
-      })
-
-      stream.end(image.buffer)
     } catch (error) {
       return handleInternalServerError(error.message)
     }
@@ -338,67 +304,6 @@ export class UsersService {
       return handleOK('Ok')
     } catch (error) {
       return handleInternalServerError(error.message)
-    }
-  }
-
-  async updateProfileImageByToken(
-    token: string,
-    userName: string,
-    image: Express.Multer.File,
-    imageUrl: string,
-  ) {
-    const { sub: id } = this.tokenService.decodeToken(token)
-
-    const user = await this.userRepository.findOneBy({ id: +id })
-    user.username = userName
-    if (!user) return handleBadrequest(new Error('Usuario no encontrado'))
-    if (!image && !imageUrl) {
-      const updateUserDto = {
-        username: userName,
-      }
-      await this.userRepository.update(+id, updateUserDto)
-      var user1 = await this.userRepository.findOneBy({ id: +id })
-
-      return user1
-    }
-
-    if (!image && imageUrl) {
-      user.imageURL = imageUrl
-      await this.userRepository.update(+id, user)
-      var users = await this.userRepository.findOneBy({ id: +id })
-      return users
-    } else {
-      try {
-        const bucket = admin.storage().bucket()
-        const fileName = `${userName}-${Date.now()}-${user.id}`
-        const file = bucket.file(fileName)
-
-        const stream = file.createWriteStream({
-          metadata: {
-            contentType: image.mimetype,
-          },
-        })
-
-        stream.on('error', (error) => {
-          return handleInternalServerError(error.message)
-        })
-
-        stream.on('finish', async () => {
-          const imageURL = `https://firebasestorage.googleapis.com/v0/b/${bucket.name}/o/${file.name}?alt=media`
-          //preparar el objeto para actualizar UpdateUserDto
-          const updateUserDto = {
-            imageURL: imageURL,
-            username: userName,
-          }
-          await this.userRepository.update(+id, updateUserDto)
-          var user = await this.userRepository.findOneBy({ id: +id })
-          return user
-        })
-
-        stream.end(image.buffer)
-      } catch (error) {
-        return handleInternalServerError(error.message)
-      }
     }
   }
 
