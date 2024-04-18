@@ -66,7 +66,6 @@ export class ImagesController {
     }
   }
 
-  // download file
   @Get('download/:filename')
   async downloadFile(
     @Param('filename') filename: string,
@@ -94,6 +93,30 @@ export class ImagesController {
 
       const readStream = fs.createReadStream(filePath)
       readStream.pipe(res)
+    } catch (error) {
+      console.error('Error:', error)
+      res.status(500).send('Internal server error')
+    }
+  }
+
+  @Get('delete/:url')
+  async deleteFile(@Param('url') url: string, @Res() res: Response) {
+    const filename = url.split('/').pop()
+
+    const filePath = path.join(
+      'C:/Users/MSI GF63/Desktop/REGXI/uploads',
+      filename,
+    )
+
+    try {
+      if (!fs.existsSync(filePath)) {
+        console.log('File not found')
+        return res.status(404).send('File not found')
+      }
+
+      fs.unlinkSync(filePath)
+
+      return handleOK('File deleted')
     } catch (error) {
       console.error('Error:', error)
       res.status(500).send('Internal server error')
