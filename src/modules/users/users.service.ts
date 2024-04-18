@@ -106,27 +106,17 @@ export class UsersService {
   }
 
   async updateUserByToken(token: string, updateUserDto: UpdateUserDto) {
-    const { sub: id } = this.tokenService.decodeToken(token)
-
-    const user = await this.userRepository.findOneBy({ id: +id })
-    if (!user) return handleBadrequest(new Error('Usuario no encontrado'))
-
-    if (updateUserDto.email) {
-      const userExists = await this.userRepository.findOneBy({
-        email: updateUserDto.email,
-      })
-      if (userExists)
-        return handleBadrequest(new Error('El email ya está en uso'))
-    }
-
-    if (updateUserDto.password) {
-      const hashedPassword = await hash(updateUserDto.password, 10)
-      updateUserDto.password = hashedPassword
-    }
-
     try {
-      const updated = await this.userRepository.update(+id, updateUserDto)
-      return handleOK(updated)
+      const { sub: id } = this.tokenService.decodeToken(token)
+
+      const user = await this.userRepository.findOneBy({ id: +id })
+      if (!user) return handleBadrequest(new Error('Usuario no encontrado'))
+
+      user.username = updateUserDto.username
+      user.imageURL = updateUserDto.imageURL
+
+      await this.userRepository.update(user.id, user)
+      return handleOK(user)
     } catch (error) {
       return handleInternalServerError(error.message)
     }
