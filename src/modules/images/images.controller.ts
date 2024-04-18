@@ -10,7 +10,7 @@ import {
 import { ImagesService } from './images.service'
 import { FileInterceptor } from '@nestjs/platform-express'
 import { diskStorage } from 'multer'
-import { handleOK } from 'src/common/handleHttp'
+import { handleBadrequest, handleOK } from 'src/common/handleHttp'
 import * as path from 'path'
 import { Response } from 'express'
 import * as fs from 'fs'
@@ -30,8 +30,12 @@ export class ImagesController {
       }),
     }),
   )
-  @Post('file')
+  @Post('upload')
   uploadFile(@UploadedFile() file: Express.Multer.File) {
+    if (!file) {
+      return handleBadrequest(new Error('File is required'))
+    }
+
     return handleOK({
       imageURL: `${process.env.BASE_URL}/images/image/${file.filename}`,
     })
@@ -39,13 +43,13 @@ export class ImagesController {
 
   @Get('image/:filename')
   async getImage(@Param('filename') filename: string, @Res() res: Response) {
-    const filePath = path.join(
-      'C:/Users/MSI GF63/Desktop/REGXI/uploads',
-      filename,
-    )
-
-    console.log(filePath)
     try {
+      const filePath = path.join(
+        'C:/Users/MSI GF63/Desktop/REGXI/uploads',
+        filename,
+      )
+
+      console.log(filePath)
       if (!fs.existsSync(filePath)) {
         console.log('File not found')
         return res.status(404).send('File not found')
@@ -71,13 +75,12 @@ export class ImagesController {
     @Param('filename') filename: string,
     @Res() res: Response,
   ) {
-    const filePath = path.join(
-      'C:/Users/MSI GF63/Desktop/REGXI/uploads',
-      filename,
-    )
-
-    console.log(filePath)
     try {
+      const filePath = path.join(
+        'C:/Users/MSI GF63/Desktop/REGXI/uploads',
+        filename,
+      )
+
       if (!fs.existsSync(filePath)) {
         console.log('File not found')
         return res.status(404).send('File not found')
@@ -99,24 +102,20 @@ export class ImagesController {
     }
   }
 
-  @Get('delete/:url')
-  async deleteFile(@Param('url') url: string, @Res() res: Response) {
-    const filename = url.split('/').pop()
-
-    const filePath = path.join(
-      'C:/Users/MSI GF63/Desktop/REGXI/uploads',
-      filename,
-    )
-
+  @Get('delete/:filename')
+  async deleteFile(@Param('filename') filename: string, @Res() res: Response) {
     try {
-      if (!fs.existsSync(filePath)) {
-        console.log('File not found')
+      const filePath = path.join(
+        'C:/Users/MSI GF63/Desktop/REGXI/uploads',
+        filename,
+      )
+
+      if (!fs.existsSync(filePath))
         return res.status(404).send('File not found')
-      }
 
       fs.unlinkSync(filePath)
 
-      return handleOK('File deleted')
+      res.status(200).send('File deleted')
     } catch (error) {
       console.error('Error:', error)
       res.status(500).send('Internal server error')
