@@ -65,4 +65,38 @@ export class ImagesController {
       res.status(500).send('Internal server error')
     }
   }
+
+  // download file
+  @Get('download/:filename')
+  async downloadFile(
+    @Param('filename') filename: string,
+    @Res() res: Response,
+  ) {
+    const filePath = path.join(
+      'C:/Users/MSI GF63/Desktop/REGXI/uploads',
+      filename,
+    )
+
+    console.log(filePath)
+    try {
+      if (!fs.existsSync(filePath)) {
+        console.log('File not found')
+        return res.status(404).send('File not found')
+      }
+
+      const stat = fs.statSync(filePath)
+
+      res.set({
+        'Content-Type': 'application/octet-stream',
+        'Content-Length': stat.size.toString(),
+        'Content-Disposition': `attachment; filename=${filename}`,
+      })
+
+      const readStream = fs.createReadStream(filePath)
+      readStream.pipe(res)
+    } catch (error) {
+      console.error('Error:', error)
+      res.status(500).send('Internal server error')
+    }
+  }
 }
