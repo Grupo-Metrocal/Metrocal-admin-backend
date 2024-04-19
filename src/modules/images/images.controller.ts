@@ -22,7 +22,7 @@ export class ImagesController {
   @UseInterceptors(
     FileInterceptor('file', {
       storage: diskStorage({
-        destination: 'C:/Users/MSI GF63/Desktop/REGXI/uploads',
+        destination: process.env.DESTINATION_CLOUD,
         filename: (req, file, cb) => {
           const filename: string = `${Date.now()}-${file.originalname}`
           cb(null, filename)
@@ -44,10 +44,7 @@ export class ImagesController {
   @Get('image/:filename')
   async getImage(@Param('filename') filename: string, @Res() res: Response) {
     try {
-      const filePath = path.join(
-        'C:/Users/MSI GF63/Desktop/REGXI/uploads',
-        filename,
-      )
+      const filePath = path.join(process.env.DESTINATION_CLOUD, filename)
 
       console.log(filePath)
       if (!fs.existsSync(filePath)) {
@@ -76,10 +73,7 @@ export class ImagesController {
     @Res() res: Response,
   ) {
     try {
-      const filePath = path.join(
-        'C:/Users/MSI GF63/Desktop/REGXI/uploads',
-        filename,
-      )
+      const filePath = path.join(process.env.DESTINATION_CLOUD, filename)
 
       if (!fs.existsSync(filePath)) {
         console.log('File not found')
@@ -105,10 +99,7 @@ export class ImagesController {
   @Get('delete/:filename')
   async deleteFile(@Param('filename') filename: string, @Res() res: Response) {
     try {
-      const filePath = path.join(
-        'C:/Users/MSI GF63/Desktop/REGXI/uploads',
-        filename,
-      )
+      const filePath = path.join(process.env.DESTINATION_CLOUD, filename)
 
       if (!fs.existsSync(filePath))
         return res.status(404).send('File not found')
