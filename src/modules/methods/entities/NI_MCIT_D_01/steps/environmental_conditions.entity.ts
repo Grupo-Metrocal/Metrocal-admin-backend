@@ -41,5 +41,6 @@ interface ICycles_NI_MCIT_D_01 {
 }
 
 interface ITime_NI_MCIT_D_01 {
+  hours: number
   minute: number
 }

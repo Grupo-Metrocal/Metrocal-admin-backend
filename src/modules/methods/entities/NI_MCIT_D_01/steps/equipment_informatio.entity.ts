@@ -1,5 +1,6 @@
 import { Column, Entity, PrimaryGeneratedColumn, OneToMany } from 'typeorm'
 import { NI_MCIT_D_01 } from '../NI_MCIT_D_01.entity'
+import { StringDecoder } from 'string_decoder'
 
 @Entity('equipment_information_NI_MCIT_D_01')
 export class EquipmentInformationNI_MCIT_D_01 {
@@ -37,6 +38,10 @@ export class EquipmentInformationNI_MCIT_D_01 {
   @Column({ type: 'varchar', nullable: true })
   code?: string
 
-  @Column({ type: 'int', nullable: true })
-  length?: number
+  @Column({ type: 'varchar', nullable: true })
+  length?: string
+
+  //fecha
+  @Column({ type: 'varchar', nullable: true })
+  date?: string
 }

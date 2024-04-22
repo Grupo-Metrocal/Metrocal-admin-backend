@@ -21,4 +21,8 @@ export class PreInstallationCommentNI_MCIT_D_01 {
 
   @Column({ nullable: true })
   accredited: boolean
+
+  //agregar fecha de registro
+  @Column({ nullable: true })
+  date: Date
 }

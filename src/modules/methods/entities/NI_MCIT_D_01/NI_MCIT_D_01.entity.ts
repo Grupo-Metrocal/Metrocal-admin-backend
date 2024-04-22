@@ -92,6 +92,7 @@ export class NI_MCIT_D_01 {
     {
       onDelete: 'CASCADE',
       onUpdate: 'CASCADE',
+      nullable: true,
     },
   )
   interior_parallelism_measurement: InteriorParallelismMeasurementNI_MCIT_D_01
@@ -103,6 +104,7 @@ export class NI_MCIT_D_01 {
     {
       onDelete: 'CASCADE',
       onUpdate: 'CASCADE',
+      nullable: true,
     },
   )
   exterior_measurement_accuracy: ExteriorMeasurementAccuracyNI_MCIT_D_01

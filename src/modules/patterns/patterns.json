@@ -62,11 +62,55 @@
     "pattern_range": "0 mm a 25 mm",
     "next_calibration": "2024-04-15"
   },
-
+  {
+    "method": "NI-MCIT-D-01",
+    "equipment": "Pie de Rey",
+    "code": "NI-MCPD-02",
+    "certificate": "SCM-00039460",
+    "traceability": "SCM",
+    "pattern_range": "0 mm a 200 mm",
+    "next_calibration": "27/9/2024"
+  },
+  {
+    "method": "NI-MCIT-D-01",
+    "equipment": "Juego de Bloques Patrón",
+    "code": "NI-MCPD-03",
+    "certificate": "SCM-00039461",
+    "traceability": "SCM",
+    "pattern_range": "0 mm a 100 mm",
+    "next_calibration": "14/3/2025"
+  },
+   {
+    "method": "NI-MCIT-D-01",
+    "equipment": "Higro Termómetro",
+    "code": "NI-MCPPT-02",
+    "certificate": "SCM-00039468",
+    "traceability": "SCM",
+    "pattern_range": "Depen. De la variable",
+    "next_calibration": "2/3/2024"
+  },
+     {
+    "method": "NI-MCIT-D-01",
+    "equipment": "Higro Termómetro",
+    "code": "NI-MCPPT-05",
+    "certificate": "SCM-00039467",
+    "traceability": "SCM",
+    "pattern_range": "Depen. De la variable",
+    "next_calibration": "5/10/2025"
+  },
+       {
+    "method": "NI-MCIT-D-01",
+    "equipment": "Higro Termómetro",
+    "code": "NI-MCPPT-06",
+    "certificate": "SCM-00039471",
+    "traceability": "SCM",
+    "pattern_range": "Depen. De la variable",
+    "next_calibration": "5/10/2025"
+  },
   {
     "method": "NI-MCIT-D-02",
     "equipment": "Pie de Rey",
-    "code": "NI-MCPD-02",
+    "code": "NI-MCPD-05",
     "certificate": "SCM-00039460",
     "traceability": "SCM",
     "pattern_range": "0 mm a 200 mm",

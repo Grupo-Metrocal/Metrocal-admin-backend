@@ -1,4 +1,5 @@
-import { Inject, Injectable, forwardRef, Get } from '@nestjs/common'
+import { Pattern } from './../patterns/entities/pattern.entity'
+import { Inject, Injectable, forwardRef, Get, Res } from '@nestjs/common'
 import { NI_MCIT_D_01 } from './entities/NI_MCIT_D_01/NI_MCIT_D_01.entity'
 import { InjectRepository } from '@nestjs/typeorm'
 import { DataSource, Repository } from 'typeorm'
@@ -20,12 +21,16 @@ import { InteriorParallelismMeasurementNI_MCIT_D_01 } from './entities/NI_MCIT_D
 import { ExteriorMeasurementAccuracyNI_MCIT_D_01Dto } from './dto/NI_MCIT_D_01/exterior_measurement_accuracy.dto'
 import { ExteriorMeasurementAccuracyNI_MCIT_D_01 } from './entities/NI_MCIT_D_01/steps/exterior_measurement_accuracy.entity'
 import { ActivitiesService } from '../activities/activities.service'
+
 import { Activity } from '../activities/entities/activities.entity'
+import { generateServiceCodeToMethod } from 'src/utils/codeGenerator'
 import * as XlsxPopulate from 'xlsx-populate'
 import * as path from 'path'
 import { exec } from 'child_process'
 import * as fs from 'fs'
+import { PatternsService } from '../patterns/patterns.service'
 import { handleInternalServerError, handleOK } from 'src/common/handleHttp'
+import { QuoteRequest } from '../quotes/entities/quote-request.entity'
 import {
   getPosition,
   getPositionNominal,
@@ -56,6 +61,9 @@ export class NI_MCIT_D_01Service {
     private readonly ExteriorMeasurementAccuracyRepository: Repository<ExteriorMeasurementAccuracyNI_MCIT_D_01>,
     @Inject(forwardRef(() => ActivitiesService))
     private readonly activitiesService: ActivitiesService,
+
+    @Inject(forwardRef(() => PatternsService))
+    private readonly patternsService: PatternsService,
   ) {}
 
   async create() {
@@ -73,30 +81,36 @@ export class NI_MCIT_D_01Service {
     equipment: EquipmentInformationNI_MCIT_D_01Dto,
     methodId: number,
   ) {
-    const method = await this.NI_MCIT_D_01Repository.findOne({
-      where: { id: methodId },
-      relations: ['equipment_information'],
-    })
-
-    if (!method) {
-      return handleInternalServerError('El método no existe')
-    }
-
-    const existingEquipment = method.equipment_information
-
-    if (existingEquipment) {
-      this.EquipmentInformationRepository.merge(existingEquipment, equipment)
-    } else {
-      const newEquipment = this.EquipmentInformationRepository.create(equipment)
-      method.equipment_information = newEquipment
-    }
-
     try {
-      this.dataSource.transaction(async (manager) => {
-        await manager.save(method.equipment_information)
-        await manager.save(method)
+      const method = await this.NI_MCIT_D_01Repository.findOne({
+        where: { id: methodId },
+        relations: ['equipment_information'],
       })
-      return handleOK(method.equipment_information)
+
+      if (!method) {
+        return handleInternalServerError('El método no existe')
+      }
+
+      const existingEquipment = method.equipment_information
+
+      if (existingEquipment) {
+        this.EquipmentInformationRepository.merge(existingEquipment, equipment)
+      } else {
+        equipment.date = new Date().toISOString()
+        const newEquipment =
+          this.EquipmentInformationRepository.create(equipment)
+        method.equipment_information = newEquipment
+      }
+
+      try {
+        this.dataSource.transaction(async (manager) => {
+          await manager.save(method.equipment_information)
+          await manager.save(method)
+        })
+        return handleOK(method.equipment_information)
+      } catch (error) {
+        return handleInternalServerError(error.message)
+      }
     } catch (error) {
       return handleInternalServerError(error.message)
     }
@@ -106,34 +120,38 @@ export class NI_MCIT_D_01Service {
     environmentalConditions: EnvironmentalConditionsNI_MCIT_D_01Dto,
     methodId: number,
   ) {
-    const method = await this.NI_MCIT_D_01Repository.findOne({
-      where: { id: methodId },
-      relations: ['environmental_conditions'],
-    })
-
-    if (!method) {
-      return handleInternalServerError('El método no existe')
-    }
-
-    const enviromentalCOnditionExist = method.environmental_conditions
-
-    if (enviromentalCOnditionExist) {
-      this.EnvironmentalConditionsRepository.merge(
-        enviromentalCOnditionExist,
-        environmentalConditions,
-      )
-    } else {
-      const newEnviromentalCondition =
-        this.EnvironmentalConditionsRepository.create(environmentalConditions)
-      method.environmental_conditions = newEnviromentalCondition
-    }
-
     try {
-      this.dataSource.transaction(async (manager) => {
-        await manager.save(method.environmental_conditions)
-        await manager.save(method)
+      const method = await this.NI_MCIT_D_01Repository.findOne({
+        where: { id: methodId },
+        relations: ['environmental_conditions'],
       })
-      return handleOK(method.environmental_conditions)
+
+      if (!method) {
+        return handleInternalServerError('El método no existe')
+      }
+
+      const enviromentalCOnditionExist = method.environmental_conditions
+
+      if (enviromentalCOnditionExist) {
+        this.EnvironmentalConditionsRepository.merge(
+          enviromentalCOnditionExist,
+          environmentalConditions,
+        )
+      } else {
+        const newEnviromentalCondition =
+          this.EnvironmentalConditionsRepository.create(environmentalConditions)
+        method.environmental_conditions = newEnviromentalCondition
+      }
+
+      try {
+        this.dataSource.transaction(async (manager) => {
+          await manager.save(method.environmental_conditions)
+          await manager.save(method)
+        })
+        return handleOK(method.environmental_conditions)
+      } catch (error) {
+        return handleInternalServerError(error.message)
+      }
     } catch (error) {
       return handleInternalServerError(error.message)
     }
@@ -144,34 +162,38 @@ export class NI_MCIT_D_01Service {
     descriptionPattern: DescriptionPatternNI_MCIT_D_01Dto,
     methodId: number,
   ) {
-    const method = await this.NI_MCIT_D_01Repository.findOne({
-      where: { id: methodId },
-      relations: ['description_pattern'],
-    })
-
-    if (!method) {
-      return handleInternalServerError('El método no existe')
-    }
-
-    const existDescriptioPattern = method.description_pattern
-
-    if (existDescriptioPattern) {
-      this.DescriptionPatternRepository.merge(
-        existDescriptioPattern,
-        descriptionPattern,
-      )
-    } else {
-      const newDescriptioPattern =
-        this.DescriptionPatternRepository.create(descriptionPattern)
-      method.description_pattern = newDescriptioPattern
-    }
-
     try {
-      this.dataSource.transaction(async (manager) => {
-        await manager.save(method.description_pattern)
-        await manager.save(method)
+      const method = await this.NI_MCIT_D_01Repository.findOne({
+        where: { id: methodId },
+        relations: ['description_pattern'],
       })
-      return handleOK(method.description_pattern)
+
+      if (!method) {
+        return handleInternalServerError('El método no existe')
+      }
+
+      const existDescriptioPattern = method.description_pattern
+
+      if (existDescriptioPattern) {
+        this.DescriptionPatternRepository.merge(
+          existDescriptioPattern,
+          descriptionPattern,
+        )
+      } else {
+        const newDescriptioPattern =
+          this.DescriptionPatternRepository.create(descriptionPattern)
+        method.description_pattern = newDescriptioPattern
+      }
+
+      try {
+        this.dataSource.transaction(async (manager) => {
+          await manager.save(method.description_pattern)
+          await manager.save(method)
+        })
+        return handleOK(method.description_pattern)
+      } catch (error) {
+        return handleInternalServerError(error.message)
+      }
     } catch (error) {
       return handleInternalServerError(error.message)
     }
@@ -181,30 +203,34 @@ export class NI_MCIT_D_01Service {
     preInstallationComment: PreInstallationCommentNI_MCIT_D_01Dto,
     methodId: number,
   ) {
-    const method = await this.NI_MCIT_D_01Repository.findOne({
-      where: { id: methodId },
-      relations: ['pre_installation_comment'],
-    })
-
-    const existPreInstallatioComment = method.pre_installation_comment
-
-    if (existPreInstallatioComment) {
-      this.PreInstallationCommentRepository.merge(
-        existPreInstallatioComment,
-        preInstallationComment,
-      )
-    } else {
-      const newPreInstallationComment =
-        this.PreInstallationCommentRepository.create(preInstallationComment)
-      method.pre_installation_comment = newPreInstallationComment
-    }
-
     try {
-      this.dataSource.transaction(async (manager) => {
-        await manager.save(method.pre_installation_comment)
-        await manager.save(method)
+      const method = await this.NI_MCIT_D_01Repository.findOne({
+        where: { id: methodId },
+        relations: ['pre_installation_comment'],
       })
-      return handleOK(method)
+
+      const existPreInstallatioComment = method.pre_installation_comment
+
+      if (existPreInstallatioComment) {
+        this.PreInstallationCommentRepository.merge(
+          existPreInstallatioComment,
+          preInstallationComment,
+        )
+      } else {
+        const newPreInstallationComment =
+          this.PreInstallationCommentRepository.create(preInstallationComment)
+        method.pre_installation_comment = newPreInstallationComment
+      }
+
+      try {
+        this.dataSource.transaction(async (manager) => {
+          await manager.save(method.pre_installation_comment)
+          await manager.save(method)
+        })
+        return handleOK(method)
+      } catch (error) {
+        return handleInternalServerError(error.message)
+      }
     } catch (error) {
       return handleInternalServerError(error.message)
     }
@@ -215,30 +241,34 @@ export class NI_MCIT_D_01Service {
     instrumentZeroCheck: InstrumentZeroCheckNI_MCIT_D_01Dto,
     methodId: number,
   ) {
-    const method = await this.NI_MCIT_D_01Repository.findOne({
-      where: { id: methodId },
-      relations: ['instrument_zero_check'],
-    })
-
-    const existInstrumentalZeroCheck = method.instrument_zero_check
-
-    if (existInstrumentalZeroCheck) {
-      this.InstrumentZeroCheckRepository.merge(
-        existInstrumentalZeroCheck,
-        instrumentZeroCheck,
-      )
-    } else {
-      const newInstrumentZeroCheck =
-        this.InstrumentZeroCheckRepository.create(instrumentZeroCheck)
-      method.instrument_zero_check = newInstrumentZeroCheck
-    }
-
     try {
-      this.dataSource.transaction(async (manager) => {
-        await manager.save(method.instrument_zero_check)
-        await manager.save(method)
+      const method = await this.NI_MCIT_D_01Repository.findOne({
+        where: { id: methodId },
+        relations: ['instrument_zero_check'],
       })
-      return handleOK(method)
+
+      const existInstrumentalZeroCheck = method.instrument_zero_check
+
+      if (existInstrumentalZeroCheck) {
+        this.InstrumentZeroCheckRepository.merge(
+          existInstrumentalZeroCheck,
+          instrumentZeroCheck,
+        )
+      } else {
+        const newInstrumentZeroCheck =
+          this.InstrumentZeroCheckRepository.create(instrumentZeroCheck)
+        method.instrument_zero_check = newInstrumentZeroCheck
+      }
+
+      try {
+        this.dataSource.transaction(async (manager) => {
+          await manager.save(method.instrument_zero_check)
+          await manager.save(method)
+        })
+        return handleOK(method)
+      } catch (error) {
+        return handleInternalServerError(error.message)
+      }
     } catch (error) {
       return handleInternalServerError(error.message)
     }
@@ -249,68 +279,76 @@ export class NI_MCIT_D_01Service {
     exteriorParallelismMeasurement: ExteriorParallelismMeasurementNI_MCIT_D_01Dto,
     methodId: number,
   ) {
-    const method = await this.NI_MCIT_D_01Repository.findOne({
-      where: { id: methodId },
-      relations: ['exterior_parallelism_measurement'],
-    })
+    try {
+      const method = await this.NI_MCIT_D_01Repository.findOne({
+        where: { id: methodId },
+        relations: ['exterior_parallelism_measurement'],
+      })
 
-    const existExteriorParallelism = method.exterior_parallelism_measurement
+      const existExteriorParallelism = method.exterior_parallelism_measurement
 
-    if (existExteriorParallelism) {
-      this.ExteriorParallelismMeasurementRepository.merge(
-        existExteriorParallelism,
-        exteriorParallelismMeasurement,
-      )
-    } else {
-      const newExteriorParaelismo =
-        this.ExteriorParallelismMeasurementRepository.create(
+      if (existExteriorParallelism) {
+        this.ExteriorParallelismMeasurementRepository.merge(
+          existExteriorParallelism,
           exteriorParallelismMeasurement,
         )
-      method.exterior_parallelism_measurement = newExteriorParaelismo
-    }
-    try {
-      this.dataSource.transaction(async (manager) => {
-        await manager.save(method.exterior_parallelism_measurement)
-        await manager.save(method)
-      })
-      return handleOK(method)
+      } else {
+        const newExteriorParaelismo =
+          this.ExteriorParallelismMeasurementRepository.create(
+            exteriorParallelismMeasurement,
+          )
+        method.exterior_parallelism_measurement = newExteriorParaelismo
+      }
+      try {
+        this.dataSource.transaction(async (manager) => {
+          await manager.save(method.exterior_parallelism_measurement)
+          await manager.save(method)
+        })
+        return handleOK(method)
+      } catch (error) {
+        return handleInternalServerError(error.message)
+      }
     } catch (error) {
       return handleInternalServerError(error.message)
     }
   }
 
-  //interiorParallelismMeasurement
+  // Mejor manejo de errores y debug
   async interiorParallelismMeasurement(
     interiorParallelismMeasurement: InteriorParallelismMeasurementNI_MCIT_D_01Dto,
     methodId: number,
   ) {
-    const method = await this.NI_MCIT_D_01Repository.findOne({
-      where: { id: methodId },
-      relations: ['interior_parallelism_measurement'],
-    })
+    try {
+      const method = await this.NI_MCIT_D_01Repository.findOne({
+        where: { id: methodId },
+        relations: ['interior_parallelism_measurement'],
+      })
 
-    const existinteriorParallelismMeasurement =
-      method.interior_parallelism_measurement
+      const existinteriorParallelismMeasurement =
+        method.interior_parallelism_measurement
 
-    if (existinteriorParallelismMeasurement) {
-      this.InteriorParallelismMeasurementRepository.merge(
-        existinteriorParallelismMeasurement,
-        interiorParallelismMeasurement,
-      )
-    } else {
-      const newInterrioParallelism =
-        this.InteriorParallelismMeasurementRepository.create(
+      if (existinteriorParallelismMeasurement) {
+        this.InteriorParallelismMeasurementRepository.merge(
+          existinteriorParallelismMeasurement,
           interiorParallelismMeasurement,
         )
-      method.interior_parallelism_measurement = newInterrioParallelism
-    }
+      } else {
+        const newInterrioParallelism =
+          this.InteriorParallelismMeasurementRepository.create(
+            interiorParallelismMeasurement,
+          )
+        method.interior_parallelism_measurement = newInterrioParallelism
+      }
 
-    try {
-      this.dataSource.transaction(async (manager) => {
-        await manager.save(method.interior_parallelism_measurement)
-        await manager.save(method)
-      })
-      return handleOK(method)
+      try {
+        this.dataSource.transaction(async (manager) => {
+          await manager.save(method.interior_parallelism_measurement)
+          await manager.save(method)
+        })
+        return handleOK(method)
+      } catch (error) {
+        return handleInternalServerError(error.message)
+      }
     } catch (error) {
       return handleInternalServerError(error.message)
     }
@@ -321,32 +359,36 @@ export class NI_MCIT_D_01Service {
     exteriorMeasurementAccuracy: ExteriorMeasurementAccuracyNI_MCIT_D_01Dto,
     methodId: number,
   ) {
-    const method = await this.NI_MCIT_D_01Repository.findOne({
-      where: { id: methodId },
-      relations: ['exterior_measurement_accuracy'],
-    })
+    try {
+      const method = await this.NI_MCIT_D_01Repository.findOne({
+        where: { id: methodId },
+        relations: ['exterior_measurement_accuracy'],
+      })
 
-    const existexteriorMeasurementAccuracy =
-      method.exterior_measurement_accuracy
+      const existexteriorMeasurementAccuracy =
+        method.exterior_measurement_accuracy
 
-    if (existexteriorMeasurementAccuracy) {
-      this.ExteriorMeasurementAccuracyRepository.merge(
-        existexteriorMeasurementAccuracy,
-        exteriorMeasurementAccuracy,
-      )
-    } else {
-      const newexteriorMeasurementAccuracy =
-        this.ExteriorMeasurementAccuracyRepository.create(
+      if (existexteriorMeasurementAccuracy) {
+        this.ExteriorMeasurementAccuracyRepository.merge(
+          existexteriorMeasurementAccuracy,
           exteriorMeasurementAccuracy,
         )
-      method.exterior_measurement_accuracy = newexteriorMeasurementAccuracy
-    }
-    try {
-      this.dataSource.transaction(async (manager) => {
-        await manager.save(method.exterior_measurement_accuracy)
-        await manager.save(method)
-      })
-      return handleOK(method)
+      } else {
+        const newexteriorMeasurementAccuracy =
+          this.ExteriorMeasurementAccuracyRepository.create(
+            exteriorMeasurementAccuracy,
+          )
+        method.exterior_measurement_accuracy = newexteriorMeasurementAccuracy
+      }
+      try {
+        this.dataSource.transaction(async (manager) => {
+          await manager.save(method.exterior_measurement_accuracy)
+          await manager.save(method)
+        })
+        return handleOK(method)
+      } catch (error) {
+        return handleInternalServerError(error.message)
+      }
     } catch (error) {
       return handleInternalServerError(error.message)
     }
@@ -426,28 +468,14 @@ export class NI_MCIT_D_01Service {
       const sheetEC4 = workbook.sheet('FA (mm)')
 
       //client
-      sheetEC.cell('A9').value(dataClient.company_name)
+      sheetEC.cell('B8').value(dataClient.company_name)
+      sheetEC.cell('B9').value(dataClient.address)
       //data quiote
       sheetEC.cell('E9').value(dataQuote.no)
 
       // Obtener la fecha actual
-      const fecha: Date = new Date()
-
-      // Obtener los componentes de la fecha
-      const dia: number = fecha.getDate()
-      const mes: number = fecha.getMonth() + 1 // Los meses comienzan desde 0, por lo que se suma 1
-      const año: number = fecha.getFullYear()
-
-      // Ajustar el formato de la fecha para que tenga dos dígitos
-      const diaFormateado: string = dia < 10 ? '0' + dia : dia.toString()
-      const mesFormateado: string = mes < 10 ? '0' + mes : mes.toString()
-
-      // Formatear la fecha al formato deseado (YYYY-MM-DD)
-      const fechaFormateada: string = `${año}-${mesFormateado}-${diaFormateado}`
-
       // Asignar la fecha formateada a la celda E8
-      sheetEC.cell('E8').value(fechaFormateada)
-
+      sheetEC.cell('E8').value(method.equipment_information.date)
       //maker
       sheetEC.cell('B13').value(method.equipment_information.maker)
       //serie
@@ -726,16 +754,9 @@ export class NI_MCIT_D_01Service {
       })
 
       async function procesarEquipo(sheet, fila, equipo, bandera) {
-        let equipoNumber = equipo
-        if (bandera) {
-          if (equipoNumber < 10) {
-            equipo = 'NI-MCPD-0' + equipo
-          } else {
-            equipo = 'NI-MCPD-' + equipo
-          }
-        }
-        let valoresEquipo = getValor(equipo)
-        console.log(valoresEquipo)
+        console.log('equipo', equipo)
+        let valoresEquipo =
+          await this.patternsService.findByCodeAndMethod(equipo)
         sheet.cell(`A${fila}`).value(valoresEquipo[0])
         sheet.cell(`I${fila}`).value(equipo)
         sheet.cell(`M${fila}`).value(valoresEquipo[1])
@@ -788,67 +809,94 @@ export class NI_MCIT_D_01Service {
       const sheetDA = workbook2.sheet('DA (mm)')
       const sheetFA = workbook2.sheet('FA (mm)')
 
+      //capturando datos del excel de las sheet DA (mm)
+      let filaDAmm = 28
+      let filastop = 36
+      const columnas_result_calibration = ['C', 'G', 'K', 'O', 'S', 'W']
+      const dataCalibration = []
+      // Recorrer las filas y columnas especificadas
+      for (let i = filaDAmm; i <= filastop; i++) {
+        const dataRow = {}
+        columnas_result_calibration.forEach((column) => {
+          const cellValue = sheetDA.cell(column + 1).value()
+          dataRow[column] = cellValue
+        })
+        dataCalibration.push(dataRow)
+        console.log(dataRow)
+      }
+
       //lectura de datos para pdf
-      const data = {
+      const serviceCode = generateServiceCodeToMethod(method.id)
+      const dataNI_R01_MCIT_D_01 = {
         client: {
-          name: dataClient.company_name,
-          address: dataClient.address,
-          email: dataClient.email,
-          phone: dataClient.phone,
+          Empresa: dataClient.company_name,
+          fecha: method.created_at,
+          LugarCalibracion: dataClient.address,
+          Codigo: dataQuote.no,
         },
-        quote: {
-          no: dataQuote.no,
-          equipment: equipment[0],
+        informacionEquipo: {
+          Dispositivo: method.equipment_information.device,
+          Marca: method.equipment_information.maker,
+          NoSerie: method.equipment_information.serial_number,
+          Range: method.equipment_information.measurement_range,
+          Resolucion: method.equipment_information.resolution,
+          Modelo: method.equipment_information.model,
+          Codigo: method.equipment_information.code,
+          Longitud: method.equipment_information.length,
         },
-        method: {
-          maker: method.equipment_information.maker,
-          serial_number: method.equipment_information.serial_number,
-          measurement_range: method.equipment_information.measurement_range,
-          resolution: method.equipment_information.resolution,
-          model: method.equipment_information.model,
-          code: method.equipment_information.code,
-          length: method.equipment_information.length,
-          stabilization_site:
-            method.environmental_conditions.stabilization_site,
-          cycles: {
-            hr: {
-              initial: method.environmental_conditions.cycles.hr.initial,
-              end: method.environmental_conditions.cycles.hr.end,
-            },
-            ta: {
-              initial: method.environmental_conditions.cycles.ta.initial,
-              end: method.environmental_conditions.cycles.ta.end,
-            },
-          },
-          time: {
-            minute: method.environmental_conditions.time.minute,
-          },
-          pre_installation_comment: method.pre_installation_comment.comment,
-          instrument_zero_check: {
-            nominal_value: method.instrument_zero_check.nominal_value,
-            x1: method.instrument_zero_check.x1,
-            x2: method.instrument_zero_check.x2,
-            x3: method.instrument_zero_check.x3,
-            x4: method.instrument_zero_check.x4,
-            x5: method.instrument_zero_check.x5,
-          },
-          exterior_parallelism_measurement:
-            method.exterior_parallelism_measurement.measurements,
-          interior_parallelism_measurement:
-            method.interior_parallelism_measurement.measurements,
-          exterior_measurement_accuracy:
-            method.exterior_measurement_accuracy.measure,
+        condicionesAmbientales: {
+          CicloInicialTa: method.environmental_conditions.cycles.ta.initial,
+          CicloFinalTa: method.environmental_conditions.cycles.ta.end,
+          CicloInicialHr: method.environmental_conditions.cycles.hr.initial,
+          CicloFinalHr: method.environmental_conditions.cycles.hr.end,
+          EquipoUsado: method.environmental_conditions.equipment_used,
+          Estabilizacion: method.environmental_conditions.stabilization_site,
         },
-        data: {
-          DA: {
-            data: [],
-            equipment_used: method.environmental_conditions.equipment_used,
-          },
-          FA: {
-            data: [],
-            equipment_used: method.environmental_conditions.equipment_used,
-          },
+        patronDescripcion: {
+          NI_MCPD_01: method.description_pattern.NI_MCPD_01,
+          NI_MCPD_02: method.description_pattern.NI_MCPD_02,
+          NI_MCPD_03: method.description_pattern.NI_MCPD_03,
+          NI_MCPD_04: method.description_pattern.NI_MCPD_04,
         },
+        comentarioPreInstalacion: {
+          Comentario: method.pre_installation_comment.comment,
+        },
+        verificacionCeroInstrumento: {
+          ValorNominal: method.instrument_zero_check.nominal_value,
+          X1: method.instrument_zero_check.x1,
+          X2: method.instrument_zero_check.x2,
+          X3: method.instrument_zero_check.x3,
+          X4: method.instrument_zero_check.x4,
+          X5: method.instrument_zero_check.x5,
+        },
+        medicionParalelismoExteriores:
+          method.exterior_parallelism_measurement.measurements,
+        medicionParalelismoInteriores:
+          method.interior_parallelism_measurement.measurements,
+        pruebaExactitud: method.exterior_measurement_accuracy.measure,
+        numeroCertificado: serviceCode,
+      }
+      //validar si lleve ONA o No
+      if (method.pre_installation_comment.accredited) {
+        const dataDA = {
+          datoscabecera: {
+            numeroCertificado: serviceCode,
+            codigoServicio: dataQuote.no,
+            fechaCalibracion: method.created_at,
+            fechaEmision: Date.now(),
+            objetoCalibracion: method.equipment_information.device,
+            marca: method.equipment_information.maker,
+            serie: method.equipment_information.serial_number,
+            modelo: method.equipment_information.model,
+            rangoMedida: method.equipment_information.measurement_range,
+            resolucion: method.equipment_information.resolution,
+            codigoIdentificacion: method.equipment_information.code,
+            Solicitante: dataClient.company_name,
+            direccion: dataClient.address,
+            lugarCalibracion: dataClient.address,
+          },
+          ResultadoCalibracion: {},
+        }
       }
 
       return handleOK('Archivo generado correctamente')
