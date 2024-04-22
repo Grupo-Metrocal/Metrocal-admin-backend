@@ -9,5 +9,6 @@ import { PatternsInitializerService } from './patterns.initializer.service'
   imports: [TypeOrmModule.forFeature([Pattern])],
   controllers: [PatternsController],
   providers: [PatternsService, PatternsInitializerService],
+  exports: [PatternsService],
 })
 export class PatternsModule {}

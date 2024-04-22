@@ -19,7 +19,7 @@ import { UpdateProfileImageDto } from './dto/update-profile-image.dto'
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard'
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger'
 import { PasswordRestoreDto } from './dto/password-restore.dto'
-import { handleBadrequest } from 'src/common/handleHttp'
+import { handleBadrequest, handleOK } from 'src/common/handleHttp'
 import { InvitationMail } from '../mail/dto/invitation-mail.dto'
 import { FileInterceptor } from '@nestjs/platform-express'
 
@@ -104,27 +104,10 @@ export class UsersController {
   }
 
   @UseGuards(JwtAuthGuard)
-  @Put('profile/:token')
+  @Post('profile/update/:token')
   async update(@Param('token') token: string, @Body() user: UpdateUserDto) {
+    console.log('update user', user)
     return await this.usersService.updateUserByToken(token, user)
-  }
-
-  @Put('image-profile/:token')
-  @UseInterceptors(FileInterceptor('image'))
-  async updateImageProfile(
-    @Param('token') token: string,
-    @UploadedFile(
-      new ParseFilePipeBuilder()
-        .addFileTypeValidator({
-          fileType: 'image',
-        })
-        .build({
-          fileIsRequired: false,
-        }),
-    )
-    image: Express.Multer.File,
-  ) {
-    return await this.usersService.updateImageProfileByToken(token, image)
   }
 
   @UseGuards(JwtAuthGuard)
@@ -133,25 +116,6 @@ export class UsersController {
     return await this.usersService.invitationForUser({
       email,
     } as InvitationMail)
-  }
-
-  @UseGuards(JwtAuthGuard)
-  @Put('profile-image-update/:token')
-  @UseInterceptors(FileInterceptor('image'))
-  async updateProfileImage(
-    @Param('token') token: string,
-    @Body('username') userName: string,
-    @Body('imageUrl') imageUrl: string,
-    @UploadedFile(
-      new ParseFilePipeBuilder().addFileTypeValidator({
-        fileType: 'image',
-      })
-      .build({
-        fileIsRequired: false,
-      })
-    )
-    image: Express.Multer.File, ) {
-      return await this.usersService.updateProfileImageByToken(token, userName, image, imageUrl)
   }
 
   @UseGuards(JwtAuthGuard)

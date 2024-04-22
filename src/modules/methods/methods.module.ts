@@ -7,6 +7,7 @@ import { ActivitiesModule } from '../activities/activities.module'
 import { QuotesModule } from '../quotes/quotes.module'
 import { Methods } from './entities/method.entity'
 import { CertificateModule } from '../certificate/certificate.module'
+import { PatternsModule } from '../patterns/patterns.module'
 
 import { NI_MCIT_P_01Service } from './ni-mcit-p-01.service'
 import { NI_MCIT_P_01 } from './entities/NI_MCIT_P_01/NI_MCIT_P_01.entity'
@@ -69,6 +70,7 @@ import { MailService } from '../mail/mail.service'
     forwardRef(() => ActivitiesModule),
     forwardRef(() => QuotesModule),
     forwardRef(() => CertificateModule),
+    forwardRef(() => PatternsModule),
   ],
   controllers: [MethodsController],
   providers: [

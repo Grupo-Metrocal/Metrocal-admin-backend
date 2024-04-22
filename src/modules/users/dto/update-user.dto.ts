@@ -6,11 +6,11 @@ export class UpdateUserDto {
   @IsNotEmpty()
   username: string
 
-  @ApiProperty()
-  email: string
+  // @ApiProperty()
+  // email: string
 
-  @ApiProperty()
-  password: string
+  // @ApiProperty()
+  // password: string
 
   @ApiProperty()
   imageURL: string

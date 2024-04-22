@@ -3,6 +3,7 @@ import { launch, executablePath } from 'puppeteer'
 import { compile } from 'handlebars'
 import { readFileSync } from 'fs'
 import { join } from 'path'
+import axios from 'axios'
 
 @Injectable()
 export class PdfService {
@@ -65,6 +66,12 @@ export class PdfService {
     })
     try {
       const page = await browser.newPage()
+      data.metrocalLogo = await this.fetchImageAsBase64(
+        'http://app-grupometrocal.com/development/api/images/image/metrocal.webp',
+      )
+      data.onaLogo = await this.fetchImageAsBase64(
+        'http://app-grupometrocal.com/development/api/images/image/ona.webp',
+      )
 
       // Agregar encabezado y pie de página
       const headerTemplate = compile(
@@ -82,6 +89,7 @@ export class PdfService {
       )(data)
 
       await page.setContent(finalHtml)
+      await page.waitForTimeout(1000)
 
       const pdfBuffer = await page.pdf({
         format: 'A4',
@@ -105,6 +113,22 @@ export class PdfService {
       return false
     } finally {
       await browser.close()
+    }
+  }
+
+  async fetchImageAsBase64(url: string) {
+    try {
+      // Realiza la solicitud para descargar la imagen
+      const response = await axios.get(url, {
+        responseType: 'arraybuffer', // Para obtener el contenido de la respuesta como un buffer
+      })
+
+      // Convierte el buffer a base64
+      const base64 = Buffer.from(response.data, 'binary').toString('base64')
+      return `data:image/webp;base64,${base64}`
+    } catch (error) {
+      console.error('Error al descargar la imagen:', error)
+      return null
     }
   }
 }
