@@ -1,0 +1,55 @@
+import { Entity, Column, PrimaryGeneratedColumn, ManyToOne } from 'typeorm'
+import { EquipmentInformationNI_MCIT_T_01 } from './steps/equipment_informatio.entity'
+import { EnvironmentalConditionsNI_MCIT_T_01 } from './steps/environmental_conditions.entity'
+
+@Entity('NI_MCIT_T_01')
+export class NI_MCIT_T_01 {
+  @PrimaryGeneratedColumn('increment')
+  id: number
+
+  @Column({ nullable: true })
+  calibration_location?: string
+
+  @Column({ nullable: true, default: false, type: 'boolean' })
+  report_status?: boolean
+
+  @Column({ nullable: true, type: 'varchar', array: true, default: [] })
+  report_messages?: string[]
+
+  @Column({ nullable: true, default: 'pending' })
+  status?: string // pending, done
+
+  @Column({ nullable: true })
+  certificate_id?: string
+
+  @Column({ nullable: true })
+  certificate_code?: string
+
+  @ManyToOne(
+    () => EquipmentInformationNI_MCIT_T_01,
+    (EquipmentInformationNI_MCIT_T_01) =>
+      EquipmentInformationNI_MCIT_T_01.NI_MCIT_T_01,
+    {
+      onDelete: 'CASCADE',
+      onUpdate: 'CASCADE',
+    },
+  )
+  equipment_information: EquipmentInformationNI_MCIT_T_01
+
+  @ManyToOne(
+    () => EnvironmentalConditionsNI_MCIT_T_01,
+    (EnvironmentalConditionsNI_MCIT_T_01) =>
+      EnvironmentalConditionsNI_MCIT_T_01.NI_MCIT_T_01,
+    {
+      onDelete: 'CASCADE',
+      onUpdate: 'CASCADE',
+    },
+  )
+  environmental_conditions: EnvironmentalConditionsNI_MCIT_T_01
+
+  @Column({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP' })
+  created_at: Date
+
+  @Column({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP' })
+  updated_at: Date
+}
