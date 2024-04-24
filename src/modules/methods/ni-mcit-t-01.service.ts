@@ -7,6 +7,12 @@ import { NI_MCIT_T_01 } from './entities/NI_MCIT_T_01/NI_MCIT_T_01.entity'
 import { handleInternalServerError, handleOK } from 'src/common/handleHttp'
 import { EquipmentInformationDto } from './dto/NI_MCIT_T_01/equipment-information.dto'
 import { EnvironmentalConditionsDto } from './dto/NI_MCIT_T_01/environmental_condition.dto'
+import { ActivitiesService } from '../activities/activities.service'
+
+import * as XlsxPopulate from 'xlsx-populate'
+import * as path from 'path'
+import { exec } from 'child_process'
+import * as fs from 'fs'
 
 @Injectable()
 export class NI_MCIT_T_01Service {
@@ -18,6 +24,8 @@ export class NI_MCIT_T_01Service {
     @InjectRepository(EnvironmentalConditionsNI_MCIT_T_01)
     private environmentalConditionsNI_MCIT_T_01Repository: Repository<EnvironmentalConditionsNI_MCIT_T_01>,
     private readonly dataSource: DataSource,
+    @Inject(forwardRef(() => ActivitiesService))
+    private activitiesService: ActivitiesService,
   ) {}
 
   async create() {
@@ -127,5 +135,97 @@ export class NI_MCIT_T_01Service {
     } catch (error) {
       return handleInternalServerError(error.message)
     }
+  }
+
+  async generateCertificate({
+    activityID,
+    methodID,
+  }: {
+    activityID: number
+    methodID: number
+  }) {
+    const method = await this.NI_MCIT_T_01Repository.findOne({
+      where: { id: methodID },
+      relations: ['equipment_information', 'environmental_conditions'],
+    })
+
+    if (!method) {
+      return handleInternalServerError('El método no existe')
+    }
+
+    const { equipment_information, environmental_conditions } = method
+
+    if (!equipment_information || !environmental_conditions) {
+      return handleInternalServerError(
+        'El método no tiene información de equipo o condiciones ambientales',
+      )
+    }
+
+    const dataActivity =
+      await this.activitiesService.getActivitiesByID(activityID)
+
+    if (!dataActivity.success) {
+      return handleInternalServerError('La actividad no existe')
+    }
+
+    const activity = dataActivity.data
+
+    try {
+      const filePath = path.join(
+        __dirname,
+        '../mail/templates/excels/ni_mcit_t_01.xlsx',
+      )
+
+      const newFilePath = path.join(
+        __dirname,
+        `../mail/templates/excels/ni_mcit_p_01_${activity.quote_request.no}.xlsx`,
+      )
+
+      fs.copyFileSync(filePath, newFilePath)
+
+      const workbook = await XlsxPopulate.fromFileAsync(newFilePath)
+      workbook
+        .sheet('NI-R01-MCIT-T-01')
+        .cell('B6')
+        .value('FRANCISCO JAVIER GARCIA')
+
+      workbook.toFileAsync(newFilePath)
+      await this.autoSaveExcel(newFilePath)
+    } catch (error) {
+      return handleInternalServerError(error.message)
+    }
+  }
+
+  async autoSaveExcel(filePath: string) {
+    return new Promise((resolve, reject) => {
+      // save excel file from powershell
+
+      const powershellCommand = `
+      $Excel = New-Object -ComObject Excel.Application
+      $Excel.Visible = $false
+      $Excel.DisplayAlerts = $false
+      $Workbook = $Excel.Workbooks.Open('${filePath}')
+      $Workbook.Save()
+      $Workbook.Close()
+      $Excel.Quit()
+
+      `
+
+      exec(
+        powershellCommand,
+        { shell: 'powershell.exe' },
+        (error, stdout, stderr) => {
+          if (error) {
+            console.error(`Error al ejecutar el comando: ${error.message}`)
+            reject(error)
+          } else if (stderr) {
+            console.error(`Error en la salida estándar: ${stderr}`)
+            reject(new Error(stderr))
+          } else {
+            resolve(stdout)
+          }
+        },
+      )
+    })
   }
 }
