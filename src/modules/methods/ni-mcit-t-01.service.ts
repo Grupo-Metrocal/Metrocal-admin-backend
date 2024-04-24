@@ -1,6 +1,7 @@
 import { Injectable, forwardRef, Inject } from '@nestjs/common'
 import { EquipmentInformationNI_MCIT_T_01 } from './entities/NI_MCIT_T_01/steps/equipment_informatio.entity'
 import { EnvironmentalConditionsNI_MCIT_T_01 } from './entities/NI_MCIT_T_01/steps/environmental_conditions.entity'
+import { DescriptionPatternNI_MCIT_T_01 } from './entities/NI_MCIT_T_01/steps/description_pattern.entity'
 import { InjectRepository } from '@nestjs/typeorm'
 import { Repository, DataSource } from 'typeorm'
 import { NI_MCIT_T_01 } from './entities/NI_MCIT_T_01/NI_MCIT_T_01.entity'
@@ -13,6 +14,10 @@ import * as XlsxPopulate from 'xlsx-populate'
 import * as path from 'path'
 import { exec } from 'child_process'
 import * as fs from 'fs'
+import { DescriptionPatternDto } from './dto/NI_MCIT_T_01/description_pattern.dto'
+import { CertificateService } from '../certificate/certificate.service'
+import { CalibrationResultsDto } from './dto/NI_MCIT_T_01/calibraion_results.dto'
+import { CalibrationResultsNI_MCIT_T_01 } from './entities/NI_MCIT_T_01/steps/calibration_results.entity'
 
 @Injectable()
 export class NI_MCIT_T_01Service {
@@ -26,6 +31,12 @@ export class NI_MCIT_T_01Service {
     private readonly dataSource: DataSource,
     @Inject(forwardRef(() => ActivitiesService))
     private activitiesService: ActivitiesService,
+    @InjectRepository(DescriptionPatternNI_MCIT_T_01)
+    private descriptionPatternNI_MCIT_T_01Repository: Repository<DescriptionPatternNI_MCIT_T_01>,
+    @InjectRepository(CalibrationResultsNI_MCIT_T_01)
+    private calibrationResultsNI_MCIT_T_01Repository: Repository<CalibrationResultsNI_MCIT_T_01>,
+
+    private readonly certificateService: CertificateService,
   ) {}
 
   async create() {
@@ -97,6 +108,43 @@ export class NI_MCIT_T_01Service {
     }
   }
 
+  async calibrationResults(
+    calibrationResults: CalibrationResultsDto,
+    methodId: number,
+  ) {
+    const method = await this.NI_MCIT_T_01Repository.findOne({
+      where: { id: methodId },
+      relations: ['calibration_results'],
+    })
+
+    if (!method) {
+      return handleInternalServerError('El método no existe')
+    }
+
+    const existingCalibrationResults = method.calibration_results
+
+    if (existingCalibrationResults) {
+      this.calibrationResultsNI_MCIT_T_01Repository.merge(
+        existingCalibrationResults,
+        calibrationResults,
+      )
+    } else {
+      const newCalibrationResults =
+        this.calibrationResultsNI_MCIT_T_01Repository.create(calibrationResults)
+      method.calibration_results = newCalibrationResults
+    }
+
+    try {
+      await this.dataSource.transaction(async (manager) => {
+        await manager.save(method.calibration_results)
+        await manager.save(method)
+      })
+
+      return handleOK(method)
+    } catch (error) {
+      return handleInternalServerError(error.message)
+    }
+  }
   async environmentalConditions(
     environmentalConditions: EnvironmentalConditionsDto,
     methodId: number,
@@ -130,6 +178,53 @@ export class NI_MCIT_T_01Service {
         await manager.save(method.environmental_conditions)
         await manager.save(method)
       })
+
+      return handleOK(method)
+    } catch (error) {
+      return handleInternalServerError(error.message)
+    }
+  }
+
+  async descriptionPattern(
+    descriptionPattern: DescriptionPatternDto,
+    methodId: number,
+    activityId: number,
+  ) {
+    try {
+      const method = await this.NI_MCIT_T_01Repository.findOne({
+        where: { id: methodId },
+        relations: ['description_pattern'],
+      })
+
+      if (!method) {
+        return handleInternalServerError('El método no existe')
+      }
+
+      const existingDescriptionPattern = method.description_pattern
+
+      if (existingDescriptionPattern) {
+        this.descriptionPatternNI_MCIT_T_01Repository.merge(
+          existingDescriptionPattern,
+          descriptionPattern,
+        )
+      } else {
+        const newDescriptionPattern =
+          this.descriptionPatternNI_MCIT_T_01Repository.create(
+            descriptionPattern,
+          )
+        method.description_pattern = newDescriptionPattern
+      }
+
+      await this.dataSource.transaction(async (manager) => {
+        await manager.save(method.description_pattern)
+
+        method.status = 'done'
+        await manager.save(method)
+      })
+
+      await this.generateCertificateCodeToMethod(method.id)
+
+      await this.activitiesService.updateActivityProgress(activityId)
 
       return handleOK(method)
     } catch (error) {
@@ -227,5 +322,32 @@ export class NI_MCIT_T_01Service {
         },
       )
     })
+  }
+
+  async generateCertificateCodeToMethod(methodID: number) {
+    try {
+      const method = await this.NI_MCIT_T_01Repository.findOne({
+        where: { id: methodID },
+      })
+
+      if (!method) {
+        return handleInternalServerError('El método no existe')
+      }
+
+      if (method.certificate_code) {
+        return handleOK('El método ya tiene un código de certificado')
+      }
+
+      const certificate = await this.certificateService.create()
+
+      method.certificate_code = certificate.data.code
+      method.certificate_id = certificate.data.id
+
+      await this.NI_MCIT_T_01Repository.save(method)
+
+      return handleOK(certificate)
+    } catch (error) {
+      return handleInternalServerError(error.message)
+    }
   }
 }
