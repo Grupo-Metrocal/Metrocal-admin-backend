@@ -38,6 +38,7 @@ export interface ICycles_NI_MCIT_T_01 {
       initial: number
       final: number
     }
+    stabilization_time: number
     equipement: string
   }
 }
