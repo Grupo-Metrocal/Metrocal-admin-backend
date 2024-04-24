@@ -17,11 +17,10 @@ export class EnvironmentalConditionsNI_MCIT_T_01 {
   NI_MCIT_T_01: NI_MCIT_T_01[]
 
   @Column('jsonb', { nullable: true })
-  cycles?: ICycles_NI_MCIT_T_01
+  environment?: ICycles_NI_MCIT_T_01
 }
 
 export interface ICycles_NI_MCIT_T_01 {
-  cycle_number: number
   ta: {
     tac: {
       initial: number
@@ -33,7 +32,7 @@ export interface ICycles_NI_MCIT_T_01 {
     }
     equipement: string
   }
-  hPa: {
+  hpa: {
     pa: {
       initial: number
       final: number
@@ -42,3 +41,28 @@ export interface ICycles_NI_MCIT_T_01 {
     equipement: string
   }
 }
+
+// example
+/* 
+"environment": {
+        "ta": {
+          "tac": {
+            "initial": 22.3,
+            "final": 24.3
+          },
+          "hrp": {
+            "initial": 56.2,
+            "final": 57.8
+          },
+          "equipment": "NI-MCPPT-06"
+        },
+        "hpa": {
+          "pa": {
+            "initial": 1001,
+            "final": 1001
+          },
+          "stabilization_time": 0,
+          "equipement": "NI-MCPPT-06"
+        }
+      },
+**/
