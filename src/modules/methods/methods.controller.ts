@@ -5,6 +5,7 @@ import { ApiTags } from '@nestjs/swagger'
 import { NI_MCIT_P_01Service } from './ni-mcit-p-01.service'
 import { NI_MCIT_D_01Service } from './ni-mcit-d-01.service'
 import { NI_MCIT_D_02Service } from './ni-mcit-d-02.service'
+import { NI_MCIT_T_01Service } from './ni-mcit-t-01.service'
 
 import { EquipmentInformationDto } from './dto/NI_MCIT_P_01/equipment_information.dto'
 import { EnvironmentalConditionsDto } from './dto/NI_MCIT_P_01/environmental_condition.dto'
@@ -30,6 +31,11 @@ import { ExteriorMeasurementAccuracyNI_MCIT_D_01Dto } from './dto/NI_MCIT_D_01/e
 import { AddLocationDto } from './dto/NI_MCIT_P_01/add_location.dto'
 import { EmmitReportDto } from './dto/emmit-report.dto'
 
+import { EquipmentInformationDto as EquipmentInformationT_01Dto } from './dto/NI_MCIT_T_01/equipment-information.dto'
+import { DescriptionPatternDto as DescriptionPatternT_01Dto } from './dto/NI_MCIT_T_01/description_pattern.dto'
+import { EnvironmentalConditionsDto as EnvironmentalConditionsT_01Dto } from './dto/NI_MCIT_T_01/environmental_condition.dto'
+import { CalibrationResultsDto as CalibrationResultsT_01Dto } from './dto/NI_MCIT_T_01/calibraion_results.dto'
+
 @ApiTags('methods')
 @Controller('methods')
 export class MethodsController {
@@ -38,6 +44,7 @@ export class MethodsController {
     private readonly ni_mcit_p_01Service: NI_MCIT_P_01Service,
     private readonly ni_mcit_d_02Service: NI_MCIT_D_02Service,
     private readonly ni_mcit_d_01Service: NI_MCIT_D_01Service,
+    private readonly ni_mcit_t_01Service: NI_MCIT_T_01Service,
   ) {}
 
   @Get()
@@ -359,5 +366,63 @@ export class MethodsController {
       activityID: activityId,
       methodID: methodId,
     })
+  }
+
+  //T-01
+  @Post('ni-mcit-t-01/calibration-location/:methodId')
+  async createNI_MCIT_T_01CalibrationLocation(
+    @Body() { location }: AddLocationDto,
+    @Param('methodId') methodId: number,
+  ) {
+    return await this.ni_mcit_t_01Service.addCalibrationLocation(
+      location,
+      methodId,
+    )
+  }
+
+  @Post('ni-mcit-t-01/equipment-information/:methodId')
+  async createNI_MCIT_T_01EquipmentInformation(
+    @Body() equipment: EquipmentInformationT_01Dto,
+    @Param('methodId') methodId: number,
+  ) {
+    return await this.ni_mcit_t_01Service.equipmentInformation(
+      equipment,
+      methodId,
+    )
+  }
+
+  @Post('ni-mcit-t-01/environmental-conditions/:methodId')
+  async createNI_MCIT_T_01EnvironmentalConditions(
+    @Body() environmentalConditions: EnvironmentalConditionsT_01Dto,
+    @Param('methodId') methodId: number,
+  ) {
+    return await this.ni_mcit_t_01Service.environmentalConditions(
+      environmentalConditions,
+      methodId,
+    )
+  }
+
+  @Post('ni-mcit-t-01/description-pattern/:methodId/:activityId')
+  async createNI_MCIT_T_01DescriptionPattern(
+    @Body() descriptionPattern: DescriptionPatternT_01Dto,
+    @Param('methodId') methodId: number,
+    @Param('activityId') activityId: number,
+  ) {
+    return await this.ni_mcit_t_01Service.descriptionPattern(
+      descriptionPattern,
+      methodId,
+      activityId,
+    )
+  }
+
+  @Post('ni-mcit-t-01/calibration-results/:methodId')
+  async createNI_MCIT_T_01CalibrationResults(
+    @Body() calibrations: CalibrationResultsT_01Dto,
+    @Param('methodId') methodId: number,
+  ) {
+    return await this.ni_mcit_t_01Service.calibrationResults(
+      calibrations,
+      methodId,
+    )
   }
 }
