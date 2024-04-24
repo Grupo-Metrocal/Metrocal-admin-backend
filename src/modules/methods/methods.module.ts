@@ -37,10 +37,13 @@ import { ExteriorMeasurementAccuracyNI_MCIT_D_01 } from './entities/NI_MCIT_D_01
 import { NI_MCIT_D_01Service } from './ni-mcit-d-01.service'
 import { PdfService } from '../mail/pdf.service'
 import { MailService } from '../mail/mail.service'
+
 import { NI_MCIT_T_01Service } from './ni-mcit-t-01.service'
 import { NI_MCIT_T_01 } from './entities/NI_MCIT_T_01/NI_MCIT_T_01.entity'
 import { EquipmentInformationNI_MCIT_T_01 } from './entities/NI_MCIT_T_01/steps/equipment_informatio.entity'
 import { EnvironmentalConditionsNI_MCIT_T_01 } from './entities/NI_MCIT_T_01/steps/environmental_conditions.entity'
+import { DescriptionPatternNI_MCIT_T_01 } from './entities/NI_MCIT_T_01/steps/description_pattern.entity'
+import { CalibrationResultsNI_MCIT_T_01 } from './entities/NI_MCIT_T_01/steps/calibration_results.entity'
 
 @Module({
   imports: [
@@ -73,7 +76,9 @@ import { EnvironmentalConditionsNI_MCIT_T_01 } from './entities/NI_MCIT_T_01/ste
 
       NI_MCIT_T_01,
       EquipmentInformationNI_MCIT_T_01,
+      CalibrationResultsNI_MCIT_T_01,
       EnvironmentalConditionsNI_MCIT_T_01,
+      DescriptionPatternNI_MCIT_T_01,
     ]),
     forwardRef(() => ActivitiesModule),
     forwardRef(() => QuotesModule),
