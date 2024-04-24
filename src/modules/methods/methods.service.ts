@@ -18,6 +18,7 @@ import { addOrRemoveMethodToStackDto } from './dto/add-remove-method-stack.dto'
 
 import { NI_MCIT_D_01 } from './entities/NI_MCIT_D_01/NI_MCIT_D_01.entity'
 import { PatternsService } from '../patterns/patterns.service'
+import { NI_MCIT_T_01 } from './entities/NI_MCIT_T_01/NI_MCIT_T_01.entity'
 
 @Injectable()
 export class MethodsService {
@@ -33,6 +34,8 @@ export class MethodsService {
     private readonly NI_MCIT_D_02Repository: Repository<NI_MCIT_D_02>,
     @InjectRepository(NI_MCIT_D_01)
     private readonly NI_MCIT_D_01Repository: Repository<NI_MCIT_D_01>,
+    @InjectRepository(NI_MCIT_T_01)
+    private readonly NI_MCIT_T_01Repository: Repository<NI_MCIT_T_01>,
 
     @Inject(forwardRef(() => ActivitiesService))
     private readonly activitiesService: ActivitiesService,
