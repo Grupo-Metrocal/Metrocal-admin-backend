@@ -1,6 +1,8 @@
 import { Entity, Column, PrimaryGeneratedColumn, ManyToOne } from 'typeorm'
 import { EquipmentInformationNI_MCIT_T_01 } from './steps/equipment_informatio.entity'
 import { EnvironmentalConditionsNI_MCIT_T_01 } from './steps/environmental_conditions.entity'
+import { CalibrationResultsNI_MCIT_T_01 } from './steps/calibration_results.entity'
+import { DescriptionPatternNI_MCIT_T_01 } from './steps/description_pattern.entity'
 
 @Entity('NI_MCIT_T_01')
 export class NI_MCIT_T_01 {
@@ -46,6 +48,28 @@ export class NI_MCIT_T_01 {
     },
   )
   environmental_conditions: EnvironmentalConditionsNI_MCIT_T_01
+
+  @ManyToOne(
+    () => CalibrationResultsNI_MCIT_T_01,
+    (CalibrationResultsNI_MCIT_T_01) =>
+      CalibrationResultsNI_MCIT_T_01.NI_MCIT_T_01,
+    {
+      onDelete: 'CASCADE',
+      onUpdate: 'CASCADE',
+    },
+  )
+  calibration_results: CalibrationResultsNI_MCIT_T_01
+
+  @ManyToOne(
+    () => DescriptionPatternNI_MCIT_T_01,
+    (DescriptionPatternNI_MCIT_T_01) =>
+      DescriptionPatternNI_MCIT_T_01.NI_MCIT_T_01,
+    {
+      onDelete: 'CASCADE',
+      onUpdate: 'CASCADE',
+    },
+  )
+  description_pattern: DescriptionPatternNI_MCIT_T_01
 
   @Column({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP' })
   created_at: Date
