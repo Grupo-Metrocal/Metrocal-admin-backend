@@ -37,5 +37,5 @@ class IMeasure {
 
 export class AccuracyTestNI_MCIT_D_02Dto {
   @ApiProperty({ type: () => [IMeasure] })
-  measure: IMeasure[]
+  measureD02: IMeasure[]
 }

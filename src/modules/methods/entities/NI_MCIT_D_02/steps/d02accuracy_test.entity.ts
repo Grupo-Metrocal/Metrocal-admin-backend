@@ -13,7 +13,7 @@ export class AccuracyTestNI_MCIT_D_02 {
   NI_MCIT_D_02: NI_MCIT_D_02[]
 
   @Column('jsonb', { nullable: true })
-  measure?: IMeasure[]
+  measureD02?: IMeasure[]
 }
 
 interface IMeasure {

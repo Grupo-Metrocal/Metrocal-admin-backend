@@ -18,12 +18,12 @@ import { DescriptionPatternNI_MCIT_P_01 } from './entities/NI_MCIT_P_01/steps/de
 
 import { NI_MCIT_D_02Service } from './ni-mcit-d-02.service'
 import { NI_MCIT_D_02 } from './entities/NI_MCIT_D_02/NI_MCIT_D_02.entity'
-import { AccuracyTestNI_MCIT_D_02 } from './entities/NI_MCIT_D_02/steps/accuracy_test.entity'
-import { DescriptionPatternNI_MCIT_D_02 } from './entities/NI_MCIT_D_02/steps/description_pattern.entity'
-import { EnvironmentalConditionsNI_MCIT_D_02 } from './entities/NI_MCIT_D_02/steps/environmental_conditions.entity'
-import { EquipmentInformationNI_MCIT_D_02 } from './entities/NI_MCIT_D_02/steps/equipment_informatio.entity'
-import { InstrumentZeroCheckNI_MCIT_D_02 } from './entities/NI_MCIT_D_02/steps/instrument_zero_check.entity'
-import { PreInstallationCommentNI_MCIT_D_02 } from './entities/NI_MCIT_D_02/steps/pre_installation_comment.entity'
+import { AccuracyTestNI_MCIT_D_02 } from './entities/NI_MCIT_D_02/steps/d02accuracy_test.entity'
+import { DescriptionPatternNI_MCIT_D_02 } from './entities/NI_MCIT_D_02/steps/d02description_pattern.entity'
+import { EnvironmentalConditionsNI_MCIT_D_02 } from './entities/NI_MCIT_D_02/steps/d02environmental_conditions.entity'
+import { EquipmentInformationNI_MCIT_D_02 } from './entities/NI_MCIT_D_02/steps/d02equipment_informatio.entity'
+import { InstrumentZeroCheckNI_MCIT_D_02 } from './entities/NI_MCIT_D_02/steps/d02instrument_zero_check.entity'
+import { PreInstallationCommentNI_MCIT_D_02 } from './entities/NI_MCIT_D_02/steps/d02pre_installation_comment.entity'
 
 import { NI_MCIT_D_01 } from './entities/NI_MCIT_D_01/NI_MCIT_D_01.entity'
 import { EquipmentInformationNI_MCIT_D_01 } from './entities/NI_MCIT_D_01/steps/equipment_informatio.entity'

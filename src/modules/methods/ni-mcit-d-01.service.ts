@@ -1,4 +1,6 @@
-import { Inject, Injectable, forwardRef, Get } from '@nestjs/common'
+import { DescriptionPatternDto } from './dto/NI_MCIT_P_01/description_pattern.dto'
+import { Pattern } from './../patterns/entities/pattern.entity'
+import { Inject, Injectable, forwardRef, Get, Res } from '@nestjs/common'
 import { NI_MCIT_D_01 } from './entities/NI_MCIT_D_01/NI_MCIT_D_01.entity'
 import { InjectRepository } from '@nestjs/typeorm'
 import { DataSource, Repository } from 'typeorm'
@@ -20,17 +22,26 @@ import { InteriorParallelismMeasurementNI_MCIT_D_01 } from './entities/NI_MCIT_D
 import { ExteriorMeasurementAccuracyNI_MCIT_D_01Dto } from './dto/NI_MCIT_D_01/exterior_measurement_accuracy.dto'
 import { ExteriorMeasurementAccuracyNI_MCIT_D_01 } from './entities/NI_MCIT_D_01/steps/exterior_measurement_accuracy.entity'
 import { ActivitiesService } from '../activities/activities.service'
+
 import { Activity } from '../activities/entities/activities.entity'
+import { generateServiceCodeToMethod } from 'src/utils/codeGenerator'
 import * as XlsxPopulate from 'xlsx-populate'
 import * as path from 'path'
 import { exec } from 'child_process'
 import * as fs from 'fs'
+import { PatternsService } from '../patterns/patterns.service'
 import { handleInternalServerError, handleOK } from 'src/common/handleHttp'
+import { QuoteRequest } from '../quotes/entities/quote-request.entity'
+import { patterns } from 'pdfkit/js/page'
+import { Certificate } from '../certificate/entities/certificate.entity'
+import { PdfService } from '../mail/pdf.service'
+import { MailService } from '../mail/mail.service'
 import {
   getPosition,
   getPositionNominal,
-  getValor,
 } from './dto/NI_MCIT_D_01/PositionBPDto'
+import { formatDate } from 'src/utils/formatDate'
+import { CertificateService } from '../certificate/certificate.service'
 
 @Injectable()
 export class NI_MCIT_D_01Service {
@@ -56,6 +67,13 @@ export class NI_MCIT_D_01Service {
     private readonly ExteriorMeasurementAccuracyRepository: Repository<ExteriorMeasurementAccuracyNI_MCIT_D_01>,
     @Inject(forwardRef(() => ActivitiesService))
     private readonly activitiesService: ActivitiesService,
+
+    @Inject(forwardRef(() => PatternsService))
+    private readonly patternsService: PatternsService,
+
+    private readonly pdfService: PdfService,
+    private readonly certificateService: CertificateService,
+    private readonly mailService: MailService,
   ) {}
 
   async create() {
@@ -73,30 +91,36 @@ export class NI_MCIT_D_01Service {
     equipment: EquipmentInformationNI_MCIT_D_01Dto,
     methodId: number,
   ) {
-    const method = await this.NI_MCIT_D_01Repository.findOne({
-      where: { id: methodId },
-      relations: ['equipment_information'],
-    })
-
-    if (!method) {
-      return handleInternalServerError('El método no existe')
-    }
-
-    const existingEquipment = method.equipment_information
-
-    if (existingEquipment) {
-      this.EquipmentInformationRepository.merge(existingEquipment, equipment)
-    } else {
-      const newEquipment = this.EquipmentInformationRepository.create(equipment)
-      method.equipment_information = newEquipment
-    }
-
     try {
-      this.dataSource.transaction(async (manager) => {
-        await manager.save(method.equipment_information)
-        await manager.save(method)
+      const method = await this.NI_MCIT_D_01Repository.findOne({
+        where: { id: methodId },
+        relations: ['equipment_information'],
       })
-      return handleOK(method.equipment_information)
+
+      if (!method) {
+        return handleInternalServerError('El método no existe')
+      }
+
+      const existingEquipment = method.equipment_information
+
+      if (existingEquipment) {
+        this.EquipmentInformationRepository.merge(existingEquipment, equipment)
+      } else {
+        equipment.date = new Date().toISOString()
+        const newEquipment =
+          this.EquipmentInformationRepository.create(equipment)
+        method.equipment_information = newEquipment
+      }
+
+      try {
+        this.dataSource.transaction(async (manager) => {
+          await manager.save(method.equipment_information)
+          await manager.save(method)
+        })
+        return handleOK(method.equipment_information)
+      } catch (error) {
+        return handleInternalServerError(error.message)
+      }
     } catch (error) {
       return handleInternalServerError(error.message)
     }
@@ -106,34 +130,38 @@ export class NI_MCIT_D_01Service {
     environmentalConditions: EnvironmentalConditionsNI_MCIT_D_01Dto,
     methodId: number,
   ) {
-    const method = await this.NI_MCIT_D_01Repository.findOne({
-      where: { id: methodId },
-      relations: ['environmental_conditions'],
-    })
-
-    if (!method) {
-      return handleInternalServerError('El método no existe')
-    }
-
-    const enviromentalCOnditionExist = method.environmental_conditions
-
-    if (enviromentalCOnditionExist) {
-      this.EnvironmentalConditionsRepository.merge(
-        enviromentalCOnditionExist,
-        environmentalConditions,
-      )
-    } else {
-      const newEnviromentalCondition =
-        this.EnvironmentalConditionsRepository.create(environmentalConditions)
-      method.environmental_conditions = newEnviromentalCondition
-    }
-
     try {
-      this.dataSource.transaction(async (manager) => {
-        await manager.save(method.environmental_conditions)
-        await manager.save(method)
+      const method = await this.NI_MCIT_D_01Repository.findOne({
+        where: { id: methodId },
+        relations: ['environmental_conditions'],
       })
-      return handleOK(method.environmental_conditions)
+
+      if (!method) {
+        return handleInternalServerError('El método no existe')
+      }
+
+      const enviromentalCOnditionExist = method.environmental_conditions
+
+      if (enviromentalCOnditionExist) {
+        this.EnvironmentalConditionsRepository.merge(
+          enviromentalCOnditionExist,
+          environmentalConditions,
+        )
+      } else {
+        const newEnviromentalCondition =
+          this.EnvironmentalConditionsRepository.create(environmentalConditions)
+        method.environmental_conditions = newEnviromentalCondition
+      }
+
+      try {
+        this.dataSource.transaction(async (manager) => {
+          await manager.save(method.environmental_conditions)
+          await manager.save(method)
+        })
+        return handleOK(method.environmental_conditions)
+      } catch (error) {
+        return handleInternalServerError(error.message)
+      }
     } catch (error) {
       return handleInternalServerError(error.message)
     }
@@ -144,34 +172,38 @@ export class NI_MCIT_D_01Service {
     descriptionPattern: DescriptionPatternNI_MCIT_D_01Dto,
     methodId: number,
   ) {
-    const method = await this.NI_MCIT_D_01Repository.findOne({
-      where: { id: methodId },
-      relations: ['description_pattern'],
-    })
-
-    if (!method) {
-      return handleInternalServerError('El método no existe')
-    }
-
-    const existDescriptioPattern = method.description_pattern
-
-    if (existDescriptioPattern) {
-      this.DescriptionPatternRepository.merge(
-        existDescriptioPattern,
-        descriptionPattern,
-      )
-    } else {
-      const newDescriptioPattern =
-        this.DescriptionPatternRepository.create(descriptionPattern)
-      method.description_pattern = newDescriptioPattern
-    }
-
     try {
-      this.dataSource.transaction(async (manager) => {
-        await manager.save(method.description_pattern)
-        await manager.save(method)
+      const method = await this.NI_MCIT_D_01Repository.findOne({
+        where: { id: methodId },
+        relations: ['description_pattern'],
       })
-      return handleOK(method.description_pattern)
+
+      if (!method) {
+        return handleInternalServerError('El método no existe')
+      }
+
+      const existDescriptioPattern = method.description_pattern
+
+      if (existDescriptioPattern) {
+        this.DescriptionPatternRepository.merge(
+          existDescriptioPattern,
+          descriptionPattern,
+        )
+      } else {
+        const newDescriptioPattern =
+          this.DescriptionPatternRepository.create(descriptionPattern)
+        method.description_pattern = newDescriptioPattern
+      }
+
+      try {
+        this.dataSource.transaction(async (manager) => {
+          await manager.save(method.description_pattern)
+          await manager.save(method)
+        })
+        return handleOK(method.description_pattern)
+      } catch (error) {
+        return handleInternalServerError(error.message)
+      }
     } catch (error) {
       return handleInternalServerError(error.message)
     }
@@ -181,30 +213,34 @@ export class NI_MCIT_D_01Service {
     preInstallationComment: PreInstallationCommentNI_MCIT_D_01Dto,
     methodId: number,
   ) {
-    const method = await this.NI_MCIT_D_01Repository.findOne({
-      where: { id: methodId },
-      relations: ['pre_installation_comment'],
-    })
-
-    const existPreInstallatioComment = method.pre_installation_comment
-
-    if (existPreInstallatioComment) {
-      this.PreInstallationCommentRepository.merge(
-        existPreInstallatioComment,
-        preInstallationComment,
-      )
-    } else {
-      const newPreInstallationComment =
-        this.PreInstallationCommentRepository.create(preInstallationComment)
-      method.pre_installation_comment = newPreInstallationComment
-    }
-
     try {
-      this.dataSource.transaction(async (manager) => {
-        await manager.save(method.pre_installation_comment)
-        await manager.save(method)
+      const method = await this.NI_MCIT_D_01Repository.findOne({
+        where: { id: methodId },
+        relations: ['pre_installation_comment'],
       })
-      return handleOK(method)
+
+      const existPreInstallatioComment = method.pre_installation_comment
+
+      if (existPreInstallatioComment) {
+        this.PreInstallationCommentRepository.merge(
+          existPreInstallatioComment,
+          preInstallationComment,
+        )
+      } else {
+        const newPreInstallationComment =
+          this.PreInstallationCommentRepository.create(preInstallationComment)
+        method.pre_installation_comment = newPreInstallationComment
+      }
+
+      try {
+        this.dataSource.transaction(async (manager) => {
+          await manager.save(method.pre_installation_comment)
+          await manager.save(method)
+        })
+        return handleOK(method)
+      } catch (error) {
+        return handleInternalServerError(error.message)
+      }
     } catch (error) {
       return handleInternalServerError(error.message)
     }
@@ -215,30 +251,34 @@ export class NI_MCIT_D_01Service {
     instrumentZeroCheck: InstrumentZeroCheckNI_MCIT_D_01Dto,
     methodId: number,
   ) {
-    const method = await this.NI_MCIT_D_01Repository.findOne({
-      where: { id: methodId },
-      relations: ['instrument_zero_check'],
-    })
-
-    const existInstrumentalZeroCheck = method.instrument_zero_check
-
-    if (existInstrumentalZeroCheck) {
-      this.InstrumentZeroCheckRepository.merge(
-        existInstrumentalZeroCheck,
-        instrumentZeroCheck,
-      )
-    } else {
-      const newInstrumentZeroCheck =
-        this.InstrumentZeroCheckRepository.create(instrumentZeroCheck)
-      method.instrument_zero_check = newInstrumentZeroCheck
-    }
-
     try {
-      this.dataSource.transaction(async (manager) => {
-        await manager.save(method.instrument_zero_check)
-        await manager.save(method)
+      const method = await this.NI_MCIT_D_01Repository.findOne({
+        where: { id: methodId },
+        relations: ['instrument_zero_check'],
       })
-      return handleOK(method)
+
+      const existInstrumentalZeroCheck = method.instrument_zero_check
+
+      if (existInstrumentalZeroCheck) {
+        this.InstrumentZeroCheckRepository.merge(
+          existInstrumentalZeroCheck,
+          instrumentZeroCheck,
+        )
+      } else {
+        const newInstrumentZeroCheck =
+          this.InstrumentZeroCheckRepository.create(instrumentZeroCheck)
+        method.instrument_zero_check = newInstrumentZeroCheck
+      }
+
+      try {
+        this.dataSource.transaction(async (manager) => {
+          await manager.save(method.instrument_zero_check)
+          await manager.save(method)
+        })
+        return handleOK(method)
+      } catch (error) {
+        return handleInternalServerError(error.message)
+      }
     } catch (error) {
       return handleInternalServerError(error.message)
     }
@@ -249,68 +289,76 @@ export class NI_MCIT_D_01Service {
     exteriorParallelismMeasurement: ExteriorParallelismMeasurementNI_MCIT_D_01Dto,
     methodId: number,
   ) {
-    const method = await this.NI_MCIT_D_01Repository.findOne({
-      where: { id: methodId },
-      relations: ['exterior_parallelism_measurement'],
-    })
+    try {
+      const method = await this.NI_MCIT_D_01Repository.findOne({
+        where: { id: methodId },
+        relations: ['exterior_parallelism_measurement'],
+      })
 
-    const existExteriorParallelism = method.exterior_parallelism_measurement
+      const existExteriorParallelism = method.exterior_parallelism_measurement
 
-    if (existExteriorParallelism) {
-      this.ExteriorParallelismMeasurementRepository.merge(
-        existExteriorParallelism,
-        exteriorParallelismMeasurement,
-      )
-    } else {
-      const newExteriorParaelismo =
-        this.ExteriorParallelismMeasurementRepository.create(
+      if (existExteriorParallelism) {
+        this.ExteriorParallelismMeasurementRepository.merge(
+          existExteriorParallelism,
           exteriorParallelismMeasurement,
         )
-      method.exterior_parallelism_measurement = newExteriorParaelismo
-    }
-    try {
-      this.dataSource.transaction(async (manager) => {
-        await manager.save(method.exterior_parallelism_measurement)
-        await manager.save(method)
-      })
-      return handleOK(method)
+      } else {
+        const newExteriorParaelismo =
+          this.ExteriorParallelismMeasurementRepository.create(
+            exteriorParallelismMeasurement,
+          )
+        method.exterior_parallelism_measurement = newExteriorParaelismo
+      }
+      try {
+        this.dataSource.transaction(async (manager) => {
+          await manager.save(method.exterior_parallelism_measurement)
+          await manager.save(method)
+        })
+        return handleOK(method)
+      } catch (error) {
+        return handleInternalServerError(error.message)
+      }
     } catch (error) {
       return handleInternalServerError(error.message)
     }
   }
 
-  //interiorParallelismMeasurement
+  // Mejor manejo de errores y debug
   async interiorParallelismMeasurement(
     interiorParallelismMeasurement: InteriorParallelismMeasurementNI_MCIT_D_01Dto,
     methodId: number,
   ) {
-    const method = await this.NI_MCIT_D_01Repository.findOne({
-      where: { id: methodId },
-      relations: ['interior_parallelism_measurement'],
-    })
+    try {
+      const method = await this.NI_MCIT_D_01Repository.findOne({
+        where: { id: methodId },
+        relations: ['interior_parallelism_measurement'],
+      })
 
-    const existinteriorParallelismMeasurement =
-      method.interior_parallelism_measurement
+      const existinteriorParallelismMeasurement =
+        method.interior_parallelism_measurement
 
-    if (existinteriorParallelismMeasurement) {
-      this.InteriorParallelismMeasurementRepository.merge(
-        existinteriorParallelismMeasurement,
-        interiorParallelismMeasurement,
-      )
-    } else {
-      const newInterrioParallelism =
-        this.InteriorParallelismMeasurementRepository.create(
+      if (existinteriorParallelismMeasurement) {
+        this.InteriorParallelismMeasurementRepository.merge(
+          existinteriorParallelismMeasurement,
           interiorParallelismMeasurement,
         )
-      method.interior_parallelism_measurement = newInterrioParallelism
-    }
+      } else {
+        const newInterrioParallelism =
+          this.InteriorParallelismMeasurementRepository.create(
+            interiorParallelismMeasurement,
+          )
+        method.interior_parallelism_measurement = newInterrioParallelism
+      }
 
-    try {
-      this.dataSource.transaction(async (manager) => {
-        await manager.save(method.interior_parallelism_measurement)
-        await manager.save(method)
-      })
-      return handleOK(method)
+      try {
+        this.dataSource.transaction(async (manager) => {
+          await manager.save(method.interior_parallelism_measurement)
+          await manager.save(method)
+        })
+        return handleOK(method)
+      } catch (error) {
+        return handleInternalServerError(error.message)
+      }
     } catch (error) {
       return handleInternalServerError(error.message)
     }
@@ -321,32 +369,36 @@ export class NI_MCIT_D_01Service {
     exteriorMeasurementAccuracy: ExteriorMeasurementAccuracyNI_MCIT_D_01Dto,
     methodId: number,
   ) {
-    const method = await this.NI_MCIT_D_01Repository.findOne({
-      where: { id: methodId },
-      relations: ['exterior_measurement_accuracy'],
-    })
+    try {
+      const method = await this.NI_MCIT_D_01Repository.findOne({
+        where: { id: methodId },
+        relations: ['exterior_measurement_accuracy'],
+      })
 
-    const existexteriorMeasurementAccuracy =
-      method.exterior_measurement_accuracy
+      const existexteriorMeasurementAccuracy =
+        method.exterior_measurement_accuracy
 
-    if (existexteriorMeasurementAccuracy) {
-      this.ExteriorMeasurementAccuracyRepository.merge(
-        existexteriorMeasurementAccuracy,
-        exteriorMeasurementAccuracy,
-      )
-    } else {
-      const newexteriorMeasurementAccuracy =
-        this.ExteriorMeasurementAccuracyRepository.create(
+      if (existexteriorMeasurementAccuracy) {
+        this.ExteriorMeasurementAccuracyRepository.merge(
+          existexteriorMeasurementAccuracy,
           exteriorMeasurementAccuracy,
         )
-      method.exterior_measurement_accuracy = newexteriorMeasurementAccuracy
-    }
-    try {
-      this.dataSource.transaction(async (manager) => {
-        await manager.save(method.exterior_measurement_accuracy)
-        await manager.save(method)
-      })
-      return handleOK(method)
+      } else {
+        const newexteriorMeasurementAccuracy =
+          this.ExteriorMeasurementAccuracyRepository.create(
+            exteriorMeasurementAccuracy,
+          )
+        method.exterior_measurement_accuracy = newexteriorMeasurementAccuracy
+      }
+      try {
+        this.dataSource.transaction(async (manager) => {
+          await manager.save(method.exterior_measurement_accuracy)
+          await manager.save(method)
+        })
+        return handleOK(method)
+      } catch (error) {
+        return handleInternalServerError(error.message)
+      }
     } catch (error) {
       return handleInternalServerError(error.message)
     }
@@ -426,28 +478,14 @@ export class NI_MCIT_D_01Service {
       const sheetEC4 = workbook.sheet('FA (mm)')
 
       //client
-      sheetEC.cell('A9').value(dataClient.company_name)
+      sheetEC.cell('B8').value(dataClient.company_name)
+      sheetEC.cell('B9').value(dataClient.address)
       //data quiote
       sheetEC.cell('E9').value(dataQuote.no)
 
       // Obtener la fecha actual
-      const fecha: Date = new Date()
-
-      // Obtener los componentes de la fecha
-      const dia: number = fecha.getDate()
-      const mes: number = fecha.getMonth() + 1 // Los meses comienzan desde 0, por lo que se suma 1
-      const año: number = fecha.getFullYear()
-
-      // Ajustar el formato de la fecha para que tenga dos dígitos
-      const diaFormateado: string = dia < 10 ? '0' + dia : dia.toString()
-      const mesFormateado: string = mes < 10 ? '0' + mes : mes.toString()
-
-      // Formatear la fecha al formato deseado (YYYY-MM-DD)
-      const fechaFormateada: string = `${año}-${mesFormateado}-${diaFormateado}`
-
       // Asignar la fecha formateada a la celda E8
-      sheetEC.cell('E8').value(fechaFormateada)
-
+      sheetEC.cell('E8').value(method.equipment_information.date)
       //maker
       sheetEC.cell('B13').value(method.equipment_information.maker)
       //serie
@@ -476,176 +514,241 @@ export class NI_MCIT_D_01Service {
       sheetEC
         .cell('F20')
         .value(method.environmental_conditions.stabilization_site)
-      sheetEC.cell('E20').value(method.environmental_conditions.time.minute)
+      sheetEC
+        .cell('E20')
+        .value(
+          method.environmental_conditions.time.hours +
+            ':' +
+            method.environmental_conditions.time.minute,
+        )
 
       //description Pattern
       sheetEC
         .cell('A24')
-        .value('NI-MCPD-' + method.description_pattern.NI_MCPD_01)
+        .value('NI-MCPD-0' + method.description_pattern.NI_MCPD_01)
       sheetEC
         .cell('A25')
-        .value('NI-MCPD-' + method.description_pattern.NI_MCPD_02)
+        .value('NI-MCPD-0' + method.description_pattern.NI_MCPD_02)
       sheetEC
         .cell('B24')
-        .value('NI-MCPD-' + method.description_pattern.NI_MCPD_03)
+        .value('NI-MCPD-0' + method.description_pattern.NI_MCPD_03)
       sheetEC
         .cell('B25')
-        .value('NI-MCPD-' + method.description_pattern.NI_MCPD_04)
+        .value('NI-MCPD-0' + method.description_pattern.NI_MCPD_04)
 
       //pre installation comment
       sheetEC.cell('A28').value(method.pre_installation_comment.comment)
 
       //instrument zero check
       sheetEC.cell('A34').value(method.instrument_zero_check.nominal_value)
-      sheetEC.cell('C34').value(method.instrument_zero_check.x1)
-      sheetEC.cell('D34').value(method.instrument_zero_check.x2)
-      sheetEC.cell('E34').value(method.instrument_zero_check.x3)
-      sheetEC.cell('F34').value(method.instrument_zero_check.x4)
-      sheetEC.cell('G34').value(method.instrument_zero_check.x5)
+      sheetEC
+        .cell('C34')
+        .value(
+          method.instrument_zero_check.x1 == 0.0
+            ? 0
+            : method.instrument_zero_check.x1,
+        )
+      sheetEC
+        .cell('D34')
+        .value(
+          method.instrument_zero_check.x2 == 0.0
+            ? 0
+            : method.instrument_zero_check.x2,
+        )
+      sheetEC
+        .cell('E34')
+        .value(
+          method.instrument_zero_check.x3 == 0.0
+            ? 0
+            : method.instrument_zero_check.x3,
+        )
+      sheetEC
+        .cell('F34')
+        .value(
+          method.instrument_zero_check.x4 == 0.0
+            ? 0
+            : method.instrument_zero_check.x4,
+        )
+      sheetEC
+        .cell('G34')
+        .value(
+          method.instrument_zero_check.x5 == 0.0
+            ? 0
+            : method.instrument_zero_check.x5,
+        )
 
       //Medición de paralelismo (caras de medición de exteriores)
-      let fila = 39
-      let position = 1
-      const columnas_verificacion_exterior = ['D', 'E', 'F', 'G', 'H']
-      const columnas_verificacion_interior = ['D', 'E', 'F', 'G', 'H']
+      if (method.exterior_parallelism_measurement != null) {
+        if (method.exterior_parallelism_measurement.measurements != null) {
+          let fila = 39
+          let position = 1
+          const columnas_verificacion_exterior = ['D', 'E', 'F', 'G', 'H']
+          const columnas_verificacion_interior = ['D', 'E', 'F', 'G', 'H']
 
-      method.exterior_parallelism_measurement.measurements.forEach((item) => {
-        //exterior
-        Object.entries(item.verification_lengths.Exterior).forEach(
-          ([key, value], index) => {
-            const columna = columnas_verificacion_exterior[index]
-            sheetEC.cell(`${columna}${fila}`).value(value)
-          },
-        )
-        fila++
-        Object.entries(item.verification_lengths.Interior).forEach(
-          ([key, value], index) => {
-            const columna = columnas_verificacion_interior[index]
-            sheetEC.cell(`${columna}${fila}`).value(value)
-          },
-        )
+          method.exterior_parallelism_measurement.measurements.forEach(
+            (item) => {
+              //exterior
+              Object.entries(item.verification_lengths.Exterior).forEach(
+                ([key, value], index) => {
+                  const columna = columnas_verificacion_exterior[index]
+                  sheetEC.cell(`${columna}${fila}`).value(value)
+                },
+              )
+              fila++
+              Object.entries(item.verification_lengths.Interior).forEach(
+                ([key, value], index) => {
+                  const columna = columnas_verificacion_interior[index]
+                  sheetEC.cell(`${columna}${fila}`).value(value)
+                },
+              )
 
-        if (position == 1) {
-          const startingColumn = 'L'
-          let currentColumn = startingColumn
-          let fila_L = 6
-          Object.entries(item.point_number).forEach(([key, value]) => {
-            let position_l = getPosition(String(value))
-            sheetEC2.cell(`${currentColumn}${fila_L}`).value(position_l)
-            currentColumn = String.fromCharCode(currentColumn.charCodeAt(0) + 1)
-          })
-        }
-        if (position == 2) {
-          const startingColumn = 'L'
-          let currentColumn = startingColumn
-          let fila_L = 13
-          Object.entries(item.point_number).forEach(([key, value]) => {
-            let position_l = getPosition(String(value))
-            sheetEC2.cell(`${currentColumn}${fila_L}`).value(position_l)
-            currentColumn = String.fromCharCode(currentColumn.charCodeAt(0) + 1)
-          })
-        }
-        if (position == 3) {
-          const startingColumn = 'L'
-          let currentColumn = startingColumn
-          let fila_L = 20
-          Object.entries(item.point_number).forEach(([key, value]) => {
-            let position_l = getPosition(String(value))
-            sheetEC2.cell(`${currentColumn}${fila_L}`).value(position_l)
-            currentColumn = String.fromCharCode(currentColumn.charCodeAt(0) + 1)
-          })
-        }
-        if (position == 4) {
-          const startingColumn = 'L'
-          let currentColumn = startingColumn
-          let fila_L = 27
-          Object.entries(item.point_number).forEach(([key, value]) => {
-            let position_l = getPosition(String(value))
-            sheetEC2.cell(`${currentColumn}${fila_L}`).value(position_l)
-            currentColumn = String.fromCharCode(currentColumn.charCodeAt(0) + 1)
-          })
-        }
-        if (position == 5) {
-          const startingColumn = 'L'
-          let currentColumn = startingColumn
-          let fila_L = 34
-          Object.entries(item.point_number).forEach(([key, value]) => {
-            let position_l = getPosition(String(value))
-            sheetEC2.cell(`${currentColumn}${fila_L}`).value(position_l)
-            currentColumn = String.fromCharCode(currentColumn.charCodeAt(0) + 1)
-          })
-        }
-        if (position == 6) {
-          const startingColumn = 'L'
-          let currentColumn = startingColumn
-          let fila_L = 41
-          Object.entries(item.point_number).forEach(([key, value]) => {
-            let position_l = getPosition(String(value))
-            sheetEC2.cell(`${currentColumn}${fila_L}`).value(position_l)
-            currentColumn = String.fromCharCode(currentColumn.charCodeAt(0) + 1)
-          })
-        }
-        if (position == 7) {
-          const startingColumn = 'L'
-          let currentColumn = startingColumn
-          let fila_L = 48
-          Object.entries(item.point_number).forEach(([key, value]) => {
-            let position_l = getPosition(String(value))
-            sheetEC2.cell(`${currentColumn}${fila_L}`).value(position_l)
-            currentColumn = String.fromCharCode(currentColumn.charCodeAt(0) + 1)
-          })
-        }
+              if (position == 1) {
+                const startingColumn = 'L'
+                let currentColumn = startingColumn
+                let fila_L = 6
+                Object.entries(item.point_number).forEach(([key, value]) => {
+                  let position_l = getPosition(String(value))
+                  sheetEC2.cell(`${currentColumn}${fila_L}`).value(position_l)
+                  currentColumn = String.fromCharCode(
+                    currentColumn.charCodeAt(0) + 1,
+                  )
+                })
+              }
+              if (position == 2) {
+                const startingColumn = 'L'
+                let currentColumn = startingColumn
+                let fila_L = 13
+                Object.entries(item.point_number).forEach(([key, value]) => {
+                  let position_l = getPosition(String(value))
+                  sheetEC2.cell(`${currentColumn}${fila_L}`).value(position_l)
+                  currentColumn = String.fromCharCode(
+                    currentColumn.charCodeAt(0) + 1,
+                  )
+                })
+              }
+              if (position == 3) {
+                const startingColumn = 'L'
+                let currentColumn = startingColumn
+                let fila_L = 20
+                Object.entries(item.point_number).forEach(([key, value]) => {
+                  let position_l = getPosition(String(value))
+                  sheetEC2.cell(`${currentColumn}${fila_L}`).value(position_l)
+                  currentColumn = String.fromCharCode(
+                    currentColumn.charCodeAt(0) + 1,
+                  )
+                })
+              }
+              if (position == 4) {
+                const startingColumn = 'L'
+                let currentColumn = startingColumn
+                let fila_L = 27
+                Object.entries(item.point_number).forEach(([key, value]) => {
+                  let position_l = getPosition(String(value))
+                  sheetEC2.cell(`${currentColumn}${fila_L}`).value(position_l)
+                  currentColumn = String.fromCharCode(
+                    currentColumn.charCodeAt(0) + 1,
+                  )
+                })
+              }
+              if (position == 5) {
+                const startingColumn = 'L'
+                let currentColumn = startingColumn
+                let fila_L = 34
+                Object.entries(item.point_number).forEach(([key, value]) => {
+                  let position_l = getPosition(String(value))
+                  sheetEC2.cell(`${currentColumn}${fila_L}`).value(position_l)
+                  currentColumn = String.fromCharCode(
+                    currentColumn.charCodeAt(0) + 1,
+                  )
+                })
+              }
+              if (position == 6) {
+                const startingColumn = 'L'
+                let currentColumn = startingColumn
+                let fila_L = 41
+                Object.entries(item.point_number).forEach(([key, value]) => {
+                  let position_l = getPosition(String(value))
+                  sheetEC2.cell(`${currentColumn}${fila_L}`).value(position_l)
+                  currentColumn = String.fromCharCode(
+                    currentColumn.charCodeAt(0) + 1,
+                  )
+                })
+              }
+              if (position == 7) {
+                const startingColumn = 'L'
+                let currentColumn = startingColumn
+                let fila_L = 48
+                Object.entries(item.point_number).forEach(([key, value]) => {
+                  let position_l = getPosition(String(value))
+                  sheetEC2.cell(`${currentColumn}${fila_L}`).value(position_l)
+                  currentColumn = String.fromCharCode(
+                    currentColumn.charCodeAt(0) + 1,
+                  )
+                })
+              }
 
-        fila++
-        position++
-      })
+              fila++
+              position++
+            },
+          )
+        }
+      }
 
       //Medición de paralelismo (caras de medición de interiores)
-      let fila_interior_parallelism = 56
-      let position_interior_parallelism = 1
-      const column_point_number3 = 'A'
-      const columnas_verificacion_exterior3 = ['D', 'E', 'F', 'G', 'H']
-      const columnas_verificacion_interior3 = ['D', 'E', 'F', 'G', 'H']
+      if (method.interior_parallelism_measurement != null) {
+        if (method.interior_parallelism_measurement.measurementsd01 != null) {
+          let fila_interior_parallelism = 56
+          let position_interior_parallelism = 1
+          const columnas_verificacion_exterior3 = ['D', 'E', 'F', 'G', 'H']
+          const columnas_verificacion_interior3 = ['D', 'E', 'F', 'G', 'H']
 
-      method.interior_parallelism_measurement.measurements.forEach((item) => {
-        Object.entries(item.verification_lengths.Exterior).forEach(
-          ([key, value], index) => {
-            const columna = columnas_verificacion_exterior3[index]
-            sheetEC.cell(`${columna}${fila_interior_parallelism}`).value(value)
-          },
-        )
-        fila_interior_parallelism++
-        Object.entries(item.verification_lengths.Interior).forEach(
-          ([key, value], index) => {
-            const columna = columnas_verificacion_interior3[index]
-            sheetEC.cell(`${columna}${fila_interior_parallelism}`).value(value)
-          },
-        )
+          method.interior_parallelism_measurement.measurementsd01.forEach(
+            (item) => {
+              Object.entries(item.verification_lengths.Exteriors).forEach(
+                ([key, value], index) => {
+                  const columna = columnas_verificacion_exterior3[index]
+                  sheetEC
+                    .cell(`${columna}${fila_interior_parallelism}`)
+                    .value(value)
+                },
+              )
+              fila_interior_parallelism++
+              Object.entries(item.verification_lengths.Interiors).forEach(
+                ([key, value], index) => {
+                  const columna = columnas_verificacion_interior3[index]
+                  sheetEC
+                    .cell(`${columna}${fila_interior_parallelism}`)
+                    .value(value)
+                },
+              )
 
-        if (position_interior_parallelism == 1) {
-          const startingColumn = 'P'
-          let currentColumn = startingColumn
-          let fila_P = 6
-          let position_P = getPositionNominal(item.nominal_patron)
-          sheetEC2.cell(`${currentColumn}${fila_P}`).value(position_P)
+              if (position_interior_parallelism == 1) {
+                const startingColumn = 'P'
+                let currentColumn = startingColumn
+                let fila_P = 6
+                let position_P = getPositionNominal(item.nominal_patron)
+                sheetEC2.cell(`${currentColumn}${fila_P}`).value(position_P)
+              }
+              if (position_interior_parallelism == 2) {
+                const startingColumn = 'P'
+                let currentColumn = startingColumn
+                let fila_P = 13
+                let position_P = getPositionNominal(item.nominal_patron)
+                sheetEC2.cell(`${currentColumn}${fila_P}`).value(position_P)
+              }
+              if (position_interior_parallelism == 3) {
+                const startingColumn = 'P'
+                let currentColumn = startingColumn
+                let fila_P = 20
+                let position_P = getPositionNominal(item.nominal_patron)
+                sheetEC2.cell(`${currentColumn}${fila_P}`).value(position_P)
+              }
+              fila_interior_parallelism++
+              position_interior_parallelism++
+            },
+          )
         }
-        if (position_interior_parallelism == 2) {
-          const startingColumn = 'P'
-          let currentColumn = startingColumn
-          let fila_P = 13
-          let position_P = getPositionNominal(item.nominal_patron)
-          sheetEC2.cell(`${currentColumn}${fila_P}`).value(position_P)
-        }
-        if (position_interior_parallelism == 3) {
-          const startingColumn = 'P'
-          let currentColumn = startingColumn
-          let fila_P = 20
-          let position_P = getPositionNominal(item.nominal_patron)
-          sheetEC2.cell(`${currentColumn}${fila_P}`).value(position_P)
-        }
-        fila_interior_parallelism++
-        position_interior_parallelism++
-      })
+      }
 
       // PRUEBA DE EXACTITUD CARA DE MEDICIÓN DE EXTERIORES
       let fila_acurrancy_test = 72
@@ -725,59 +828,38 @@ export class NI_MCIT_D_01Service {
         fila_position_acurrancy_test++
       })
 
-      async function procesarEquipo(sheet, fila, equipo, bandera) {
-        let equipoNumber = equipo
-        if (bandera) {
-          if (equipoNumber < 10) {
-            equipo = 'NI-MCPD-0' + equipo
-          } else {
-            equipo = 'NI-MCPD-' + equipo
+      //tipo de patrone de medicion
+      if (method.environmental_conditions.equipment_used == 'NI-MCPPT-02') {
+        sheetEC.cell('S52').value('1')
+      }
+      if (method.environmental_conditions.equipment_used == 'NI-MCPPT-05') {
+        sheetEC.cell('S52').value('2')
+      }
+      if (method.environmental_conditions.equipment_used == 'NI-MCPPT-06') {
+        sheetEC.cell('S52').value('3')
+      }
+
+      // Procesamiento de equipos DA (mm) y FA (mm)
+      const descipcioPatrines = []
+      for (let i = 1; i <= 4; i++) {
+        let data = method.description_pattern['NI_MCPD_0' + i]
+        if (data) {
+          if (data < 10) {
+            data = 'NI-MCPD-0' + data
           }
-        }
-        let valoresEquipo = getValor(equipo)
-        console.log(valoresEquipo)
-        sheet.cell(`A${fila}`).value(valoresEquipo[0])
-        sheet.cell(`I${fila}`).value(equipo)
-        sheet.cell(`M${fila}`).value(valoresEquipo[1])
-        sheet.cell(`R${fila}`).value(valoresEquipo[2])
-      }
-
-      // Procesamiento de equipos DA (mm)
-      let filaDA = 83
-      for (let i = 1; i <= 4; i++) {
-        let codigoEquipo = method.description_pattern['NI_MCPD_0' + i]
-        if (codigoEquipo) {
-          await procesarEquipo(sheetEC3, filaDA, codigoEquipo, true)
-          filaDA++
+          let patterns = await this.patternsService.findByCodeAndMethod(
+            data,
+            'NI-MCIT-D-01',
+          )
+          descipcioPatrines.push(patterns.data)
         }
       }
-
-      // Procesamiento de equipo usado para DA (mm)
-      await procesarEquipo(
-        sheetEC3,
-        filaDA,
+      let patterns = await this.patternsService.findByCodeAndMethod(
         method.environmental_conditions.equipment_used,
-        false,
+        'NI-MCIT-D-01',
       )
-      filaDA++
 
-      // Procesamiento de equipos FA (mm)
-      let filaFA = 82
-      for (let i = 1; i <= 4; i++) {
-        let codigoEquipo = method.description_pattern['NI_MCPD_0' + i]
-        if (codigoEquipo) {
-          await procesarEquipo(sheetEC4, filaFA, codigoEquipo, true)
-          filaFA++
-        }
-      }
-
-      // Procesamiento de equipo usado para FA (mm)
-      await procesarEquipo(
-        sheetEC4,
-        filaFA,
-        method.environmental_conditions.equipment_used,
-        false,
-      )
+      descipcioPatrines.push(patterns.data)
 
       workbook.toFileAsync(newFilePath)
 
@@ -788,70 +870,274 @@ export class NI_MCIT_D_01Service {
       const sheetDA = workbook2.sheet('DA (mm)')
       const sheetFA = workbook2.sheet('FA (mm)')
 
-      //lectura de datos para pdf
-      const data = {
-        client: {
-          name: dataClient.company_name,
-          address: dataClient.address,
-          email: dataClient.email,
-          phone: dataClient.phone,
-        },
-        quote: {
-          no: dataQuote.no,
-          equipment: equipment[0],
-        },
-        method: {
-          maker: method.equipment_information.maker,
-          serial_number: method.equipment_information.serial_number,
-          measurement_range: method.equipment_information.measurement_range,
-          resolution: method.equipment_information.resolution,
-          model: method.equipment_information.model,
-          code: method.equipment_information.code,
-          length: method.equipment_information.length,
-          stabilization_site:
-            method.environmental_conditions.stabilization_site,
-          cycles: {
-            hr: {
-              initial: method.environmental_conditions.cycles.hr.initial,
-              end: method.environmental_conditions.cycles.hr.end,
-            },
-            ta: {
-              initial: method.environmental_conditions.cycles.ta.initial,
-              end: method.environmental_conditions.cycles.ta.end,
-            },
-          },
-          time: {
-            minute: method.environmental_conditions.time.minute,
-          },
-          pre_installation_comment: method.pre_installation_comment.comment,
-          instrument_zero_check: {
-            nominal_value: method.instrument_zero_check.nominal_value,
-            x1: method.instrument_zero_check.x1,
-            x2: method.instrument_zero_check.x2,
-            x3: method.instrument_zero_check.x3,
-            x4: method.instrument_zero_check.x4,
-            x5: method.instrument_zero_check.x5,
-          },
-          exterior_parallelism_measurement:
-            method.exterior_parallelism_measurement.measurements,
-          interior_parallelism_measurement:
-            method.interior_parallelism_measurement.measurements,
-          exterior_measurement_accuracy:
-            method.exterior_measurement_accuracy.measure,
-        },
-        data: {
-          DA: {
-            data: [],
-            equipment_used: method.environmental_conditions.equipment_used,
-          },
-          FA: {
-            data: [],
-            equipment_used: method.environmental_conditions.equipment_used,
-          },
-        },
+      //capturando datos del excel de las sheet DA (mm)
+      let filaDAmm = 28
+      let filastop = 34
+      const columnas_result_calibration = ['C', 'G', 'K', 'O', 'S', 'W']
+      const dataCalibration = []
+      // Recorrer las filas y columnas especificadas
+      for (let i = filaDAmm; i <= filastop; i++) {
+        let data = {}
+        columnas_result_calibration.forEach((column) => {
+          let value = sheetDA.cell(`${column}${i}`).value()
+          if (!isNaN(value)) {
+            if (column != 'C') {
+              value = parseFloat(value).toFixed(1)
+            }
+          }
+          data[column] = value
+        })
+        dataCalibration.push(data)
       }
 
-      return handleOK('Archivo generado correctamente')
+      // Caras de medición de exteriores.
+      // Caras de medición de exteriores.
+      const dataCalibrationExterior = []
+      if (method.exterior_parallelism_measurement != null) {
+        if (method.exterior_parallelism_measurement.measurements != null) {
+          let filaDAmmExterior = 42
+          let filastopExterior = 55
+          const columnas_result_calibrationExterior = ['E', 'H', 'L']
+          // Recorrer las filas y columnas especificadas
+          for (let i = filaDAmmExterior; i <= filastopExterior; i++) {
+            if (i === 52 || i === 53) {
+              continue
+            }
+            let data = {}
+            let shouldAddRow = false // Controla si la fila debe añadirse
+            columnas_result_calibrationExterior.forEach((column) => {
+              let value = sheetDA.cell(`${column}${i}`).value() // Obtiene el valor de la celda
+              if (value !== undefined && !isNaN(value)) {
+                if (column === 'H' || column === 'L') {
+                  value = parseFloat(value).toFixed(2)
+                }
+                if (column === 'E') {
+                  if (!Number.isInteger(value)) {
+                    value = Math.round(value)
+                  }
+                }
+                data[column] = value // Asigna el valor formateado al objeto data
+                shouldAddRow = true // Marca que la fila tiene al menos un valor no undefined y debería ser añadida
+              }
+            })
+            const position = i % 2 === 0 ? true : false
+            // Si la fila tiene al menos un valor definido, se añade al arreglo
+            if (shouldAddRow) {
+              dataCalibrationExterior.push({ position, ...data })
+            }
+          }
+        }
+      }
+      const dataCalibrationInterior = []
+      //Caras de medición de interiores
+      if (method.interior_parallelism_measurement != null) {
+        if (method.interior_parallelism_measurement.measurementsd01 != null) {
+          let filaDAmmInteriorr = 42
+          let filastopInterior = 43
+          const columnas_result_calibrationInterior = ['T', 'W', 'Z']
+
+          // Recorrer las filas y columnas especificadas
+          for (let i = filaDAmmInteriorr; i <= filastopInterior; i++) {
+            let data = {}
+            let shouldAddRow = false // Controla si la fila debe añadirse
+            columnas_result_calibrationInterior.forEach((column) => {
+              let value = sheetDA.cell(`${column}${i}`).value() // Obtiene el valor de la celda
+              if (value !== undefined && !isNaN(value)) {
+                if (column === 'W' || column === 'Z') {
+                  value = parseFloat(value).toFixed(2) // Formatea el valor a un decimal
+                }
+                if (column === 'T') {
+                  if (!Number.isInteger(value)) {
+                    value = Math.round(value)
+                  }
+                }
+                data[column] = value // Asigna el valor formateado al objeto data
+                shouldAddRow = true // Marca que la fila tiene al menos un valor no undefined y debería ser añadida
+              }
+            })
+            const position = i % 2 === 0 ? true : false
+
+            // Si la fila tiene al menos un valor definido, se añade al arreglo
+            if (shouldAddRow) {
+              dataCalibrationInterior.push({ position, ...data })
+            }
+          }
+        }
+      }
+
+      //Condiciones ambientales
+      const condicionesAmbientales = []
+      let temperatura = sheetDA.cell('G68').value()
+      condicionesAmbientales.push(temperatura)
+      let humedad = sheetDA.cell('G69').value()
+      condicionesAmbientales.push(humedad)
+      let estabilizacion = sheetDA.cell('J68').value()
+      condicionesAmbientales.push(estabilizacion)
+      let tiempo = sheetDA.cell('J69').value()
+      condicionesAmbientales.push(tiempo)
+
+      //Fecha
+      const fechaOriginal = method.equipment_information.date
+      const fecha = new Date(fechaOriginal)
+
+      // Obteniendo los componentes de la fecha
+      const dia = fecha.getDate().toString().padStart(2, '0')
+      const mes = (fecha.getMonth() + 1).toString().padStart(2, '0') // Enero es 0, así que necesitas sumar 1
+      const año = fecha.getFullYear()
+
+      // Formato de fecha: dd/mm/yyyy
+      const fechaFormateada = `${dia}/${mes}/${año}`
+
+      //lectura de datos para pdf
+      const serviceCode = generateServiceCodeToMethod(method.id)
+      const dataNI_R01_MCIT_D_01 = {
+        client: {
+          Empresa: dataClient.company_name,
+          fecha: fechaFormateada,
+          LugarCalibracion: dataClient.address,
+          Codigo: dataQuote.no,
+          fechaCertificate: Date.now(),
+        },
+        informacionEquipo: {
+          Dispositivo: method.equipment_information.device,
+          Marca: method.equipment_information.maker,
+          NoSerie: method.equipment_information.serial_number,
+          Range: method.equipment_information.measurement_range,
+          Resolucion: method.equipment_information.resolution,
+          Modelo: method.equipment_information.model,
+          Codigo: method.equipment_information.code,
+          Longitud: method.equipment_information.length,
+        },
+        condicionesAmbientales2: {
+          CicloInicialTa: method.environmental_conditions.cycles.ta.initial,
+          CicloFinalTa: method.environmental_conditions.cycles.ta.end,
+          CicloInicialHr: method.environmental_conditions.cycles.hr.initial,
+          CicloFinalHr: method.environmental_conditions.cycles.hr.end,
+          EquipoUsado: method.environmental_conditions.equipment_used,
+          Estabilizacion: method.environmental_conditions.stabilization_site,
+        },
+        descipcioPatrines,
+        dataCalibrationExterior,
+        dataCalibrationInterior,
+        comentarioPreInstalacion: {
+          Comentario: method.pre_installation_comment.comment,
+        },
+        verificacionCeroInstrumento: {
+          ValorNominal: method.instrument_zero_check.nominal_value,
+          X1: method.instrument_zero_check.x1,
+          X2: method.instrument_zero_check.x2,
+          X3: method.instrument_zero_check.x3,
+          X4: method.instrument_zero_check.x4,
+          X5: method.instrument_zero_check.x5,
+        },
+        medicionParalelismoExteriores:
+          method.exterior_parallelism_measurement == null ? false : true,
+        medicionParalelismoInteriores:
+          method.interior_parallelism_measurement == null ? false : true,
+        pruebaExactitud: method.exterior_measurement_accuracy.measure,
+        numeroCertificado: serviceCode,
+      }
+
+      //validar si lleve ONA o No
+      if (method.pre_installation_comment.accredited) {
+        await this.generateCertificateCodeToMethod(method.id)
+      }
+      const methodAcredited = await this.NI_MCIT_D_01Repository.findOne({
+        where: { id: methodID },
+      })
+
+      let dataDA
+      if (method.pre_installation_comment.accredited) {
+        dataDA = {
+          datoscabecera: {
+            numeroCertificado: serviceCode,
+            codigoServicio: methodAcredited.certificate_code,
+            fechaCalibracion: method.created_at,
+            fechaEmision: formatDate(new Date().toString()),
+            objetoCalibracion: method.equipment_information.device,
+            marca: method.equipment_information.maker,
+            serie: method.equipment_information.serial_number,
+            modelo: method.equipment_information.model,
+            rangoMedida: method.equipment_information.measurement_range,
+            resolucion: method.equipment_information.resolution,
+            codigoIdentificacion: method.equipment_information.code,
+            Solicitante: dataClient.company_name,
+            direccion: dataClient.address,
+            lugarCalibracion: dataClient.address,
+          },
+          ResultadoCalibracion: {
+            dataCalibration,
+          },
+          condicionesAmbientales: {
+            Temperatura: temperatura,
+            Humedad: humedad,
+            Estabilizacion: estabilizacion,
+            Tiempo: tiempo,
+          },
+          acreedited: method.pre_installation_comment.accredited,
+        }
+      } else {
+        dataDA = {
+          datoscabecera: {
+            numeroCertificado: serviceCode,
+            fechaCalibracion: method.created_at,
+            fechaEmision: formatDate(new Date().toString()),
+            objetoCalibracion: method.equipment_information.device,
+            marca: method.equipment_information.maker,
+            serie: method.equipment_information.serial_number,
+            modelo: method.equipment_information.model,
+            rangoMedida: method.equipment_information.measurement_range,
+            resolucion: method.equipment_information.resolution,
+            codigoIdentificacion: method.equipment_information.code,
+            Solicitante: dataClient.company_name,
+            direccion: dataClient.address,
+            lugarCalibracion: dataClient.address,
+          },
+          ResultadoCalibracion: {
+            dataCalibration,
+          },
+          condicionesAmbientales: {
+            Temperatura: temperatura,
+            Humedad: humedad,
+            Estabilizacion: estabilizacion,
+            Tiempo: tiempo,
+          },
+          acreedited: method.pre_installation_comment.accredited,
+        }
+      }
+
+      //guardar en base de datos
+      const CertificateData = {
+        dataNI_R01_MCIT_D_01,
+        dataDA,
+        creditable: method.pre_installation_comment.accredited,
+      }
+
+      const PDF = await this.pdfService.generateCertificatePdf(
+        '/certificates/NI_CMIT_D_01/certificadoD01.hbs',
+        // method.pre_installation_comment.accredited,
+        CertificateData,
+      )
+
+      if (!PDF) {
+        return handleInternalServerError('Error al generar el PDF')
+      }
+
+      // const PDF = await this.pdfService.generateCertificateD_01pdf(
+      //   CertificateData,
+      //   method.pre_installation_comment.accredited,
+      // )
+
+      const response = await this.mailService.sendMailCertification({
+        user: dataClient.email,
+        pdf: PDF,
+      })
+
+      if (response) {
+        return handleOK('Certificado generado correctamente')
+      } else {
+        return handleInternalServerError('Error al generar el archivo')
+      }
     } catch (error) {
       console.error('Error al generar el archivo:', error)
       return handleInternalServerError('Error al generar el archivo')
@@ -913,18 +1199,42 @@ export class NI_MCIT_D_01Service {
         ],
       })
 
-      if (!method) {
-        return handleInternalServerError('El método no existe')
-      }
-
-      const dataCertificate = await this.generateCertificateData({
+      const respuesta = await this.generateCertificateData({
         activityID,
         methodID,
       })
 
+      console.log('dataCertificate', respuesta)
       return handleOK('Archivo generado correctamente')
     } catch (error) {
       return handleInternalServerError('Error al generar el certificado')
+    }
+  }
+
+  async generateCertificateCodeToMethod(methodID: number) {
+    try {
+      const method = await this.NI_MCIT_D_01Repository.findOne({
+        where: { id: methodID },
+      })
+
+      if (!method) {
+        return handleInternalServerError('El método no existe')
+      }
+
+      if (method.certificate_code) {
+        return handleOK('El método ya tiene un código de certificado')
+      }
+
+      const certificate = await this.certificateService.create()
+
+      method.certificate_code = certificate.data.code
+      method.certificate_id = certificate.data.id
+
+      await this.NI_MCIT_D_01Repository.save(method)
+
+      return handleOK(certificate)
+    } catch (error) {
+      return handleInternalServerError(error.message)
     }
   }
 }

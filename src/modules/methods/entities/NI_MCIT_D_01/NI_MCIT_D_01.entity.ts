@@ -19,6 +19,12 @@ export class NI_MCIT_D_01 {
   @Column({ nullable: true, type: 'varchar', array: true, default: [] })
   report_messages?: string[]
 
+  @Column({ nullable: true })
+  certificate_id?: string
+
+  @Column({ nullable: true })
+  certificate_code?: string
+
   @ManyToOne(
     () => EquipmentInformationNI_MCIT_D_01,
     (equipmentInformationNI_MCIT_D_01) =>
@@ -92,6 +98,7 @@ export class NI_MCIT_D_01 {
     {
       onDelete: 'CASCADE',
       onUpdate: 'CASCADE',
+      nullable: true,
     },
   )
   interior_parallelism_measurement: InteriorParallelismMeasurementNI_MCIT_D_01
@@ -103,6 +110,7 @@ export class NI_MCIT_D_01 {
     {
       onDelete: 'CASCADE',
       onUpdate: 'CASCADE',
+      nullable: true,
     },
   )
   exterior_measurement_accuracy: ExteriorMeasurementAccuracyNI_MCIT_D_01

@@ -1,5 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger'
-class IMedition {
+
+class IMeditions {
   @ApiProperty()
   x1: number
 
@@ -16,22 +17,22 @@ class IMedition {
   x5: number
 }
 
-class IPlace {
+class IPlaces {
   @ApiProperty()
-  Exterior: IMedition
+  Exteriors: IMeditions
 
   @ApiProperty()
-  Interior: IMedition
+  Interiors: IMeditions
 }
 
-class IMeasurements {
+class IMeasurementsD01 {
   @ApiProperty()
   nominal_patron: string
 
   @ApiProperty()
-  verification_lengths: IPlace
+  verification_lengths: IPlaces
 }
 export class InteriorParallelismMeasurementNI_MCIT_D_01Dto {
-  @ApiProperty({ type: () => IMeasurements })
-  measurements?: IMeasurements[]
+  @ApiProperty({ type: () => IMeasurementsD01 })
+  measurementsd01?: IMeasurementsD01[]
 }
