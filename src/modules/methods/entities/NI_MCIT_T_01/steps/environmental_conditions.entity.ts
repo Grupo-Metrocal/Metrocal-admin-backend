@@ -30,7 +30,7 @@ export interface ICycles_NI_MCIT_T_01 {
       initial: number
       final: number
     }
-    equipement: string
+    equipment: string
   }
   hpa: {
     pa: {
@@ -38,7 +38,7 @@ export interface ICycles_NI_MCIT_T_01 {
       final: number
     }
     stabilization_time: number
-    equipement: string
+    equipment: string
   }
 }
 
