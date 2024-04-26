@@ -402,6 +402,16 @@ export class MethodsController {
     )
   }
 
+  @Post('ni-mcit-t-01/calibration-results/:methodId')
+  async createNI_MCIT_T_01CalibrationResults(
+    @Body() calibrations: CalibrationResultsT_01Dto,
+    @Param('methodId') methodId: number,
+  ) {
+    return await this.ni_mcit_t_01Service.calibrationResults(
+      calibrations,
+      methodId,
+    )
+  }
   @Post('ni-mcit-t-01/description-pattern/:methodId/:activityId')
   async createNI_MCIT_T_01DescriptionPattern(
     @Body() descriptionPattern: DescriptionPatternT_01Dto,
@@ -415,14 +425,14 @@ export class MethodsController {
     )
   }
 
-  @Post('ni-mcit-t-01/calibration-results/:methodId')
-  async createNI_MCIT_T_01CalibrationResults(
-    @Body() calibrations: CalibrationResultsT_01Dto,
+  @Get('ni-mcit-t-01/certificates/activity/:activityId/method/:methodId')
+  async getNI_MCIT_T_01Certificate(
+    @Param('activityId') activityId: number,
     @Param('methodId') methodId: number,
   ) {
-    return await this.ni_mcit_t_01Service.calibrationResults(
-      calibrations,
-      methodId,
-    )
+    return await this.ni_mcit_t_01Service.generateCertificate({
+      activityID: activityId,
+      methodID: methodId,
+    })
   }
 }
