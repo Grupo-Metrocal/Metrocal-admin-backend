@@ -19,6 +19,12 @@ export class NI_MCIT_D_01 {
   @Column({ nullable: true, type: 'varchar', array: true, default: [] })
   report_messages?: string[]
 
+  @Column({ nullable: true })
+  certificate_id?: string
+
+  @Column({ nullable: true })
+  certificate_code?: string
+
   @ManyToOne(
     () => EquipmentInformationNI_MCIT_D_01,
     (equipmentInformationNI_MCIT_D_01) =>

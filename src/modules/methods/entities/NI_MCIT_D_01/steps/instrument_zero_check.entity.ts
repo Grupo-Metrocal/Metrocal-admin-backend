@@ -19,18 +19,18 @@ export class InstrumentZeroCheckNI_MCIT_D_01 {
   @Column({ nullable: true })
   nominal_value: number
 
-  @Column({ nullable: true })
+  @Column({ type: 'decimal', precision: 10, scale: 2, nullable: true })
   x1?: number
 
-  @Column({ nullable: true })
+  @Column({ type: 'decimal', precision: 10, scale: 2, nullable: true })
   x2?: number
 
-  @Column({ nullable: true })
+  @Column({ type: 'decimal', precision: 10, scale: 2, nullable: true })
   x3?: number
 
-  @Column({ nullable: true })
+  @Column({ type: 'decimal', precision: 10, scale: 2, nullable: true })
   x4?: number
 
-  @Column({ nullable: true })
+  @Column({ type: 'decimal', precision: 10, scale: 2, nullable: true })
   x5?: number
 }

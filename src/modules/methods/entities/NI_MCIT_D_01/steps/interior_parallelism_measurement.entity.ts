@@ -17,20 +17,20 @@ export class InteriorParallelismMeasurementNI_MCIT_D_01 {
   NI_MCIT_D_01: NI_MCIT_D_01[]
 
   @Column('jsonb', { nullable: true })
-  measurements?: IMeasurements[]
+  measurementsd01?: IMeasurements[]
 }
 
 interface IMeasurements {
   nominal_patron: string
-  verification_lengths: IPlace
+  verification_lengths: IPlaces
 }
 
-interface IPlace {
-  Exterior: IMedition
-  Interior: IMedition
+interface IPlaces {
+  Exteriors: IMeditions
+  Interiors: IMeditions
 }
 
-interface IMedition {
+interface IMeditions {
   x1: number
   x2: number
   x3: number

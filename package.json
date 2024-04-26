@@ -18,7 +18,7 @@
     "test:cov": "jest --coverage",
     "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand",
     "test:e2e": "jest --config ./test/jest-e2e.json",
-    "copy-assets": "mkdir dist\\modules\\mail\\templates && xcopy /s /e src\\modules\\mail\\templates dist\\modules\\mail\\templates"
+    "copy-assets": "mkdir dist\\modules\\mail\\templates\\excels && xcopy /s /e src\\modules\\mail\\templates dist\\modules\\mail\\templates\\"
   },
   "dependencies": {
     "@nestjs-modules/mailer": "^1.9.1",

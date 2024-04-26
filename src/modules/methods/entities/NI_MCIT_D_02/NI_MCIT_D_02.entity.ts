@@ -1,10 +1,10 @@
 import { Column, Entity, ManyToOne, PrimaryGeneratedColumn } from 'typeorm'
-import { EnvironmentalConditionsNI_MCIT_D_02 } from './steps/environmental_conditions.entity'
-import { EquipmentInformationNI_MCIT_D_02 } from './steps/equipment_informatio.entity'
-import { DescriptionPatternNI_MCIT_D_02 } from './steps/description_pattern.entity'
-import { PreInstallationCommentNI_MCIT_D_02 } from './steps/pre_installation_comment.entity'
-import { InstrumentZeroCheckNI_MCIT_D_02 } from './steps/instrument_zero_check.entity'
-import { AccuracyTestNI_MCIT_D_02 } from './steps/accuracy_test.entity'
+import { EnvironmentalConditionsNI_MCIT_D_02 } from './steps/d02environmental_conditions.entity'
+import { EquipmentInformationNI_MCIT_D_02 } from './steps/d02equipment_informatio.entity'
+import { DescriptionPatternNI_MCIT_D_02 } from './steps/d02description_pattern.entity'
+import { PreInstallationCommentNI_MCIT_D_02 } from './steps/d02pre_installation_comment.entity'
+import { InstrumentZeroCheckNI_MCIT_D_02 } from './steps/d02instrument_zero_check.entity'
+import { AccuracyTestNI_MCIT_D_02 } from './steps/d02accuracy_test.entity'
 
 @Entity('NI_MCIT_D_02')
 export class NI_MCIT_D_02 {
@@ -96,4 +96,10 @@ export class NI_MCIT_D_02 {
 
   @Column({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP' })
   updated_at: Date
+
+  @Column({ nullable: true })
+  certificate_id?: string
+
+  @Column({ nullable: true })
+  certificate_code?: string
 }

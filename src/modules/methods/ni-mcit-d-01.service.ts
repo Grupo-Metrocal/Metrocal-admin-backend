@@ -1,3 +1,4 @@
+import { DescriptionPatternDto } from './dto/NI_MCIT_P_01/description_pattern.dto'
 import { Pattern } from './../patterns/entities/pattern.entity'
 import { Inject, Injectable, forwardRef, Get, Res } from '@nestjs/common'
 import { NI_MCIT_D_01 } from './entities/NI_MCIT_D_01/NI_MCIT_D_01.entity'
@@ -31,11 +32,16 @@ import * as fs from 'fs'
 import { PatternsService } from '../patterns/patterns.service'
 import { handleInternalServerError, handleOK } from 'src/common/handleHttp'
 import { QuoteRequest } from '../quotes/entities/quote-request.entity'
+import { patterns } from 'pdfkit/js/page'
+import { Certificate } from '../certificate/entities/certificate.entity'
+import { PdfService } from '../mail/pdf.service'
+import { MailService } from '../mail/mail.service'
 import {
   getPosition,
   getPositionNominal,
-  getValor,
 } from './dto/NI_MCIT_D_01/PositionBPDto'
+import { formatDate } from 'src/utils/formatDate'
+import { CertificateService } from '../certificate/certificate.service'
 
 @Injectable()
 export class NI_MCIT_D_01Service {
@@ -64,6 +70,10 @@ export class NI_MCIT_D_01Service {
 
     @Inject(forwardRef(() => PatternsService))
     private readonly patternsService: PatternsService,
+
+    private readonly pdfService: PdfService,
+    private readonly certificateService: CertificateService,
+    private readonly mailService: MailService,
   ) {}
 
   async create() {
@@ -504,176 +514,241 @@ export class NI_MCIT_D_01Service {
       sheetEC
         .cell('F20')
         .value(method.environmental_conditions.stabilization_site)
-      sheetEC.cell('E20').value(method.environmental_conditions.time.minute)
+      sheetEC
+        .cell('E20')
+        .value(
+          method.environmental_conditions.time.hours +
+            ':' +
+            method.environmental_conditions.time.minute,
+        )
 
       //description Pattern
       sheetEC
         .cell('A24')
-        .value('NI-MCPD-' + method.description_pattern.NI_MCPD_01)
+        .value('NI-MCPD-0' + method.description_pattern.NI_MCPD_01)
       sheetEC
         .cell('A25')
-        .value('NI-MCPD-' + method.description_pattern.NI_MCPD_02)
+        .value('NI-MCPD-0' + method.description_pattern.NI_MCPD_02)
       sheetEC
         .cell('B24')
-        .value('NI-MCPD-' + method.description_pattern.NI_MCPD_03)
+        .value('NI-MCPD-0' + method.description_pattern.NI_MCPD_03)
       sheetEC
         .cell('B25')
-        .value('NI-MCPD-' + method.description_pattern.NI_MCPD_04)
+        .value('NI-MCPD-0' + method.description_pattern.NI_MCPD_04)
 
       //pre installation comment
       sheetEC.cell('A28').value(method.pre_installation_comment.comment)
 
       //instrument zero check
       sheetEC.cell('A34').value(method.instrument_zero_check.nominal_value)
-      sheetEC.cell('C34').value(method.instrument_zero_check.x1)
-      sheetEC.cell('D34').value(method.instrument_zero_check.x2)
-      sheetEC.cell('E34').value(method.instrument_zero_check.x3)
-      sheetEC.cell('F34').value(method.instrument_zero_check.x4)
-      sheetEC.cell('G34').value(method.instrument_zero_check.x5)
+      sheetEC
+        .cell('C34')
+        .value(
+          method.instrument_zero_check.x1 == 0.0
+            ? 0
+            : method.instrument_zero_check.x1,
+        )
+      sheetEC
+        .cell('D34')
+        .value(
+          method.instrument_zero_check.x2 == 0.0
+            ? 0
+            : method.instrument_zero_check.x2,
+        )
+      sheetEC
+        .cell('E34')
+        .value(
+          method.instrument_zero_check.x3 == 0.0
+            ? 0
+            : method.instrument_zero_check.x3,
+        )
+      sheetEC
+        .cell('F34')
+        .value(
+          method.instrument_zero_check.x4 == 0.0
+            ? 0
+            : method.instrument_zero_check.x4,
+        )
+      sheetEC
+        .cell('G34')
+        .value(
+          method.instrument_zero_check.x5 == 0.0
+            ? 0
+            : method.instrument_zero_check.x5,
+        )
 
       //Medición de paralelismo (caras de medición de exteriores)
-      let fila = 39
-      let position = 1
-      const columnas_verificacion_exterior = ['D', 'E', 'F', 'G', 'H']
-      const columnas_verificacion_interior = ['D', 'E', 'F', 'G', 'H']
+      if (method.exterior_parallelism_measurement != null) {
+        if (method.exterior_parallelism_measurement.measurements != null) {
+          let fila = 39
+          let position = 1
+          const columnas_verificacion_exterior = ['D', 'E', 'F', 'G', 'H']
+          const columnas_verificacion_interior = ['D', 'E', 'F', 'G', 'H']
 
-      method.exterior_parallelism_measurement.measurements.forEach((item) => {
-        //exterior
-        Object.entries(item.verification_lengths.Exterior).forEach(
-          ([key, value], index) => {
-            const columna = columnas_verificacion_exterior[index]
-            sheetEC.cell(`${columna}${fila}`).value(value)
-          },
-        )
-        fila++
-        Object.entries(item.verification_lengths.Interior).forEach(
-          ([key, value], index) => {
-            const columna = columnas_verificacion_interior[index]
-            sheetEC.cell(`${columna}${fila}`).value(value)
-          },
-        )
+          method.exterior_parallelism_measurement.measurements.forEach(
+            (item) => {
+              //exterior
+              Object.entries(item.verification_lengths.Exterior).forEach(
+                ([key, value], index) => {
+                  const columna = columnas_verificacion_exterior[index]
+                  sheetEC.cell(`${columna}${fila}`).value(value)
+                },
+              )
+              fila++
+              Object.entries(item.verification_lengths.Interior).forEach(
+                ([key, value], index) => {
+                  const columna = columnas_verificacion_interior[index]
+                  sheetEC.cell(`${columna}${fila}`).value(value)
+                },
+              )
 
-        if (position == 1) {
-          const startingColumn = 'L'
-          let currentColumn = startingColumn
-          let fila_L = 6
-          Object.entries(item.point_number).forEach(([key, value]) => {
-            let position_l = getPosition(String(value))
-            sheetEC2.cell(`${currentColumn}${fila_L}`).value(position_l)
-            currentColumn = String.fromCharCode(currentColumn.charCodeAt(0) + 1)
-          })
-        }
-        if (position == 2) {
-          const startingColumn = 'L'
-          let currentColumn = startingColumn
-          let fila_L = 13
-          Object.entries(item.point_number).forEach(([key, value]) => {
-            let position_l = getPosition(String(value))
-            sheetEC2.cell(`${currentColumn}${fila_L}`).value(position_l)
-            currentColumn = String.fromCharCode(currentColumn.charCodeAt(0) + 1)
-          })
-        }
-        if (position == 3) {
-          const startingColumn = 'L'
-          let currentColumn = startingColumn
-          let fila_L = 20
-          Object.entries(item.point_number).forEach(([key, value]) => {
-            let position_l = getPosition(String(value))
-            sheetEC2.cell(`${currentColumn}${fila_L}`).value(position_l)
-            currentColumn = String.fromCharCode(currentColumn.charCodeAt(0) + 1)
-          })
-        }
-        if (position == 4) {
-          const startingColumn = 'L'
-          let currentColumn = startingColumn
-          let fila_L = 27
-          Object.entries(item.point_number).forEach(([key, value]) => {
-            let position_l = getPosition(String(value))
-            sheetEC2.cell(`${currentColumn}${fila_L}`).value(position_l)
-            currentColumn = String.fromCharCode(currentColumn.charCodeAt(0) + 1)
-          })
-        }
-        if (position == 5) {
-          const startingColumn = 'L'
-          let currentColumn = startingColumn
-          let fila_L = 34
-          Object.entries(item.point_number).forEach(([key, value]) => {
-            let position_l = getPosition(String(value))
-            sheetEC2.cell(`${currentColumn}${fila_L}`).value(position_l)
-            currentColumn = String.fromCharCode(currentColumn.charCodeAt(0) + 1)
-          })
-        }
-        if (position == 6) {
-          const startingColumn = 'L'
-          let currentColumn = startingColumn
-          let fila_L = 41
-          Object.entries(item.point_number).forEach(([key, value]) => {
-            let position_l = getPosition(String(value))
-            sheetEC2.cell(`${currentColumn}${fila_L}`).value(position_l)
-            currentColumn = String.fromCharCode(currentColumn.charCodeAt(0) + 1)
-          })
-        }
-        if (position == 7) {
-          const startingColumn = 'L'
-          let currentColumn = startingColumn
-          let fila_L = 48
-          Object.entries(item.point_number).forEach(([key, value]) => {
-            let position_l = getPosition(String(value))
-            sheetEC2.cell(`${currentColumn}${fila_L}`).value(position_l)
-            currentColumn = String.fromCharCode(currentColumn.charCodeAt(0) + 1)
-          })
-        }
+              if (position == 1) {
+                const startingColumn = 'L'
+                let currentColumn = startingColumn
+                let fila_L = 6
+                Object.entries(item.point_number).forEach(([key, value]) => {
+                  let position_l = getPosition(String(value))
+                  sheetEC2.cell(`${currentColumn}${fila_L}`).value(position_l)
+                  currentColumn = String.fromCharCode(
+                    currentColumn.charCodeAt(0) + 1,
+                  )
+                })
+              }
+              if (position == 2) {
+                const startingColumn = 'L'
+                let currentColumn = startingColumn
+                let fila_L = 13
+                Object.entries(item.point_number).forEach(([key, value]) => {
+                  let position_l = getPosition(String(value))
+                  sheetEC2.cell(`${currentColumn}${fila_L}`).value(position_l)
+                  currentColumn = String.fromCharCode(
+                    currentColumn.charCodeAt(0) + 1,
+                  )
+                })
+              }
+              if (position == 3) {
+                const startingColumn = 'L'
+                let currentColumn = startingColumn
+                let fila_L = 20
+                Object.entries(item.point_number).forEach(([key, value]) => {
+                  let position_l = getPosition(String(value))
+                  sheetEC2.cell(`${currentColumn}${fila_L}`).value(position_l)
+                  currentColumn = String.fromCharCode(
+                    currentColumn.charCodeAt(0) + 1,
+                  )
+                })
+              }
+              if (position == 4) {
+                const startingColumn = 'L'
+                let currentColumn = startingColumn
+                let fila_L = 27
+                Object.entries(item.point_number).forEach(([key, value]) => {
+                  let position_l = getPosition(String(value))
+                  sheetEC2.cell(`${currentColumn}${fila_L}`).value(position_l)
+                  currentColumn = String.fromCharCode(
+                    currentColumn.charCodeAt(0) + 1,
+                  )
+                })
+              }
+              if (position == 5) {
+                const startingColumn = 'L'
+                let currentColumn = startingColumn
+                let fila_L = 34
+                Object.entries(item.point_number).forEach(([key, value]) => {
+                  let position_l = getPosition(String(value))
+                  sheetEC2.cell(`${currentColumn}${fila_L}`).value(position_l)
+                  currentColumn = String.fromCharCode(
+                    currentColumn.charCodeAt(0) + 1,
+                  )
+                })
+              }
+              if (position == 6) {
+                const startingColumn = 'L'
+                let currentColumn = startingColumn
+                let fila_L = 41
+                Object.entries(item.point_number).forEach(([key, value]) => {
+                  let position_l = getPosition(String(value))
+                  sheetEC2.cell(`${currentColumn}${fila_L}`).value(position_l)
+                  currentColumn = String.fromCharCode(
+                    currentColumn.charCodeAt(0) + 1,
+                  )
+                })
+              }
+              if (position == 7) {
+                const startingColumn = 'L'
+                let currentColumn = startingColumn
+                let fila_L = 48
+                Object.entries(item.point_number).forEach(([key, value]) => {
+                  let position_l = getPosition(String(value))
+                  sheetEC2.cell(`${currentColumn}${fila_L}`).value(position_l)
+                  currentColumn = String.fromCharCode(
+                    currentColumn.charCodeAt(0) + 1,
+                  )
+                })
+              }
 
-        fila++
-        position++
-      })
+              fila++
+              position++
+            },
+          )
+        }
+      }
 
       //Medición de paralelismo (caras de medición de interiores)
-      let fila_interior_parallelism = 56
-      let position_interior_parallelism = 1
-      const column_point_number3 = 'A'
-      const columnas_verificacion_exterior3 = ['D', 'E', 'F', 'G', 'H']
-      const columnas_verificacion_interior3 = ['D', 'E', 'F', 'G', 'H']
+      if (method.interior_parallelism_measurement != null) {
+        if (method.interior_parallelism_measurement.measurementsd01 != null) {
+          let fila_interior_parallelism = 56
+          let position_interior_parallelism = 1
+          const columnas_verificacion_exterior3 = ['D', 'E', 'F', 'G', 'H']
+          const columnas_verificacion_interior3 = ['D', 'E', 'F', 'G', 'H']
 
-      method.interior_parallelism_measurement.measurements.forEach((item) => {
-        Object.entries(item.verification_lengths.Exterior).forEach(
-          ([key, value], index) => {
-            const columna = columnas_verificacion_exterior3[index]
-            sheetEC.cell(`${columna}${fila_interior_parallelism}`).value(value)
-          },
-        )
-        fila_interior_parallelism++
-        Object.entries(item.verification_lengths.Interior).forEach(
-          ([key, value], index) => {
-            const columna = columnas_verificacion_interior3[index]
-            sheetEC.cell(`${columna}${fila_interior_parallelism}`).value(value)
-          },
-        )
+          method.interior_parallelism_measurement.measurementsd01.forEach(
+            (item) => {
+              Object.entries(item.verification_lengths.Exteriors).forEach(
+                ([key, value], index) => {
+                  const columna = columnas_verificacion_exterior3[index]
+                  sheetEC
+                    .cell(`${columna}${fila_interior_parallelism}`)
+                    .value(value)
+                },
+              )
+              fila_interior_parallelism++
+              Object.entries(item.verification_lengths.Interiors).forEach(
+                ([key, value], index) => {
+                  const columna = columnas_verificacion_interior3[index]
+                  sheetEC
+                    .cell(`${columna}${fila_interior_parallelism}`)
+                    .value(value)
+                },
+              )
 
-        if (position_interior_parallelism == 1) {
-          const startingColumn = 'P'
-          let currentColumn = startingColumn
-          let fila_P = 6
-          let position_P = getPositionNominal(item.nominal_patron)
-          sheetEC2.cell(`${currentColumn}${fila_P}`).value(position_P)
+              if (position_interior_parallelism == 1) {
+                const startingColumn = 'P'
+                let currentColumn = startingColumn
+                let fila_P = 6
+                let position_P = getPositionNominal(item.nominal_patron)
+                sheetEC2.cell(`${currentColumn}${fila_P}`).value(position_P)
+              }
+              if (position_interior_parallelism == 2) {
+                const startingColumn = 'P'
+                let currentColumn = startingColumn
+                let fila_P = 13
+                let position_P = getPositionNominal(item.nominal_patron)
+                sheetEC2.cell(`${currentColumn}${fila_P}`).value(position_P)
+              }
+              if (position_interior_parallelism == 3) {
+                const startingColumn = 'P'
+                let currentColumn = startingColumn
+                let fila_P = 20
+                let position_P = getPositionNominal(item.nominal_patron)
+                sheetEC2.cell(`${currentColumn}${fila_P}`).value(position_P)
+              }
+              fila_interior_parallelism++
+              position_interior_parallelism++
+            },
+          )
         }
-        if (position_interior_parallelism == 2) {
-          const startingColumn = 'P'
-          let currentColumn = startingColumn
-          let fila_P = 13
-          let position_P = getPositionNominal(item.nominal_patron)
-          sheetEC2.cell(`${currentColumn}${fila_P}`).value(position_P)
-        }
-        if (position_interior_parallelism == 3) {
-          const startingColumn = 'P'
-          let currentColumn = startingColumn
-          let fila_P = 20
-          let position_P = getPositionNominal(item.nominal_patron)
-          sheetEC2.cell(`${currentColumn}${fila_P}`).value(position_P)
-        }
-        fila_interior_parallelism++
-        position_interior_parallelism++
-      })
+      }
 
       // PRUEBA DE EXACTITUD CARA DE MEDICIÓN DE EXTERIORES
       let fila_acurrancy_test = 72
@@ -753,52 +828,38 @@ export class NI_MCIT_D_01Service {
         fila_position_acurrancy_test++
       })
 
-      async function procesarEquipo(sheet, fila, equipo, bandera) {
-        console.log('equipo', equipo)
-        let valoresEquipo =
-          await this.patternsService.findByCodeAndMethod(equipo)
-        sheet.cell(`A${fila}`).value(valoresEquipo[0])
-        sheet.cell(`I${fila}`).value(equipo)
-        sheet.cell(`M${fila}`).value(valoresEquipo[1])
-        sheet.cell(`R${fila}`).value(valoresEquipo[2])
+      //tipo de patrone de medicion
+      if (method.environmental_conditions.equipment_used == 'NI-MCPPT-02') {
+        sheetEC.cell('S52').value('1')
+      }
+      if (method.environmental_conditions.equipment_used == 'NI-MCPPT-05') {
+        sheetEC.cell('S52').value('2')
+      }
+      if (method.environmental_conditions.equipment_used == 'NI-MCPPT-06') {
+        sheetEC.cell('S52').value('3')
       }
 
-      // Procesamiento de equipos DA (mm)
-      let filaDA = 83
+      // Procesamiento de equipos DA (mm) y FA (mm)
+      const descipcioPatrines = []
       for (let i = 1; i <= 4; i++) {
-        let codigoEquipo = method.description_pattern['NI_MCPD_0' + i]
-        if (codigoEquipo) {
-          await procesarEquipo(sheetEC3, filaDA, codigoEquipo, true)
-          filaDA++
+        let data = method.description_pattern['NI_MCPD_0' + i]
+        if (data) {
+          if (data < 10) {
+            data = 'NI-MCPD-0' + data
+          }
+          let patterns = await this.patternsService.findByCodeAndMethod(
+            data,
+            'NI-MCIT-D-01',
+          )
+          descipcioPatrines.push(patterns.data)
         }
       }
-
-      // Procesamiento de equipo usado para DA (mm)
-      await procesarEquipo(
-        sheetEC3,
-        filaDA,
+      let patterns = await this.patternsService.findByCodeAndMethod(
         method.environmental_conditions.equipment_used,
-        false,
+        'NI-MCIT-D-01',
       )
-      filaDA++
 
-      // Procesamiento de equipos FA (mm)
-      let filaFA = 82
-      for (let i = 1; i <= 4; i++) {
-        let codigoEquipo = method.description_pattern['NI_MCPD_0' + i]
-        if (codigoEquipo) {
-          await procesarEquipo(sheetEC4, filaFA, codigoEquipo, true)
-          filaFA++
-        }
-      }
-
-      // Procesamiento de equipo usado para FA (mm)
-      await procesarEquipo(
-        sheetEC4,
-        filaFA,
-        method.environmental_conditions.equipment_used,
-        false,
-      )
+      descipcioPatrines.push(patterns.data)
 
       workbook.toFileAsync(newFilePath)
 
@@ -811,28 +872,131 @@ export class NI_MCIT_D_01Service {
 
       //capturando datos del excel de las sheet DA (mm)
       let filaDAmm = 28
-      let filastop = 36
+      let filastop = 34
       const columnas_result_calibration = ['C', 'G', 'K', 'O', 'S', 'W']
       const dataCalibration = []
       // Recorrer las filas y columnas especificadas
       for (let i = filaDAmm; i <= filastop; i++) {
-        const dataRow = {}
+        let data = {}
         columnas_result_calibration.forEach((column) => {
-          const cellValue = sheetDA.cell(column + 1).value()
-          dataRow[column] = cellValue
+          let value = sheetDA.cell(`${column}${i}`).value()
+          if (!isNaN(value)) {
+            if (column != 'C') {
+              value = parseFloat(value).toFixed(1)
+            }
+          }
+          data[column] = value
         })
-        dataCalibration.push(dataRow)
-        console.log(dataRow)
+        dataCalibration.push(data)
       }
+
+      // Caras de medición de exteriores.
+      // Caras de medición de exteriores.
+      const dataCalibrationExterior = []
+      if (method.exterior_parallelism_measurement != null) {
+        if (method.exterior_parallelism_measurement.measurements != null) {
+          let filaDAmmExterior = 42
+          let filastopExterior = 55
+          const columnas_result_calibrationExterior = ['E', 'H', 'L']
+          // Recorrer las filas y columnas especificadas
+          for (let i = filaDAmmExterior; i <= filastopExterior; i++) {
+            if (i === 52 || i === 53) {
+              continue
+            }
+            let data = {}
+            let shouldAddRow = false // Controla si la fila debe añadirse
+            columnas_result_calibrationExterior.forEach((column) => {
+              let value = sheetDA.cell(`${column}${i}`).value() // Obtiene el valor de la celda
+              if (value !== undefined && !isNaN(value)) {
+                if (column === 'H' || column === 'L') {
+                  value = parseFloat(value).toFixed(2)
+                }
+                if (column === 'E') {
+                  if (!Number.isInteger(value)) {
+                    value = Math.round(value)
+                  }
+                }
+                data[column] = value // Asigna el valor formateado al objeto data
+                shouldAddRow = true // Marca que la fila tiene al menos un valor no undefined y debería ser añadida
+              }
+            })
+            const position = i % 2 === 0 ? true : false
+            // Si la fila tiene al menos un valor definido, se añade al arreglo
+            if (shouldAddRow) {
+              dataCalibrationExterior.push({ position, ...data })
+            }
+          }
+        }
+      }
+      const dataCalibrationInterior = []
+      //Caras de medición de interiores
+      if (method.interior_parallelism_measurement != null) {
+        if (method.interior_parallelism_measurement.measurementsd01 != null) {
+          let filaDAmmInteriorr = 42
+          let filastopInterior = 43
+          const columnas_result_calibrationInterior = ['T', 'W', 'Z']
+
+          // Recorrer las filas y columnas especificadas
+          for (let i = filaDAmmInteriorr; i <= filastopInterior; i++) {
+            let data = {}
+            let shouldAddRow = false // Controla si la fila debe añadirse
+            columnas_result_calibrationInterior.forEach((column) => {
+              let value = sheetDA.cell(`${column}${i}`).value() // Obtiene el valor de la celda
+              if (value !== undefined && !isNaN(value)) {
+                if (column === 'W' || column === 'Z') {
+                  value = parseFloat(value).toFixed(2) // Formatea el valor a un decimal
+                }
+                if (column === 'T') {
+                  if (!Number.isInteger(value)) {
+                    value = Math.round(value)
+                  }
+                }
+                data[column] = value // Asigna el valor formateado al objeto data
+                shouldAddRow = true // Marca que la fila tiene al menos un valor no undefined y debería ser añadida
+              }
+            })
+            const position = i % 2 === 0 ? true : false
+
+            // Si la fila tiene al menos un valor definido, se añade al arreglo
+            if (shouldAddRow) {
+              dataCalibrationInterior.push({ position, ...data })
+            }
+          }
+        }
+      }
+
+      //Condiciones ambientales
+      const condicionesAmbientales = []
+      let temperatura = sheetDA.cell('G68').value()
+      condicionesAmbientales.push(temperatura)
+      let humedad = sheetDA.cell('G69').value()
+      condicionesAmbientales.push(humedad)
+      let estabilizacion = sheetDA.cell('J68').value()
+      condicionesAmbientales.push(estabilizacion)
+      let tiempo = sheetDA.cell('J69').value()
+      condicionesAmbientales.push(tiempo)
+
+      //Fecha
+      const fechaOriginal = method.equipment_information.date
+      const fecha = new Date(fechaOriginal)
+
+      // Obteniendo los componentes de la fecha
+      const dia = fecha.getDate().toString().padStart(2, '0')
+      const mes = (fecha.getMonth() + 1).toString().padStart(2, '0') // Enero es 0, así que necesitas sumar 1
+      const año = fecha.getFullYear()
+
+      // Formato de fecha: dd/mm/yyyy
+      const fechaFormateada = `${dia}/${mes}/${año}`
 
       //lectura de datos para pdf
       const serviceCode = generateServiceCodeToMethod(method.id)
       const dataNI_R01_MCIT_D_01 = {
         client: {
           Empresa: dataClient.company_name,
-          fecha: method.created_at,
+          fecha: fechaFormateada,
           LugarCalibracion: dataClient.address,
           Codigo: dataQuote.no,
+          fechaCertificate: Date.now(),
         },
         informacionEquipo: {
           Dispositivo: method.equipment_information.device,
@@ -844,7 +1008,7 @@ export class NI_MCIT_D_01Service {
           Codigo: method.equipment_information.code,
           Longitud: method.equipment_information.length,
         },
-        condicionesAmbientales: {
+        condicionesAmbientales2: {
           CicloInicialTa: method.environmental_conditions.cycles.ta.initial,
           CicloFinalTa: method.environmental_conditions.cycles.ta.end,
           CicloInicialHr: method.environmental_conditions.cycles.hr.initial,
@@ -852,12 +1016,9 @@ export class NI_MCIT_D_01Service {
           EquipoUsado: method.environmental_conditions.equipment_used,
           Estabilizacion: method.environmental_conditions.stabilization_site,
         },
-        patronDescripcion: {
-          NI_MCPD_01: method.description_pattern.NI_MCPD_01,
-          NI_MCPD_02: method.description_pattern.NI_MCPD_02,
-          NI_MCPD_03: method.description_pattern.NI_MCPD_03,
-          NI_MCPD_04: method.description_pattern.NI_MCPD_04,
-        },
+        descipcioPatrines,
+        dataCalibrationExterior,
+        dataCalibrationInterior,
         comentarioPreInstalacion: {
           Comentario: method.pre_installation_comment.comment,
         },
@@ -870,20 +1031,29 @@ export class NI_MCIT_D_01Service {
           X5: method.instrument_zero_check.x5,
         },
         medicionParalelismoExteriores:
-          method.exterior_parallelism_measurement.measurements,
+          method.exterior_parallelism_measurement == null ? false : true,
         medicionParalelismoInteriores:
-          method.interior_parallelism_measurement.measurements,
+          method.interior_parallelism_measurement == null ? false : true,
         pruebaExactitud: method.exterior_measurement_accuracy.measure,
         numeroCertificado: serviceCode,
       }
+
       //validar si lleve ONA o No
       if (method.pre_installation_comment.accredited) {
-        const dataDA = {
+        await this.generateCertificateCodeToMethod(method.id)
+      }
+      const methodAcredited = await this.NI_MCIT_D_01Repository.findOne({
+        where: { id: methodID },
+      })
+
+      let dataDA
+      if (method.pre_installation_comment.accredited) {
+        dataDA = {
           datoscabecera: {
             numeroCertificado: serviceCode,
-            codigoServicio: dataQuote.no,
+            codigoServicio: methodAcredited.certificate_code,
             fechaCalibracion: method.created_at,
-            fechaEmision: Date.now(),
+            fechaEmision: formatDate(new Date().toString()),
             objetoCalibracion: method.equipment_information.device,
             marca: method.equipment_information.maker,
             serie: method.equipment_information.serial_number,
@@ -895,11 +1065,79 @@ export class NI_MCIT_D_01Service {
             direccion: dataClient.address,
             lugarCalibracion: dataClient.address,
           },
-          ResultadoCalibracion: {},
+          ResultadoCalibracion: {
+            dataCalibration,
+          },
+          condicionesAmbientales: {
+            Temperatura: temperatura,
+            Humedad: humedad,
+            Estabilizacion: estabilizacion,
+            Tiempo: tiempo,
+          },
+          acreedited: method.pre_installation_comment.accredited,
+        }
+      } else {
+        dataDA = {
+          datoscabecera: {
+            numeroCertificado: serviceCode,
+            fechaCalibracion: method.created_at,
+            fechaEmision: formatDate(new Date().toString()),
+            objetoCalibracion: method.equipment_information.device,
+            marca: method.equipment_information.maker,
+            serie: method.equipment_information.serial_number,
+            modelo: method.equipment_information.model,
+            rangoMedida: method.equipment_information.measurement_range,
+            resolucion: method.equipment_information.resolution,
+            codigoIdentificacion: method.equipment_information.code,
+            Solicitante: dataClient.company_name,
+            direccion: dataClient.address,
+            lugarCalibracion: dataClient.address,
+          },
+          ResultadoCalibracion: {
+            dataCalibration,
+          },
+          condicionesAmbientales: {
+            Temperatura: temperatura,
+            Humedad: humedad,
+            Estabilizacion: estabilizacion,
+            Tiempo: tiempo,
+          },
+          acreedited: method.pre_installation_comment.accredited,
         }
       }
 
-      return handleOK('Archivo generado correctamente')
+      //guardar en base de datos
+      const CertificateData = {
+        dataNI_R01_MCIT_D_01,
+        dataDA,
+        creditable: method.pre_installation_comment.accredited,
+      }
+
+      const PDF = await this.pdfService.generateCertificatePdf(
+        '/certificates/NI_CMIT_D_01/certificadoD01.hbs',
+        // method.pre_installation_comment.accredited,
+        CertificateData,
+      )
+
+      if (!PDF) {
+        return handleInternalServerError('Error al generar el PDF')
+      }
+
+      // const PDF = await this.pdfService.generateCertificateD_01pdf(
+      //   CertificateData,
+      //   method.pre_installation_comment.accredited,
+      // )
+
+      const response = await this.mailService.sendMailCertification({
+        user: dataClient.email,
+        pdf: PDF,
+      })
+
+      if (response) {
+        return handleOK('Certificado generado correctamente')
+      } else {
+        return handleInternalServerError('Error al generar el archivo')
+      }
     } catch (error) {
       console.error('Error al generar el archivo:', error)
       return handleInternalServerError('Error al generar el archivo')
@@ -961,18 +1199,42 @@ export class NI_MCIT_D_01Service {
         ],
       })
 
-      if (!method) {
-        return handleInternalServerError('El método no existe')
-      }
-
-      const dataCertificate = await this.generateCertificateData({
+      const respuesta = await this.generateCertificateData({
         activityID,
         methodID,
       })
 
+      console.log('dataCertificate', respuesta)
       return handleOK('Archivo generado correctamente')
     } catch (error) {
       return handleInternalServerError('Error al generar el certificado')
+    }
+  }
+
+  async generateCertificateCodeToMethod(methodID: number) {
+    try {
+      const method = await this.NI_MCIT_D_01Repository.findOne({
+        where: { id: methodID },
+      })
+
+      if (!method) {
+        return handleInternalServerError('El método no existe')
+      }
+
+      if (method.certificate_code) {
+        return handleOK('El método ya tiene un código de certificado')
+      }
+
+      const certificate = await this.certificateService.create()
+
+      method.certificate_code = certificate.data.code
+      method.certificate_id = certificate.data.id
+
+      await this.NI_MCIT_D_01Repository.save(method)
+
+      return handleOK(certificate)
+    } catch (error) {
+      return handleInternalServerError(error.message)
     }
   }
 }
