@@ -13,7 +13,7 @@ export class CertificateService {
     private readonly dataSource: DataSource,
   ) {}
 
-  async create() {
+  async create(prefix: string) {
     try {
       const certificate = new Certificate()
 
@@ -23,7 +23,7 @@ export class CertificateService {
         const code = generateCertCode({
           id: certificateCreated.id,
           modificationsNumber: 1,
-          prefix: 'P',
+          prefix: prefix,
         })
         certificateCreated.code = code
 
