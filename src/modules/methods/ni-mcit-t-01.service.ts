@@ -241,14 +241,24 @@ export class NI_MCIT_T_01Service {
   }) {
     const method = await this.NI_MCIT_T_01Repository.findOne({
       where: { id: methodID },
-      relations: ['equipment_information', 'environmental_conditions'],
+      relations: [
+        'equipment_information',
+        'environmental_conditions',
+        'description_pattern',
+        'calibration_results',
+      ],
     })
 
     if (!method) {
       return handleInternalServerError('El método no existe')
     }
 
-    const { equipment_information, environmental_conditions } = method
+    const {
+      equipment_information,
+      environmental_conditions,
+      description_pattern,
+      calibration_results,
+    } = method
 
     if (!equipment_information || !environmental_conditions) {
       return handleInternalServerError(
@@ -273,19 +283,90 @@ export class NI_MCIT_T_01Service {
 
       const newFilePath = path.join(
         __dirname,
-        `../mail/templates/excels/ni_mcit_p_01_${activity.quote_request.no}.xlsx`,
+        `../mail/templates/excels/ni_mcit_t_01_${activity.quote_request.no}-${methodID}.xlsx`,
       )
 
       fs.copyFileSync(filePath, newFilePath)
 
       const workbook = await XlsxPopulate.fromFileAsync(newFilePath)
+
+      // condiciones ambientales
+      const sheetEnviromentalConditions = workbook.sheet('NI-R01-MCIT-T-01')
+
+      sheetEnviromentalConditions
+        .cell('B18')
+        .value(environmental_conditions.environment.ta.tac.initial)
+      sheetEnviromentalConditions
+        .cell('B19')
+        .value(environmental_conditions.environment.ta.tac.final)
+      sheetEnviromentalConditions
+        .cell('C18')
+        .value(environmental_conditions.environment.ta.hrp.initial)
+      sheetEnviromentalConditions
+        .cell('C19')
+        .value(environmental_conditions.environment.ta.hrp.final)
+      sheetEnviromentalConditions
+        .cell('D18')
+        .value(environmental_conditions.environment.ta.equipment)
+      sheetEnviromentalConditions
+        .cell('F18')
+        .value(environmental_conditions.environment.hpa.pa.initial)
+      sheetEnviromentalConditions
+        .cell('F19')
+        .value(environmental_conditions.environment.hpa.pa.final)
+      sheetEnviromentalConditions
+        .cell('G18')
+        .value(environmental_conditions.environment.hpa.equipment)
+      sheetEnviromentalConditions
+        .cell('I18')
+        .value(environmental_conditions.environment.hpa.stabilization_time)
+
+      // calibration results
+      let initialRow = 23
+      for (const value of calibration_results.results) {
+        initialRow++
+
+        workbook
+          .sheet('NI-R01-MCIT-T-01')
+          .cell(`B${initialRow}`)
+          .value(value?.indication_linear[0]?.patron || 0)
+        workbook
+          .sheet('NI-R01-MCIT-T-01')
+          .cell(`C${initialRow}`)
+          .value(value?.indication_linear[0]?.thermometer || 0)
+        workbook
+          .sheet('NI-R01-MCIT-T-01')
+          .cell(`D${initialRow}`)
+          .value(value?.indication_linear[1]?.patron || 0)
+        workbook
+          .sheet('NI-R01-MCIT-T-01')
+          .cell(`E${initialRow}`)
+          .value(value?.indication_linear[1]?.thermometer || 0)
+        workbook
+          .sheet('NI-R01-MCIT-T-01')
+          .cell(`F${initialRow}`)
+          .value(value?.indication_linear[2]?.patron || 0)
+        workbook
+          .sheet('NI-R01-MCIT-T-01')
+          .cell(`G${initialRow}`)
+          .value(value?.indication_linear[2]?.thermometer || 0)
+      }
+
+      // descrition pattern
       workbook
-        .sheet('NI-R01-MCIT-T-01')
-        .cell('B6')
-        .value('FRANCISCO JAVIER GARCIA')
+        .sheet('Calibración')
+        .cell('J5')
+        .value(description_pattern.pattern)
+      // resolucion
+      workbook
+        .sheet('Calibración')
+        .cell('F5')
+        .value(equipment_information.resolution)
+      // unidad de medida
+      workbook.sheet('Calibración').cell('F7').value(equipment_information.unit)
 
       workbook.toFileAsync(newFilePath)
-      await this.autoSaveExcel(newFilePath)
+      return await this.autoSaveExcel(newFilePath)
     } catch (error) {
       return handleInternalServerError(error.message)
     }
@@ -338,7 +419,7 @@ export class NI_MCIT_T_01Service {
         return handleOK('El método ya tiene un código de certificado')
       }
 
-      const certificate = await this.certificateService.create()
+      const certificate = await this.certificateService.create('T')
 
       method.certificate_code = certificate.data.code
       method.certificate_id = certificate.data.id
