@@ -531,8 +531,7 @@ export class NI_MCIT_T_01Service {
           reproduce en su totalidad.
         `,
       }
-      console.log(certificate)
-      // fs.unlinkSync(newFilePath)
+      fs.unlinkSync(newFilePath)
       return handleOK(certificate)
     } catch (error) {
       return handleInternalServerError(error.message)
