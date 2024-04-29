@@ -18,6 +18,11 @@ import { DescriptionPatternDto } from './dto/NI_MCIT_T_01/description_pattern.dt
 import { CertificateService } from '../certificate/certificate.service'
 import { CalibrationResultsDto } from './dto/NI_MCIT_T_01/calibraion_results.dto'
 import { CalibrationResultsNI_MCIT_T_01 } from './entities/NI_MCIT_T_01/steps/calibration_results.entity'
+import { PatternsService } from '../patterns/patterns.service'
+import { generateServiceCodeToMethod } from 'src/utils/codeGenerator'
+import { formatDate } from 'src/utils/formatDate'
+import { PdfService } from '../mail/pdf.service'
+import { MailService } from '../mail/mail.service'
 
 @Injectable()
 export class NI_MCIT_T_01Service {
@@ -36,7 +41,13 @@ export class NI_MCIT_T_01Service {
     @InjectRepository(CalibrationResultsNI_MCIT_T_01)
     private calibrationResultsNI_MCIT_T_01Repository: Repository<CalibrationResultsNI_MCIT_T_01>,
 
+    @Inject(forwardRef(() => PatternsService))
+    private readonly patternsService: PatternsService,
+
     private readonly certificateService: CertificateService,
+
+    private readonly pdfService: PdfService,
+    private readonly mailService: MailService,
   ) {}
 
   async create() {
@@ -366,7 +377,163 @@ export class NI_MCIT_T_01Service {
       workbook.sheet('Calibración').cell('F7').value(equipment_information.unit)
 
       workbook.toFileAsync(newFilePath)
-      return await this.autoSaveExcel(newFilePath)
+      await this.autoSaveExcel(newFilePath)
+
+      const reopnedWorkbook = await XlsxPopulate.fromFileAsync(newFilePath)
+
+      let temperatureReference = []
+      let thermometerIndication = []
+      let correction = []
+      let expandedUncertaintyK2 = []
+
+      let temperatureReferenceInternationalSystemUnits = []
+      let thermometerIndicationInternationalSystemUnits = []
+      let correctionInternationalSystemUnits = []
+      let expandedUncertaintyK2InternationalSystemUnits = []
+
+      const calibrationResultsSheet = reopnedWorkbook.sheet(
+        'DA Unidad-K (5 ptos)',
+      )
+
+      for (let i = 0; i <= method.calibration_results.results.length; i++) {
+        // temperatura de referencia
+        temperatureReference.push(
+          calibrationResultsSheet
+            .cell(`D${28 + i}`)
+            .value()
+            .toString(),
+        )
+        // indicacion del termometro
+        thermometerIndication.push(
+          calibrationResultsSheet
+            .cell(`F${28 + i}`)
+            .value()
+            .toString(),
+        )
+        // correcion
+        correction.push(
+          calibrationResultsSheet
+            .cell(`L${28 + i}`)
+            .value()
+            .toString(),
+        )
+        // incertidumbre expandida K = 2
+        expandedUncertaintyK2.push(
+          calibrationResultsSheet
+            .cell(`R${28 + i}`)
+            .value()
+            .toString(),
+        )
+
+        // ** unidades internacionales **
+        if (description_pattern.show_table_international_system_units) {
+          // temperatura de referencia
+          temperatureReferenceInternationalSystemUnits.push(
+            i !== 0
+              ? Math.trunc(
+                  Number(calibrationResultsSheet.cell(`D${62 + i}`).value()),
+                )
+              : calibrationResultsSheet.cell(`D${62 + i}`).value(),
+          )
+          // indicacion del termometro
+          thermometerIndicationInternationalSystemUnits.push(
+            i !== 0
+              ? Math.trunc(
+                  Number(calibrationResultsSheet.cell(`F${62 + i}`).value()),
+                )
+              : calibrationResultsSheet.cell(`F${62 + i}`).value(),
+          )
+          // correcion
+          correctionInternationalSystemUnits.push(
+            i !== 0
+              ? Math.trunc(
+                  Number(calibrationResultsSheet.cell(`L${62 + i}`).value()),
+                )
+              : calibrationResultsSheet.cell(`L${62 + i}`).value(),
+          )
+          // incertidumbre expandida K = 2
+          expandedUncertaintyK2InternationalSystemUnits.push(
+            calibrationResultsSheet.cell(`R${62 + i}`).value(),
+          )
+        }
+      }
+
+      const calibration_results_certificate = {
+        result: {
+          temperatureReference,
+          thermometerIndication,
+          correction,
+          expandedUncertaintyK2,
+        },
+        result_unid_system: {
+          temperatureReference: temperatureReferenceInternationalSystemUnits,
+          thermometerIndication: thermometerIndicationInternationalSystemUnits,
+          correction: correctionInternationalSystemUnits,
+          expandedUncertaintyK2: expandedUncertaintyK2InternationalSystemUnits,
+        },
+      }
+
+      const environment_method_used =
+        await this.patternsService.findByCodeAndMethod(
+          environmental_conditions.environment.ta.equipment,
+          'NI-MCIT-T-01',
+        )
+
+      const calibration_method_used =
+        await this.patternsService.findByCodeAndMethod(
+          description_pattern.pattern,
+          'NI-MCIT-T-01',
+        )
+
+      const certificate = {
+        pattern: 'NI-MCIT-T-01',
+        email: activity.quote_request.client.email,
+        show_table_international_system_units:
+          description_pattern.show_table_international_system_units,
+        equipment_information: {
+          certification_code: method.certificate_code,
+          service_code: generateServiceCodeToMethod(method.id),
+          certificate_issue_date: formatDate(new Date().toString()),
+          calibration_date: formatDate(activity.updated_at),
+          object_calibrated: equipment_information.device,
+          maker: equipment_information.maker,
+          serial_number: method.equipment_information.serial_number,
+          model: equipment_information.model,
+          measurement_range: `${equipment_information.range_min} ${equipment_information.unit} a ${equipment_information.range_max} ${equipment_information.unit}`,
+          resolution: `${equipment_information.resolution} ${equipment_information.unit}`,
+          code: equipment_information.code,
+          unit: equipment_information.unit,
+          applicant: activity.quote_request.client.company_name,
+          address: activity.quote_request.client.address,
+          calibration_location: method.calibration_location,
+        },
+        calibration_results: calibration_results_certificate,
+        environment_method_used: environment_method_used.data,
+        calibration_method_used: calibration_method_used.data,
+        creditable: description_pattern.creditable,
+        description_pattern,
+        environmental_conditions: {
+          temperature: `Temperatura: ${calibrationResultsSheet
+            .cell('E75')
+            .value()} °C ± ${calibrationResultsSheet.cell('G75').value()} °C`,
+          humidity: `Humedad: ${calibrationResultsSheet.cell('E76').value()} % ± ${calibrationResultsSheet.cell('G76').value()} %`,
+        },
+        observations: `
+          ${description_pattern.observation}
+          Es responsabilidad del encargado del instrumento establecer la frecuencia del servicio de calibración.
+          La corrección corresponde al valor del patrón menos las indicación del equipo.
+          La indicación de temperatura de referencia y del equipo, corresponden al promedio de 3 mediciones.
+          El factor de conversión al SI corresponde a T(K) = t(°C) + 273,15
+          De acuerdo a lo establecido en NTON 07-004-01 Norma Metrológica del Sistema Internacional de Unidades (SI).
+          Los resultados emitidos en este certificado corresponden únicamente al objeto calibrado y a las magnitudes
+          especificadas al momento de realizar el servicio.
+          Este certificado de calibración no debe ser reproducido sin la aprobación del laboratorio, excepto cuando se
+          reproduce en su totalidad.
+        `,
+      }
+      console.log(certificate)
+      // fs.unlinkSync(newFilePath)
+      return handleOK(certificate)
     } catch (error) {
       return handleInternalServerError(error.message)
     }
@@ -427,6 +594,84 @@ export class NI_MCIT_T_01Service {
       await this.NI_MCIT_T_01Repository.save(method)
 
       return handleOK(certificate)
+    } catch (error) {
+      return handleInternalServerError(error.message)
+    }
+  }
+
+  async generatePDFCertificate(activityID: number, methodID: number) {
+    try {
+      const method = await this.NI_MCIT_T_01Repository.findOne({
+        where: { id: methodID },
+        relations: [
+          'equipment_information',
+          'environmental_conditions',
+          'calibration_results',
+          'description_pattern',
+        ],
+      })
+
+      if (!method) {
+        return handleInternalServerError('El método no existe')
+      }
+
+      const dataCertificate = await this.generateCertificate({
+        activityID,
+        methodID,
+      })
+
+      if (!dataCertificate.success) {
+        return dataCertificate
+      }
+
+      dataCertificate.data.calibration_results.result =
+        dataCertificate.data.calibration_results.result.temperatureReference.map(
+          (temperature, index) => ({
+            temperatureReference: temperature,
+            thermometerIndication:
+              dataCertificate.data.calibration_results.result
+                .thermometerIndication[index],
+            correction:
+              dataCertificate.data.calibration_results.result.correction[index],
+            expandedUncertaintyK2:
+              dataCertificate.data.calibration_results.result
+                .expandedUncertaintyK2[index],
+          }),
+        )
+
+      if (dataCertificate.data.show_table_international_system_units) {
+        dataCertificate.data.calibration_results.result_unid_system =
+          dataCertificate.data.calibration_results.result_unid_system.temperatureReference.map(
+            (temperature, index) => ({
+              temperatureReference: temperature,
+              thermometerIndication:
+                dataCertificate.data.calibration_results.result_unid_system
+                  .thermometerIndication[index],
+              correction:
+                dataCertificate.data.calibration_results.result_unid_system
+                  .correction[index],
+              expandedUncertaintyK2:
+                dataCertificate.data.calibration_results.result_unid_system
+                  .expandedUncertaintyK2[index],
+            }),
+          )
+      }
+
+      const PDF = await this.pdfService.generateCertificatePdf(
+        '/certificates/t-01.hbs',
+        dataCertificate.data,
+      )
+
+      if (!PDF) {
+        return handleInternalServerError('Error al generar el PDF')
+      }
+
+      const response = await this.mailService.sendMailCertification({
+        user: dataCertificate.data.email,
+        pdf: PDF,
+      })
+
+      return handleOK(response)
     } catch (error) {
       return handleInternalServerError(error.message)
     }
