@@ -20,6 +20,9 @@ export class EquipmentInformationDto {
   model?: string
 
   @ApiProperty()
+  serial_number?: string
+
+  @ApiProperty()
   code?: string
 
   @ApiProperty()
