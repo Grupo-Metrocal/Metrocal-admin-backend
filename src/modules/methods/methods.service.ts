@@ -19,6 +19,7 @@ import { addOrRemoveMethodToStackDto } from './dto/add-remove-method-stack.dto'
 import { NI_MCIT_D_01 } from './entities/NI_MCIT_D_01/NI_MCIT_D_01.entity'
 import { PatternsService } from '../patterns/patterns.service'
 import { NI_MCIT_T_01 } from './entities/NI_MCIT_T_01/NI_MCIT_T_01.entity'
+import { NI_MCIT_M_01 } from './entities/NI_MCIT_M_01/NI_MCIT_M_01.entity'
 
 @Injectable()
 export class MethodsService {
@@ -36,6 +37,8 @@ export class MethodsService {
     private readonly NI_MCIT_D_01Repository: Repository<NI_MCIT_D_01>,
     @InjectRepository(NI_MCIT_T_01)
     private readonly NI_MCIT_T_01Repository: Repository<NI_MCIT_T_01>,
+    @InjectRepository(NI_MCIT_M_01)
+    private readonly NI_MCIT_M_01Repository: Repository<NI_MCIT_M_01>,
 
     @Inject(forwardRef(() => ActivitiesService))
     private readonly activitiesService: ActivitiesService,
@@ -170,6 +173,9 @@ export class MethodsService {
           'interior_parallelism_measurement',
           'exterior_measurement_accuracy',
         ],
+      })
+      const NI_MCIT_M_01 = await this.NI_MCIT_M_01Repository.find({
+        relations: ['equipment_information', 'data'],
       })
       return handleOK({ NI_MCIT_P_01, NI_MCIT_D_02, NI_MCIT_D_01 })
     } catch (error) {

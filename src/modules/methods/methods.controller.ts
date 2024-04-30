@@ -6,6 +6,7 @@ import { NI_MCIT_P_01Service } from './ni-mcit-p-01.service'
 import { NI_MCIT_D_01Service } from './ni-mcit-d-01.service'
 import { NI_MCIT_D_02Service } from './ni-mcit-d-02.service'
 import { NI_MCIT_T_01Service } from './ni-mcit-t-01.service'
+import { NI_MCIT_M_01Service } from './ni-mcit-m-01.service'
 
 import { EquipmentInformationDto } from './dto/NI_MCIT_P_01/equipment_information.dto'
 import { EnvironmentalConditionsDto } from './dto/NI_MCIT_P_01/environmental_condition.dto'
@@ -36,6 +37,9 @@ import { DescriptionPatternDto as DescriptionPatternT_01Dto } from './dto/NI_MCI
 import { EnvironmentalConditionsDto as EnvironmentalConditionsT_01Dto } from './dto/NI_MCIT_T_01/environmental_condition.dto'
 import { CalibrationResultsDto as CalibrationResultsT_01Dto } from './dto/NI_MCIT_T_01/calibraion_results.dto'
 
+import { EquipmentInformationDto as EquipmentInformationM_01Dto } from './dto/NI_MCIT_M_01/equipment_information.dto'
+import { DataDto as DataM_01Dto } from './dto/NI_MCIT_M_01/data.dto'
+
 @ApiTags('methods')
 @Controller('methods')
 export class MethodsController {
@@ -45,6 +49,7 @@ export class MethodsController {
     private readonly ni_mcit_d_02Service: NI_MCIT_D_02Service,
     private readonly ni_mcit_d_01Service: NI_MCIT_D_01Service,
     private readonly ni_mcit_t_01Service: NI_MCIT_T_01Service,
+    private readonly ni_mcit_m_01Service: NI_MCIT_M_01Service,
   ) {}
 
   @Get()
@@ -444,6 +449,28 @@ export class MethodsController {
     return await this.ni_mcit_t_01Service.generatePDFCertificate(
       idActivity,
       idMethod,
+    )
+  }
+
+  @Post('ni-mcit-m-01/equipment-information/:methodId')
+  async createNI_MCIT_M_01EquipmentInformation(
+    @Body() equipment: EquipmentInformationM_01Dto,
+    @Param('methodId') methodId: number,
+  ) {
+    return await this.ni_mcit_m_01Service.equipmentInformation(
+      equipment,
+      methodId,
+    )
+  }
+
+  @Post('ni-mcit-m-01/data-information/:methodId')
+  async createNI_MCIT_M_01Data(
+    @Body() data: DataM_01Dto,
+    @Param('methodId') methodId: number,
+  ) {
+    return await this.ni_mcit_m_01Service.dataInformation(
+      data,
+      methodId,
     )
   }
 }
