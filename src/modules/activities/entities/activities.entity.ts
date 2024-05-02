@@ -44,4 +44,10 @@ export class Activity {
 
   @Column({ type: 'varchar', nullable: true })
   comments_insitu?: string[]
+
+  @Column({ nullable: true, default: false })
+  reviewed: boolean
+
+  @Column({ type: 'varchar', nullable: true })
+  reviewed_user_id: number
 }
