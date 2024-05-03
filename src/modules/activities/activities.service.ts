@@ -19,6 +19,7 @@ import { MailService } from '../mail/mail.service'
 import * as admin from 'firebase-admin'
 import { formatDate } from 'src/utils/formatDate'
 import { FinishActivityDto } from './dto/finish-activity.dto'
+import { TokenService } from '../auth/jwt/jwt.service'
 
 @Injectable()
 export class ActivitiesService {
@@ -34,6 +35,7 @@ export class ActivitiesService {
     private readonly methodsService: MethodsService,
     private readonly pdfService: PdfService,
     private readonly mailService: MailService,
+    private readonly tokenService: TokenService,
   ) {}
 
   async createActivity(activity: Activity) {
@@ -613,7 +615,7 @@ export class ActivitiesService {
   async getActivitiesDoneToCertify() {
     try {
       const response = await this.activityRepository.find({
-        where: { status: 'done' },
+        where: { status: 'done', reviewed: true },
         relations: [
           'quote_request',
           'quote_request.equipment_quote_request',
@@ -704,6 +706,41 @@ export class ActivitiesService {
 
         stream.end(image.buffer)
       })
+    } catch (error) {
+      return handleInternalServerError(error.message)
+    }
+  }
+
+  async reviewActivity(activityID: number, token: string) {
+    try {
+      const { sub: id } = this.tokenService.decodeToken(token)
+
+      const user = await this.userRepository.findOneBy({ id: +id })
+
+      if (!user) {
+        return handleBadrequest(new Error('Perfil no encontrado'))
+      }
+
+      const activity = await this.activityRepository.findOne({
+        where: { id: activityID },
+      })
+
+      if (!activity) {
+        return handleBadrequest(new Error('Actividad no encontrada'))
+      }
+
+      if (activity.status !== 'done') {
+        return handleBadrequest(
+          new Error('La actividad no ha sido finalizada por el responsable'),
+        )
+      }
+
+      activity.reviewed = true
+      activity.reviewed_user_id = user.id
+
+      await this.activityRepository.save(activity)
+
+      return handleOK(activity)
     } catch (error) {
       return handleInternalServerError(error.message)
     }

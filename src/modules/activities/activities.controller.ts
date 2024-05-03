@@ -16,6 +16,7 @@ import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard'
 import { AddResponsableToActivityDto } from './dto/add-responsable.dto'
 import { FileInterceptor } from '@nestjs/platform-express'
 import { FinishActivityDto } from './dto/finish-activity.dto'
+import { ReviewActivityDto } from './dto/review-activty.dto'
 
 @ApiTags('activities')
 @Controller('activities')
@@ -121,5 +122,13 @@ export class ActivitiesController {
     image: Express.Multer.File,
   ) {
     return await this.activitiesService.addClientSignature(id, image)
+  }
+
+  @Post('review-activity/:activityID')
+  async reviewActivity(
+    @Param('activityID') id: number,
+    @Body() data: ReviewActivityDto,
+  ) {
+    return await this.activitiesService.reviewActivity(id, data.token)
   }
 }

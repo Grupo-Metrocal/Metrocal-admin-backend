@@ -4,7 +4,7 @@ import { compile } from 'handlebars'
 import { readFileSync } from 'fs'
 import { join } from 'path'
 import axios from 'axios'
-import puppeteer from 'puppeteer'
+import * as https from 'https'
 
 @Injectable()
 export class PdfService {
@@ -68,10 +68,10 @@ export class PdfService {
     try {
       const page = await browser.newPage()
       data.metrocalLogo = await this.fetchImageAsBase64(
-        'http://app-grupometrocal.com/development/api/images/image/metrocal.webp',
+        'https://app-grupometrocal.com/development/api/images/image/metrocal.webp',
       )
       data.onaLogo = await this.fetchImageAsBase64(
-        'http://app-grupometrocal.com/development/api/images/image/ona.webp',
+        'https://app-grupometrocal.com/development/api/images/image/ona.webp',
       )
 
       // Agregar encabezado y pie de página
@@ -122,6 +122,9 @@ export class PdfService {
       // Realiza la solicitud para descargar la imagen
       const response = await axios.get(url, {
         responseType: 'arraybuffer', // Para obtener el contenido de la respuesta como un buffer
+        httpsAgent: new https.Agent({
+          rejectUnauthorized: false,
+        }),
       })
 
       // Convierte el buffer a base64

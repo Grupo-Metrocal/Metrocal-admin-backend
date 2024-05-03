@@ -8,6 +8,7 @@ import { User } from '../users/entities/user.entity'
 import { MethodsModule } from '../methods/methods.module'
 import { PdfService } from '../mail/pdf.service'
 import { MailService } from '../mail/mail.service'
+import { TokenService } from '../auth/jwt/jwt.service'
 
 @Module({
   imports: [
@@ -16,7 +17,7 @@ import { MailService } from '../mail/mail.service'
     forwardRef(() => MethodsModule),
   ],
   controllers: [ActivitiesController],
-  providers: [ActivitiesService, PdfService, MailService],
+  providers: [ActivitiesService, PdfService, MailService, TokenService],
   exports: [ActivitiesService],
 })
 export class ActivitiesModule {}
