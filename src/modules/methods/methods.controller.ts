@@ -242,6 +242,18 @@ export class MethodsController {
     return await this.ni_mcit_d_02Service.accuracyTest(accuracyTest, methodId)
   }
 
+  //certificate
+  @Get('ni-mcit-d-02/certificates/activity/:activityId/method/:methodId')
+  async getNI_MCIT_D_02Certificate(
+    @Param('activityId') activityId: number,
+    @Param('methodId') methodId: number,
+  ) {
+    return await this.ni_mcit_d_02Service.getNI_MCIT_D_02Certificate({
+      activityID: activityId,
+      methodID: methodId,
+    })
+  }
+
   //* Routing for D-01
 
   //create method for D-01
@@ -277,11 +289,11 @@ export class MethodsController {
   //description-pattern
   @Post('ni-mcit-d-01/description-pattern/:methodId')
   async createNI_MCIT_D_01DescriptionPattern(
-    @Body() descriptionPattern: DescriptionPatternNI_MCIT_D_01Dto,
+    @Body() descriptionPatterns: DescriptionPatternNI_MCIT_D_01Dto,
     @Param('methodId') methodId: number,
   ) {
     return await this.ni_mcit_d_01Service.descriptionPattern(
-      descriptionPattern,
+      descriptionPatterns,
       methodId,
     )
   }
