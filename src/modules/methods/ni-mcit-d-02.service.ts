@@ -706,7 +706,6 @@ export class NI_MCIT_D_02Service {
           })
           dataResultCalibrationFAmm.push(data)
         }
-        console.log(dataResultCalibrationFAmm)
       }
 
       //Para generar la certificacion
@@ -816,7 +815,11 @@ export class NI_MCIT_D_02Service {
         pdf: PDF,
       })
 
-      //fin del metodo
+      if (response) {
+        return handleOK('Certificado generado correctamente')
+      } else {
+        return handleInternalServerError('Error al generar el archivo')
+      }
     } catch (error) {
       return handleInternalServerError(error.message)
     }
@@ -911,7 +914,7 @@ export class NI_MCIT_D_02Service {
         return handleOK('El método ya tiene un código de certificado')
       }
 
-      const certificate = await this.certificateService.create()
+      const certificate = await this.certificateService.create('D')
 
       method.certificate_code = certificate.data.code
       method.certificate_id = certificate.data.id
