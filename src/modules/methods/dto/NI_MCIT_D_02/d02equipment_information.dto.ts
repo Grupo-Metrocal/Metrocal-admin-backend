@@ -23,5 +23,8 @@ export class EquipmentInformationNI_MCIT_D_02Dto {
   code: string
 
   @ApiProperty()
-  length: number
+  length: string
+
+  @ApiProperty()
+  date: string
 }

@@ -16,15 +16,6 @@ export class DescriptionPatternNI_MCIT_D_01 {
   )
   NI_MCIT_D_01: NI_MCIT_D_01[]
 
-  @Column({ nullable: true })
-  NI_MCPD_01?: number
-
-  @Column({ nullable: true })
-  NI_MCPD_02?: number
-
-  @Column({ nullable: true })
-  NI_MCPD_03?: number
-
-  @Column({ nullable: true })
-  NI_MCPD_04?: number
+  @Column('jsonb', { nullable: true })
+  descriptionPatterns: string[]
 }

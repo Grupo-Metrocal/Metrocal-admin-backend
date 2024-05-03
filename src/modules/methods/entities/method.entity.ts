@@ -16,7 +16,7 @@ export interface IMethods {
   methd:
     | 'NI-MCIT-B-01'
     | 'NI-MCIT-D-01'
-    | 'NI-MCIT-D-01'
+    | 'NI-MCIT-D-02'
     | 'NI-MCIT-M-01'
     | 'NI-MCIT-P-01'
     | 'NI-MCIT-T-01'

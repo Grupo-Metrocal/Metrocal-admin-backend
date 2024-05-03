@@ -1,4 +1,4 @@
-import { Inject, Injectable, forwardRef } from '@nestjs/common'
+import { Inject, Injectable, Res, forwardRef } from '@nestjs/common'
 import { NI_MCIT_D_02 } from './entities/NI_MCIT_D_02/NI_MCIT_D_02.entity'
 import { InjectRepository } from '@nestjs/typeorm'
 import { DataSource, Repository, Column } from 'typeorm'
@@ -18,9 +18,21 @@ import { AccuracyTestNI_MCIT_D_02 } from './entities/NI_MCIT_D_02/steps/d02accur
 import { executeTransaction } from 'src/utils/executeTransaction'
 import { ActivitiesService } from '../activities/activities.service'
 import { Activity } from '../activities/entities/activities.entity'
+import { PatternsService } from '../patterns/patterns.service'
 import * as XlsxPopulate from 'xlsx-populate'
+import { PdfService } from '../mail/pdf.service'
 import * as fs from 'fs'
 import * as path from 'path'
+
+import {
+  getPosition,
+  getPositionNominal,
+} from './dto/NI_MCIT_D_02/d02PositionBPDto'
+import { exec } from 'child_process'
+import { generateServiceCodeToMethod } from 'src/utils/codeGenerator'
+import { CertificateService } from '../certificate/certificate.service'
+import { formatDate } from 'src/utils/formatDate'
+import { MailService } from '../mail/mail.service'
 
 @Injectable()
 export class NI_MCIT_D_02Service {
@@ -42,6 +54,12 @@ export class NI_MCIT_D_02Service {
     private readonly AccuracyTestRepository: Repository<AccuracyTestNI_MCIT_D_02>,
     @Inject(forwardRef(() => ActivitiesService))
     private readonly activitiesService: ActivitiesService,
+
+    @Inject(forwardRef(() => PatternsService))
+    private readonly patternsService: PatternsService,
+    private readonly certificateService: CertificateService,
+    private readonly pdfService: PdfService,
+    private readonly mailService: MailService,
   ) {}
 
   async create() {
@@ -74,16 +92,20 @@ export class NI_MCIT_D_02Service {
       if (existingEquipment) {
         this.EquipmentInformationRepository.merge(existingEquipment, equipment)
       } else {
+        equipment.date = new Date().toISOString()
         const newEquipment =
           this.EquipmentInformationRepository.create(equipment)
         method.equipment_information = newEquipment
       }
-      await executeTransaction(
-        this.dataSource,
-        method,
-        method.equipment_information,
-      )
-      return handleOK(method)
+      try {
+        this.dataSource.transaction(async (manager) => {
+          await manager.save(method.equipment_information)
+          await manager.save(method)
+        })
+        return handleOK(method.equipment_information)
+      } catch (error) {
+        return handleInternalServerError(error.message)
+      }
     } catch (error) {
       return handleInternalServerError(error.message)
     }
@@ -115,11 +137,15 @@ export class NI_MCIT_D_02Service {
         method.environmental_conditions = newEnvironmentalConditions
       }
 
-      await executeTransaction(
-        this.dataSource,
-        method,
-        method.environmental_conditions,
-      )
+      try {
+        this.dataSource.transaction(async (manager) => {
+          await manager.save(method.environmental_conditions)
+          await manager.save(method)
+        })
+        return handleOK(method.environmental_conditions)
+      } catch (error) {
+        return handleInternalServerError(error.message)
+      }
     } catch (error) {
       return handleInternalServerError(error.message)
     }
@@ -152,11 +178,16 @@ export class NI_MCIT_D_02Service {
           this.DescriptionPatternRepository.create(descriptionPattern)
         method.description_pattern = newDescriptionPattern
       }
-      await executeTransaction(
-        this.dataSource,
-        method,
-        method.description_pattern,
-      )
+
+      try {
+        this.dataSource.transaction(async (manager) => {
+          await manager.save(method.description_pattern)
+          await manager.save(method)
+        })
+        return handleOK(method.description_pattern)
+      } catch (error) {
+        return handleInternalServerError(error.message)
+      }
     } catch (error) {
       return handleInternalServerError(error.message)
     }
@@ -189,11 +220,16 @@ export class NI_MCIT_D_02Service {
           this.PreInstallationCommentRepository.create(preInstallationComment)
         method.pre_installation_comment = newPreInstallationComment
       }
-      await executeTransaction(
-        this.dataSource,
-        method,
-        method.pre_installation_comment,
-      )
+
+      try {
+        this.dataSource.transaction(async (manager) => {
+          await manager.save(method.pre_installation_comment)
+          await manager.save(method)
+        })
+        return handleOK(method.pre_installation_comment)
+      } catch (error) {
+        return handleInternalServerError(error.message)
+      }
     } catch (error) {
       return handleInternalServerError(error.message)
     }
@@ -226,11 +262,16 @@ export class NI_MCIT_D_02Service {
           this.InstrumentZeroCheckRepository.create(instrumentZeroCheck)
         method.instrument_zero_check = newInstrumentZeroCheck
       }
-      await executeTransaction(
-        this.dataSource,
-        method,
-        method.instrument_zero_check,
-      )
+
+      try {
+        this.dataSource.transaction(async (manager) => {
+          await manager.save(method.instrument_zero_check)
+          await manager.save(method)
+        })
+        return handleOK(method.instrument_zero_check)
+      } catch (error) {
+        return handleInternalServerError(error.message)
+      }
     } catch (error) {
       return handleInternalServerError(error.message)
     }
@@ -260,7 +301,15 @@ export class NI_MCIT_D_02Service {
         method.accuracy_test = newAccuracyTest
       }
 
-      await executeTransaction(this.dataSource, method, method.accuracy_test)
+      try {
+        this.dataSource.transaction(async (manager) => {
+          await manager.save(method.accuracy_test)
+          await manager.save(method)
+        })
+        return handleOK(method.accuracy_test)
+      } catch (error) {
+        return handleInternalServerError(error.message)
+      }
     } catch (error) {
       return handleInternalServerError(error.message)
     }
@@ -331,33 +380,15 @@ export class NI_MCIT_D_02Service {
 
       const sheetNI_R01_MCIT_D_02 = workbook.sheet('NI-R01-MCIT-D-02')
       const sheetResultados = workbook.sheet('Resultados')
-      const sheetDatos_Patrones = workbook.sheet('Datos Patrones')
-      const sheetEC3 = workbook.sheet('DA (mm)')
-      const sheetEC4 = workbook.sheet('FA (mm)')
+      const sheetPatrones = workbook.sheet('Patrones')
 
       //Datos del cliente
       sheetNI_R01_MCIT_D_02.cell('B7').value(dataClient.company_name)
 
-      // Obtener la fecha actual
-      const fecha: Date = new Date()
-
-      // Obtener los componentes de la fecha
-      const dia: number = fecha.getDate()
-      const mes: number = fecha.getMonth() + 1 // Los meses comienzan desde 0, por lo que se suma 1
-      const año: number = fecha.getFullYear()
-
-      // Ajustar el formato de la fecha para que tenga dos dígitos
-      const diaFormateado: string = dia < 10 ? '0' + dia : dia.toString()
-      const mesFormateado: string = mes < 10 ? '0' + mes : mes.toString()
-
-      // Formatear la fecha al formato deseado (YYYY-MM-DD)
-      const fechaFormateada: string = `${año}-${mesFormateado}-${diaFormateado}`
-
-      // Asignar la fecha formateada a la celda E8
-      sheetNI_R01_MCIT_D_02.cell('H7').value(fechaFormateada)
-
-      //Informacion de equipos
       const equipmentInfo = method.equipment_information
+      // Asignar la fecha formateada a la celda E8
+      sheetNI_R01_MCIT_D_02.cell('H7').value(equipmentInfo.date)
+      //Informacion de equipos
       sheetNI_R01_MCIT_D_02.cell('C11').value(equipmentInfo.device)
       sheetNI_R01_MCIT_D_02.cell('C12').value(equipmentInfo.maker)
       sheetNI_R01_MCIT_D_02.cell('C13').value(equipmentInfo.serial_number)
@@ -391,21 +422,6 @@ export class NI_MCIT_D_02Service {
         .cell('C20')
         .value(environmentalConditions.cycles.hr.end)
 
-      //Patron de descripcion
-      const descriptionPattern = method.description_pattern
-      sheetNI_R01_MCIT_D_02
-        .cell('A23')
-        .value('NI-MCPD-' + descriptionPattern.NI_MCPD_01)
-      sheetNI_R01_MCIT_D_02
-        .cell('A24')
-        .value('NI-MCPD-' + descriptionPattern.NI_MCPD_02)
-      sheetNI_R01_MCIT_D_02
-        .cell('A25')
-        .value('NI-MCPD-' + descriptionPattern.NI_MCPD_03)
-      sheetNI_R01_MCIT_D_02
-        .cell('A26')
-        .value('NI-MCPD-' + descriptionPattern.NI_MCPD_04)
-
       //Observaciones pre-instalacion
       const preInstallationComment = method.pre_installation_comment
       sheetNI_R01_MCIT_D_02.cell('A26').value(preInstallationComment.comment)
@@ -413,24 +429,496 @@ export class NI_MCIT_D_02Service {
       //Verificacion de cero del instrumento
       const instrumentZeroCheck = method.instrument_zero_check
       sheetNI_R01_MCIT_D_02.cell('A32').value(instrumentZeroCheck.nominal_value)
-      sheetNI_R01_MCIT_D_02.cell('B32').value(instrumentZeroCheck.x1)
-      sheetNI_R01_MCIT_D_02.cell('C32').value(instrumentZeroCheck.x2)
-      sheetNI_R01_MCIT_D_02.cell('D32').value(instrumentZeroCheck.x3)
-      sheetNI_R01_MCIT_D_02.cell('E32').value(instrumentZeroCheck.x4)
-      sheetNI_R01_MCIT_D_02.cell('F32').value(instrumentZeroCheck.x5)
-      sheetNI_R01_MCIT_D_02.cell('G32').value(instrumentZeroCheck.x6)
-      sheetNI_R01_MCIT_D_02.cell('H32').value(instrumentZeroCheck.x7)
-      sheetNI_R01_MCIT_D_02.cell('I32').value(instrumentZeroCheck.x8)
-      sheetNI_R01_MCIT_D_02.cell('J32').value(instrumentZeroCheck.x9)
-      sheetNI_R01_MCIT_D_02.cell('K32').value(instrumentZeroCheck.x10)
+      sheetNI_R01_MCIT_D_02
+        .cell('B32')
+        .value(instrumentZeroCheck.x1 == 0.0 ? 0 : instrumentZeroCheck.x1)
+      sheetNI_R01_MCIT_D_02
+        .cell('C32')
+        .value(instrumentZeroCheck.x2 == 0.0 ? 0 : instrumentZeroCheck.x2)
+      sheetNI_R01_MCIT_D_02
+        .cell('D32')
+        .value(instrumentZeroCheck.x3 == 0.0 ? 0 : instrumentZeroCheck.x3)
+      sheetNI_R01_MCIT_D_02
+        .cell('E32')
+        .value(instrumentZeroCheck.x4 == 0.0 ? 0 : instrumentZeroCheck.x4)
+      sheetNI_R01_MCIT_D_02
+        .cell('F32')
+        .value(instrumentZeroCheck.x5 == 0.0 ? 0 : instrumentZeroCheck.x5)
+      sheetNI_R01_MCIT_D_02
+        .cell('G32')
+        .value(instrumentZeroCheck.x6 == 0.0 ? 0 : instrumentZeroCheck.x6)
+      sheetNI_R01_MCIT_D_02
+        .cell('H32')
+        .value(instrumentZeroCheck.x7 == 0.0 ? 0 : instrumentZeroCheck.x7)
+      sheetNI_R01_MCIT_D_02
+        .cell('I32')
+        .value(instrumentZeroCheck.x8 == 0.0 ? 0 : instrumentZeroCheck.x8)
+      sheetNI_R01_MCIT_D_02
+        .cell('J32')
+        .value(instrumentZeroCheck.x9 == 0.0 ? 0 : instrumentZeroCheck.x9)
+      sheetNI_R01_MCIT_D_02
+        .cell('K32')
+        .value(instrumentZeroCheck.x10 == 0.0 ? 0 : instrumentZeroCheck.x10)
 
       //Prueba de exactitud
       let fila = 37
-      let position = 1
-      const Column = 'B'
-      const accuracyTest = method.accuracy_test
+      let fila_position = 1
+      const column_verificaction = [
+        'B',
+        'C',
+        'D',
+        'E',
+        'F',
+        'G',
+        'H',
+        'I',
+        'J',
+        'K',
+      ]
+      method.accuracy_test.measureD02.forEach((item) => {
+        Object.entries(item.varification_lengths).forEach(
+          ([key, value], index) => {
+            const columna = column_verificaction[index]
+            sheetNI_R01_MCIT_D_02.cell(`${columna}${fila}`).value(value)
+          },
+        )
+
+        if (fila_position == 1) {
+          const starinColumns = 'L'
+          let currentColumn = starinColumns
+          let fila_l = 6
+          Object.entries(item.nominal_value).forEach(([key, value]) => {
+            let position_l = getPosition(String(value))
+            sheetPatrones.cell(`${currentColumn}${fila_l}`).value(position_l)
+            currentColumn = String.fromCharCode(currentColumn.charCodeAt(0) + 1)
+          })
+        }
+
+        if (fila_position == 2) {
+          const starinColumns = 'L'
+          let currentColumn = starinColumns
+          let fila_l = 12
+          Object.entries(item.nominal_value).forEach(([key, value]) => {
+            let position_l = getPositionNominal(String(value))
+            sheetPatrones.cell(`${currentColumn}${fila_l}`).value(position_l)
+            currentColumn = String.fromCharCode(currentColumn.charCodeAt(0) + 1)
+          })
+        }
+
+        if (fila_position == 3) {
+          const starinColumns = 'L'
+          let currentColumn = starinColumns
+          let fila_l = 18
+          Object.entries(item.nominal_value).forEach(([key, value]) => {
+            let position_l = getPosition(String(value))
+            sheetPatrones.cell(`${currentColumn}${fila_l}`).value(position_l)
+            currentColumn = String.fromCharCode(currentColumn.charCodeAt(0) + 1)
+          })
+        }
+
+        if (fila_position == 4) {
+          const starinColumns = 'L'
+          let currentColumn = starinColumns
+          let fila_l = 24
+          Object.entries(item.nominal_value).forEach(([key, value]) => {
+            let position_l = getPosition(String(value))
+            sheetPatrones.cell(`${currentColumn}${fila_l}`).value(position_l)
+            currentColumn = String.fromCharCode(currentColumn.charCodeAt(0) + 1)
+          })
+        }
+
+        if (fila_position == 5) {
+          const starinColumns = 'L'
+          let currentColumn = starinColumns
+          let fila_l = 30
+          Object.entries(item.nominal_value).forEach(([key, value]) => {
+            let position_l = getPositionNominal(String(value))
+            sheetPatrones.cell(`${currentColumn}${fila_l}`).value(position_l)
+            currentColumn = String.fromCharCode(currentColumn.charCodeAt(0) + 1)
+          })
+        }
+
+        if (fila_position == 6) {
+          const starinColumns = 'L'
+          let currentColumn = starinColumns
+          let fila_l = 36
+          Object.entries(item.nominal_value).forEach(([key, value]) => {
+            let position_l = getPosition(String(value))
+            sheetPatrones.cell(`${currentColumn}${fila_l}`).value(position_l)
+            currentColumn = String.fromCharCode(currentColumn.charCodeAt(0) + 1)
+          })
+        }
+
+        if (fila_position == 7) {
+          const starinColumns = 'L'
+          let currentColumn = starinColumns
+          let fila_l = 42
+          Object.entries(item.nominal_value).forEach(([key, value]) => {
+            let position_l = getPositionNominal(String(value))
+            sheetPatrones.cell(`${currentColumn}${fila_l}`).value(position_l)
+            currentColumn = String.fromCharCode(currentColumn.charCodeAt(0) + 1)
+          })
+        }
+
+        if (fila_position == 8) {
+          const starinColumns = 'L'
+          let currentColumn = starinColumns
+          let fila_l = 48
+          Object.entries(item.nominal_value).forEach(([key, value]) => {
+            let position_l = getPosition(String(value))
+            sheetPatrones.cell(`${currentColumn}${fila_l}`).value(position_l)
+            currentColumn = String.fromCharCode(currentColumn.charCodeAt(0) + 1)
+          })
+        }
+
+        if (fila_position == 9) {
+          const starinColumns = 'L'
+          let currentColumn = starinColumns
+          let fila_l = 54
+          Object.entries(item.nominal_value).forEach(([key, value]) => {
+            let position_l = getPositionNominal(String(value))
+            sheetPatrones.cell(`${currentColumn}${fila_l}`).value(position_l)
+            currentColumn = String.fromCharCode(currentColumn.charCodeAt(0) + 1)
+          })
+        }
+
+        if (fila_position == 10) {
+          const starinColumns = 'L'
+          let currentColumn = starinColumns
+          let fila_l = 60
+          Object.entries(item.nominal_value).forEach(([key, value]) => {
+            let position_l = getPosition(String(value))
+            sheetPatrones.cell(`${currentColumn}${fila_l}`).value(position_l)
+            currentColumn = String.fromCharCode(currentColumn.charCodeAt(0) + 1)
+          })
+        }
+
+        fila++
+        fila_position++
+      })
+
+      //tipo patrones de medicion
+      //tipo de patrone de medicion
+      if (method.environmental_conditions.equipment_used == 'NI-MCPPT-02') {
+        sheetResultados.cell('Z66').value(1)
+      }
+      if (method.environmental_conditions.equipment_used == 'NI-MCPPT-05') {
+        sheetResultados.cell('Z66').value(2)
+      }
+      if (method.environmental_conditions.equipment_used == 'NI-MCPPT-06') {
+        sheetResultados.cell('Z66').value(3)
+      }
+
+      //Para generarla certificacion
+      const patronsUtilizados = []
+      method.description_pattern.descriptionPattern.forEach(async (x) => {
+        let dato = x
+        let patterns = await this.patternsService.findByCodeAndMethod(
+          dato,
+          'NI-MCIT-D-02',
+        )
+        patronsUtilizados.push(patterns.data)
+      })
+      let patterns = await this.patternsService.findByCodeAndMethod(
+        method.environmental_conditions.equipment_used,
+        'NI-MCIT-D-02',
+      )
+
+      patronsUtilizados.push(patterns.data)
+
+      workbook.toFileAsync(newFilePath)
+      await this.autoSaveExcel(newFilePath)
+      const workbook2 = await XlsxPopulate.fromFileAsync(newFilePath)
+      const sheetDA3 = workbook2.sheet('DA (mm)')
+      const sheetFA4 = workbook2.sheet('FA (mm)')
+
+      //recoleccion de daotos de DA (mm)
+      const dataResultCalibrationDAmm = []
+      //temperatura
+      let temperatura1DA = sheetDA3.cell('G45').value()
+      let temperatura2DA = sheetDA3.cell('J45').value()
+      let humedad1DA = sheetDA3.cell('G46').value()
+      let humedad2DA = sheetDA3.cell('J46').value()
+      if (method.pre_installation_comment.accredited) {
+        //Prueba de exactitud
+        let filaDAmm = 31
+        let filaStopDAmm = 42
+        const columna_resultados_calibacion = ['C', 'F', 'K', 'Q', 'W']
+        for (let i = filaDAmm; i <= filaStopDAmm; i++) {
+          let data = {}
+          columna_resultados_calibacion.forEach((column) => {
+            let value = sheetDA3.cell(`${column}${i}`).value()
+            if (!isNaN(value)) {
+              if (column == 'C') {
+                value = parseFloat(value).toFixed(1)
+              }
+              if (column == 'F') {
+                value = parseFloat(value).toFixed(5)
+              }
+              if (column == 'K') {
+                value = parseFloat(value).toFixed(3)
+              }
+              if (column == 'Q') {
+                value = parseFloat(value).toFixed(1)
+              }
+              if (column == 'W') {
+                value = parseFloat(value).toFixed(1)
+              }
+            }
+            data[column] = value
+          })
+          dataResultCalibrationDAmm.push(data)
+        }
+      }
+
+      const dataResultCalibrationFAmm = []
+      let temperatura1FA = sheetDA3.cell('G45').value()
+      let temperatura2FA = sheetDA3.cell('J45').value()
+      let humedad1FA = sheetDA3.cell('G46').value()
+      let humedad2FA = sheetDA3.cell('J46').value()
+      if (!method.pre_installation_comment.accredited) {
+        //Prueba de exactitud
+        let filaFAmm = 30
+        let filaStopFAmm = 36
+        const columna_resultados_calibacion = ['C', 'F', 'K', 'Q', 'W']
+        for (let i = filaFAmm; i <= filaStopFAmm; i++) {
+          let data = {}
+          columna_resultados_calibacion.forEach((column) => {
+            let value = sheetFA4.cell(`${column}${i}`).value()
+            if (!isNaN(value)) {
+              if (column == 'C') {
+                value = parseFloat(value).toFixed(1)
+              }
+              if (column == 'F') {
+                value = parseFloat(value).toFixed(5)
+              }
+              if (column == 'K') {
+                value = parseFloat(value).toFixed(3)
+              }
+              if (column == 'Q') {
+                value = parseFloat(value).toFixed(1)
+              }
+              if (column == 'W') {
+                value = parseFloat(value).toFixed(1)
+              }
+            }
+            data[column] = value
+          })
+          dataResultCalibrationFAmm.push(data)
+        }
+        console.log(dataResultCalibrationFAmm)
+      }
+
+      //Para generar la certificacion
+      const fechaOriginal = method.equipment_information.date
+      const fecha = new Date(fechaOriginal)
+      const dia = fecha.getDate().toString().padStart(2, '0')
+      const mes = (fecha.getMonth() + 1).toString().padStart(2, '0') // Enero es 0, así que necesitas sumar 1
+      const año = fecha.getFullYear()
+      // Formato de fecha: dd/mm/yyyy
+      const fechaFormateada = `${dia}/${mes}/${año}`
+
+      //Datos de la certificacion
+      const serviceCode = generateServiceCodeToMethod(method.id)
+      const dataNI_MCIT_D_02 = {
+        client: {
+          Empresa: dataClient.company_name,
+          fechaCalibracion: fechaFormateada,
+          LugarCalibracion: dataClient.address,
+          Codigo: dataQuote.no,
+          fechaCertificado: Date.now(),
+        },
+        patronsUtilizados,
+      }
+      //validar si lleve ONA o No
+      if (method.pre_installation_comment.accredited) {
+        await this.generateCertificateCodeToMethod(method.id)
+      }
+      const methodAcredited = await this.NI_MCIT_D_02Repository.findOne({
+        where: { id: methodID },
+      })
+
+      let dataDA
+      if (method.pre_installation_comment.accredited) {
+        dataDA = {
+          datosCabecera: {
+            identificacionServicio: methodAcredited.certificate_code,
+            codigoServicio: serviceCode,
+            fechaCalibracion: fecha,
+            fechaEmision: formatDate(new Date().toString()),
+            objetocalibracion: method.equipment_information.device,
+            marca: method.equipment_information.maker,
+            serie: method.equipment_information.serial_number,
+            modelo: method.equipment_information.model,
+            rango: method.equipment_information.measurement_range,
+            resolucion: method.equipment_information.resolution,
+            codigoIdentificacion: method.equipment_information.code,
+            solicitante: dataClient.company_name,
+            direccion: dataClient.address,
+            lugarCalibracion: dataClient.address,
+          },
+          temperatura1DA,
+          temperatura2DA,
+          humedad1DA,
+          humedad2DA,
+          dataResultCalibrationDAmm,
+          acreedited: method.pre_installation_comment.accredited,
+        }
+      } else {
+        dataDA = {
+          datosCabecera: {
+            codigoServicio: serviceCode,
+            fechaCalibracion: fecha,
+            fechaEmision: formatDate(new Date().toString()),
+            objetocalibracion: method.equipment_information.device,
+            marca: method.equipment_information.maker,
+            serie: method.equipment_information.serial_number,
+            modelo: method.equipment_information.model,
+            rango: method.equipment_information.measurement_range,
+            resolucion: method.equipment_information.resolution,
+            codigoIdentificacion: method.equipment_information.code,
+            solicitante: dataClient.company_name,
+            direccion: dataClient.address,
+            lugarCalibracion: dataClient.address,
+          },
+          temperatura1FA,
+          temperatura2FA,
+          humedad1FA,
+          humedad2FA,
+          dataResultCalibrationFAmm,
+          acreedited: method.pre_installation_comment.accredited,
+        }
+      }
+
+      const CertificateData = {
+        dataNI_MCIT_D_02,
+        dataDA,
+        creditable: method.pre_installation_comment.accredited,
+      }
+
+      let PDF
+      if (method.pre_installation_comment.accredited) {
+        PDF = await this.pdfService.generateCertificatePdf(
+          '/certificates/NI_CMIT_D_02/certificadoD02_1.hbs',
+          // method.pre_installation_comment.accredited,
+          CertificateData,
+        )
+      } else {
+        PDF = await this.pdfService.generateCertificatePdf(
+          '/certificates/NI_CMIT_D_02/certificadoD02_2.hbs',
+          // method.pre_installation_comment.accredited,
+          CertificateData,
+        )
+      }
+
+      const response = await this.mailService.sendMailCertification({
+        user: dataClient.email,
+        pdf: PDF,
+      })
 
       //fin del metodo
+    } catch (error) {
+      return handleInternalServerError(error.message)
+    }
+  }
+
+  async getNI_MCIT_D_02Certificate({
+    activityID,
+    methodID,
+  }: {
+    activityID: number
+    methodID: number
+  }) {
+    try {
+      const method = await this.NI_MCIT_D_02Repository.findOne({
+        where: { id: methodID },
+        relations: [
+          'equipment_information',
+          'environmental_conditions',
+          'description_pattern',
+          'pre_installation_comment',
+          'instrument_zero_check',
+          'accuracy_test',
+        ],
+      })
+
+      if (!method) {
+        return handleInternalServerError('El método no existe')
+      }
+      let respuesta
+      if (method) {
+        respuesta = await this.generateCertificateD_02({
+          activityID,
+          methodID,
+        })
+      }
+
+      if (respuesta.status === 500) {
+        return handleInternalServerError('Error al generar el certificado')
+      }
+      if (respuesta.status === 200) {
+        return handleOK('Certificado generado correctamente')
+      }
+    } catch (error) {
+      return handleInternalServerError('Error al generar el certificado')
+    }
+  }
+
+  async autoSaveExcel(filePath: string) {
+    return new Promise((resolve, reject) => {
+      // save excel file from powershell
+      const powershellCommand = `
+      $Excel = New-Object -ComObject Excel.Application
+      $Excel.Visible = $false
+      $Excel.DisplayAlerts = $false
+      $Workbook = $Excel.Workbooks.Open('${filePath}')
+      $Workbook.Save()
+      $Workbook.Close()
+      $Excel.Quit()
+
+      `
+
+      exec(
+        powershellCommand,
+        { shell: 'powershell.exe' },
+        (error, stdout, stderr) => {
+          if (error) {
+            console.error(`Error al ejecutar el comando: ${error.message}`)
+            reject(error) // Aquí rechazamos la promesa con el error
+          } else if (stderr) {
+            console.error(`Error en la salida estándar: ${stderr}`)
+            reject(new Error(stderr))
+          } else {
+            console.log(`Salida estándar: ${stdout}`)
+            resolve(stdout)
+          }
+        },
+      )
+    })
+  }
+
+  async generateCertificateCodeToMethod(methodID: number) {
+    try {
+      const method = await this.NI_MCIT_D_02Repository.findOne({
+        where: { id: methodID },
+      })
+
+      if (!method) {
+        return handleInternalServerError('El método no existe')
+      }
+
+      if (method.certificate_code) {
+        return handleOK('El método ya tiene un código de certificado')
+      }
+
+      const certificate = await this.certificateService.create()
+
+      method.certificate_code = certificate.data.code
+      method.certificate_id = certificate.data.id
+
+      await this.NI_MCIT_D_02Repository.save(method)
+
+      return handleOK(certificate)
     } catch (error) {
       return handleInternalServerError(error.message)
     }

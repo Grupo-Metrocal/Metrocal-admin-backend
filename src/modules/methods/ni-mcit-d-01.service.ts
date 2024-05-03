@@ -31,9 +31,6 @@ import { exec } from 'child_process'
 import * as fs from 'fs'
 import { PatternsService } from '../patterns/patterns.service'
 import { handleInternalServerError, handleOK } from 'src/common/handleHttp'
-import { QuoteRequest } from '../quotes/entities/quote-request.entity'
-import { patterns } from 'pdfkit/js/page'
-import { Certificate } from '../certificate/entities/certificate.entity'
 import { PdfService } from '../mail/pdf.service'
 import { MailService } from '../mail/mail.service'
 import {
@@ -169,7 +166,7 @@ export class NI_MCIT_D_01Service {
 
   //Description Pattern
   async descriptionPattern(
-    descriptionPattern: DescriptionPatternNI_MCIT_D_01Dto,
+    descriptionPatterns: DescriptionPatternNI_MCIT_D_01Dto,
     methodId: number,
   ) {
     try {
@@ -187,12 +184,12 @@ export class NI_MCIT_D_01Service {
       if (existDescriptioPattern) {
         this.DescriptionPatternRepository.merge(
           existDescriptioPattern,
-          descriptionPattern,
+          descriptionPatterns,
         )
       } else {
-        const newDescriptioPattern =
-          this.DescriptionPatternRepository.create(descriptionPattern)
-        method.description_pattern = newDescriptioPattern
+        const newDescriptionPattern =
+          this.DescriptionPatternRepository.create(descriptionPatterns)
+        method.description_pattern = newDescriptionPattern
       }
 
       try {
@@ -522,20 +519,6 @@ export class NI_MCIT_D_01Service {
             method.environmental_conditions.time.minute,
         )
 
-      //description Pattern
-      sheetEC
-        .cell('A24')
-        .value('NI-MCPD-0' + method.description_pattern.NI_MCPD_01)
-      sheetEC
-        .cell('A25')
-        .value('NI-MCPD-0' + method.description_pattern.NI_MCPD_02)
-      sheetEC
-        .cell('B24')
-        .value('NI-MCPD-0' + method.description_pattern.NI_MCPD_03)
-      sheetEC
-        .cell('B25')
-        .value('NI-MCPD-0' + method.description_pattern.NI_MCPD_04)
-
       //pre installation comment
       sheetEC.cell('A28').value(method.pre_installation_comment.comment)
 
@@ -830,30 +813,26 @@ export class NI_MCIT_D_01Service {
 
       //tipo de patrone de medicion
       if (method.environmental_conditions.equipment_used == 'NI-MCPPT-02') {
-        sheetEC.cell('S52').value('1')
+        sheetEC.cell('S52').value(1)
       }
       if (method.environmental_conditions.equipment_used == 'NI-MCPPT-05') {
-        sheetEC.cell('S52').value('2')
+        sheetEC.cell('S52').value(2)
       }
       if (method.environmental_conditions.equipment_used == 'NI-MCPPT-06') {
-        sheetEC.cell('S52').value('3')
+        sheetEC.cell('S52').value(3)
       }
 
       // Procesamiento de equipos DA (mm) y FA (mm)
       const descipcioPatrines = []
-      for (let i = 1; i <= 4; i++) {
-        let data = method.description_pattern['NI_MCPD_0' + i]
-        if (data) {
-          if (data < 10) {
-            data = 'NI-MCPD-0' + data
-          }
-          let patterns = await this.patternsService.findByCodeAndMethod(
-            data,
-            'NI-MCIT-D-01',
-          )
-          descipcioPatrines.push(patterns.data)
-        }
-      }
+      method.description_pattern.descriptionPatterns.forEach(async (x) => {
+        let dato = x
+        let patterns = await this.patternsService.findByCodeAndMethod(
+          dato,
+          'NI-MCIT-D-01',
+        )
+        descipcioPatrines.push(patterns.data)
+      })
+
       let patterns = await this.patternsService.findByCodeAndMethod(
         method.environmental_conditions.equipment_used,
         'NI-MCIT-D-01',
@@ -1199,12 +1178,23 @@ export class NI_MCIT_D_01Service {
         ],
       })
 
-      const respuesta = await this.generateCertificateData({
-        activityID,
-        methodID,
-      })
-
-      console.log('dataCertificate', respuesta)
+      if (!method) {
+        return handleInternalServerError('El método no existe')
+      }
+      let respuesta
+      if (method) {
+        const respuesta = await this.generateCertificateData({
+          activityID,
+          methodID,
+        })
+      }
+      if (respuesta.status === 500) {
+        return handleInternalServerError('Error al generar el certificado')
+      }
+      if (respuesta.status === 200) {
+        return handleOK('Certificado generado correctamente')
+      }
+      //console.log('dataCertificate', respuesta)/
       return handleOK('Archivo generado correctamente')
     } catch (error) {
       return handleInternalServerError('Error al generar el certificado')
