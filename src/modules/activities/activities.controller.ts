@@ -17,6 +17,7 @@ import { AddResponsableToActivityDto } from './dto/add-responsable.dto'
 import { FileInterceptor } from '@nestjs/platform-express'
 import { FinishActivityDto } from './dto/finish-activity.dto'
 import { ReviewActivityDto } from './dto/review-activty.dto'
+import { AddSignatureDto } from './dto/add-signature.dto'
 
 @ApiTags('activities')
 @Controller('activities')
@@ -107,21 +108,11 @@ export class ActivitiesController {
   }
   // @UseGuards(JwtAuthGuard)
   @Post('client-signature/:activityID')
-  @UseInterceptors(FileInterceptor('image'))
   async clientSignature(
     @Param('activityID') id: number,
-    @UploadedFile(
-      new ParseFilePipeBuilder()
-        .addFileTypeValidator({
-          fileType: 'image',
-        })
-        .build({
-          fileIsRequired: false,
-        }),
-    )
-    image: Express.Multer.File,
+    @Body() image: AddSignatureDto,
   ) {
-    return await this.activitiesService.addClientSignature(id, image)
+    return await this.activitiesService.addClientSignature(id, image.imageURL)
   }
 
   @Post('review-activity/:activityID')
