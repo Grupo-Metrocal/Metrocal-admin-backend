@@ -453,6 +453,10 @@ export class ActivitiesService {
         address: activity.quote_request.client.address,
         requestedBy: activity.quote_request.client.requested_by,
         phone: activity.quote_request.client.phone,
+        client_signature: activity.client_signature,
+        work_areas: activity.work_areas.join(', ') || '',
+        comments_insitu1: activity?.comments_insitu?.[0] || '',
+        comments_insitu2: activity?.comments_insitu?.[1] || '',
         equipments: activity.quote_request.equipment_quote_request.map(
           (equipment, index) => {
             return {
@@ -670,7 +674,7 @@ export class ActivitiesService {
     }
   }
 
-  async addClientSignature(activityID: number, image: Express.Multer.File) {
+  async addClientSignature(activityID: number, imageURL: string) {
     try {
       const activity = await this.activityRepository.findOne({
         where: { id: activityID },
@@ -680,32 +684,11 @@ export class ActivitiesService {
         return handleBadrequest(new Error('Actividad no encontrada'))
       }
 
-      const bucket = admin.storage().bucket()
-      const file = bucket.file(`client-signature_${activityID}_${Date.now()}`)
+      activity.client_signature = imageURL
 
-      const stream = file.createWriteStream({
-        metadata: {
-          contentType: image.mimetype,
-        },
-      })
+      await this.activityRepository.save(activity)
 
-      stream.on('error', (error) => {
-        return handleInternalServerError(error.message)
-      })
-
-      return new Promise((resolve, reject) => {
-        stream.on('finish', async () => {
-          const imageURL = `https://firebasestorage.googleapis.com/v0/b/${bucket.name}/o/${file.name}?alt=media`
-
-          activity.client_signature = imageURL
-
-          await this.activityRepository.save(activity)
-
-          resolve(handleOK({ imageURL })) // Resuelve la promesa con el resultado de la función handleOK
-        })
-
-        stream.end(image.buffer)
-      })
+      return handleOK(activity)
     } catch (error) {
       return handleInternalServerError(error.message)
     }
