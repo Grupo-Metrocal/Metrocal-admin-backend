@@ -27,6 +27,12 @@ export class NI_MCIT_T_01 {
   @Column({ nullable: true })
   certificate_code?: string
 
+  @Column({ nullable: true })
+  certificate_url?: string
+
+  @Column({ nullable: true, type: 'boolean', default: false })
+  review_state?: boolean
+
   @ManyToOne(
     () => EquipmentInformationNI_MCIT_T_01,
     (EquipmentInformationNI_MCIT_T_01) =>
