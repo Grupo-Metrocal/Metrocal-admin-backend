@@ -15,6 +15,7 @@ import { NI_MCIT_D_02 } from './entities/NI_MCIT_D_02/NI_MCIT_D_02.entity'
 import { Methods } from './entities/method.entity'
 import { QuoteRequest } from '../quotes/entities/quote-request.entity'
 import { addOrRemoveMethodToStackDto } from './dto/add-remove-method-stack.dto'
+import * as path from 'path'
 
 import { NI_MCIT_D_01 } from './entities/NI_MCIT_D_01/NI_MCIT_D_01.entity'
 import { PatternsService } from '../patterns/patterns.service'
@@ -368,5 +369,34 @@ export class MethodsService {
     )
 
     return patterns
+  }
+
+  async setCertificateUrlToMethod(
+    method_name: string,
+    method_id: number,
+    stackID: number,
+  ) {
+    try {
+      const repository = `${method_name}Repository`
+      const method = await this[repository].findOne({
+        where: {
+          id: method_id,
+        },
+      })
+      const path_file = '../mail/templates/excels/'
+      const excel_name = `${method_name.toLowerCase()}-${stackID}.xlsx`
+
+      await this.dataSource.transaction(async (manager) => {
+        method.certificate_url = path.join(
+          __dirname,
+          `${path_file}${excel_name}`,
+        )
+        await manager.save(method)
+      })
+
+      return handleOK('URL de certificado agregado')
+    } catch (error) {
+      return handleInternalServerError(error.message)
+    }
   }
 }
