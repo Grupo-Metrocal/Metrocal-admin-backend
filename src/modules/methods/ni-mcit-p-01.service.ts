@@ -315,14 +315,13 @@ export class NI_MCIT_P_01Service {
         )
       }
 
-      const newFilePath = path.join(
-        __dirname,
-        `../mail/templates/excels/ni_mcit_p_01_${activity.quote_request.no}.xlsx`,
-      )
+      if (fs.existsSync(method.certificate_url)) {
+        fs.unlinkSync(method.certificate_url)
+      }
 
-      fs.copyFileSync(filePath, newFilePath)
+      fs.copyFileSync(filePath, method.certificate_url)
 
-      const workbook = await XlsxPopulate.fromFileAsync(newFilePath)
+      const workbook = await XlsxPopulate.fromFileAsync(method.certificate_url)
 
       if (!workbook) {
         return handleInternalServerError('El archivo no existe')
@@ -472,11 +471,11 @@ export class NI_MCIT_P_01Service {
           }
         }
       }
-      workbook.toFileAsync(newFilePath)
+      workbook.toFileAsync(method.certificate_url)
 
-      await this.autoSaveExcel(newFilePath)
+      await this.autoSaveExcel(method.certificate_url)
 
-      const workbook2 = await XlsxPopulate.fromFileAsync(newFilePath)
+      const workbook2 = await XlsxPopulate.fromFileAsync(method.certificate_url)
       const sheetCER = workbook2.sheet('DA Unid-kPa (5 ptos)')
 
       let reference_pressure = []
@@ -630,7 +629,6 @@ export class NI_MCIT_P_01Service {
         `,
       }
 
-      fs.unlinkSync(newFilePath)
       return handleOK(certificate)
     } catch (error) {
       console.error(error.message)
