@@ -385,7 +385,7 @@ export class MethodsService {
         },
       })
       const path_file = '../mail/templates/excels/'
-      const excel_name = `${method_name.toLowerCase()}-${stackID}.xlsx`
+      const excel_name = `${method_name.toLowerCase()}-${stackID}_${method_id}.xlsx`
 
       await this.dataSource.transaction(async (manager) => {
         method.certificate_url = path.join(
