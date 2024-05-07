@@ -16,7 +16,6 @@ import { MethodsService } from '../methods/methods.service'
 import { QuoteRequest } from '../quotes/entities/quote-request.entity'
 import { PdfService } from '../mail/pdf.service'
 import { MailService } from '../mail/mail.service'
-import * as admin from 'firebase-admin'
 import { formatDate } from 'src/utils/formatDate'
 import { FinishActivityDto } from './dto/finish-activity.dto'
 import { TokenService } from '../auth/jwt/jwt.service'
@@ -706,6 +705,7 @@ export class ActivitiesService {
 
       const activity = await this.activityRepository.findOne({
         where: { id: activityID },
+        relations: ['quote_request', 'quote_request.equipment_quote_request'],
       })
 
       if (!activity) {
@@ -720,6 +720,26 @@ export class ActivitiesService {
 
       activity.reviewed = true
       activity.reviewed_user_id = user.id
+
+      for (const equipment of activity.quote_request.equipment_quote_request) {
+        const stackMehods = await this.methodsService.getMethodsID(
+          equipment.method_id,
+        )
+
+        if (!stackMehods.success) {
+          continue
+        }
+
+        const { data: methods } = stackMehods as { data: any }
+
+        for (const method of methods) {
+          await this.methodsService.setCertificateUrlToMethod(
+            equipment.calibration_method.split(' ')[0].replaceAll('-', '_'),
+            method.id,
+            equipment.method_id,
+          )
+        }
+      }
 
       await this.activityRepository.save(activity)
 
