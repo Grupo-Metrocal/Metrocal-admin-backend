@@ -33,6 +33,9 @@ export class NI_MCIT_P_01 {
   @Column({ nullable: true, type: 'boolean', default: false })
   review_state?: boolean
 
+  @Column({ nullable: true })
+  review_user_id?: number
+
   @ManyToOne(
     () => EquipmentInformationNI_MCIT_P_01,
     (EquipmentInformationNI_MCIT_P_01) =>
