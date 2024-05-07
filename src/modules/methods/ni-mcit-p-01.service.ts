@@ -26,6 +26,7 @@ import { exec } from 'child_process'
 import * as fs from 'fs'
 import { MailService } from '../mail/mail.service'
 import { PatternsService } from '../patterns/patterns.service'
+import { MethodsService } from './methods.service'
 
 @Injectable()
 export class NI_MCIT_P_01Service {
@@ -52,6 +53,7 @@ export class NI_MCIT_P_01Service {
     private readonly certificateService: CertificateService,
     private readonly pdfService: PdfService,
     private readonly mailService: MailService,
+    private readonly methodService: MethodsService,
   ) {}
 
   async create() {
@@ -631,7 +633,7 @@ export class NI_MCIT_P_01Service {
 
       return handleOK(certificate)
     } catch (error) {
-      console.error(error.message)
+      await this.methodService.killExcelProcess(method.certificate_url)
       return handleInternalServerError(error.message)
     }
   }
