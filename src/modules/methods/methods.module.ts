@@ -48,6 +48,7 @@ import { NI_MCIT_M_01Service } from './ni-mcit-m-01.service'
 import { NI_MCIT_M_01 } from './entities/NI_MCIT_M_01/NI_MCIT_M_01.entity'
 import { EquipmentInformationNI_MCIT_M_01 } from './entities/NI_MCIT_M_01/steps/equipment_information.entity'
 import { DataNI_MCIT_M_01 } from './entities/NI_MCIT_M_01/steps/data.entity'
+import { TokenService } from '../auth/jwt/jwt.service'
 
 @Module({
   imports: [
@@ -83,7 +84,7 @@ import { DataNI_MCIT_M_01 } from './entities/NI_MCIT_M_01/steps/data.entity'
       CalibrationResultsNI_MCIT_T_01,
       EnvironmentalConditionsNI_MCIT_T_01,
       DescriptionPatternNI_MCIT_T_01,
-    
+
       NI_MCIT_M_01,
       EquipmentInformationNI_MCIT_M_01,
       DataNI_MCIT_M_01,
@@ -103,6 +104,7 @@ import { DataNI_MCIT_M_01 } from './entities/NI_MCIT_M_01/steps/data.entity'
     NI_MCIT_M_01Service,
     PdfService,
     MailService,
+    TokenService,
   ],
   exports: [MethodsService],
 })
