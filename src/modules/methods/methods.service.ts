@@ -17,6 +17,7 @@ import { QuoteRequest } from '../quotes/entities/quote-request.entity'
 import { addOrRemoveMethodToStackDto } from './dto/add-remove-method-stack.dto'
 import * as path from 'path'
 import { exec } from 'child_process'
+import { TokenService } from '../auth/jwt/jwt.service'
 
 import { NI_MCIT_D_01 } from './entities/NI_MCIT_D_01/NI_MCIT_D_01.entity'
 import { PatternsService } from '../patterns/patterns.service'
@@ -49,6 +50,7 @@ export class MethodsService {
 
     @Inject(forwardRef(() => PatternsService))
     private readonly patternsService: PatternsService,
+    private readonly tokenService: TokenService,
   ) {}
 
   async createMethod(createMethod: CreateMethodDto) {
@@ -418,5 +420,33 @@ export class MethodsService {
         }
       })
     })
+  }
+
+  async reviewMethod(method_name: string, method_id: number, token: string) {
+    if (!token || !method_id || !method_name) {
+      return handleBadrequest(new Error('Faltan parámetros'))
+    }
+
+    try {
+      const repository = `${method_name}Repository`
+
+      const method = await this[repository].findOne({
+        where: {
+          id: method_id,
+        },
+      })
+
+      const { sub: id } = this.tokenService.decodeToken(token)
+
+      await this.dataSource.transaction(async (manager) => {
+        method.review_state = true
+        method.review_user_id = +id
+        await manager.save(method)
+      })
+
+      return handleOK('Método revisado')
+    } catch (error) {
+      return handleInternalServerError(error.message)
+    }
   }
 }
