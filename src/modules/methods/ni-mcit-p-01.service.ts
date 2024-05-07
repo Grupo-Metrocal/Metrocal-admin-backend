@@ -271,15 +271,6 @@ export class NI_MCIT_P_01Service {
       return handleInternalServerError('El método no existe')
     }
 
-    const dataActivity =
-      await this.activitiesService.getActivitiesByID(activityID)
-
-    if (!dataActivity.success) {
-      return handleInternalServerError('La actividad no existe')
-    }
-
-    const { data: activity } = dataActivity as { data: Activity }
-
     // const equipment = activity.quote_request.equipment_quote_request.filter(
     //   async (equipment) => {
     //     const stack = await this.methodsService.getMethodsID(equipment.id)
@@ -477,8 +468,32 @@ export class NI_MCIT_P_01Service {
 
       await this.autoSaveExcel(method.certificate_url)
 
-      const workbook2 = await XlsxPopulate.fromFileAsync(method.certificate_url)
-      const sheetCER = workbook2.sheet('DA Unid-kPa (5 ptos)')
+      return await this.getCertificateResult(methodID, activityID)
+    } catch (error) {
+      await this.methodService.killExcelProcess(method.certificate_url)
+      return handleInternalServerError(error.message)
+    }
+  }
+
+  async getCertificateResult(methodID: number, activityID: number) {
+    const method = await this.NI_MCIT_P_01Repository.findOne({
+      where: { id: methodID },
+      relations: [
+        'calibration_results',
+        'description_pattern',
+        'environmental_conditions',
+        'equipment_information',
+      ],
+    })
+
+    const dataActivity =
+      await this.activitiesService.getActivitiesByID(activityID)
+
+    const { data: activity } = dataActivity as { data: Activity }
+
+    try {
+      const workbook = await XlsxPopulate.fromFileAsync(method.certificate_url)
+      const sheetCER = workbook.sheet('DA Unid-kPa (5 ptos)')
 
       let reference_pressure = []
       let equipment_indication = []
