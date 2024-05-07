@@ -16,6 +16,7 @@ import { Methods } from './entities/method.entity'
 import { QuoteRequest } from '../quotes/entities/quote-request.entity'
 import { addOrRemoveMethodToStackDto } from './dto/add-remove-method-stack.dto'
 import * as path from 'path'
+import { exec } from 'child_process'
 
 import { NI_MCIT_D_01 } from './entities/NI_MCIT_D_01/NI_MCIT_D_01.entity'
 import { PatternsService } from '../patterns/patterns.service'
@@ -398,5 +399,24 @@ export class MethodsService {
     } catch (error) {
       return handleInternalServerError(error.message)
     }
+  }
+
+  async killExcelProcess(excel_url: string) {
+    console.log('Killing excel process')
+    return new Promise((resolve, reject) => {
+      const command = `powershell.exe Get-Process Excel | Where-Object { $_.MainWindowTitle -like "*${excel_url.replace(/\\/g, '\\\\')}*" } | ForEach-Object { $_.Kill() }`
+
+      exec(command, { shell: 'powershell.exe' }, (error, stdout, stderr) => {
+        if (error) {
+          console.error(`Error al eliminar el proceso excel: ${error.message}`)
+          reject(error)
+        } else if (stderr) {
+          console.error(`Error en la salida estándar: ${stderr}`)
+          reject(new Error(stderr))
+        } else {
+          resolve(stdout)
+        }
+      })
+    })
   }
 }
