@@ -292,14 +292,13 @@ export class NI_MCIT_T_01Service {
         '../mail/templates/excels/ni_mcit_t_01.xlsx',
       )
 
-      const newFilePath = path.join(
-        __dirname,
-        `../mail/templates/excels/ni_mcit_t_01_${activity.quote_request.no}-${methodID}.xlsx`,
-      )
+      if (fs.existsSync(method.certificate_url)) {
+        fs.unlinkSync(method.certificate_url)
+      }
 
-      fs.copyFileSync(filePath, newFilePath)
+      fs.copyFileSync(filePath, method.certificate_url)
 
-      const workbook = await XlsxPopulate.fromFileAsync(newFilePath)
+      const workbook = await XlsxPopulate.fromFileAsync(method.certificate_url)
 
       // condiciones ambientales
       const sheetEnviromentalConditions = workbook.sheet('NI-R01-MCIT-T-01')
@@ -376,10 +375,12 @@ export class NI_MCIT_T_01Service {
       // unidad de medida
       workbook.sheet('Calibración').cell('F7').value(equipment_information.unit)
 
-      workbook.toFileAsync(newFilePath)
-      await this.autoSaveExcel(newFilePath)
+      workbook.toFileAsync(method.certificate_url)
+      await this.autoSaveExcel(method.certificate_url)
 
-      const reopnedWorkbook = await XlsxPopulate.fromFileAsync(newFilePath)
+      const reopnedWorkbook = await XlsxPopulate.fromFileAsync(
+        method.certificate_url,
+      )
 
       let temperatureReference = []
       let thermometerIndication = []
@@ -531,7 +532,6 @@ export class NI_MCIT_T_01Service {
           reproduce en su totalidad.
         `,
       }
-      fs.unlinkSync(newFilePath)
       return handleOK(certificate)
     } catch (error) {
       return handleInternalServerError(error.message)
