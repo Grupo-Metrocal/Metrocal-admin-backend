@@ -102,6 +102,22 @@ export class MethodsController {
     )
   }
 
+  @Post('review-method/')
+  async reviewMethod(
+    @Body()
+    {
+      method_name,
+      method_id,
+      token,
+    }: {
+      method_name: string
+      method_id: number
+      token: string
+    },
+  ) {
+    return this.methodsService.reviewMethod(method_name, method_id, token)
+  }
+
   @Post('ni-mcit-p-01/calibration-location/:methodId')
   async createNI_MCIT_P_01CalibrationLocation(
     @Body() { location }: AddLocationDto,
@@ -480,9 +496,6 @@ export class MethodsController {
     @Body() data: DataM_01Dto,
     @Param('methodId') methodId: number,
   ) {
-    return await this.ni_mcit_m_01Service.dataInformation(
-      data,
-      methodId,
-    )
+    return await this.ni_mcit_m_01Service.dataInformation(data, methodId)
   }
 }
