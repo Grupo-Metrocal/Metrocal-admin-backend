@@ -23,6 +23,7 @@ import { generateServiceCodeToMethod } from 'src/utils/codeGenerator'
 import { formatDate } from 'src/utils/formatDate'
 import { PdfService } from '../mail/pdf.service'
 import { MailService } from '../mail/mail.service'
+import { MethodsService } from './methods.service'
 
 @Injectable()
 export class NI_MCIT_T_01Service {
@@ -48,6 +49,7 @@ export class NI_MCIT_T_01Service {
 
     private readonly pdfService: PdfService,
     private readonly mailService: MailService,
+    private readonly methodService: MethodsService,
   ) {}
 
   async create() {
@@ -271,20 +273,16 @@ export class NI_MCIT_T_01Service {
       calibration_results,
     } = method
 
-    if (!equipment_information || !environmental_conditions) {
+    if (
+      !equipment_information ||
+      !environmental_conditions ||
+      !description_pattern ||
+      !calibration_results
+    ) {
       return handleInternalServerError(
-        'El método no tiene información de equipo o condiciones ambientales',
+        'El método no tiene la información necesaria para generar el certificado',
       )
     }
-
-    const dataActivity =
-      await this.activitiesService.getActivitiesByID(activityID)
-
-    if (!dataActivity.success) {
-      return handleInternalServerError('La actividad no existe')
-    }
-
-    const activity = dataActivity.data
 
     try {
       const filePath = path.join(
@@ -377,6 +375,56 @@ export class NI_MCIT_T_01Service {
 
       workbook.toFileAsync(method.certificate_url)
       await this.autoSaveExcel(method.certificate_url)
+
+      return this.getCertificateResult(method.id, activityID)
+    } catch (error) {
+      await this.methodService.killExcelProcess(method.certificate_url)
+      return handleInternalServerError(error.message)
+    }
+  }
+
+  async getCertificateResult(methodID: number, activityID: number) {
+    try {
+      const method = await this.NI_MCIT_T_01Repository.findOne({
+        where: { id: methodID },
+        relations: [
+          'equipment_information',
+          'environmental_conditions',
+          'description_pattern',
+          'calibration_results',
+        ],
+      })
+
+      if (!method) {
+        return handleInternalServerError('El método no existe')
+      }
+
+      const {
+        equipment_information,
+        environmental_conditions,
+        description_pattern,
+        calibration_results,
+      } = method
+
+      if (
+        !equipment_information ||
+        !environmental_conditions ||
+        !description_pattern ||
+        !calibration_results
+      ) {
+        return handleInternalServerError(
+          'El método no tiene la información necesaria para generar el certificado',
+        )
+      }
+
+      const dataActivity =
+        await this.activitiesService.getActivitiesByID(activityID)
+
+      if (!dataActivity.success) {
+        return handleInternalServerError('La actividad no existe')
+      }
+
+      const activity = dataActivity.data
 
       const reopnedWorkbook = await XlsxPopulate.fromFileAsync(
         method.certificate_url,
@@ -532,6 +580,7 @@ export class NI_MCIT_T_01Service {
           reproduce en su totalidad.
         `,
       }
+
       return handleOK(certificate)
     } catch (error) {
       return handleInternalServerError(error.message)
