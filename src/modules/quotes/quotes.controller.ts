@@ -36,7 +36,7 @@ export class QuotesController {
   @UseGuards(JwtAuthGuard)
   @Get('')
   async getAll() {
-    return await this.quotesService.getAll()
+    return await this.quotesService.getAll({ filterActive: true })
   }
 
   @Get('request/all')
