@@ -118,6 +118,11 @@ export class MethodsController {
     return this.methodsService.reviewMethod(method_name, method_id, token)
   }
 
+  @Get('send-certifications-to-client/:activityID')
+  sendAllCertificatesToClient(@Param('activityID') activityID: number) {
+    return this.methodsService.sendAllCertificatesToClient(activityID)
+  }
+
   @Post('ni-mcit-p-01/calibration-location/:methodId')
   async createNI_MCIT_P_01CalibrationLocation(
     @Body() { location }: AddLocationDto,
