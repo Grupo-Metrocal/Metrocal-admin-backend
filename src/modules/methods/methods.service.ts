@@ -24,6 +24,10 @@ import { PatternsService } from '../patterns/patterns.service'
 import { NI_MCIT_T_01 } from './entities/NI_MCIT_T_01/NI_MCIT_T_01.entity'
 import { NI_MCIT_M_01 } from './entities/NI_MCIT_M_01/NI_MCIT_M_01.entity'
 
+import { NI_MCIT_P_01Service } from './ni-mcit-p-01.service'
+import { NI_MCIT_T_01Service } from './ni-mcit-t-01.service'
+import { MailService } from '../mail/mail.service'
+
 @Injectable()
 export class MethodsService {
   constructor(
@@ -51,6 +55,9 @@ export class MethodsService {
     @Inject(forwardRef(() => PatternsService))
     private readonly patternsService: PatternsService,
     private readonly tokenService: TokenService,
+    private readonly mailService: MailService,
+    private readonly NI_MCIT_P_01Services: NI_MCIT_P_01Service,
+    private readonly NI_MCIT_T_01Services: NI_MCIT_T_01Service,
   ) {}
 
   async createMethod(createMethod: CreateMethodDto) {
@@ -446,6 +453,51 @@ export class MethodsService {
 
       return handleOK('Método revisado')
     } catch (error) {
+      return handleInternalServerError(error.message)
+    }
+  }
+
+  async sendAllCertificatesToClient(activityID: number) {
+    try {
+      const activity = await this.activitiesService.getActivityById(activityID)
+
+      const { equipment_quote_request } = activity.data.quote_request
+
+      const collectionPDF = []
+
+      for (const equipment of equipment_quote_request) {
+        if (equipment.method_id) {
+          const method_name = `${equipment.calibration_method.split(' ')[0].replaceAll('-', '_')}Services`
+          const { data: stackMethods } = await this.getMethodsID(
+            equipment.method_id,
+          )
+
+          for (const method of stackMethods) {
+            const dataMethod = await this[method_name].generatePDFCertificate(
+              activityID,
+              method.id,
+            )
+
+            if (dataMethod.success) {
+              collectionPDF.push({
+                filename: `Certificado de calibración equipo ${equipment.name} - ${method.id}.pdf`,
+                content: dataMethod.data.pdf,
+              })
+            }
+          }
+        } else {
+          continue
+        }
+      }
+
+      await this.mailService.sendMailCollectionCertificate({
+        user: activity.data.quote_request.client.email,
+        collection: collectionPDF as any,
+      })
+
+      return handleOK('Email enviado')
+    } catch (error) {
+      console.log(error)
       return handleInternalServerError(error.message)
     }
   }
