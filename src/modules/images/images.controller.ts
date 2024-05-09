@@ -14,7 +14,9 @@ import { handleBadrequest, handleOK } from 'src/common/handleHttp'
 import * as path from 'path'
 import { Response } from 'express'
 import * as fs from 'fs'
+import { ApiTags } from '@nestjs/swagger'
 
+@ApiTags('images')
 @Controller('images')
 export class ImagesController {
   constructor(private readonly imagesService: ImagesService) {}
