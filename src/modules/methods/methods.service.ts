@@ -473,16 +473,20 @@ export class MethodsService {
           )
 
           for (const method of stackMethods) {
-            const dataMethod = await this[method_name].generatePDFCertificate(
-              activityID,
-              method.id,
-            )
+            if (method.review_state) {
+              const dataMethod = await this[method_name].generatePDFCertificate(
+                activityID,
+                method.id,
+              )
 
-            if (dataMethod.success) {
-              collectionPDF.push({
-                filename: `Certificado de calibración equipo ${equipment.name} - ${method.id}.pdf`,
-                content: dataMethod.data.pdf,
-              })
+              if (dataMethod.success) {
+                collectionPDF.push({
+                  filename: `Certificado de calibración equipo ${equipment.name} - ${method.id}.pdf`,
+                  content: dataMethod.data.pdf,
+                })
+              }
+            } else {
+              continue
             }
           }
         } else {
