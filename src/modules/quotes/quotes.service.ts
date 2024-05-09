@@ -1,6 +1,6 @@
 import { Inject, Injectable, forwardRef } from '@nestjs/common'
 import { InjectRepository } from '@nestjs/typeorm'
-import { Repository, DataSource } from 'typeorm'
+import { Repository, DataSource, In, IsNull, Not } from 'typeorm'
 import { EquipmentQuoteRequest } from './entities/equipment-quote-request.entity'
 import { QuoteRequest } from './entities/quote-request.entity'
 import { QuoteRequestDto } from './dto/quote-request.dto'
@@ -95,20 +95,19 @@ export class QuotesService {
     }
   }
 
-  async getAll() {
+  async getAll({ filterActive = false }: { filterActive?: boolean }) {
     try {
       const quotes = await this.quoteRequestRepository.find({
-        where: [
-          { status: 'pending' },
-          { status: 'waiting' },
-          { status: 'done' },
-        ],
         relations: [
           'equipment_quote_request',
           'client',
           'approved_by',
           'activity',
         ],
+        where: {
+          status: In(['pending', 'waiting', 'done']),
+          activity: filterActive ? IsNull() : Not(IsNull()), // Si filterActive es true, buscamos activity null, de lo contrario, activity no es null
+        },
       })
 
       return handleOK(quotes)
