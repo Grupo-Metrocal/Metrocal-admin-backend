@@ -1183,19 +1183,16 @@ export class NI_MCIT_D_01Service {
       }
       let respuesta
       if (method) {
-        const respuesta = await this.generateCertificateData({
+        respuesta = await this.generateCertificateData({
           activityID,
           methodID,
         })
       }
-      if (respuesta.status === 500) {
+      if (respuesta.status === 200) {
+        return handleOK('Archivo generado correctamente')
+      } else {
         return handleInternalServerError('Error al generar el certificado')
       }
-      if (respuesta.status === 200) {
-        return handleOK('Certificado generado correctamente')
-      }
-      //console.log('dataCertificate', respuesta)/
-      return handleOK('Archivo generado correctamente')
     } catch (error) {
       return handleInternalServerError('Error al generar el certificado')
     }
