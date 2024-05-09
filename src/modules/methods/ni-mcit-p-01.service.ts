@@ -50,9 +50,16 @@ export class NI_MCIT_P_01Service {
     @Inject(forwardRef(() => PatternsService))
     private readonly patternsService: PatternsService,
 
+    @Inject(forwardRef(() => CertificateService))
     private readonly certificateService: CertificateService,
+
+    @Inject(forwardRef(() => PdfService))
     private readonly pdfService: PdfService,
+
+    @Inject(forwardRef(() => MailService))
     private readonly mailService: MailService,
+
+    @Inject(forwardRef(() => MethodsService))
     private readonly methodService: MethodsService,
   ) {}
 
@@ -751,10 +758,16 @@ export class NI_MCIT_P_01Service {
         return handleInternalServerError('El método no existe')
       }
 
-      const dataCertificate = await this.generateCertificate({
-        activityID,
-        methodID,
-      })
+      let dataCertificate: any
+
+      if (!fs.existsSync(method.certificate_url)) {
+        dataCertificate = await this.generateCertificate({
+          activityID,
+          methodID,
+        })
+      } else {
+        dataCertificate = await this.getCertificateResult(methodID, activityID)
+      }
 
       if (!dataCertificate.success) {
         return dataCertificate
@@ -801,12 +814,31 @@ export class NI_MCIT_P_01Service {
         return handleInternalServerError('Error al generar el PDF')
       }
 
-      const response = await this.mailService.sendMailCertification({
-        user: dataCertificate.data.email,
+      return handleOK({
         pdf: PDF,
+        client_email: dataCertificate.data.email,
+      })
+    } catch (error) {
+      return handleInternalServerError(error.message)
+    }
+  }
+
+  async sendCertificateToClient(activityID: number, methodID: number) {
+    try {
+      const data = await this.generatePDFCertificate(activityID, methodID)
+
+      if (!data.success) {
+        return data
+      }
+
+      const { pdf, client_email } = data.data
+
+      await this.mailService.sendMailCertification({
+        user: client_email,
+        pdf,
       })
 
-      return handleOK(response)
+      return handleOK('Certificado enviado con exito')
     } catch (error) {
       return handleInternalServerError(error.message)
     }
