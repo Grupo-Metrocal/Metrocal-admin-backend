@@ -102,4 +102,16 @@ export class NI_MCIT_D_02 {
 
   @Column({ nullable: true })
   certificate_code?: string
+
+  @Column({ nullable: true })
+  certificate_url?: string
+
+  @Column({ nullable: true, type: 'boolean', default: false })
+  review_state?: boolean
+
+  @Column({ nullable: true })
+  review_user_id?: number
+
+  @Column({ nullable: true, default: 'pending' })
+  status?: string // pending, done
 }
