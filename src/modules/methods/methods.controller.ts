@@ -400,7 +400,7 @@ export class MethodsController {
     @Param('activityId') activityId: number,
     @Param('methodId') methodId: number,
   ) {
-    return await this.ni_mcit_d_01Service.generateCertificateD_01({
+    return await this.ni_mcit_d_01Service.generateCertificateData({
       activityID: activityId,
       methodID: methodId,
     })
