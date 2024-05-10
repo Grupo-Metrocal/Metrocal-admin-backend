@@ -371,6 +371,7 @@ export class NI_MCIT_D_01Service {
   async exteriorMeasurementAccuracy(
     exteriorMeasurementAccuracy: ExteriorMeasurementAccuracyNI_MCIT_D_01Dto,
     methodId: number,
+    activityID: number,
   ) {
     try {
       const method = await this.NI_MCIT_D_01Repository.findOne({
@@ -400,6 +401,7 @@ export class NI_MCIT_D_01Service {
         })
 
         await this.generateCertificateCodeToMethod(method.id)
+        await this.activitiesService.updateActivityProgress(activityID)
 
         return handleOK(method)
       } catch (error) {
