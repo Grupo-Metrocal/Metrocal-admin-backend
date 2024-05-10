@@ -1,12 +1,4 @@
-import {
-  Controller,
-  Delete,
-  Param,
-  ParseFilePipeBuilder,
-  UploadedFile,
-  UseGuards,
-  UseInterceptors,
-} from '@nestjs/common'
+import { Controller, Delete, Param, UseGuards } from '@nestjs/common'
 import { ActivitiesService } from './activities.service'
 import { ApiTags } from '@nestjs/swagger'
 import { Get, Post, Body } from '@nestjs/common'
