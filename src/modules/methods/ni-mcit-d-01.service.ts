@@ -397,6 +397,8 @@ export class NI_MCIT_D_01Service {
       try {
         this.dataSource.transaction(async (manager) => {
           await manager.save(method.exterior_measurement_accuracy)
+          method.status = 'done'
+
           await manager.save(method)
         })
 
@@ -856,7 +858,6 @@ export class NI_MCIT_D_01Service {
       //   CertificateData,
       //   method.pre_installation_comment.accredited,
       // )
-      console.log('correcto')
       return this.getCertificateResult(method.id, activityID)
     } catch (error) {
       console.error('Error al generar el archivo:', error)
@@ -1182,7 +1183,7 @@ export class NI_MCIT_D_01Service {
       const PDF = await this.pdfService.generateCertificatePdf(
         '/certificates/NI_CMIT_D_01/certificadoD01.hbs',
         // method.pre_installation_comment.accredited,
-        CertificateData,
+        CertificateData.data,
       )
 
       if (!PDF) {
