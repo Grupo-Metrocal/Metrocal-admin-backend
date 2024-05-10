@@ -28,6 +28,7 @@ import { NI_MCIT_P_01Service } from './ni-mcit-p-01.service'
 import { NI_MCIT_T_01Service } from './ni-mcit-t-01.service'
 import { MailService } from '../mail/mail.service'
 import { NI_MCIT_D_01Service } from './ni-mcit-d-01.service'
+import { NI_MCIT_D_02Service } from './ni-mcit-d-02.service'
 
 @Injectable()
 export class MethodsService {
@@ -60,6 +61,7 @@ export class MethodsService {
     private readonly NI_MCIT_P_01Services: NI_MCIT_P_01Service,
     private readonly NI_MCIT_T_01Services: NI_MCIT_T_01Service,
     private readonly NI_MCIT_D_01Services: NI_MCIT_D_01Service,
+    private readonly NI_MCIT_D_02Services: NI_MCIT_D_02Service,
   ) {}
 
   async createMethod(createMethod: CreateMethodDto) {
