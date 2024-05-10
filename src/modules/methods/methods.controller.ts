@@ -267,12 +267,17 @@ export class MethodsController {
     )
   }
 
-  @Post('ni-mcit-d-02/accuracy-test/:methodId')
+  @Post('ni-mcit-d-02/accuracy-test/:methodId/:activityId')
   async createNI_MCIT_D_02AccuracyTest(
     @Body() accuracyTest: AccuracyTestNI_MCIT_D_02Dto,
     @Param('methodId') methodId: number,
+    @Param('activityId') activityId: number,
   ) {
-    return await this.ni_mcit_d_02Service.accuracyTest(accuracyTest, methodId)
+    return await this.ni_mcit_d_02Service.accuracyTest(
+      accuracyTest,
+      methodId,
+      activityId,
+    )
   }
 
   //certificate
@@ -281,7 +286,7 @@ export class MethodsController {
     @Param('activityId') activityId: number,
     @Param('methodId') methodId: number,
   ) {
-    return await this.ni_mcit_d_02Service.getNI_MCIT_D_02Certificate({
+    return await this.ni_mcit_d_02Service.generateCertificateData({
       activityID: activityId,
       methodID: methodId,
     })
