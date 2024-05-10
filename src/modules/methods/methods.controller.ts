@@ -382,15 +382,17 @@ export class MethodsController {
   }
 
   //exterior-measurement-accuracy
-  @Post('ni-mcit-d-01/exterior-measurement-accuracy/:methodId')
+  @Post('ni-mcit-d-01/exterior-measurement-accuracy/:methodId/:activityId')
   async createNI_MCIT_D_01ExteriorMeasurementAccuracy(
     @Body()
     exteriorMeasurementAccuracy: ExteriorMeasurementAccuracyNI_MCIT_D_01Dto,
     @Param('methodId') methodId: number,
+    @Param('activityId') activityId: number,
   ) {
     return await this.ni_mcit_d_01Service.exteriorMeasurementAccuracy(
       exteriorMeasurementAccuracy,
       methodId,
+      activityId,
     )
   }
 
