@@ -57,8 +57,12 @@ export class NI_MCIT_D_02Service {
 
     @Inject(forwardRef(() => PatternsService))
     private readonly patternsService: PatternsService,
+
+    @Inject(forwardRef(() => CertificateService))
     private readonly certificateService: CertificateService,
+    @Inject(forwardRef(() => PdfService))
     private readonly pdfService: PdfService,
+    @Inject(forwardRef(() => MailService))
     private readonly mailService: MailService,
   ) {}
 
@@ -280,6 +284,7 @@ export class NI_MCIT_D_02Service {
   async accuracyTest(
     accuracyTest: AccuracyTestNI_MCIT_D_02Dto,
     methodId: number,
+    activityID: number,
   ) {
     try {
       // Buscar el método existente
@@ -304,8 +309,13 @@ export class NI_MCIT_D_02Service {
       try {
         this.dataSource.transaction(async (manager) => {
           await manager.save(method.accuracy_test)
+          method.status = 'done'
+
           await manager.save(method)
         })
+        await this.generateCertificateCodeToMethod(method.id)
+        await this.activitiesService.updateActivityProgress(activityID)
+
         return handleOK(method.accuracy_test)
       } catch (error) {
         return handleInternalServerError(error.message)
@@ -316,7 +326,7 @@ export class NI_MCIT_D_02Service {
   }
 
   //excel
-  async generateCertificateD_02({
+  async generateCertificateData({
     activityID,
     methodID,
   }: {
@@ -348,16 +358,15 @@ export class NI_MCIT_D_02Service {
 
     const { data: activity } = dataActivity as { data: Activity }
 
-    const equipment = activity.quote_request.equipment_quote_request.filter(
-      (item) => item.method_id == method.id,
-    )
+    // const equipment = activity.quote_request.equipment_quote_request.filter(
+    //   (item) => item.method_id == method.id,
+    // )
 
     const dataClient = activity.quote_request.client
-    const dataQuote = activity.quote_request
 
-    if (equipment.length === 0) {
-      return handleInternalServerError('El equipo no existe')
-    }
+    // if (equipment.length === 0) {
+    //   return handleInternalServerError('El equipo no existe')
+    // }
 
     //ni_mcit_d_02
     const filePath = path.join(
@@ -366,13 +375,13 @@ export class NI_MCIT_D_02Service {
     )
 
     try {
-      const newFilePath = path.join(
-        __dirname,
-        `../mail/templates/excels/ni_mcit_d_02_${activityID}_${methodID}.xlsx`,
-      )
-      fs.copyFileSync(filePath, newFilePath)
+      if (fs.existsSync(method.certificate_url)) {
+        fs.unlinkSync(method.certificate_url)
+      }
 
-      const workbook = await XlsxPopulate.fromFileAsync(newFilePath)
+      fs.copyFileSync(filePath, method.certificate_url)
+
+      const workbook = await XlsxPopulate.fromFileAsync(method.certificate_url)
 
       if (!workbook) {
         return handleInternalServerError('El archivo no existe')
@@ -626,9 +635,38 @@ export class NI_MCIT_D_02Service {
 
       patronsUtilizados.push(patterns.data)
 
-      workbook.toFileAsync(newFilePath)
-      await this.autoSaveExcel(newFilePath)
-      const workbook2 = await XlsxPopulate.fromFileAsync(newFilePath)
+      workbook.toFileAsync(method.certificate_url)
+      await this.autoSaveExcel(method.certificate_url)
+
+      return this.getCertificateResult(method.id, activityID)
+    } catch (error) {
+      return handleInternalServerError(error.message)
+    }
+  }
+
+  async getCertificateResult(methodID: number, activityID: number) {
+    try {
+      const method = await this.NI_MCIT_D_02Repository.findOne({
+        where: { id: methodID },
+        relations: [
+          'equipment_information',
+          'environmental_conditions',
+          'description_pattern',
+          'pre_installation_comment',
+          'instrument_zero_check',
+          'accuracy_test',
+        ],
+      })
+
+      const dataActivity =
+        await this.activitiesService.getActivityById(activityID)
+
+      const { data: activity } = dataActivity as { data: Activity }
+
+      const dataClient = activity.quote_request.client
+      const dataQuote = activity.quote_request
+
+      const workbook2 = await XlsxPopulate.fromFileAsync(method.certificate_url)
       const sheetDA3 = workbook2.sheet('DA (mm)')
       const sheetFA4 = workbook2.sheet('FA (mm)')
 
@@ -708,6 +746,7 @@ export class NI_MCIT_D_02Service {
         }
       }
 
+      const patronsUtilizados = []
       //Para generar la certificacion
       const fechaOriginal = method.equipment_information.date
       const fecha = new Date(fechaOriginal)
@@ -729,10 +768,7 @@ export class NI_MCIT_D_02Service {
         },
         patronsUtilizados,
       }
-      //validar si lleve ONA o No
-      if (method.pre_installation_comment.accredited) {
-        await this.generateCertificateCodeToMethod(method.id)
-      }
+
       const methodAcredited = await this.NI_MCIT_D_02Repository.findOne({
         where: { id: methodID },
       })
@@ -795,33 +831,67 @@ export class NI_MCIT_D_02Service {
         creditable: method.pre_installation_comment.accredited,
       }
 
-      let PDF
+      return handleOK(CertificateData)
+    } catch (error) {
+      return handleInternalServerError('Error al generar el archivo')
+    }
+  }
+
+  async generatePDFCertificate(activityID: number, methodID: number) {
+    try {
+      const method = await this.NI_MCIT_D_02Repository.findOne({
+        where: { id: methodID },
+        relations: [
+          'equipment_information',
+          'environmental_conditions',
+          'description_pattern',
+          'pre_installation_comment',
+          'instrument_zero_check',
+          'accuracy_test',
+        ],
+      })
+
+      if (!method) {
+        return handleInternalServerError('El método no existe')
+      }
+
+      let CertificateData: any
+
+      if (!fs.existsSync(method.certificate_url)) {
+        CertificateData = await this.generateCertificateData({
+          activityID,
+          methodID,
+        })
+      } else {
+        CertificateData = await this.getCertificateResult(methodID, activityID)
+      }
+
+      let PDF: any
+
       if (method.pre_installation_comment.accredited) {
         PDF = await this.pdfService.generateCertificatePdf(
           '/certificates/NI_CMIT_D_02/certificadoD02_1.hbs',
           // method.pre_installation_comment.accredited,
-          CertificateData,
+          CertificateData.data,
         )
       } else {
         PDF = await this.pdfService.generateCertificatePdf(
           '/certificates/NI_CMIT_D_02/certificadoD02_2.hbs',
           // method.pre_installation_comment.accredited,
-          CertificateData,
+          CertificateData.data,
         )
       }
 
-      const response = await this.mailService.sendMailCertification({
-        user: dataClient.email,
-        pdf: PDF,
-      })
-
-      if (response) {
-        return handleOK('Certificado generado correctamente')
-      } else {
-        return handleInternalServerError('Error al generar el archivo')
+      if (!PDF) {
+        return handleInternalServerError('Error al generar el PDF')
       }
+
+      return handleOK({
+        pdf: PDF,
+        client_email: CertificateData,
+      })
     } catch (error) {
-      return handleInternalServerError(error.message)
+      return handleInternalServerError('Error al generar el PDF')
     }
   }
 
@@ -848,9 +918,10 @@ export class NI_MCIT_D_02Service {
       if (!method) {
         return handleInternalServerError('El método no existe')
       }
+
       let respuesta
       if (method) {
-        respuesta = await this.generateCertificateD_02({
+        respuesta = await this.generateCertificateData({
           activityID,
           methodID,
         })
@@ -859,6 +930,7 @@ export class NI_MCIT_D_02Service {
       if (respuesta.status === 500) {
         return handleInternalServerError('Error al generar el certificado')
       }
+
       if (respuesta.status === 200) {
         return handleOK('Certificado generado correctamente')
       }
