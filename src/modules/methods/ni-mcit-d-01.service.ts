@@ -68,8 +68,13 @@ export class NI_MCIT_D_01Service {
     @Inject(forwardRef(() => PatternsService))
     private readonly patternsService: PatternsService,
 
+    @Inject(forwardRef(() => PdfService))
     private readonly pdfService: PdfService,
+
+    @Inject(forwardRef(() => CertificateService))
     private readonly certificateService: CertificateService,
+
+    @Inject(forwardRef(() => MailService))
     private readonly mailService: MailService,
   ) {}
 
@@ -114,6 +119,7 @@ export class NI_MCIT_D_01Service {
           await manager.save(method.equipment_information)
           await manager.save(method)
         })
+
         return handleOK(method.equipment_information)
       } catch (error) {
         return handleInternalServerError(error.message)
@@ -392,6 +398,9 @@ export class NI_MCIT_D_01Service {
           await manager.save(method.exterior_measurement_accuracy)
           await manager.save(method)
         })
+
+        await this.generateCertificateCodeToMethod(method.id)
+
         return handleOK(method)
       } catch (error) {
         return handleInternalServerError(error.message)
@@ -436,18 +445,18 @@ export class NI_MCIT_D_01Service {
 
     const { data: activity } = dataActivity as { data: Activity }
 
-    const equipment = activity.quote_request.equipment_quote_request.filter(
-      (item) => item.method_id == method.id,
-    )
+    // const equipment = activity.quote_request.equipment_quote_request.filter(
+    //   (item) => item.method_id == method.id,
+    // )
 
     const dataClient = activity.quote_request.client
     const dataQuote = activity.quote_request
 
-    if (equipment.length === 0) {
-      return handleInternalServerError(
-        'El método no existe en la actividad seleccionada',
-      )
-    }
+    // if (equipment.length === 0) {
+    //   return handleInternalServerError(
+    //     'El método no existe en la actividad seleccionada',
+    //   )
+    // }
 
     const filePath = path.join(
       __dirname,
@@ -455,14 +464,13 @@ export class NI_MCIT_D_01Service {
     )
 
     try {
-      const newFilePath = path.join(
-        __dirname,
-        `../mail/templates/excels/ni_mcit_d_01_${activityID}_${methodID}.xlsx`,
-      )
+      if (fs.existsSync(method.certificate_url)) {
+        fs.unlinkSync(method.certificate_url)
+      }
 
-      fs.copyFileSync(filePath, newFilePath)
+      fs.copyFileSync(filePath, method.certificate_url)
 
-      const workbook = await XlsxPopulate.fromFileAsync(newFilePath)
+      const workbook = await XlsxPopulate.fromFileAsync(method.certificate_url)
 
       if (!workbook) {
         return handleInternalServerError('El archivo no existe')
@@ -471,8 +479,6 @@ export class NI_MCIT_D_01Service {
       //enter method selected
       const sheetEC = workbook.sheet('NI-R01-MCIT-D-01')
       const sheetEC2 = workbook.sheet('Datos Patrones')
-      const sheetEC3 = workbook.sheet('DA (mm)')
-      const sheetEC4 = workbook.sheet('FA (mm)')
 
       //client
       sheetEC.cell('B8').value(dataClient.company_name)
@@ -523,41 +529,41 @@ export class NI_MCIT_D_01Service {
       sheetEC.cell('A28').value(method.pre_installation_comment.comment)
 
       //instrument zero check
-      sheetEC.cell('A34').value(method.instrument_zero_check.nominal_value)
+      sheetEC.cell('A34').value(method.instrument_zero_check?.nominal_value)
       sheetEC
         .cell('C34')
         .value(
-          method.instrument_zero_check.x1 == 0.0
+          method.instrument_zero_check?.x1 == 0.0
             ? 0
-            : method.instrument_zero_check.x1,
+            : method.instrument_zero_check?.x1,
         )
       sheetEC
         .cell('D34')
         .value(
-          method.instrument_zero_check.x2 == 0.0
+          method.instrument_zero_check?.x2 == 0.0
             ? 0
-            : method.instrument_zero_check.x2,
+            : method.instrument_zero_check?.x2,
         )
       sheetEC
         .cell('E34')
         .value(
-          method.instrument_zero_check.x3 == 0.0
+          method.instrument_zero_check?.x3 == 0.0
             ? 0
-            : method.instrument_zero_check.x3,
+            : method.instrument_zero_check?.x3,
         )
       sheetEC
         .cell('F34')
         .value(
-          method.instrument_zero_check.x4 == 0.0
+          method.instrument_zero_check?.x4 == 0.0
             ? 0
-            : method.instrument_zero_check.x4,
+            : method.instrument_zero_check?.x4,
         )
       sheetEC
         .cell('G34')
         .value(
-          method.instrument_zero_check.x5 == 0.0
+          method.instrument_zero_check?.x5 == 0.0
             ? 0
-            : method.instrument_zero_check.x5,
+            : method.instrument_zero_check?.x5,
         )
 
       //Medición de paralelismo (caras de medición de exteriores)
@@ -738,7 +744,7 @@ export class NI_MCIT_D_01Service {
       let fila_position_acurrancy_test = 1
       const columnas_verificacion_exterior4 = ['C', 'D', 'E', 'F', 'G']
 
-      method.exterior_measurement_accuracy.measure.forEach((item) => {
+      method.exterior_measurement_accuracy?.measure?.forEach((item) => {
         Object.entries(item.verification_lengths).forEach(
           ([key, value], index) => {
             const columna = columnas_verificacion_exterior4[index]
@@ -824,7 +830,7 @@ export class NI_MCIT_D_01Service {
 
       // Procesamiento de equipos DA (mm) y FA (mm)
       const descipcioPatrines = []
-      method.description_pattern.descriptionPatterns.forEach(async (x) => {
+      method.description_pattern?.descriptionPatterns.forEach(async (x) => {
         let dato = x
         let patterns = await this.patternsService.findByCodeAndMethod(
           dato,
@@ -840,14 +846,56 @@ export class NI_MCIT_D_01Service {
 
       descipcioPatrines.push(patterns.data)
 
-      workbook.toFileAsync(newFilePath)
+      workbook.toFileAsync(method.certificate_url)
 
-      await this.autoSaveExcel(newFilePath)
+      await this.autoSaveExcel(method.certificate_url)
 
-      const workbook2 = await XlsxPopulate.fromFileAsync(newFilePath)
-      const sheetTomaDatos = workbook2.sheet('NI-R01-MCIT-D-01')
+      // const PDF = await this.pdfService.generateCertificateD_01pdf(
+      //   CertificateData,
+      //   method.pre_installation_comment.accredited,
+      // )
+      console.log('correcto')
+      return this.getCertificateResult(method.id, activityID)
+    } catch (error) {
+      console.error('Error al generar el archivo:', error)
+      return handleInternalServerError('Error al generar el archivo')
+    }
+  }
+
+  async getCertificateResult(methodID: number, activityID: number) {
+    try {
+      const method = await this.NI_MCIT_D_01Repository.findOne({
+        where: { id: methodID },
+        relations: [
+          'equipment_information',
+          'environmental_conditions',
+          'description_pattern',
+          'pre_installation_comment',
+          'instrument_zero_check',
+          'exterior_parallelism_measurement',
+          'interior_parallelism_measurement',
+          'exterior_measurement_accuracy',
+        ],
+      })
+
+      if (!method) {
+        return handleInternalServerError('El método no existe')
+      }
+
+      const dataActivity =
+        await this.activitiesService.getActivityById(activityID)
+
+      if (!dataActivity) {
+        return handleInternalServerError('La actividad no existe')
+      }
+
+      const { data: activity } = dataActivity as { data: Activity }
+
+      const dataClient = activity.quote_request.client
+      const dataQuote = activity.quote_request
+
+      const workbook2 = await XlsxPopulate.fromFileAsync(method.certificate_url)
       const sheetDA = workbook2.sheet('DA (mm)')
-      const sheetFA = workbook2.sheet('FA (mm)')
 
       //capturando datos del excel de las sheet DA (mm)
       let filaDAmm = 28
@@ -967,6 +1015,8 @@ export class NI_MCIT_D_01Service {
       // Formato de fecha: dd/mm/yyyy
       const fechaFormateada = `${dia}/${mes}/${año}`
 
+      const descipcioPatrines = []
+
       //lectura de datos para pdf
       const serviceCode = generateServiceCodeToMethod(method.id)
       const dataNI_R01_MCIT_D_01 = {
@@ -1002,25 +1052,23 @@ export class NI_MCIT_D_01Service {
           Comentario: method.pre_installation_comment.comment,
         },
         verificacionCeroInstrumento: {
-          ValorNominal: method.instrument_zero_check.nominal_value,
-          X1: method.instrument_zero_check.x1,
-          X2: method.instrument_zero_check.x2,
-          X3: method.instrument_zero_check.x3,
-          X4: method.instrument_zero_check.x4,
-          X5: method.instrument_zero_check.x5,
+          ValorNominal: method.instrument_zero_check?.nominal_value,
+          X1: method.instrument_zero_check?.x1,
+          X2: method.instrument_zero_check?.x2,
+          X3: method.instrument_zero_check?.x3,
+          X4: method.instrument_zero_check?.x4,
+          X5: method.instrument_zero_check?.x5,
         },
         medicionParalelismoExteriores:
           method.exterior_parallelism_measurement == null ? false : true,
         medicionParalelismoInteriores:
           method.interior_parallelism_measurement == null ? false : true,
-        pruebaExactitud: method.exterior_measurement_accuracy.measure,
+        pruebaExactitud: method.exterior_measurement_accuracy?.measure,
         numeroCertificado: serviceCode,
       }
 
       //validar si lleve ONA o No
-      if (method.pre_installation_comment.accredited) {
-        await this.generateCertificateCodeToMethod(method.id)
-      }
+
       const methodAcredited = await this.NI_MCIT_D_01Repository.findOne({
         where: { id: methodID },
       })
@@ -1092,6 +1140,43 @@ export class NI_MCIT_D_01Service {
         creditable: method.pre_installation_comment.accredited,
       }
 
+      return handleOK(CertificateData)
+    } catch (error) {
+      return handleInternalServerError(error.message)
+    }
+  }
+
+  async generatePDFCertificate(activityID: number, methodID: number) {
+    try {
+      const method = await this.NI_MCIT_D_01Repository.findOne({
+        where: { id: methodID },
+        relations: [
+          'equipment_information',
+          'environmental_conditions',
+          'description_pattern',
+          'pre_installation_comment',
+          'instrument_zero_check',
+          'exterior_parallelism_measurement',
+          'interior_parallelism_measurement',
+          'exterior_measurement_accuracy',
+        ],
+      })
+
+      if (!method) {
+        return handleInternalServerError('El método no existe')
+      }
+
+      let CertificateData: any
+
+      if (!fs.existsSync(method.certificate_url)) {
+        CertificateData = await this.generateCertificateData({
+          activityID,
+          methodID,
+        })
+      } else {
+        CertificateData = await this.getCertificateResult(methodID, activityID)
+      }
+
       const PDF = await this.pdfService.generateCertificatePdf(
         '/certificates/NI_CMIT_D_01/certificadoD01.hbs',
         // method.pre_installation_comment.accredited,
@@ -1102,26 +1187,16 @@ export class NI_MCIT_D_01Service {
         return handleInternalServerError('Error al generar el PDF')
       }
 
-      // const PDF = await this.pdfService.generateCertificateD_01pdf(
-      //   CertificateData,
-      //   method.pre_installation_comment.accredited,
-      // )
-
-      const response = await this.mailService.sendMailCertification({
-        user: dataClient.email,
+      return handleOK({
         pdf: PDF,
+        client_email: CertificateData,
       })
-
-      if (response) {
-        return handleOK('Certificado generado correctamente')
-      } else {
-        return handleInternalServerError('Error al generar el archivo')
-      }
     } catch (error) {
-      console.error('Error al generar el archivo:', error)
-      return handleInternalServerError('Error al generar el archivo')
+      return handleInternalServerError(error.message)
     }
   }
+
+  async sendCertificateToClient() {}
 
   async autoSaveExcel(filePath: string) {
     return new Promise((resolve, reject) => {
@@ -1217,9 +1292,7 @@ export class NI_MCIT_D_01Service {
       method.certificate_code = certificate.data.code
       method.certificate_id = certificate.data.id
 
-      await this.NI_MCIT_D_01Repository.save(method)
-
-      return handleOK(certificate)
+      return handleOK(await this.NI_MCIT_D_01Repository.save(method))
     } catch (error) {
       return handleInternalServerError(error.message)
     }
