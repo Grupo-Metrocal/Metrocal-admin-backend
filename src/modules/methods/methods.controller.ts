@@ -39,6 +39,7 @@ import { CalibrationResultsDto as CalibrationResultsT_01Dto } from './dto/NI_MCI
 
 import { EquipmentInformationDto as EquipmentInformationM_01Dto } from './dto/NI_MCIT_M_01/equipment_information.dto'
 import { DataDto as DataM_01Dto } from './dto/NI_MCIT_M_01/data.dto'
+import { handleBadrequest } from 'src/common/handleHttp'
 
 @ApiTags('methods')
 @Controller('methods')
@@ -115,6 +116,10 @@ export class MethodsController {
       token: string
     },
   ) {
+    if (!token || !method_id || !method_name) {
+      return handleBadrequest(new Error('Faltan parámetros'))
+    }
+
     return this.methodsService.reviewMethod(method_name, method_id, token)
   }
 
