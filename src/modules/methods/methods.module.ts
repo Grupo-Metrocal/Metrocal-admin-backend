@@ -44,11 +44,17 @@ import { EquipmentInformationNI_MCIT_T_01 } from './entities/NI_MCIT_T_01/steps/
 import { EnvironmentalConditionsNI_MCIT_T_01 } from './entities/NI_MCIT_T_01/steps/environmental_conditions.entity'
 import { DescriptionPatternNI_MCIT_T_01 } from './entities/NI_MCIT_T_01/steps/description_pattern.entity'
 import { CalibrationResultsNI_MCIT_T_01 } from './entities/NI_MCIT_T_01/steps/calibration_results.entity'
+
 import { NI_MCIT_M_01Service } from './ni-mcit-m-01.service'
 import { NI_MCIT_M_01 } from './entities/NI_MCIT_M_01/NI_MCIT_M_01.entity'
 import { EquipmentInformationNI_MCIT_M_01 } from './entities/NI_MCIT_M_01/steps/equipment_information.entity'
 import { DataNI_MCIT_M_01 } from './entities/NI_MCIT_M_01/steps/data.entity'
 import { TokenService } from '../auth/jwt/jwt.service'
+
+import { NI_MCIT_T_03Service } from './ni-mcit-t-03.service'
+import { NI_MCIT_T_03 } from './entities/NI_MCIT_T_03/NI_MCIT_T_03.entity'
+import { EquipmentInformationNI_MCIT_T_03 } from './entities/NI_MCIT_T_03/steps/equipment_informatio.entity'
+import { DescriptionPatternNI_MCIT_T_03 } from './entities/NI_MCIT_T_03/steps/description_pattern.entity'
 
 @Module({
   imports: [
@@ -88,6 +94,10 @@ import { TokenService } from '../auth/jwt/jwt.service'
       NI_MCIT_M_01,
       EquipmentInformationNI_MCIT_M_01,
       DataNI_MCIT_M_01,
+
+      NI_MCIT_T_03,
+      EquipmentInformationNI_MCIT_T_03,
+      DescriptionPatternNI_MCIT_T_03,
     ]),
     forwardRef(() => ActivitiesModule),
     forwardRef(() => QuotesModule),
@@ -102,6 +112,7 @@ import { TokenService } from '../auth/jwt/jwt.service'
     NI_MCIT_D_01Service,
     NI_MCIT_T_01Service,
     NI_MCIT_M_01Service,
+    NI_MCIT_T_03Service,
     PdfService,
     MailService,
     TokenService,
