@@ -19,6 +19,7 @@ import { MailService } from '../mail/mail.service'
 import { formatDate } from 'src/utils/formatDate'
 import { FinishActivityDto } from './dto/finish-activity.dto'
 import { TokenService } from '../auth/jwt/jwt.service'
+import { CertificateService } from '../certificate/certificate.service'
 
 @Injectable()
 export class ActivitiesService {
@@ -35,6 +36,9 @@ export class ActivitiesService {
     private readonly pdfService: PdfService,
     private readonly mailService: MailService,
     private readonly tokenService: TokenService,
+
+    @Inject(forwardRef(() => CertificateService))
+    private readonly certificateService: CertificateService,
   ) {}
 
   async createActivity(activity: Activity) {
@@ -627,6 +631,71 @@ export class ActivitiesService {
         ],
       })
 
+      let pendingCertification = 0
+      let currentMonthCertificates = 0
+      let previousMonthCertificatesTotal = 0
+      let currentMonthIncome = 0
+      let previousMonthIncome = 0
+
+      for (const activity of response) {
+        if (
+          activity.quote_request.created_at.getMonth() !== new Date().getMonth()
+        ) {
+          currentMonthIncome += activity.quote_request.price
+        }
+
+        if (
+          activity.quote_request.created_at.getMonth() !==
+          new Date().getMonth() - 1
+        ) {
+          previousMonthIncome += activity.quote_request.price
+        }
+
+        for (const equipment of activity.quote_request
+          .equipment_quote_request) {
+          const stack = await this.methodsService.getMethodsID(
+            equipment.method_id,
+          )
+
+          if (!stack.success) {
+            continue
+          }
+
+          const { data: methods } = stack as { data: any }
+
+          for (const method of methods) {
+            if (method.created_at.getMonth() === new Date().getMonth()) {
+              currentMonthCertificates += 1
+
+              if (method.certificate_id && !method.review_state) {
+                pendingCertification += 1
+              }
+            }
+
+            if (method.created_at.getMonth() === new Date().getMonth() - 1) {
+              previousMonthCertificatesTotal += 1
+            }
+          }
+        }
+      }
+
+      const dataCertificates = {
+        certificates: {
+          currentMonth: currentMonthCertificates,
+          comparePreviousMonth:
+            ((currentMonthCertificates - previousMonthCertificatesTotal) /
+              previousMonthCertificatesTotal) *
+            100,
+        },
+        income: {
+          currentMonth: currentMonthIncome,
+          comparePreviousMonth:
+            ((currentMonthIncome - previousMonthIncome) / previousMonthIncome) *
+            100,
+        },
+        pendingCertification,
+      }
+
       const data = response.map((activity) => {
         return {
           id: activity.id,
@@ -667,7 +736,10 @@ export class ActivitiesService {
         }
       })
 
-      return handleOK(data)
+      return handleOK({
+        statistics: dataCertificates,
+        activities: data,
+      })
     } catch (error) {
       return handleInternalServerError(error.message)
     }
