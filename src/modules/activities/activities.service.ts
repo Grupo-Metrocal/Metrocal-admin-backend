@@ -1,7 +1,7 @@
 import { Injectable, Inject, forwardRef } from '@nestjs/common'
 import { InjectRepository } from '@nestjs/typeorm'
 import { Activity } from './entities/activities.entity'
-import { Repository, DataSource } from 'typeorm'
+import { Repository, DataSource, IsNull } from 'typeorm'
 import { QuotesService } from '../quotes/quotes.service'
 import {
   handleBadrequest,
@@ -69,6 +69,7 @@ export class ActivitiesService {
   async getAllActivities() {
     try {
       const response = await this.activityRepository.find({
+        where: [{ is_certificate: false }, { is_certificate: IsNull() }],
         relations: [
           'quote_request',
           'quote_request.client',
