@@ -434,10 +434,6 @@ export class MethodsService {
   }
 
   async reviewMethod(method_name: string, method_id: number, token: string) {
-    if (!token || !method_id || !method_name) {
-      return handleBadrequest(new Error('Faltan parámetros'))
-    }
-
     try {
       const repository = `${method_name}Repository`
 
@@ -464,7 +460,6 @@ export class MethodsService {
   async sendAllCertificatesToClient(activityID: number) {
     try {
       const activity = await this.activitiesService.getActivityById(activityID)
-
       const { equipment_quote_request } = activity.data.quote_request
 
       const collectionPDF = []
@@ -502,6 +497,8 @@ export class MethodsService {
         user: activity.data.quote_request.client.email,
         collection: collectionPDF as any,
       })
+
+      await this.activitiesService.changeIsCertificateActivity(activityID)
 
       return handleOK('Email enviado')
     } catch (error) {
