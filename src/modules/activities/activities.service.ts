@@ -667,7 +667,11 @@ export class ActivitiesService {
             if (method.created_at.getMonth() === new Date().getMonth()) {
               currentMonthCertificates += 1
 
-              if (method.certificate_id && !method.review_state) {
+              if (
+                method.certificate_id &&
+                !method.review_state &&
+                !activity.is_certificate
+              ) {
                 pendingCertification += 1
               }
             }
