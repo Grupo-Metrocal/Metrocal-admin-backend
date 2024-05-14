@@ -832,4 +832,20 @@ export class ActivitiesService {
       return handleInternalServerError(error.message)
     }
   }
+
+  async changeIsCertificateActivity(activityID: number) {
+    try {
+      const activity = await this.activityRepository.findOne({
+        where: { id: activityID },
+      })
+
+      activity.is_certificate = true
+
+      await this.activityRepository.save(activity)
+
+      return handleOK(activity)
+    } catch (error) {
+      return handleInternalServerError(error.message)
+    }
+  }
 }
