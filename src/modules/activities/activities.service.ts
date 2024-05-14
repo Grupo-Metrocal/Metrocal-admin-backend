@@ -69,7 +69,14 @@ export class ActivitiesService {
   async getAllActivities() {
     try {
       const response = await this.activityRepository.find({
-        where: [{ is_certificate: false }, { is_certificate: IsNull() }],
+        where: [
+          {
+            status: 'pending',
+          },
+          {
+            reviewed: false,
+          },
+        ],
         relations: [
           'quote_request',
           'quote_request.client',
