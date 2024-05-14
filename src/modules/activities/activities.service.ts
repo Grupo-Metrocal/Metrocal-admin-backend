@@ -630,7 +630,7 @@ export class ActivitiesService {
   async getActivitiesDoneToCertify() {
     try {
       const response = await this.activityRepository.find({
-        where: { status: 'done', reviewed: true },
+        where: { status: 'done', reviewed: true, is_certificate: false },
         relations: [
           'quote_request',
           'quote_request.equipment_quote_request',
