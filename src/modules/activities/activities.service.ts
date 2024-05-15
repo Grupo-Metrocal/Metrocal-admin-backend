@@ -131,17 +131,19 @@ export class ActivitiesService {
         }
       })
 
+      const approved_by = {
+        id: response.quote_request.approved_by.id,
+        username: response.quote_request.approved_by.username,
+        email: response.quote_request.approved_by.email,
+        imageURL: response.quote_request.approved_by.imageURL,
+      }
+
       const data = {
+        ...response,
         quote_request: {
           ...response.quote_request,
-          approved_by: {
-            id: response.quote_request.approved_by.id,
-            username: response.quote_request.approved_by.username,
-            email: response.quote_request.approved_by.email,
-            imageURL: response.quote_request.approved_by.imageURL,
-          },
+          approved_by,
         },
-
         team_members: teamMembers,
       }
 
