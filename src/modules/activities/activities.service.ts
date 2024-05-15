@@ -132,7 +132,16 @@ export class ActivitiesService {
       })
 
       const data = {
-        ...response,
+        quote_request: {
+          ...response.quote_request,
+          approved_by: {
+            id: response.quote_request.approved_by.id,
+            username: response.quote_request.approved_by.username,
+            email: response.quote_request.approved_by.email,
+            imageURL: response.quote_request.approved_by.imageURL,
+          },
+        },
+
         team_members: teamMembers,
       }
 
