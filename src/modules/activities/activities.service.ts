@@ -891,6 +891,7 @@ export class ActivitiesService {
         let client_email = ''
         let client_company_name = ''
         let emited_by: any = ''
+        let quote_request_id = activity.quote_request.id
 
         for (const equipment of activity.quote_request
           .equipment_quote_request) {
@@ -930,6 +931,7 @@ export class ActivitiesService {
           emited_by: emited_by.username,
           client_email,
           pending_certificates,
+          quote_request_id,
         })
       }
 
