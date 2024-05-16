@@ -5,10 +5,10 @@ export class EquipmentInformationDto {
   device?: string
 
   @ApiProperty()
-  range_min?: number
+  temperature_min?: number
 
   @ApiProperty()
-  range_max?: number
+  temperature_max?: number
 
   @ApiProperty()
   maker?: string
@@ -27,4 +27,7 @@ export class EquipmentInformationDto {
 
   @ApiProperty()
   resolution?: number
+
+  @ApiProperty()
+  sensor?: string
 }

@@ -9,7 +9,4 @@ export class DescriptionPatternDto {
 
   @ApiProperty()
   creditable?: boolean
-
-  @ApiProperty()
-  show_table_international_system_units?: boolean
 }
