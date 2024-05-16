@@ -18,6 +18,11 @@ import { EnvironmentalConditionsDto } from './dto/NI_MCIT_T_03/environmental_con
 import { DescriptionPatternDto } from './dto/NI_MCIT_T_03/description_pattern.dto'
 import { ActivitiesService } from '../activities/activities.service'
 
+import * as XlsxPopulate from 'xlsx-populate'
+import * as path from 'path'
+import { exec } from 'child_process'
+import * as fs from 'fs'
+
 @Injectable()
 export class NI_MCIT_T_03Service {
   constructor(
@@ -270,5 +275,38 @@ export class NI_MCIT_T_03Service {
     } catch (error) {
       return handleInternalServerError(error.message)
     }
+  }
+
+  async autoSaveExcel(filePath: string) {
+    return new Promise((resolve, reject) => {
+      // save excel file from powershell
+
+      const powershellCommand = `
+      $Excel = New-Object -ComObject Excel.Application
+      $Excel.Visible = $false
+      $Excel.DisplayAlerts = $false
+      $Workbook = $Excel.Workbooks.Open('${filePath}')
+      $Workbook.Save()
+      $Workbook.Close()
+      $Excel.Quit()
+
+      `
+
+      exec(
+        powershellCommand,
+        { shell: 'powershell.exe' },
+        (error, stdout, stderr) => {
+          if (error) {
+            console.error(`Error al ejecutar el comando: ${error.message}`)
+            reject(error)
+          } else if (stderr) {
+            console.error(`Error en la salida estándar: ${stderr}`)
+            reject(new Error(stderr))
+          } else {
+            resolve(stdout)
+          }
+        },
+      )
+    })
   }
 }
