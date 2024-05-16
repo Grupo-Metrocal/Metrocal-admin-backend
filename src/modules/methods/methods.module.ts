@@ -55,6 +55,8 @@ import { NI_MCIT_T_03Service } from './ni-mcit-t-03.service'
 import { NI_MCIT_T_03 } from './entities/NI_MCIT_T_03/NI_MCIT_T_03.entity'
 import { EquipmentInformationNI_MCIT_T_03 } from './entities/NI_MCIT_T_03/steps/equipment_informatio.entity'
 import { DescriptionPatternNI_MCIT_T_03 } from './entities/NI_MCIT_T_03/steps/description_pattern.entity'
+import { CalibrationResultsNI_MCIT_T_03 } from './entities/NI_MCIT_T_03/steps/calibration_results.entity'
+import { EnvironmentalConditionsNI_MCIT_T_03 } from './entities/NI_MCIT_T_03/steps/environmental_conditions.entity'
 
 @Module({
   imports: [
@@ -98,6 +100,8 @@ import { DescriptionPatternNI_MCIT_T_03 } from './entities/NI_MCIT_T_03/steps/de
       NI_MCIT_T_03,
       EquipmentInformationNI_MCIT_T_03,
       DescriptionPatternNI_MCIT_T_03,
+      CalibrationResultsNI_MCIT_T_03,
+      EnvironmentalConditionsNI_MCIT_T_03,
     ]),
     forwardRef(() => ActivitiesModule),
     forwardRef(() => QuotesModule),
