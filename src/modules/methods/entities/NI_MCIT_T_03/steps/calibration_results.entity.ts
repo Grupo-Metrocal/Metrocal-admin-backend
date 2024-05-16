@@ -24,13 +24,12 @@ export interface IResults_NI_MCIT_T_03 {
   cicle_number: number
 
   calibration_factor: {
+    pattern: number
     upward: {
       equipment: number
-      pattern: number
     }
     downward: {
       equipment: number
-      pattern: number
     }
   }[]
 }
