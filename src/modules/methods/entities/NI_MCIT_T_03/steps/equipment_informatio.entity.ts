@@ -29,10 +29,10 @@ export class EquipmentInformationNI_MCIT_T_03 {
   measurement_range?: string
 
   @Column({ type: 'float', nullable: true })
-  range_min?: number
+  temperature_min?: number
 
   @Column({ type: 'float', nullable: true })
-  range_max?: number
+  temperature_max?: number
 
   @Column({ type: 'varchar', nullable: true })
   unit?: string
@@ -45,4 +45,7 @@ export class EquipmentInformationNI_MCIT_T_03 {
 
   @Column({ type: 'float', nullable: true })
   resolution?: number
+
+  @Column({ type: 'varchar', nullable: true })
+  sensor?: string
 }
