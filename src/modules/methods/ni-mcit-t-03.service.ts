@@ -309,4 +309,203 @@ export class NI_MCIT_T_03Service {
       )
     })
   }
+
+  async generateCertificate({
+    activityID,
+    methodID,
+  }: {
+    activityID: number
+    methodID: number
+  }) {
+    const method = await this.NI_MCIT_T_03Repository.findOne({
+      where: { id: methodID },
+      relations: [
+        'equipment_information',
+        'environmental_conditions',
+        'description_pattern',
+        'calibration_results',
+      ],
+    })
+
+    if (!method) {
+      return handleInternalServerError('El método no existe')
+    }
+
+    const {
+      equipment_information,
+      environmental_conditions,
+      description_pattern,
+      calibration_results,
+    } = method
+
+    if (
+      !equipment_information ||
+      !environmental_conditions ||
+      !description_pattern ||
+      !calibration_results
+    ) {
+      return handleInternalServerError(
+        'El método no tiene la información necesaria para generar el certificado',
+      )
+    }
+
+    try {
+      const filePath = path.join(
+        __dirname,
+        '../mail/templates/excels/ni_mcit_t_03.xlsx',
+      )
+
+      if (fs.existsSync(method.certificate_url)) {
+        fs.unlinkSync(method.certificate_url)
+      }
+
+      fs.copyFileSync(filePath, method.certificate_url)
+
+      const workbook = await XlsxPopulate.fromFileAsync(method.certificate_url)
+
+      const sheet = workbook.sheet('Entrada de Datos')
+
+      sheet.cell('C3').value(method.equipment_information.sensor)
+      sheet.cell('C6').value(method.equipment_information.unit)
+      sheet.cell('C7').value(method.equipment_information.resolution)
+
+      // method
+      sheet.cell('H3').value(method.description_pattern.pattern)
+
+      for (const result of method.calibration_results.results) {
+        for (const [
+          index,
+          calibrationFactor,
+        ] of result.calibration_factor.entries()) {
+          if (result.cicle_number === 1) {
+            sheet.cell(`A${index + 14}`).value(calibrationFactor.pattern)
+
+            sheet
+              .cell(`B${index + 14}`)
+              .value(calibrationFactor.upward.equipment)
+            sheet
+              .cell(`C${index + 14}`)
+              .value(calibrationFactor.downward.equipment)
+          }
+
+          if (result.cicle_number === 2) {
+            sheet
+              .cell(`D${index + 14}`)
+              .value(calibrationFactor.upward.equipment)
+            sheet
+              .cell(`E${index + 14}`)
+              .value(calibrationFactor.downward.equipment)
+          }
+        }
+      }
+
+      workbook.toFileAsync(method.certificate_url)
+      await this.autoSaveExcel(method.certificate_url)
+
+      return handleOK(await this.getCertificateResult(methodID, activityID))
+    } catch (error) {
+      return handleInternalServerError(error.message)
+    }
+  }
+
+  async getCertificateResult(methodID: number, activityID: number) {
+    try {
+      const method = await this.NI_MCIT_T_03Repository.findOne({
+        where: { id: methodID },
+        relations: [
+          'equipment_information',
+          'environmental_conditions',
+          'description_pattern',
+          'calibration_results',
+        ],
+      })
+
+      if (!method) {
+        return handleInternalServerError('El método no existe')
+      }
+
+      const {
+        equipment_information,
+        environmental_conditions,
+        description_pattern,
+        calibration_results,
+      } = method
+
+      if (
+        !equipment_information ||
+        !environmental_conditions ||
+        !description_pattern ||
+        !calibration_results
+      ) {
+        return handleInternalServerError(
+          'El método no tiene la información necesaria para generar el certificado',
+        )
+      }
+
+      const dataActivity =
+        await this.activitiesService.getActivitiesByID(activityID)
+
+      if (!dataActivity.success) {
+        return handleInternalServerError('La actividad no existe')
+      }
+
+      const activity = dataActivity.data
+
+      const workbook = await XlsxPopulate.fromFileAsync(method.certificate_url)
+
+      const sheet = workbook.sheet('Certificado')
+
+      let pattern_indication = []
+      let instrument_indication = []
+      let correction = []
+      let uncertainty = []
+
+      console.log(method.certificate_code)
+
+      for (
+        let i = 0;
+        i <= method.calibration_results.results[0].calibration_factor.length;
+        i++
+      ) {
+        const patternIndication = sheet.cell(`D${25 + i}`).value()
+        pattern_indication.push(
+          typeof patternIndication === 'number'
+            ? patternIndication.toFixed(2)
+            : patternIndication,
+        )
+
+        const instrumentIndication = sheet.cell(`F${25 + i}`).value()
+        instrument_indication.push(
+          typeof instrumentIndication === 'number'
+            ? instrumentIndication.toFixed(2)
+            : instrumentIndication,
+        )
+
+        const correctionValue = sheet.cell(`L${25 + i}`).value()
+        correction.push(
+          typeof correctionValue === 'number'
+            ? correctionValue.toFixed(2)
+            : correctionValue,
+        )
+
+        const uncertaintyValue = sheet.cell(`R${25 + i}`).value()
+        uncertainty.push(
+          typeof uncertaintyValue === 'number'
+            ? uncertaintyValue.toFixed(2)
+            : uncertaintyValue,
+        )
+      }
+
+      const data = {
+        pattern_indication,
+        instrument_indication,
+        correction,
+        uncertainty,
+      }
+
+      return handleOK(data)
+    } catch (error) {
+      return handleInternalServerError(error.message)
+    }
+  }
 }
