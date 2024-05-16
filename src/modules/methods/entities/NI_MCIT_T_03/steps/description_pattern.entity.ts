@@ -24,7 +24,4 @@ export class DescriptionPatternNI_MCIT_T_03 {
 
   @Column({ nullable: true })
   creditable?: boolean
-
-  @Column({ nullable: true })
-  show_table_international_system_units?: boolean
 }
