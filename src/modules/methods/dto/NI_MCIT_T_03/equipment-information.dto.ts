@@ -1,6 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger'
 
-export class EquipmentInformationDto {
+export class EquipmentInformationT_03Dto {
   @ApiProperty()
   device?: string
 

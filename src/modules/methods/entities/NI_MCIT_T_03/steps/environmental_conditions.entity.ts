@@ -21,4 +21,7 @@ export class EnvironmentalConditionsNI_MCIT_T_03 {
 
   @Column({ nullable: true, type: 'float' })
   humidity: number
+
+  @Column({ nullable: true })
+  pattern: string
 }

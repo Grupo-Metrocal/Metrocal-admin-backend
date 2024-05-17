@@ -25,9 +25,6 @@ export class EquipmentInformationNI_MCIT_T_01 {
   @Column({ type: 'varchar', nullable: true })
   serial_number?: string
 
-  @Column({ type: 'varchar', nullable: true })
-  measurement_range?: string
-
   @Column({ type: 'float', nullable: true })
   range_min?: number
 
