@@ -33,16 +33,16 @@ import { ExteriorMeasurementAccuracyNI_MCIT_D_01Dto } from './dto/NI_MCIT_D_01/e
 import { AddLocationDto } from './dto/NI_MCIT_P_01/add_location.dto'
 import { EmmitReportDto } from './dto/emmit-report.dto'
 
-import { EquipmentInformationDto as EquipmentInformationT_01Dto } from './dto/NI_MCIT_T_01/equipment-information.dto'
-import { DescriptionPatternDto as DescriptionPatternT_01Dto } from './dto/NI_MCIT_T_01/description_pattern.dto'
-import { EnvironmentalConditionsDto as EnvironmentalConditionsT_01Dto } from './dto/NI_MCIT_T_01/environmental_condition.dto'
-import { CalibrationResultsDto as CalibrationResultsT_01Dto } from './dto/NI_MCIT_T_01/calibraion_results.dto'
+import { EquipmentInformationT_01Dto } from './dto/NI_MCIT_T_01/equipment-information.dto'
+import { DescriptionPatternT_01Dto } from './dto/NI_MCIT_T_01/description_pattern.dto'
+import { EnvironmentalConditionsT_01Dto } from './dto/NI_MCIT_T_01/environmental_condition.dto'
+import { CalibrationResultsT_01Dto } from './dto/NI_MCIT_T_01/calibraion_results.dto'
 
 import { EquipmentInformationDto as EquipmentInformationM_01Dto } from './dto/NI_MCIT_M_01/equipment_information.dto'
 import { DataDto as DataM_01Dto } from './dto/NI_MCIT_M_01/data.dto'
 import { handleBadrequest } from 'src/common/handleHttp'
 
-import { EquipmentInformationDto as EquipmentInformationT_03Dto } from './dto/NI_MCIT_T_03/equipment-information.dto'
+import { EquipmentInformationT_03Dto } from './dto/NI_MCIT_T_03/equipment-information.dto'
 import { DescriptionPatternDto as DescriptionPatternT_03Dto } from './dto/NI_MCIT_T_03/description_pattern.dto'
 import { EnvironmentalConditionsDto as EnvironmentalConditionsT_03Dto } from './dto/NI_MCIT_T_03/environmental_condition.dto'
 import { CalibrationResultsDto as CalibrationResultsT_03Dto } from './dto/NI_MCIT_T_03/calibraion_results.dto'
