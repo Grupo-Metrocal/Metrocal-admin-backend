@@ -590,4 +590,15 @@ export class MethodsController {
       methodID: methodId,
     })
   }
+
+  @Get('ni-mcit-t-03/generate-certificate/send/pdf/:idActivity/:idMethod')
+  async sendCertificateToClient(
+    @Param('idActivity') activityId: number,
+    @Param('idMethod') methodId: number,
+  ) {
+    return await this.ni_mcit_t_03Service.sendCertificateToClient(
+      activityId,
+      methodId,
+    )
+  }
 }
