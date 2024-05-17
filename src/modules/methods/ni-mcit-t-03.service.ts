@@ -9,7 +9,7 @@ import { NI_MCIT_T_03 } from './entities/NI_MCIT_T_03/NI_MCIT_T_03.entity'
 import { DataSource, Repository } from 'typeorm'
 import { EquipmentInformationNI_MCIT_T_03 } from './entities/NI_MCIT_T_03/steps/equipment_informatio.entity'
 import { handleInternalServerError, handleOK } from 'src/common/handleHttp'
-import { EquipmentInformationDto } from './dto/NI_MCIT_T_03/equipment-information.dto'
+import { EquipmentInformationT_03Dto } from './dto/NI_MCIT_T_03/equipment-information.dto'
 import { CalibrationResultsNI_MCIT_T_03 } from './entities/NI_MCIT_T_03/steps/calibration_results.entity'
 import { EnvironmentalConditionsNI_MCIT_T_03 } from './entities/NI_MCIT_T_03/steps/environmental_conditions.entity'
 import { DescriptionPatternNI_MCIT_T_03 } from './entities/NI_MCIT_T_03/steps/description_pattern.entity'
@@ -88,7 +88,7 @@ export class NI_MCIT_T_03Service {
   }
 
   async equipmentInformation(
-    equipment: EquipmentInformationDto,
+    equipment: EquipmentInformationT_03Dto,
     methodId: number,
   ) {
     try {
@@ -368,8 +368,7 @@ export class NI_MCIT_T_03Service {
       sheet.cell('C3').value(method.equipment_information.sensor)
       sheet.cell('C6').value(method.equipment_information.unit)
       sheet.cell('C7').value(method.equipment_information.resolution)
-
-      // method
+      sheet.cell('L5').value(method.environmental_conditions.pattern)
       sheet.cell('H3').value(method.description_pattern.pattern)
 
       for (const result of method.calibration_results.results) {
@@ -402,7 +401,7 @@ export class NI_MCIT_T_03Service {
       workbook.toFileAsync(method.certificate_url)
       await this.autoSaveExcel(method.certificate_url)
 
-      return handleOK(await this.getCertificateResult(methodID, activityID))
+      return await this.getCertificateResult(methodID, activityID)
     } catch (error) {
       return handleInternalServerError(error.message)
     }
@@ -460,8 +459,6 @@ export class NI_MCIT_T_03Service {
       let correction = []
       let uncertainty = []
 
-      console.log(method.certificate_code)
-
       for (
         let i = 0;
         i <= method.calibration_results.results[0].calibration_factor.length;
@@ -496,14 +493,42 @@ export class NI_MCIT_T_03Service {
         )
       }
 
-      const data = {
+      const calibration_results_certificate = {
         pattern_indication,
         instrument_indication,
         correction,
         uncertainty,
       }
 
-      return handleOK(data)
+      const process_calibrator = await this.patternsService.findByCodeAndMethod(
+        method.description_pattern.pattern,
+        'NI-MCIT-T-03',
+      )
+
+      const hygrothermometer = await this.patternsService.findByCodeAndMethod(
+        method.environmental_conditions.pattern,
+        'NI-MCIT-T-03',
+      )
+
+      return handleOK({
+        calibration_results: calibration_results_certificate,
+        process_calibrator_used: process_calibrator.data,
+        hygrothermometer_used: hygrothermometer?.data || {},
+        environmental_conditions: {
+          temperature: `Temperatura: ${sheet.cell('E39').value()} °C ± ${sheet.cell('G39').value()} °C`,
+          humidity: `Humedad: ${sheet.cell('E40').value()} % ± ${sheet.cell('G40').value()} %`,
+        },
+        observation: `
+        ${method.description_pattern.observation}
+        Es responsabilidad del encargado del instrumento establecer la frecuencia del servicio de calibración.
+        La corrección corresponde al valor del patrón menos las indicación del equipo.
+        La indicación del patrón de referencia y del equipo corresponde al promedio de 4 mediciones.
+        Los resultados emitidos en este certificado corresponden únicamente al objeto calibrado y a las magnitudes
+        especificadas al momento de realizar el servicio.
+        Este certificado de calibración no puede ser reproducido parcialmente excepto en su totalidad, sin previa
+        aprobación escrita del laboratorio que lo emite.
+        `,
+      })
     } catch (error) {
       return handleInternalServerError(error.message)
     }
