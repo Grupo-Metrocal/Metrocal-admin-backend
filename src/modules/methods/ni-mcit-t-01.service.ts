@@ -6,17 +6,17 @@ import { InjectRepository } from '@nestjs/typeorm'
 import { Repository, DataSource } from 'typeorm'
 import { NI_MCIT_T_01 } from './entities/NI_MCIT_T_01/NI_MCIT_T_01.entity'
 import { handleInternalServerError, handleOK } from 'src/common/handleHttp'
-import { EquipmentInformationDto } from './dto/NI_MCIT_T_01/equipment-information.dto'
-import { EnvironmentalConditionsDto } from './dto/NI_MCIT_T_01/environmental_condition.dto'
+import { EquipmentInformationT_01Dto } from './dto/NI_MCIT_T_01/equipment-information.dto'
+import { EnvironmentalConditionsT_01Dto } from './dto/NI_MCIT_T_01/environmental_condition.dto'
 import { ActivitiesService } from '../activities/activities.service'
 
 import * as XlsxPopulate from 'xlsx-populate'
 import * as path from 'path'
 import { exec } from 'child_process'
 import * as fs from 'fs'
-import { DescriptionPatternDto } from './dto/NI_MCIT_T_01/description_pattern.dto'
+import { DescriptionPatternT_01Dto } from './dto/NI_MCIT_T_01/description_pattern.dto'
 import { CertificateService } from '../certificate/certificate.service'
-import { CalibrationResultsDto } from './dto/NI_MCIT_T_01/calibraion_results.dto'
+import { CalibrationResultsT_01Dto } from './dto/NI_MCIT_T_01/calibraion_results.dto'
 import { CalibrationResultsNI_MCIT_T_01 } from './entities/NI_MCIT_T_01/steps/calibration_results.entity'
 import { PatternsService } from '../patterns/patterns.service'
 import { generateServiceCodeToMethod } from 'src/utils/codeGenerator'
@@ -70,7 +70,7 @@ export class NI_MCIT_T_01Service {
   }
 
   async equipmentInformation(
-    equipment: EquipmentInformationDto,
+    equipment: EquipmentInformationT_01Dto,
     methodId: number,
   ) {
     try {
@@ -128,7 +128,7 @@ export class NI_MCIT_T_01Service {
   }
 
   async calibrationResults(
-    calibrationResults: CalibrationResultsDto,
+    calibrationResults: CalibrationResultsT_01Dto,
     methodId: number,
   ) {
     const method = await this.NI_MCIT_T_01Repository.findOne({
@@ -165,7 +165,7 @@ export class NI_MCIT_T_01Service {
     }
   }
   async environmentalConditions(
-    environmentalConditions: EnvironmentalConditionsDto,
+    environmentalConditions: EnvironmentalConditionsT_01Dto,
     methodId: number,
   ) {
     const method = await this.NI_MCIT_T_01Repository.findOne({
@@ -205,7 +205,7 @@ export class NI_MCIT_T_01Service {
   }
 
   async descriptionPattern(
-    descriptionPattern: DescriptionPatternDto,
+    descriptionPattern: DescriptionPatternT_01Dto,
     methodId: number,
     activityId: number,
   ) {
@@ -574,7 +574,7 @@ export class NI_MCIT_T_01Service {
           humidity: `Humedad: ${calibrationResultsSheet.cell('E76').value()} % ± ${calibrationResultsSheet.cell('G76').value()} %`,
         },
         observations: `
-          ${description_pattern.observation}
+          ${description_pattern.observation || ''}
           Es responsabilidad del encargado del instrumento establecer la frecuencia del servicio de calibración.
           La corrección corresponde al valor del patrón menos las indicación del equipo.
           La indicación de temperatura de referencia y del equipo, corresponden al promedio de 3 mediciones.
