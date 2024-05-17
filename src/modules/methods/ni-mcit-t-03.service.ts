@@ -22,6 +22,9 @@ import * as XlsxPopulate from 'xlsx-populate'
 import * as path from 'path'
 import { exec } from 'child_process'
 import * as fs from 'fs'
+import { Activity } from '../activities/entities/activities.entity'
+import { generateServiceCodeToMethod } from 'src/utils/codeGenerator'
+import { formatDate } from 'src/utils/formatDate'
 
 @Injectable()
 export class NI_MCIT_T_03Service {
@@ -370,6 +373,8 @@ export class NI_MCIT_T_03Service {
       sheet.cell('C7').value(method.equipment_information.resolution)
       sheet.cell('L5').value(method.environmental_conditions.pattern)
       sheet.cell('H3').value(method.description_pattern.pattern)
+      sheet.cell('C32').value(method.environmental_conditions.temperature)
+      sheet.cell('C33').value(method.environmental_conditions.humidity)
 
       for (const result of method.calibration_results.results) {
         for (const [
@@ -448,7 +453,7 @@ export class NI_MCIT_T_03Service {
         return handleInternalServerError('La actividad no existe')
       }
 
-      const activity = dataActivity.data
+      const activity = dataActivity.data as Activity
 
       const workbook = await XlsxPopulate.fromFileAsync(method.certificate_url)
 
@@ -514,11 +519,28 @@ export class NI_MCIT_T_03Service {
         calibration_results: calibration_results_certificate,
         process_calibrator_used: process_calibrator.data,
         hygrothermometer_used: hygrothermometer?.data || {},
+        equipment_information: {
+          certification_code: method.certificate_code,
+          service_code: generateServiceCodeToMethod(method.id),
+          certificate_issue_date: formatDate(new Date().toString()),
+          calibration_date: formatDate(activity.updated_at as any),
+          device: method.equipment_information.device,
+          maker: method.equipment_information.maker,
+          serial_number: method.equipment_information.serial_number,
+          measurement_range: `${method.equipment_information.temperature_min} ${method.equipment_information.unit} a ${method.equipment_information.temperature_max} ${method.equipment_information.unit}`,
+          model: method.equipment_information.model,
+          code: method.equipment_information.code,
+          sensor: method.equipment_information.sensor,
+          applicant: activity.quote_request.client.company_name,
+          address: activity.quote_request.client.address,
+          calibration_location: method.calibration_location,
+        },
         environmental_conditions: {
           temperature: `Temperatura: ${sheet.cell('E39').value()} °C ± ${sheet.cell('G39').value()} °C`,
           humidity: `Humedad: ${sheet.cell('E40').value()} % ± ${sheet.cell('G40').value()} %`,
         },
-        observation: `
+        client_email: activity.quote_request.client.email,
+        observations: `
         ${method.description_pattern.observation}
         Es responsabilidad del encargado del instrumento establecer la frecuencia del servicio de calibración.
         La corrección corresponde al valor del patrón menos las indicación del equipo.
@@ -529,6 +551,90 @@ export class NI_MCIT_T_03Service {
         aprobación escrita del laboratorio que lo emite.
         `,
       })
+    } catch (error) {
+      return handleInternalServerError(error.message)
+    }
+  }
+
+  async generatePDFCertificate(activityID: number, methodID: number) {
+    try {
+      const method = await this.NI_MCIT_T_03Repository.findOne({
+        where: { id: methodID },
+        relations: [
+          'equipment_information',
+          'environmental_conditions',
+          'calibration_results',
+          'description_pattern',
+        ],
+      })
+
+      if (!method) {
+        return handleInternalServerError('El método no existe')
+      }
+
+      let dataCertificate: any
+
+      if (!fs.existsSync(method.certificate_url)) {
+        dataCertificate = await this.generateCertificate({
+          activityID,
+          methodID,
+        })
+      } else {
+        dataCertificate = await this.getCertificateResult(methodID, activityID)
+      }
+
+      if (!dataCertificate.success) {
+        return dataCertificate
+      }
+
+      dataCertificate.data.calibration_results =
+        dataCertificate.data.calibration_results.pattern_indication.map(
+          (indication, index) => ({
+            pattern_indication: indication,
+            instrument_indication:
+              dataCertificate.data.calibration_results.instrument_indication[
+                index
+              ],
+            correction:
+              dataCertificate.data.calibration_results.correction[index],
+            uncertainty:
+              dataCertificate.data.calibration_results.uncertainty[index],
+          }),
+        )
+      const PDF = await this.pdfService.generateCertificatePdf(
+        '/certificates/t-03.hbs',
+        dataCertificate.data,
+      )
+
+      if (!PDF) {
+        return handleInternalServerError('Error al generar el PDF')
+      }
+
+      return handleOK({
+        pdf: PDF,
+        client_email: dataCertificate.data.client_email,
+      })
+    } catch (error) {
+      return handleInternalServerError(error.message)
+    }
+  }
+
+  async sendCertificateToClient(activityID: number, methodID: number) {
+    try {
+      const data = await this.generatePDFCertificate(activityID, methodID)
+
+      if (!data.success) {
+        return data
+      }
+
+      const { pdf, client_email } = data.data
+
+      await this.mailService.sendMailCertification({
+        user: client_email,
+        pdf,
+      })
+
+      return handleOK('Certificado enviado con exito')
     } catch (error) {
       return handleInternalServerError(error.message)
     }
