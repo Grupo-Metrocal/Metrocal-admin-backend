@@ -1,6 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger'
 
-export class DescriptionPatternDto {
+export class DescriptionPatternT_01Dto {
   @ApiProperty()
   observation?: string
 

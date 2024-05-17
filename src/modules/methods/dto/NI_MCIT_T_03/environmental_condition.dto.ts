@@ -6,4 +6,7 @@ export class EnvironmentalConditionsDto {
 
   @ApiProperty()
   humidity: number
+
+  @ApiProperty()
+  pattern: string
 }
