@@ -370,11 +370,13 @@ export class NI_MCIT_T_03Service {
 
       sheet.cell('C3').value(method.equipment_information.sensor)
       sheet.cell('C6').value(method.equipment_information.unit)
-      sheet.cell('C7').value(method.equipment_information.resolution)
+      sheet.cell('C7').value(Number(method.equipment_information.resolution))
       sheet.cell('L5').value(method.environmental_conditions.pattern)
       sheet.cell('H3').value(method.description_pattern.pattern)
-      sheet.cell('C32').value(method.environmental_conditions.temperature)
-      sheet.cell('C33').value(method.environmental_conditions.humidity)
+      sheet
+        .cell('L3')
+        .value(Number(method.environmental_conditions.temperature))
+      sheet.cell('L4').value(Number(method.environmental_conditions.humidity))
 
       for (const result of method.calibration_results.results) {
         for (const [
@@ -382,23 +384,25 @@ export class NI_MCIT_T_03Service {
           calibrationFactor,
         ] of result.calibration_factor.entries()) {
           if (result.cicle_number === 1) {
-            sheet.cell(`A${index + 14}`).value(calibrationFactor.pattern)
+            sheet
+              .cell(`A${index + 14}`)
+              .value(Number(calibrationFactor.pattern))
 
             sheet
               .cell(`B${index + 14}`)
-              .value(calibrationFactor.upward.equipment)
+              .value(Number(calibrationFactor.upward.equipment))
             sheet
               .cell(`C${index + 14}`)
-              .value(calibrationFactor.downward.equipment)
+              .value(Number(calibrationFactor.downward.equipment))
           }
 
           if (result.cicle_number === 2) {
             sheet
               .cell(`D${index + 14}`)
-              .value(calibrationFactor.upward.equipment)
+              .value(Number(calibrationFactor.upward.equipment))
             sheet
               .cell(`E${index + 14}`)
-              .value(calibrationFactor.downward.equipment)
+              .value(Number(calibrationFactor.downward.equipment))
           }
         }
       }
