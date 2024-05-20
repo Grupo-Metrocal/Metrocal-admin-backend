@@ -504,6 +504,11 @@ export class MethodsController {
     )
   }
 
+  @Get('ni-mcit-t-01/equipment/:id')
+  async getEquipmentT_01ById(@Param('id') id: number) {
+    return await this.ni_mcit_t_01Service.getMehotdById(id)
+  }
+
   @Post('ni-mcit-m-01/equipment-information/:methodId')
   async createNI_MCIT_M_01EquipmentInformation(
     @Body() equipment: EquipmentInformationM_01Dto,
@@ -600,5 +605,10 @@ export class MethodsController {
       activityId,
       methodId,
     )
+  }
+
+  @Get('ni-mcit-t-03/equipment/:id')
+  async getEquipmentT_03ById(@Param('id') id: number) {
+    return await this.ni_mcit_t_03Service.getMehotdById(id)
   }
 }
