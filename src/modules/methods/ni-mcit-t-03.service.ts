@@ -412,6 +412,28 @@ export class NI_MCIT_T_03Service {
     }
   }
 
+  async getMehotdById(methodId: number) {
+    try {
+      const method = await this.NI_MCIT_T_03Repository.findOne({
+        where: { id: methodId },
+        relations: [
+          'equipment_information',
+          'environmental_conditions',
+          'description_pattern',
+          'calibration_results',
+        ],
+      })
+
+      if (!method) {
+        return handleInternalServerError('El método no existe')
+      }
+
+      return handleOK(method)
+    } catch (error) {
+      return handleInternalServerError(error.message)
+    }
+  }
+
   async getCertificateResult(methodID: number, activityID: number) {
     try {
       const method = await this.NI_MCIT_T_03Repository.findOne({
@@ -556,7 +578,11 @@ export class NI_MCIT_T_03Service {
     }
   }
 
-  async generatePDFCertificate(activityID: number, methodID: number) {
+  async generatePDFCertificate(
+    activityID: number,
+    methodID: number,
+    generatePDF = false,
+  ) {
     try {
       const method = await this.NI_MCIT_T_03Repository.findOne({
         where: { id: methodID },
@@ -574,7 +600,7 @@ export class NI_MCIT_T_03Service {
 
       let dataCertificate: any
 
-      if (!fs.existsSync(method.certificate_url)) {
+      if (!fs.existsSync(method.certificate_url) || generatePDF) {
         dataCertificate = await this.generateCertificate({
           activityID,
           methodID,
@@ -621,7 +647,7 @@ export class NI_MCIT_T_03Service {
 
   async sendCertificateToClient(activityID: number, methodID: number) {
     try {
-      const data = await this.generatePDFCertificate(activityID, methodID)
+      const data = await this.generatePDFCertificate(activityID, methodID, true)
 
       if (!data.success) {
         return data
