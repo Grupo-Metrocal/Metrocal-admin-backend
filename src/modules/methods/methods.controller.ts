@@ -7,6 +7,7 @@ import { NI_MCIT_D_01Service } from './ni-mcit-d-01.service'
 import { NI_MCIT_D_02Service } from './ni-mcit-d-02.service'
 import { NI_MCIT_T_01Service } from './ni-mcit-t-01.service'
 import { NI_MCIT_M_01Service } from './ni-mcit-m-01.service'
+import { NI_MCIT_B_01Service } from './ni-mcit-b-01.service'
 
 import { EquipmentInformationDto } from './dto/NI_MCIT_P_01/equipment_information.dto'
 import { EnvironmentalConditionsDto } from './dto/NI_MCIT_P_01/environmental_condition.dto'
@@ -40,6 +41,13 @@ import { CalibrationResultsDto as CalibrationResultsT_01Dto } from './dto/NI_MCI
 import { EquipmentInformationDto as EquipmentInformationM_01Dto } from './dto/NI_MCIT_M_01/equipment_information.dto'
 import { DataDto as DataM_01Dto } from './dto/NI_MCIT_M_01/data.dto'
 
+import { EquipmentInformationNI_MCIT_B_01Dto } from './dto/NI_MCIT_B_01/b01equipment_information.dto'
+import { EccentricityTestNI_MCIT_B_01Dto } from './dto/NI_MCIT_B_01/b01eccentricity_test.dto'
+import { RepeatabilityTestNI_MCIT_B_01Dto } from './dto/NI_MCIT_B_01/b01repeatability_test.dto'
+import { LinearityTestNI_MCIT_B_01Dto } from './dto/NI_MCIT_B_01/b01linearity_test.dto'
+import { EnviromentalConditionsNI_MCIT_B_01Dto } from './dto/NI_MCIT_B_01/b01enviromental_condition.dto'
+import { UnitOfMeasurementNI_MCIT_B_01Dto } from './dto/NI_MCIT_B_01/b01unitOfMeasurement.dto'
+
 @ApiTags('methods')
 @Controller('methods')
 export class MethodsController {
@@ -50,6 +58,7 @@ export class MethodsController {
     private readonly ni_mcit_d_01Service: NI_MCIT_D_01Service,
     private readonly ni_mcit_t_01Service: NI_MCIT_T_01Service,
     private readonly ni_mcit_m_01Service: NI_MCIT_M_01Service,
+    private readonly ni_mcit_b_01Service: NI_MCIT_B_01Service,
   ) {}
 
   @Get()
@@ -509,5 +518,104 @@ export class MethodsController {
     @Param('methodId') methodId: number,
   ) {
     return await this.ni_mcit_m_01Service.dataInformation(data, methodId)
+  }
+
+  //controladores del method B01
+  @Post('ni-mcit-b-01/create')
+  async createNI_MCIT_B_01() {
+    return await this.ni_mcit_b_01Service.createNI_MCIT_B_01()
+  }
+
+  @Post('ni-mcit-b-01/equipment-information/:methodId')
+  async createNI_MCIT_B_01EquipmentInformation(
+    @Body() equipment: EquipmentInformationNI_MCIT_B_01Dto,
+    @Param('methodId') methodId: number,
+  ) {
+    return await this.ni_mcit_b_01Service.equipmentInfomationB01(
+      equipment,
+      methodId,
+    )
+  }
+
+  @Post('ni-mcit-b-01/enviromental-condition/:methodId')
+  async createNI_MCIT_B_01EnviromentalCondition(
+    @Body() enviromentalCondition: EnviromentalConditionsNI_MCIT_B_01Dto,
+    @Param('methodId') methodId: number,
+  ) {
+    return await this.ni_mcit_b_01Service.enviromentalConditionB01(
+      enviromentalCondition,
+      methodId,
+    )
+  }
+
+  //eccentricityTestB01
+  @Post('ni-mcit-b-01/eccentricity-test/:methodId')
+  async createNI_MCIT_B_01EccentricityTest(
+    @Body() eccentricityTest: EccentricityTestNI_MCIT_B_01Dto,
+    @Param('methodId') methodId: number,
+  ) {
+    return await this.ni_mcit_b_01Service.eccentricityTestB01(
+      eccentricityTest,
+      methodId,
+    )
+  }
+
+  //repeatabilityTestB01
+  @Post('ni-mcit-b-01/repeatability-test/:methodId')
+  async createNI_MCIT_B_01RepeatabilityTest(
+    @Body() repeatabilityTest: RepeatabilityTestNI_MCIT_B_01Dto,
+    @Param('methodId') methodId: number,
+  ) {
+    return await this.ni_mcit_b_01Service.repeatabilityTestB01(
+      repeatabilityTest,
+      methodId,
+    )
+  }
+
+  //linearityTestB01
+  @Post('ni-mcit-b-01/linearity-test/:methodId')
+  async createNI_MCIT_B_01LinearityTest(
+    @Body() linearityTest: LinearityTestNI_MCIT_B_01Dto,
+    @Param('methodId') methodId: number,
+  ) {
+    return await this.ni_mcit_b_01Service.linearityTestB01(
+      linearityTest,
+      methodId,
+    )
+  }
+
+  //unitOfMeasurementB01
+  @Post('ni-mcit-b-01/unit-of-measurement/:methodId')
+  async createNI_MCIT_B_01UnitOfMeasurement(
+    @Body() unitOfMeasurement: UnitOfMeasurementNI_MCIT_B_01Dto,
+    @Param('methodId') methodId: number,
+  ) {
+    return await this.ni_mcit_b_01Service.unitOfMeasurementB01(
+      unitOfMeasurement,
+      methodId,
+    )
+  }
+
+  //certificate
+  @Get('ni-mcit-b-01/certificates/activity/:activityId/method/:methodId')
+  async getNI_MCIT_B_01Certificate(
+    @Param('activityId') activityId: number,
+    @Param('methodId') methodId: number,
+  ) {
+    return await this.ni_mcit_b_01Service.generateCertificateB01({
+      activityID: activityId,
+      methodID: methodId,
+    })
+  }
+
+  @Get('ni-mcit-b-01/generate-certificate/pdf/:idActivity/:idMethod')
+  async getCertificatePdfB01(
+    @Param('activityId') activityId: number,
+    @Param('methodId') methodId: number,
+  ) {
+    return await this.ni_mcit_b_01Service.generatePDFCertificateB01({
+      activityID: activityId,
+      methodID: methodId,
+    })
   }
 }

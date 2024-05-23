@@ -49,6 +49,14 @@ import { NI_MCIT_M_01 } from './entities/NI_MCIT_M_01/NI_MCIT_M_01.entity'
 import { EquipmentInformationNI_MCIT_M_01 } from './entities/NI_MCIT_M_01/steps/equipment_information.entity'
 import { DataNI_MCIT_M_01 } from './entities/NI_MCIT_M_01/steps/data.entity'
 import { TokenService } from '../auth/jwt/jwt.service'
+import { NI_MCIT_B_01 } from './entities/NI_MCIT_B_01/NI_MCIT_B_01.entity'
+import { NI_MCIT_B_01Service } from './ni-mcit-b-01.service'
+import { EnvironmentalConditionsNI_MCIT_B_01 } from './entities/NI_MCIT_B_01/steps/b01enviromental_condition.entity'
+import { EquipmentInformationNI_MCIT_B_01 } from './entities/NI_MCIT_B_01/steps/b01equipment_information.entity'
+import { EccentricityTestNI_MCIT_B_01 } from './entities/NI_MCIT_B_01/steps/b01eccentricity_test.entity'
+import { RepeatabilityTestNI_MCIT_B_01 } from './entities/NI_MCIT_B_01/steps/b01repeatability_test.entity'
+import { LinearityTestNI_MCIT_B_01 } from './entities/NI_MCIT_B_01/steps/b01linearity_test.entity'
+import { UnitOfMeasurementNI_MCIT_B_01 } from './entities/NI_MCIT_B_01/steps/b01unitOfMeasurement.entity'
 
 @Module({
   imports: [
@@ -88,6 +96,14 @@ import { TokenService } from '../auth/jwt/jwt.service'
       NI_MCIT_M_01,
       EquipmentInformationNI_MCIT_M_01,
       DataNI_MCIT_M_01,
+
+      NI_MCIT_B_01,
+      EnvironmentalConditionsNI_MCIT_B_01,
+      EquipmentInformationNI_MCIT_B_01,
+      EccentricityTestNI_MCIT_B_01,
+      RepeatabilityTestNI_MCIT_B_01,
+      LinearityTestNI_MCIT_B_01,
+      UnitOfMeasurementNI_MCIT_B_01,
     ]),
     forwardRef(() => ActivitiesModule),
     forwardRef(() => QuotesModule),
@@ -102,6 +118,7 @@ import { TokenService } from '../auth/jwt/jwt.service'
     NI_MCIT_D_01Service,
     NI_MCIT_T_01Service,
     NI_MCIT_M_01Service,
+    NI_MCIT_B_01Service,
     PdfService,
     MailService,
     TokenService,
