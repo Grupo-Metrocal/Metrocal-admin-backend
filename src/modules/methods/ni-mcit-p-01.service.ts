@@ -642,7 +642,7 @@ export class NI_MCIT_P_01Service {
         hPa_eq_enviromental_conditions:
           method.environmental_conditions.cycles[0].hPa.equipement,
         observations: `
-          ${method.description_pattern.observation}
+          ${method.description_pattern.observation || ''}
           Es responsabilidad del encargado del instrumento establecer la frecuencia del servicio de calibración.
           La corrección corresponde al valor del patrón menos la indicación del equipo.
           ${sheetCER.cell('A113').value()}
