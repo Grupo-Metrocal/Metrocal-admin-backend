@@ -9,6 +9,7 @@ import {
   handleBadrequest,
   handleInternalServerError,
   handleOK,
+  handlePaginate,
 } from 'src/common/handleHttp'
 
 @Injectable()
@@ -124,6 +125,48 @@ export class ClientsService {
     try {
       await this.quoteRequestRepository.remove(quoteRequest)
       return handleOK(quoteRequest)
+    } catch (error) {
+      return handleInternalServerError(error)
+    }
+  }
+
+  async getClientsPagination(page: number, limit: number) {
+    try {
+      const response = await this.clientRepository.find({
+        relations: ['quote_requests', 'quote_requests.equipment_quote_request'],
+        order: { created_at: 'DESC' },
+        skip: (page - 1) * limit,
+        take: limit,
+      })
+
+      const total = await this.clientRepository.count()
+
+      const clients: {
+        id: number
+        company_name: string
+        email: string
+        requested_by: string
+        phone: string
+        address: string
+        quote_requests: any[]
+      }[] = []
+
+      response.forEach((client) => {
+        const { id, company_name, email, requested_by, phone, address } = client
+        const quote_requests = client.quote_requests.map((quote) => quote.id)
+
+        clients.push({
+          id,
+          company_name,
+          email,
+          requested_by,
+          phone,
+          address,
+          quote_requests,
+        })
+      })
+
+      return handlePaginate(clients, total, limit, page)
     } catch (error) {
       return handleInternalServerError(error)
     }
