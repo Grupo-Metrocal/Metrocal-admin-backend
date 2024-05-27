@@ -5,7 +5,6 @@ import { Post, Body, Get, Param, Delete } from '@nestjs/common'
 import { CreateClientDto } from './dto/client.dto'
 import { handleBadrequest } from 'src/common/handleHttp'
 
-
 @ApiTags('clients')
 @Controller('clients')
 export class ClientsController {
@@ -39,5 +38,13 @@ export class ClientsController {
   @Get('emails/all')
   async getClientsEmails() {
     return await this.clientsService.getClientsEmails()
+  }
+
+  @Get(':page/:limit')
+  async getClientsPagination(
+    @Param('page') page: number,
+    @Param('limit') limit: number,
+  ) {
+    return await this.clientsService.getClientsPagination(page, limit)
   }
 }
