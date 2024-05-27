@@ -25,11 +25,6 @@ export class ClientsController {
     return await this.clientsService.findById(id)
   }
 
-  @Get()
-  async findAll() {
-    return await this.clientsService.findAll()
-  }
-
   @Delete(':id')
   async delete(@Param('id') id: number) {
     if (!id) return handleBadrequest(new Error('El id es requerido'))
@@ -48,7 +43,6 @@ export class ClientsController {
     return await this.clientsService.getClientsPagination(page, limit)
   }
 
-  // modificar cliente
   @Post('update/:id')
   async updateClient(@Param('id') id: number, @Body() client: CreateClientDto) {
     if (!id) return handleBadrequest(new Error('El id es requerido'))
