@@ -9,12 +9,14 @@ import { MethodsModule } from '../methods/methods.module'
 import { PdfService } from '../mail/pdf.service'
 import { MailService } from '../mail/mail.service'
 import { TokenService } from '../auth/jwt/jwt.service'
+import { CertificateModule } from '../certificate/certificate.module'
 
 @Module({
   imports: [
     TypeOrmModule.forFeature([Activity, User]),
     forwardRef(() => QuotesModule),
     forwardRef(() => MethodsModule),
+    forwardRef(() => CertificateModule),
   ],
   controllers: [ActivitiesController],
   providers: [ActivitiesService, PdfService, MailService, TokenService],

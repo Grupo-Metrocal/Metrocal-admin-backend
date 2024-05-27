@@ -1,0 +1,166 @@
+<style>
+  .ni-mcit-t-03 { display: flex; flex-direction: column; gap: 25px; }
+  .equipment-information { display: flex; justify-content: space-between;
+  margin-top: 20px; } .equipment-information div { width: 50%; display: flex;
+  flex-direction: column; gap: 5px; } .equipment-information .labels {
+  font-weight: bold; } table { border-collapse: collapse; width: 100%; } th, td
+  { border: 1px solid #dddddd; text-align: center; } .table-title
+  { border: 1px solid #dddddd; text-align: center; } .enviromental-conditions {
+  display: flex; justify-content: space-between; } .enviromental-conditions div
+  { display: flex; flex-direction: column; gap: 10px; }
+</style>
+
+<div class='ni-mcit-t-03'>
+  <div class='equipment-information'>
+    <div class='labels'>
+      <span>Identificación del certificado:</span>
+      <span>Código de servicio:</span>
+      <span>Fecha de calibración:</span>
+      <span>Fecha de emisión de certificado:</span>
+      <span>Objeto de calibración:</span>
+      <span>Fabricante/Marca:</span>
+      <span>Serie:</span>
+      <span>Modelo:</span>
+      <span>Rango de medida:</span>
+      <span>Intervalo de escala:</span>
+      <span>Código de identificación:</span>
+      <span>Solicitante:</span>
+      <span>Dirección del solicitante:</span>
+      <span>Lugar de calibración:</span>
+    </div>
+    <div class='values'>
+      <span
+        style='font-weight: bold'
+      >{{equipment_information.certification_code}}</span>
+      <span>{{equipment_information.service_code}}</span>
+      <span>{{equipment_information.calibration_date}}</span>
+      <span>{{equipment_information.certificate_issue_date}}</span>
+      <span>{{equipment_information.device}}</span>
+      <span>{{equipment_information.maker}}</span>
+      <span>{{equipment_information.serial_number}}</span>
+      <span>{{equipment_information.model}}</span>
+      <span>{{equipment_information.measurement_range}}</span>
+      <span>XXXX</span>
+      <span>{{equipment_information.code}}</span>
+      <span>{{equipment_information.applicant}}</span>
+      <span>{{equipment_information.address}}</span>
+      <span>{{equipment_information.calibration_location}}</span>
+    </div>
+  </div>
+
+  <div class='calibration-result' style='height: 270px;'>
+    <strong><span>Resultados de la calibración</span></strong>
+    <br />
+    <br />
+    <table>
+      <thead>
+        <caption class='table-title' colspan='5'>
+          Tabla de resultados de calibración
+        </caption>
+        <tr>
+          <th>Indicación del Patrón</th>
+          <th>Indicación del Instrumento</th>
+          <th>Corrección</th>
+          <th>Incertidumbre expandida K = 2</th>
+        </tr>
+      </thead>
+      <tbody>
+        {{#each calibration_results as |data|}}
+          <tr>
+            <td>{{data.pattern_indication}}</td>
+            <td>{{data.instrument_indication}}</td>
+            <td>{{data.correction}}</td>
+            <td>{{data.uncertainty}}</td>
+          </tr>
+        {{/each}}
+      </tbody>
+    </table>
+  </div>
+
+  <div class='enviromental-conditions'>
+    <div>
+      <strong><span>Condiciones ambientales</span></strong>
+      <span>{{environmental_conditions.temperature}}</span>
+      <span>{{environmental_conditions.humidity}}</span>
+    </div>
+  </div>
+
+  <div class='calibration-method'>
+    <strong><span>Método de calibración:</span></strong>
+    <br />
+    <br />
+
+    <span style='margin-left: 10px'>Las pruebas se realizaron según NI-MCIT-T-03
+      Instrucción para calibración de controladores (indicadores) de
+      temperatura, con sensor RTD, de dos, tres y cuatro hilos en el rango
+      comprendido entre -180 ºC hasta 800 ºC, y termopares, tipo K en el rango
+      comprendido entre -180 ºC hasta 1300 ºC
+    </span>
+  </div>
+
+  <div class='uncertainty'>
+    <strong><span>Incertidumbre de los datos</span></strong>
+    <br />
+    <br />
+    <span>
+      La incertidumbre de las medición se obtuvo multiplicando la incertidumbre
+      estándar combinada por un factor de cobertura k = 2, con el que se alcanza
+      un nivel de confianza de aproximadamente el 95 %. La incertidumbre
+      estándar de la medición se determinó conforme a Guía para la Expresión de
+      la Incertidumbre de la Medida, BIPM-IEC-IFCC-ISO-IUPAC-IUPAP-OIML, en la
+      cual se toma en cuenta la incertidumbre de los patrones, del método de
+      calibración, de los factores de influencia durante la calibración y del
+      equipo sujeto a calibración.
+    </span>
+  </div>
+
+  <div class='id_certificate'>
+    <strong><span>Identificación del certificado:</span></strong>
+    <strong style='margin-left: 10px'><span
+      >{{equipment_information.certification_code}}</span></strong>
+  </div>
+
+  <div class="used_pattern">
+    <strong><span>Descripción de patrones utilizados</span></strong>
+    <br>
+
+    <!-- tabla -->
+    <table>
+      <thead>
+        <tr>
+          <th style="background-color: #dddddd;">Equipo</th>
+          <th style="background-color: #dddddd;">Código</th>
+          <th style="background-color: #dddddd;">Certificado</th>
+          <th style="background-color: #dddddd;">Trazabilidad</th>
+          <th style="background-color: #dddddd;">Próxima calibración</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>{{process_calibrator_used.equipment}}</td>
+          <td>{{process_calibrator_used.code}}</td>
+          <td>{{process_calibrator_used.certificate}}</td>
+          <td>{{process_calibrator_used.traceability}}</td>
+          <td>{{process_calibrator_used.next_calibration}}</td>
+        </tr>
+
+        <tr>
+          <td>{{hygrothermometer_used.equipment}}</td>
+          <td>{{hygrothermometer_used.code}}</td>
+          <td>{{hygrothermometer_used.certificate}}</td>
+          <td>{{hygrothermometer_used.traceability}}</td>
+          <td>{{hygrothermometer_used.next_calibration}}</td>
+        </tr>
+      <tbody>
+        
+      </tbody>
+    </table>
+  </div>
+
+  <div class="observations">
+    <strong><span>Observaciones</span></strong>
+    <div style="white-space: pre-line; margin-top: -1em;">
+      {{observations}}
+    </div>
+  </div>
+</div>

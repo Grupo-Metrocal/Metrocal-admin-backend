@@ -1,6 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger'
 
-export class DescriptionPatternT_01Dto {
+export class DescriptionPatternDto {
   @ApiProperty()
   observation?: string
 
@@ -9,7 +9,4 @@ export class DescriptionPatternT_01Dto {
 
   @ApiProperty()
   creditable?: boolean
-
-  @ApiProperty()
-  show_table_international_system_units?: boolean
 }

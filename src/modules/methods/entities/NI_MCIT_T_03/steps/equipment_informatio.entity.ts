@@ -1,20 +1,20 @@
 import { Column, Entity, PrimaryGeneratedColumn, OneToMany } from 'typeorm'
-import { NI_MCIT_T_01 } from '../NI_MCIT_T_01.entity'
+import { NI_MCIT_T_03 } from '../NI_MCIT_T_03.entity'
 
-@Entity('equipment_information_NI_MCIT_T_01')
-export class EquipmentInformationNI_MCIT_T_01 {
+@Entity('equipment_information_NI_MCIT_T_03')
+export class EquipmentInformationNI_MCIT_T_03 {
   @PrimaryGeneratedColumn()
   id: number
 
   @OneToMany(
-    () => NI_MCIT_T_01,
-    (NI_MCIT_P_01) => NI_MCIT_P_01.equipment_information,
+    () => NI_MCIT_T_03,
+    (NI_MCIT_P_03) => NI_MCIT_P_03.equipment_information,
     {
       onDelete: 'CASCADE',
       onUpdate: 'CASCADE',
     },
   )
-  NI_MCIT_T_01: NI_MCIT_T_01[]
+  NI_MCIT_T_03: NI_MCIT_T_03[]
 
   @Column({ type: 'varchar', nullable: true })
   device?: string
@@ -25,11 +25,14 @@ export class EquipmentInformationNI_MCIT_T_01 {
   @Column({ type: 'varchar', nullable: true })
   serial_number?: string
 
-  @Column({ type: 'float', nullable: true })
-  range_min?: number
+  @Column({ type: 'varchar', nullable: true })
+  measurement_range?: string
 
   @Column({ type: 'float', nullable: true })
-  range_max?: number
+  temperature_min?: number
+
+  @Column({ type: 'float', nullable: true })
+  temperature_max?: number
 
   @Column({ type: 'varchar', nullable: true })
   unit?: string
@@ -42,4 +45,7 @@ export class EquipmentInformationNI_MCIT_T_01 {
 
   @Column({ type: 'float', nullable: true })
   resolution?: number
+
+  @Column({ type: 'varchar', nullable: true })
+  sensor?: string
 }

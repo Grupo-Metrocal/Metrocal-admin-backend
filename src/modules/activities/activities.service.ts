@@ -1,12 +1,13 @@
 import { Injectable, Inject, forwardRef } from '@nestjs/common'
 import { InjectRepository } from '@nestjs/typeorm'
 import { Activity } from './entities/activities.entity'
-import { Repository, DataSource } from 'typeorm'
+import { Repository, DataSource, IsNull } from 'typeorm'
 import { QuotesService } from '../quotes/quotes.service'
 import {
   handleBadrequest,
   handleInternalServerError,
   handleOK,
+  handlePaginate,
 } from 'src/common/handleHttp'
 import { User } from '../users/entities/user.entity'
 import { AssignTeamMembersToActivityDto } from './dto/assign-activity.dt'
@@ -19,6 +20,7 @@ import { MailService } from '../mail/mail.service'
 import { formatDate } from 'src/utils/formatDate'
 import { FinishActivityDto } from './dto/finish-activity.dto'
 import { TokenService } from '../auth/jwt/jwt.service'
+import { CertificateService } from '../certificate/certificate.service'
 
 @Injectable()
 export class ActivitiesService {
@@ -35,6 +37,9 @@ export class ActivitiesService {
     private readonly pdfService: PdfService,
     private readonly mailService: MailService,
     private readonly tokenService: TokenService,
+
+    @Inject(forwardRef(() => CertificateService))
+    private readonly certificateService: CertificateService,
   ) {}
 
   async createActivity(activity: Activity) {
@@ -65,6 +70,14 @@ export class ActivitiesService {
   async getAllActivities() {
     try {
       const response = await this.activityRepository.find({
+        where: [
+          {
+            status: 'pending',
+          },
+          {
+            reviewed: false,
+          },
+        ],
         relations: [
           'quote_request',
           'quote_request.client',
@@ -118,8 +131,19 @@ export class ActivitiesService {
         }
       })
 
+      const approved_by = {
+        id: response.quote_request.approved_by.id,
+        username: response.quote_request.approved_by.username,
+        email: response.quote_request.approved_by.email,
+        imageURL: response.quote_request.approved_by.imageURL,
+      }
+
       const data = {
         ...response,
+        quote_request: {
+          ...response.quote_request,
+          approved_by,
+        },
         team_members: teamMembers,
       }
 
@@ -618,7 +642,7 @@ export class ActivitiesService {
   async getActivitiesDoneToCertify() {
     try {
       const response = await this.activityRepository.find({
-        where: { status: 'done', reviewed: true },
+        where: { status: 'done', reviewed: true, is_certificate: false },
         relations: [
           'quote_request',
           'quote_request.equipment_quote_request',
@@ -626,6 +650,75 @@ export class ActivitiesService {
           'team_members',
         ],
       })
+
+      let pendingCertification = 0
+      let currentMonthCertificates = 0
+      let previousMonthCertificatesTotal = 0
+      let currentMonthIncome = 0
+      let previousMonthIncome = 0
+
+      for (const activity of response) {
+        if (
+          activity.quote_request.created_at.getMonth() !== new Date().getMonth()
+        ) {
+          currentMonthIncome += activity.quote_request.price
+        }
+
+        if (
+          activity.quote_request.created_at.getMonth() !==
+          new Date().getMonth() - 1
+        ) {
+          previousMonthIncome += activity.quote_request.price
+        }
+
+        for (const equipment of activity.quote_request
+          .equipment_quote_request) {
+          const stack = await this.methodsService.getMethodsID(
+            equipment.method_id,
+          )
+
+          if (!stack.success) {
+            continue
+          }
+
+          const { data: methods } = stack as { data: any }
+
+          for (const method of methods) {
+            if (method.created_at.getMonth() === new Date().getMonth()) {
+              currentMonthCertificates += 1
+
+              if (
+                method.certificate_id &&
+                !method.review_state &&
+                !activity.is_certificate
+              ) {
+                pendingCertification += 1
+              }
+            }
+
+            if (method.created_at.getMonth() === new Date().getMonth() - 1) {
+              previousMonthCertificatesTotal += 1
+            }
+          }
+        }
+      }
+
+      const dataCertificates = {
+        certificates: {
+          currentMonth: currentMonthCertificates,
+          comparePreviousMonth:
+            ((currentMonthCertificates - previousMonthCertificatesTotal) /
+              previousMonthCertificatesTotal) *
+            100,
+        },
+        income: {
+          currentMonth: currentMonthIncome,
+          comparePreviousMonth:
+            ((currentMonthIncome - previousMonthIncome) / previousMonthIncome) *
+            100,
+        },
+        pendingCertification,
+      }
 
       const data = response.map((activity) => {
         return {
@@ -667,7 +760,10 @@ export class ActivitiesService {
         }
       })
 
-      return handleOK(data)
+      return handleOK({
+        statistics: dataCertificates,
+        activities: data,
+      })
     } catch (error) {
       return handleInternalServerError(error.message)
     }
@@ -744,6 +840,113 @@ export class ActivitiesService {
       await this.activityRepository.save(activity)
 
       return handleOK(activity)
+    } catch (error) {
+      return handleInternalServerError(error.message)
+    }
+  }
+
+  async changeIsCertificateActivity(activityID: number) {
+    try {
+      const activity = await this.activityRepository.findOne({
+        where: { id: activityID },
+      })
+
+      activity.is_certificate = true
+      activity.updated_at = new Date()
+
+      await this.activityRepository.save(activity)
+
+      return handleOK(activity)
+    } catch (error) {
+      return handleInternalServerError(error.message)
+    }
+  }
+
+  async getCertifiedActivities(page: number, limit: number) {
+    try {
+      const response = await this.activityRepository.find({
+        where: { is_certificate: true },
+        relations: [
+          'quote_request',
+          'quote_request.client',
+          'quote_request.equipment_quote_request',
+          'team_members',
+        ],
+        order: { created_at: 'DESC' },
+        skip: (page - 1) * limit,
+        take: limit,
+      })
+
+      const totalActivitiesCount = await this.activityRepository.count({
+        where: { is_certificate: true },
+      })
+
+      /**
+       * get the next information
+       *   id: number
+  issued_certificates: number
+  emited_date: string
+  calibrated_equipment: string
+  client_company_name: string
+  emited_by: string
+  client_email: string
+  pending_certificates: number
+       */
+
+      let data = []
+
+      for (const activity of response) {
+        let issued_certificates = 0
+        let pending_certificates = 0
+        let calibrated_equipment = 0
+        let client_email = ''
+        let client_company_name = ''
+        let emited_by: any = ''
+        let quote_request_id = activity.quote_request.id
+
+        for (const equipment of activity.quote_request
+          .equipment_quote_request) {
+          const stack = await this.methodsService.getMethodsID(
+            equipment.method_id,
+          )
+
+          if (!stack.success) {
+            continue
+          }
+
+          const { data: methods } = stack as { data: any }
+
+          for (const method of methods) {
+            if (method.certificate_id) {
+              issued_certificates += 1
+            } else {
+              pending_certificates += 1
+            }
+          }
+        }
+
+        calibrated_equipment = issued_certificates + pending_certificates
+        client_email = activity.quote_request.client.email
+        client_company_name = activity.quote_request.client.company_name
+        emited_by = await this.userRepository.findOne({
+          where: { id: activity.reviewed_user_id },
+          select: ['username'],
+        })
+
+        data.push({
+          id: activity.id,
+          issued_certificates,
+          emited_date: formatDate(activity.updated_at + ''),
+          calibrated_equipment,
+          client_company_name,
+          emited_by: emited_by.username,
+          client_email,
+          pending_certificates,
+          quote_request_id,
+        })
+      }
+
+      return handlePaginate(data, totalActivitiesCount, limit, page)
     } catch (error) {
       return handleInternalServerError(error.message)
     }

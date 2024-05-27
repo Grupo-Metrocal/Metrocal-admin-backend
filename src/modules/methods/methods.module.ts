@@ -44,6 +44,7 @@ import { EquipmentInformationNI_MCIT_T_01 } from './entities/NI_MCIT_T_01/steps/
 import { EnvironmentalConditionsNI_MCIT_T_01 } from './entities/NI_MCIT_T_01/steps/environmental_conditions.entity'
 import { DescriptionPatternNI_MCIT_T_01 } from './entities/NI_MCIT_T_01/steps/description_pattern.entity'
 import { CalibrationResultsNI_MCIT_T_01 } from './entities/NI_MCIT_T_01/steps/calibration_results.entity'
+
 import { NI_MCIT_M_01Service } from './ni-mcit-m-01.service'
 import { NI_MCIT_M_01 } from './entities/NI_MCIT_M_01/NI_MCIT_M_01.entity'
 import { EquipmentInformationNI_MCIT_M_01 } from './entities/NI_MCIT_M_01/steps/equipment_information.entity'
@@ -57,6 +58,13 @@ import { EccentricityTestNI_MCIT_B_01 } from './entities/NI_MCIT_B_01/steps/b01e
 import { RepeatabilityTestNI_MCIT_B_01 } from './entities/NI_MCIT_B_01/steps/b01repeatability_test.entity'
 import { LinearityTestNI_MCIT_B_01 } from './entities/NI_MCIT_B_01/steps/b01linearity_test.entity'
 import { UnitOfMeasurementNI_MCIT_B_01 } from './entities/NI_MCIT_B_01/steps/b01unitOfMeasurement.entity'
+
+import { NI_MCIT_T_03Service } from './ni-mcit-t-03.service'
+import { NI_MCIT_T_03 } from './entities/NI_MCIT_T_03/NI_MCIT_T_03.entity'
+import { EquipmentInformationNI_MCIT_T_03 } from './entities/NI_MCIT_T_03/steps/equipment_informatio.entity'
+import { DescriptionPatternNI_MCIT_T_03 } from './entities/NI_MCIT_T_03/steps/description_pattern.entity'
+import { CalibrationResultsNI_MCIT_T_03 } from './entities/NI_MCIT_T_03/steps/calibration_results.entity'
+import { EnvironmentalConditionsNI_MCIT_T_03 } from './entities/NI_MCIT_T_03/steps/environmental_conditions.entity'
 
 @Module({
   imports: [
@@ -104,6 +112,12 @@ import { UnitOfMeasurementNI_MCIT_B_01 } from './entities/NI_MCIT_B_01/steps/b01
       RepeatabilityTestNI_MCIT_B_01,
       LinearityTestNI_MCIT_B_01,
       UnitOfMeasurementNI_MCIT_B_01,
+
+      NI_MCIT_T_03,
+      EquipmentInformationNI_MCIT_T_03,
+      DescriptionPatternNI_MCIT_T_03,
+      CalibrationResultsNI_MCIT_T_03,
+
     ]),
     forwardRef(() => ActivitiesModule),
     forwardRef(() => QuotesModule),
@@ -119,6 +133,7 @@ import { UnitOfMeasurementNI_MCIT_B_01 } from './entities/NI_MCIT_B_01/steps/b01
     NI_MCIT_T_01Service,
     NI_MCIT_M_01Service,
     NI_MCIT_B_01Service,
+    NI_MCIT_T_03Service,
     PdfService,
     MailService,
     TokenService,

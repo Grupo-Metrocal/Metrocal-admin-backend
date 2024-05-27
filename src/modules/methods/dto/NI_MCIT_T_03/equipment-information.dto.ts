@@ -1,14 +1,14 @@
 import { ApiProperty } from '@nestjs/swagger'
 
-export class EquipmentInformationT_01Dto {
+export class EquipmentInformationT_03Dto {
   @ApiProperty()
   device?: string
 
   @ApiProperty()
-  range_min?: number
+  temperature_min?: number
 
   @ApiProperty()
-  range_max?: number
+  temperature_max?: number
 
   @ApiProperty()
   maker?: string
@@ -27,4 +27,7 @@ export class EquipmentInformationT_01Dto {
 
   @ApiProperty()
   resolution?: number
+
+  @ApiProperty()
+  sensor?: string
 }

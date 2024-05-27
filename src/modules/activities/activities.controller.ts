@@ -114,4 +114,12 @@ export class ActivitiesController {
   ) {
     return await this.activitiesService.reviewActivity(id, data.token)
   }
+
+  @Get('certified-activities/:page/:limit')
+  async getCertifiedActivities(
+    @Param('page') page: number,
+    @Param('limit') limit: number,
+  ) {
+    return await this.activitiesService.getCertifiedActivities(page, limit)
+  }
 }

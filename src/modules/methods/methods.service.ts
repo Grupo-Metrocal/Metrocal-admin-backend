@@ -29,6 +29,7 @@ import { NI_MCIT_T_01Service } from './ni-mcit-t-01.service'
 import { MailService } from '../mail/mail.service'
 import { NI_MCIT_D_01Service } from './ni-mcit-d-01.service'
 import { NI_MCIT_D_02Service } from './ni-mcit-d-02.service'
+import { NI_MCIT_T_03 } from './entities/NI_MCIT_T_03/NI_MCIT_T_03.entity'
 
 @Injectable()
 export class MethodsService {
@@ -48,6 +49,8 @@ export class MethodsService {
     private readonly NI_MCIT_T_01Repository: Repository<NI_MCIT_T_01>,
     @InjectRepository(NI_MCIT_M_01)
     private readonly NI_MCIT_M_01Repository: Repository<NI_MCIT_M_01>,
+    @InjectRepository(NI_MCIT_T_03)
+    private readonly NI_MCIT_T_03Repository: Repository<NI_MCIT_T_03>,
 
     @Inject(forwardRef(() => ActivitiesService))
     private readonly activitiesService: ActivitiesService,
@@ -434,10 +437,6 @@ export class MethodsService {
   }
 
   async reviewMethod(method_name: string, method_id: number, token: string) {
-    if (!token || !method_id || !method_name) {
-      return handleBadrequest(new Error('Faltan parámetros'))
-    }
-
     try {
       const repository = `${method_name}Repository`
 
@@ -464,7 +463,6 @@ export class MethodsService {
   async sendAllCertificatesToClient(activityID: number) {
     try {
       const activity = await this.activitiesService.getActivityById(activityID)
-
       const { equipment_quote_request } = activity.data.quote_request
 
       const collectionPDF = []
@@ -502,6 +500,8 @@ export class MethodsService {
         user: activity.data.quote_request.client.email,
         collection: collectionPDF as any,
       })
+
+      await this.activitiesService.changeIsCertificateActivity(activityID)
 
       return handleOK('Email enviado')
     } catch (error) {

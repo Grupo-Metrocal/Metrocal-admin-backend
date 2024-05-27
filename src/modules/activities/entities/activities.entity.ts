@@ -50,4 +50,7 @@ export class Activity {
 
   @Column({ type: 'varchar', nullable: true })
   reviewed_user_id: number
+
+  @Column({ type: 'boolean', default: false, nullable: true })
+  is_certificate: boolean
 }
