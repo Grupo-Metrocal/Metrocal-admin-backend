@@ -10,7 +10,6 @@ import { NI_MCIT_M_01Service } from './ni-mcit-m-01.service'
 import { NI_MCIT_B_01Service } from './ni-mcit-b-01.service'
 import { NI_MCIT_T_03Service } from './ni-mcit-t-03.service'
 
-
 import { EquipmentInformationDto } from './dto/NI_MCIT_P_01/equipment_information.dto'
 import { EnvironmentalConditionsDto } from './dto/NI_MCIT_P_01/environmental_condition.dto'
 import { CalibrationResultsDto } from './dto/NI_MCIT_P_01/calibraion_results.dto'
@@ -551,7 +550,10 @@ export class MethodsController {
   ) {
     return await this.ni_mcit_b_01Service.equipmentInfomationB01(
       equipment,
-      
+      methodId,
+    )
+  }
+
   //T-03
   @Post('ni-mcit-t-03/calibration-location/:methodId')
   async createNI_MCIT_T_03CalibrationLocation(
@@ -583,6 +585,9 @@ export class MethodsController {
   ) {
     return await this.ni_mcit_b_01Service.eccentricityTestB01(
       eccentricityTest,
+      methodId,
+    )
+  }
 
   @Post('ni-mcit-t-03/equipment-information/:methodId')
   async createNI_MCIT_T_03EquipmentInformation(
@@ -603,6 +608,9 @@ export class MethodsController {
   ) {
     return await this.ni_mcit_b_01Service.repeatabilityTestB01(
       repeatabilityTest,
+      methodId,
+    )
+  }
 
   @Post('ni-mcit-t-03/environmental-conditions/:methodId')
   async createNI_MCIT_T_03EnvironmentalConditions(
@@ -646,6 +654,10 @@ export class MethodsController {
     @Param('methodId') methodId: number,
   ) {
     return await this.ni_mcit_b_01Service.generateCertificateB01({
+      activityID: activityId,
+      methodID: methodId,
+    })
+  }
 
   @Post('ni-mcit-t-03/calibration-results/:methodId')
   async createNI_MCIT_T_03CalibrationResults(
@@ -690,6 +702,7 @@ export class MethodsController {
       activityID: activityId,
       methodID: methodId,
     })
+  }
 
   @Get('ni-mcit-t-03/generate-certificate/send/pdf/:idActivity/:idMethod')
   async sendCertificateToClient(
