@@ -193,12 +193,12 @@ export class NI_MCIT_T_01Service {
     }
 
     try {
-      await this.dataSource.transaction(async (manager) => {
+      const newMethod = await this.dataSource.transaction(async (manager) => {
         await manager.save(method.environmental_conditions)
         await manager.save(method)
       })
 
-      return handleOK(method)
+      return handleOK(newMethod)
     } catch (error) {
       return handleInternalServerError(error.message)
     }
