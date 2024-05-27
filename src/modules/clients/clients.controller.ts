@@ -47,4 +47,15 @@ export class ClientsController {
   ) {
     return await this.clientsService.getClientsPagination(page, limit)
   }
+
+  // modificar cliente
+  @Post('update/:id')
+  async updateClient(@Param('id') id: number, @Body() client: CreateClientDto) {
+    if (!id) return handleBadrequest(new Error('El id es requerido'))
+    if (!client)
+      return handleBadrequest(
+        new Error('Porfavor envie un cliente que desea registrar'),
+      )
+    return await this.clientsService.updateClient(id, client)
+  }
 }
