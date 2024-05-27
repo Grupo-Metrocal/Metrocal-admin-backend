@@ -3,18 +3,25 @@ import {
   Get,
   Post,
   Body,
-  Patch,
+  Put,
   Param,
   Delete,
+  UploadedFile,
+  UseInterceptors,
+  UseGuards,
+  HttpException,
+  ParseFilePipeBuilder,
 } from '@nestjs/common'
 import { UsersService } from './users.service'
 import { CreateUserDto } from './dto/create-user.dto'
 import { UpdateUserDto } from './dto/update-user.dto'
-import { HttpException, UseGuards } from '@nestjs/common'
+import { UpdateProfileImageDto } from './dto/update-profile-image.dto'
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard'
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger'
 import { PasswordRestoreDto } from './dto/password-restore.dto'
-import { handleBadrequest } from 'src/common/handleHttp'
+import { handleBadrequest, handleOK } from 'src/common/handleHttp'
+import { InvitationMail } from '../mail/dto/invitation-mail.dto'
+import { FileInterceptor } from '@nestjs/platform-express'
 
 @ApiBearerAuth()
 @ApiTags('users')
@@ -35,7 +42,6 @@ export class UsersController {
     return await this.usersService.create(user)
   }
 
-  @UseGuards(JwtAuthGuard)
   @Get()
   async findAll() {
     return this.usersService.findAll()
@@ -95,5 +101,26 @@ export class UsersController {
     if (isNaN(+id)) throw new HttpException('El id debe ser un número', 400)
 
     return await this.usersService.remove(+id)
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Post('profile/update/:token')
+  async update(@Param('token') token: string, @Body() user: UpdateUserDto) {
+    console.log('update user', user)
+    return await this.usersService.updateUserByToken(token, user)
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Get('invitation-user/:email')
+  async invitationUser(@Param('email') email: string) {
+    return await this.usersService.invitationForUser({
+      email,
+    } as InvitationMail)
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Get('data-user/:token')
+  async dataUser(@Param('token') token: string) {
+    return await this.usersService.getUserData(token)
   }
 }

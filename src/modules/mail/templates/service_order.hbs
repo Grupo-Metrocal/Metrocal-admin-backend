@@ -1,0 +1,67 @@
+<html lang='en'>
+  <head>
+    <meta charset='UTF-8' />
+    <meta name='viewport' content='width=device-width, initial-scale=1.0' />
+    <title>ORDEN DE SERVICIO</title>
+    <link
+      href='https://fonts.googleapis.com/css?family=Montserrat:400,500,600,700'
+      rel='stylesheet'
+      type='text/css'
+    />
+
+    <style>
+      body { font-family: 'Montserrat', sans-serif; font-size: 15px; color:
+      #333; }
+    </style>
+  </head>
+  <body>
+
+    <h2>
+      ORDEN DE SERVICIO
+    </h2>
+
+    <p> Estimados compañeros de {{clientName}}, </p>
+    <p>Nos complace informarle que su orden de servicio ha sido generada con
+      éxito. y los servicios solicitados en la cotizacion han sido completados
+      con exito.</p>
+
+    <h3>Detalles de la orden de servicio:</h3>
+    <ul>
+      <li>Número de cotización: {{quoteNumber}}</li>
+      <li>Fecha de inicio: {{startDate}}</li>
+      <li>Fecha de finalización: {{endDate}}</li>
+      <li>Técnicos asignados:
+        <ul>
+          {{#each technicians}}
+            <li>{{this}}</li>
+          {{/each}}
+        </ul>
+      </li>
+    </ul>
+
+    {{!  }}
+    <p>Si tiene alguna pregunta o necesita más información, no dude en ponerse
+      en contacto con nosotros a través de nuestro correo electrónico o número
+      de teléfono.</p>
+
+    <p style='font-weight: bold;'>Correo electrónico:
+      <a href='mailto:info@metrocal.co.ni'>info@metrocal.co.ni</a>
+    </p>
+    <p style='font-weight: bold;'>
+      Teléfono:
+      <a href='tel:+50512345678'>+505 22490758</a>
+    </p>
+
+    <p>Gracias por su atención.</p>
+    <p>Atentamente, METROCAL.</p>
+
+    <p
+      style='
+        font-size: 12px;
+        color: tomato;
+        text-align: center;
+        margin-top: 50px;
+      '
+    >Este mensaje fue enviado automáticamente, por favor no responda.</p>
+  </body>
+</html>

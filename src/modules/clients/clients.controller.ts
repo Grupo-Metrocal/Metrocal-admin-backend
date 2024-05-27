@@ -1,9 +1,10 @@
-import { Controller } from '@nestjs/common'
+import { Controller, UseGuards } from '@nestjs/common'
 import { ClientsService } from './clients.service'
 import { ApiTags } from '@nestjs/swagger'
 import { Post, Body, Get, Param, Delete } from '@nestjs/common'
 import { CreateClientDto } from './dto/client.dto'
 import { handleBadrequest } from 'src/common/handleHttp'
+
 
 @ApiTags('clients')
 @Controller('clients')
@@ -34,5 +35,9 @@ export class ClientsController {
   async delete(@Param('id') id: number) {
     if (!id) return handleBadrequest(new Error('El id es requerido'))
     return await this.clientsService.delete(id)
+  }
+  @Get('emails/all')
+  async getClientsEmails() {
+    return await this.clientsService.getClientsEmails()
   }
 }

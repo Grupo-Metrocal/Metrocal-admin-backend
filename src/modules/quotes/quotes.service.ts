@@ -1,7 +1,6 @@
-import { Injectable } from '@nestjs/common'
+import { Inject, Injectable, forwardRef } from '@nestjs/common'
 import { InjectRepository } from '@nestjs/typeorm'
-import { Repository, DataSource } from 'typeorm'
-import { Quote } from './entities/quote.entity'
+import { Repository, DataSource, In, IsNull, Not } from 'typeorm'
 import { EquipmentQuoteRequest } from './entities/equipment-quote-request.entity'
 import { QuoteRequest } from './entities/quote-request.entity'
 import { QuoteRequestDto } from './dto/quote-request.dto'
@@ -12,32 +11,42 @@ import { MailService } from '../mail/mail.service'
 import { TokenService } from '../auth/jwt/jwt.service'
 import { ApprovedQuoteRequestDto } from '../mail/dto/approved-quote-request.dto'
 import { PdfService } from '../mail/pdf.service'
-import { changeStatusQuoteRequestDto } from './dto/change-status-quote-request.dto'
-import { AddQuoteDto } from './dto/quote.dto'
+import { ApprovedOrRejectedQuoteByClientDto } from './dto/change-status-quote-request.dto'
 import {
   handleBadrequest,
   handleInternalServerError,
   handleOK,
+  handlePaginate,
+  handlePaginateByPageNumber,
 } from 'src/common/handleHttp'
 import { generateQuoteRequestCode } from 'src/utils/codeGenerator'
 import { User } from '../users/entities/user.entity'
 import { UsersService } from '../users/users.service'
+import { RejectedQuoteRequest } from '../mail/dto/rejected-quote-request.dto'
+import { ActivitiesService } from '../activities/activities.service'
+import { PaginationQueryDto } from './dto/pagination-query.dto'
+import { formatPrice } from 'src/utils/formatPrices'
+import { MethodsService } from '../methods/methods.service'
+import { PaginationQueryDinamicDto } from './dto/pagination-dinamic.dto'
+import { ReviewEquipmentDto } from './dto/review-equipment.dto'
 
 @Injectable()
 export class QuotesService {
   constructor(
-    @InjectRepository(Quote)
-    private readonly quoteRepository: Repository<Quote>,
     @InjectRepository(QuoteRequest)
     private readonly quoteRequestRepository: Repository<QuoteRequest>,
     @InjectRepository(EquipmentQuoteRequest)
     private readonly equipmentQuoteRequestRepository: Repository<EquipmentQuoteRequest>,
+    @Inject(forwardRef(() => ActivitiesService))
+    private readonly activitiesService: ActivitiesService,
     private readonly clientsService: ClientsService,
     private readonly dataSource: DataSource,
     private readonly mailService: MailService,
     private readonly tokenService: TokenService,
     private readonly pdfService: PdfService,
     private readonly usersService: UsersService,
+    @Inject(forwardRef(() => MethodsService))
+    private readonly methodsService: MethodsService,
   ) {}
 
   async createQuoteRequest(quoteRequestDto: QuoteRequestDto) {
@@ -53,6 +62,8 @@ export class QuotesService {
       general_discount: quoteRequestDto.general_discount,
       tax: quoteRequestDto.tax,
       price: quoteRequestDto.price,
+      rejected_comment: quoteRequestDto.rejected_comment,
+      rejected_options: quoteRequestDto.rejected_options,
     })
 
     const equipmentQuoteRequest = quoteRequestDto.equipment_quote_request.map(
@@ -84,18 +95,64 @@ export class QuotesService {
     }
   }
 
-  async getAllQuoteRequest() {
-    return await this.quoteRequestRepository.find({
+  async getAll({ filterActive = false }: { filterActive?: boolean }) {
+    try {
+      const quotes = await this.quoteRequestRepository.find({
+        relations: [
+          'equipment_quote_request',
+          'client',
+          'approved_by',
+          'activity',
+        ],
+        where: {
+          status: In(['pending', 'waiting', 'done']),
+          activity: filterActive ? IsNull() : Not(IsNull()), // Si filterActive es true, buscamos activity null, de lo contrario, activity no es null
+        },
+      })
+
+      return handleOK(quotes)
+    } catch (error) {
+      return handleInternalServerError(error.message)
+    }
+  }
+
+  async getAllQuoteRequest({ limit, offset }: PaginationQueryDto) {
+    const quotes = await this.quoteRequestRepository.find({
       where: [{ status: 'pending' }, { status: 'waiting' }, { status: 'done' }],
-      relations: ['equipment_quote_request', 'client', 'quote', 'approved_by'],
+      relations: [
+        'equipment_quote_request',
+        'client',
+        'approved_by',
+        'activity',
+      ],
+      // order: { created_at: 'DESC' },
+      take: limit,
+      skip: offset,
     })
+
+    const total = await this.quoteRequestRepository.count({
+      where: [{ status: 'pending' }, { status: 'waiting' }, { status: 'done' }],
+    })
+
+    return handlePaginate(quotes, total, limit, offset)
   }
 
   async getQuoteRequestByClientId(id: number) {
-    return await this.quoteRequestRepository.find({
-      where: { client: { id } },
-      relations: ['equipment_quote_request', 'client', 'quote', 'approved_by'],
-    })
+    try {
+      const response = await this.quoteRequestRepository.find({
+        where: { client: { id } },
+        relations: [
+          'equipment_quote_request',
+          'client',
+          'approved_by',
+          'activity',
+        ],
+      })
+
+      return handleOK(response)
+    } catch (error) {
+      return handleInternalServerError(error.message)
+    }
   }
 
   async rejectQuoteRequest(id: number) {
@@ -107,10 +164,21 @@ export class QuotesService {
   }
 
   async getQuoteRequestById(id: number) {
-    return await this.quoteRequestRepository.findOne({
-      where: { id },
-      relations: ['equipment_quote_request', 'client', 'quote', 'approved_by'],
-    })
+    try {
+      const response = await this.quoteRequestRepository.findOne({
+        where: { id },
+        relations: [
+          'equipment_quote_request',
+          'client',
+          'approved_by',
+          'activity',
+        ],
+      })
+
+      return handleOK(response)
+    } catch (error) {
+      return handleInternalServerError(error.message)
+    }
   }
 
   async updateEquipmentQuoteRequest(
@@ -179,7 +247,9 @@ export class QuotesService {
       let approvedQuoteRequestDto: ApprovedQuoteRequestDto | undefined
 
       if (quoteRequest.status === 'waiting') {
-        const quote = await this.getQuoteRequestById(quoteRequestDto.id)
+        const { data: quote } = await this.getQuoteRequestById(
+          quoteRequestDto.id,
+        )
         approvedQuoteRequestDto = new ApprovedQuoteRequestDto()
         approvedQuoteRequestDto.clientName = quote.client.company_name
         approvedQuoteRequestDto.servicesAndEquipments =
@@ -188,22 +258,53 @@ export class QuotesService {
               service: equipment.type_service,
               equipment: equipment.name,
               count: equipment.count,
-              unitPrice: equipment.price,
-              subTotal: equipment.total,
-              discount: equipment.discount,
+              unitPrice:
+                equipment.status === 'done'
+                  ? formatPrice(equipment.price)
+                  : '---',
+              subTotal:
+                equipment.status === 'done'
+                  ? formatPrice(equipment.total)
+                  : 'No aprobado',
+              discount:
+                equipment.status === 'done' ? equipment.discount + '%' : '---',
             }
           })
 
-        approvedQuoteRequestDto.total = quoteRequestDto.price
+        approvedQuoteRequestDto.total = formatPrice(quoteRequestDto.price)
         approvedQuoteRequestDto.token = token
         approvedQuoteRequestDto.email = quote.client.email
         approvedQuoteRequestDto.linkDetailQuote = `${process.env.DOMAIN}/quote/${token}`
-        approvedQuoteRequestDto.subtotal = quote.equipment_quote_request.reduce(
-          (acc, equipment) => acc + equipment.total,
-          0,
-        )
-        approvedQuoteRequestDto.tax = quoteRequestDto.tax
+        ;(approvedQuoteRequestDto.subtotal = formatPrice(
+          quote?.equipment_quote_request
+            ?.map((equipment: any) =>
+              equipment.status === 'done' ? equipment.total : 0,
+            )
+            .reduce((a, b) => a + b, 0),
+        )),
+          (approvedQuoteRequestDto.tax = quoteRequestDto.tax)
         approvedQuoteRequestDto.discount = quoteRequestDto.general_discount
+        approvedQuoteRequestDto.extras = formatPrice(quoteRequestDto.extras)
+      }
+
+      let rejectedquoterequest: RejectedQuoteRequest | undefined
+      if (quoteRequest.status === 'rejected') {
+        const { data: quote } = await this.getQuoteRequestById(
+          quoteRequestDto.id,
+        )
+
+        rejectedquoterequest = new RejectedQuoteRequest()
+        rejectedquoterequest.clientName = quote.client.company_name
+        rejectedquoterequest.email = quote.client.email
+        rejectedquoterequest.comment = quoteRequestDto.rejected_comment
+        rejectedquoterequest.linkToNewQuote = `${process.env.DOMAIN}`
+
+        quoteRequest.rejected_comment = quoteRequestDto.rejected_comment
+      }
+      if (quoteRequest.status === 'rejected' && rejectedquoterequest) {
+        await this.mailService.sendMailrejectedQuoteRequest(
+          rejectedquoterequest,
+        )
       }
 
       await this.dataSource.transaction(async (manager) => {
@@ -234,7 +335,7 @@ export class QuotesService {
   }
 
   async getQuoteRequestPdf(template: string, id: number) {
-    const quote = await this.getQuoteRequestById(id)
+    const { data: quote } = await this.getQuoteRequestById(id)
 
     if (!quote) {
       throw new Error('La cotización no existe')
@@ -271,82 +372,263 @@ export class QuotesService {
     return await this.pdfService.generatePdf(template, data)
   }
 
-  async changeStatusQuoteRequest(
-    changeStatusQuoteRequest: changeStatusQuoteRequestDto,
+  async approvedOrRejectedQuoteByClient(
+    changeStatusQuoteRequest: ApprovedOrRejectedQuoteByClientDto,
   ) {
     const quoteRequest = await this.quoteRequestRepository.findOne({
       where: { id: changeStatusQuoteRequest.id },
+      relations: ['equipment_quote_request', 'activity'],
     })
 
     if (!quoteRequest) {
-      throw new Error('La cotización no existe')
+      return handleBadrequest(new Error('La cotización no existe'))
+    }
+
+    if (quoteRequest.status === 'done') {
+      return handleBadrequest(
+        new Error('La cotización ya ha sido aprobada anteriormente'),
+      )
+    }
+
+    if (quoteRequest.status === 'rejected') {
+      return handleBadrequest(
+        new Error('La cotización ya ha sido rechazada anteriormente'),
+      )
     }
 
     quoteRequest.status = changeStatusQuoteRequest.status
+    quoteRequest.rejected_comment = changeStatusQuoteRequest.comment
+    quoteRequest.rejected_options = changeStatusQuoteRequest.options
 
     try {
       await this.quoteRequestRepository.save(quoteRequest)
-      return quoteRequest
+
+      if (quoteRequest.status === 'done') {
+        // const activity = await this.activitiesService.createActivity(
+        //   changeStatusQuoteRequest as any,
+        // )
+
+        // const response = await this.methodsService.createMethod({
+        //   activity_id: activity.data.id,
+        // })
+
+        return handleOK('Cotización aprobada')
+      }
+
+      return handleOK('Cotización rechazada')
     } catch (error) {
-      return false
+      return handleInternalServerError(error.message)
     }
   }
 
-  async addQuote(addQuoteDto: AddQuoteDto) {
-    const quoteRequest = await this.getQuoteRequestById(addQuoteDto.id)
+  //pagination and filter by status and client name and company name.
+  async getQuoteRequestRegister({
+    limit,
+    offset,
+    status,
+    bussinesName,
+  }: PaginationQueryDinamicDto) {
+    const arrayStatus = status
+      .toString()
+      .split(',')
+      .filter(
+        (element) =>
+          element.trim() !== '' && element !== undefined && element !== null,
+      )
 
-    const quote = new Quote()
+    let next_expired = ''
+    let expired = ''
 
-    quote.quote_request = quoteRequest
-    quoteRequest.quote = quote
-
-    try {
-      await this.dataSource.transaction(async (manager) => {
-        await manager.save(quoteRequest)
-        await manager.save(quote)
-      })
-      return true
-    } catch (error) {
-      return false
-    }
-  }
-
-  async getQuotes() {
-    return await this.quoteRepository.find({
-      relations: [
-        'quote_request',
-        'workers',
-        'quote_request.client',
-        'quote_request.equipment_quote_request',
-        'quote_request.approved_by',
-      ],
+    arrayStatus.forEach((i) => {
+      if (i === 'next_expired') {
+        next_expired = 'next_expired'
+      }
+      if (i === 'expired') {
+        expired = 'expired'
+      }
     })
-  }
 
-  async getQuoteRequestRegister() {
-    return await this.quoteRequestRepository
-      .createQueryBuilder('quote_request')
-      .select([
-        'quote_request.id AS id',
-        'quote_request.status',
-        'quote_request.price',
-        'quote_request.created_at',
-        `COALESCE(approved_by.username, 'Sin asignar') AS approved_by`,
-        'client.company_name',
-        'client.phone',
-      ])
-      .where('quote_request.status IN (:...statuses)', {
-        statuses: ['done', 'rejected', 'canceled'],
-      })
-      .leftJoin('quote_request.approved_by', 'approved_by')
-      .leftJoin('quote_request.client', 'client')
-      .getRawMany()
+    const statusMap = arrayStatus.map((i) => {
+      if (i === 'next_expired' || i === 'expired') {
+        return 'waiting' // Asignar 'done' en lugar de 'next_expired' o 'expired'.
+      }
+      if (i === 'approved') {
+        arrayStatus.push('done')
+        return 'done'
+      }
+      return i // Mantener el valor original si no es 'next_expired' o 'expired' .
+    })
+
+    // Cambiar el estado 'done' por 'next_expired', 'expired'  según el tiempo transcurrido desde la creación.
+    const updateQuoteStatus = (quote_registered) => {
+      if (next_expired !== '' || expired !== '') {
+        for (let i = 0; i < quote_registered.length; i++) {
+          if (quote_registered[i].quote_request_status === 'waiting') {
+            const dateNow = new Date()
+            const date = new Date(quote_registered[i].quote_request_created_at)
+            const diffTime = Math.abs(dateNow.getTime() - date.getTime())
+
+            if (
+              diffTime <= 23 * 24 * 60 * 60 * 1000 &&
+              diffTime >= 22 * 24 * 60 * 60 * 1000
+            ) {
+              quote_registered[i].quote_request_status = 'next_expired'
+            } else if (diffTime > 30 * 24 * 60 * 60 * 1000) {
+              quote_registered[i].quote_request_status = 'expired'
+            } else {
+              // Si no cumple las condiciones, podemos excluirlo del resultado.
+              quote_registered.splice(i, 1)
+              i-- // Ajustamos el índice porque eliminamos un elemento.
+            }
+          }
+        }
+      }
+    }
+
+    /*
+      Si la solicitud incluye todos los estados posibles y no se especifica un nombre de empresa,
+      se obtienen todas las solicitudes de cotización, se actualiza el estado según el tiempo transcurrido
+      y se retorna el resultado paginado.
+    */
+    if (status.length === 47 && bussinesName === '') {
+      const quote_registered = await this.quoteRequestRepository
+        .createQueryBuilder('quote_request')
+        .select([
+          'quote_request.id AS id',
+          'quote_request.status',
+          'quote_request.price',
+          'quote_request.created_at',
+          `COALESCE(approved_by.username, 'Sin asignar') AS approved_by`,
+          'client.company_name',
+          'client.phone',
+        ])
+        .where('quote_request.status IN (:...status)', {
+          status: statusMap,
+        })
+        .leftJoin('quote_request.approved_by', 'approved_by')
+        .leftJoin('quote_request.client', 'client')
+        .getRawMany()
+
+      updateQuoteStatus(quote_registered)
+
+      return handlePaginateByPageNumber(quote_registered, limit, offset)
+    }
+
+    /* 
+      Si la solicitud incluye todos los estados posibles y se especifica un nombre de empresa,
+      se obtienen las solicitudes de cotización filtradas por el nombre de empresa,
+      se actualiza el estado según el tiempo transcurrido y se retorna el resultado paginado.
+    */
+    if (status.length === 47 && bussinesName !== '') {
+      const quote_registered = await this.quoteRequestRepository
+        .createQueryBuilder('quote_request')
+        .select([
+          'quote_request.id AS id',
+          'quote_request.status',
+          'quote_request.price',
+          'quote_request.created_at',
+          `COALESCE(approved_by.username, 'Sin asignar') AS approved_by`,
+          'client.company_name',
+          'client.phone',
+        ])
+        .where('client.company_name ILIKE :bussinesName', {
+          bussinesName: `%${bussinesName}%`,
+        })
+        .andWhere('quote_request.status IN (:...status)', {
+          status: statusMap,
+        })
+        .leftJoin('quote_request.approved_by', 'approved_by')
+        .leftJoin('quote_request.client', 'client')
+        .getRawMany()
+
+      updateQuoteStatus(quote_registered)
+
+      return handlePaginateByPageNumber(quote_registered, limit, offset)
+    }
+
+    /*
+      Si la solicitud tiene estados especificados y no se proporciona un nombre de empresa,
+      se registran los estados, se obtienen las solicitudes de cotización según los estados,
+      se actualiza el estado según el tiempo transcurrido y se retorna el resultado paginado.
+    */
+    if (status.length !== 0 && bussinesName === '') {
+      const quote_registered = await this.quoteRequestRepository
+        .createQueryBuilder('quote_request')
+        .select([
+          'quote_request.id AS id',
+          'quote_request.status',
+          'quote_request.price',
+          'quote_request.created_at',
+          `COALESCE(approved_by.username, 'Sin asignar') AS approved_by`,
+          'client.company_name',
+          'client.phone',
+        ])
+        .where('quote_request.status IN (:...status)', {
+          status: statusMap,
+        })
+        .leftJoin('quote_request.approved_by', 'approved_by')
+        .leftJoin('quote_request.client', 'client')
+        .getRawMany()
+
+      updateQuoteStatus(quote_registered)
+
+      return handlePaginateByPageNumber(
+        quote_registered.filter((quote) =>
+          arrayStatus.includes(quote.quote_request_status),
+        ),
+        limit,
+        offset,
+      )
+    }
+
+    /*
+      Si la solicitud tiene estados especificados y se proporciona un nombre de empresa,
+      se registran los estados, se obtienen las solicitudes de cotización según los estados y el nombre de empresa,
+      se actualiza el estado según el tiempo transcurrido y se retorna el resultado paginado.
+    */
+    if (status.length !== 0 && bussinesName !== '') {
+      const quote_registered = await this.quoteRequestRepository
+        .createQueryBuilder('quote_request')
+        .select([
+          'quote_request.id AS id',
+          'quote_request.status',
+          'quote_request.price',
+          'quote_request.created_at',
+          `COALESCE(approved_by.username, 'Sin asignar') AS approved_by`,
+          'client.company_name',
+          'client.phone',
+        ])
+        .where('quote_request.status IN (:...status)', {
+          status: statusMap,
+        })
+        .andWhere('client.company_name ILIKE :bussinesName', {
+          bussinesName: `%${bussinesName}%`,
+        })
+        .leftJoin('quote_request.approved_by', 'approved_by')
+        .leftJoin('quote_request.client', 'client')
+        .getRawMany()
+
+      updateQuoteStatus(quote_registered)
+
+      return handlePaginateByPageNumber(
+        quote_registered.filter((quote) =>
+          arrayStatus.includes(quote.quote_request_status),
+        ),
+        limit,
+        offset,
+      )
+    }
   }
 
   async deleteQuoteRequest(id: number) {
     const quoteRequest = await this.quoteRequestRepository.findOne({
       where: { id },
-      relations: ['equipment_quote_request', 'quote', 'client', 'approved_by'],
+      relations: [
+        'equipment_quote_request',
+        'client',
+        'activity',
+        'client.quote_requests',
+      ],
     })
 
     if (!quoteRequest) {
@@ -354,11 +636,257 @@ export class QuotesService {
     }
 
     try {
-      await this.quoteRequestRepository.delete({ id })
-      return true
+      await this.dataSource.transaction(async (manager) => {
+        if (quoteRequest.activity) {
+          await this.activitiesService.deleteActivity(quoteRequest.activity.id)
+        }
+
+        await this.clientsService.deleteQuoteFromClient(quoteRequest.id)
+
+        await manager.remove(quoteRequest)
+      })
+      return handleOK(true)
     } catch (error) {
-      console.log(error)
-      return false
+      return handleInternalServerError(error.message)
+    }
+  }
+
+  async rememberQuoteRequest(id: number) {
+    const { data: quoteRequest } = await this.getQuoteRequestById(id)
+
+    if (!quoteRequest) {
+      return handleBadrequest(new Error('La cotización no existe'))
+    }
+
+    const token = this.tokenService.generateTemporaryLink(id, '15d')
+
+    try {
+      const approvedQuoteRequestDto = new ApprovedQuoteRequestDto()
+
+      approvedQuoteRequestDto.clientName = quoteRequest.client.company_name
+      approvedQuoteRequestDto.servicesAndEquipments =
+        quoteRequest.equipment_quote_request.map((equipment) => {
+          return {
+            service: equipment.type_service,
+            equipment: equipment.name,
+            count: equipment.count,
+            unitPrice:
+              equipment.status === 'done'
+                ? formatPrice(equipment.price)
+                : '---',
+            subTotal:
+              equipment.status === 'done'
+                ? formatPrice(equipment.total)
+                : 'No aprobado',
+            discount:
+              equipment.status === 'done' ? equipment.discount + '%' : '---',
+          }
+        })
+
+      approvedQuoteRequestDto.total = formatPrice(quoteRequest.price)
+      approvedQuoteRequestDto.token = token
+      approvedQuoteRequestDto.email = quoteRequest.client.email
+      approvedQuoteRequestDto.linkDetailQuote = `${process.env.DOMAIN}/quote/${token}`
+      approvedQuoteRequestDto.subtotal = formatPrice(
+        quoteRequest?.equipment_quote_request
+          ?.map((equipment: any) =>
+            equipment.status === 'done' ? equipment.total : 0,
+          )
+          .reduce((a, b) => a + b, 0),
+      )
+      approvedQuoteRequestDto.tax = quoteRequest.tax
+      approvedQuoteRequestDto.discount = quoteRequest.general_discount
+      approvedQuoteRequestDto.extras = formatPrice(quoteRequest.extras)
+
+      await this.mailService.sendMailApprovedQuoteRequest(
+        approvedQuoteRequestDto,
+      )
+      return handleOK(true)
+    } catch (error) {
+      return handleInternalServerError(error.message)
+    }
+  }
+
+  async GetMonthlyQuoteRequests(lastMonths: number) {
+    try {
+      const quoteRequests = await this.quoteRequestRepository
+        .createQueryBuilder('quote_request')
+        .select([
+          `DATE_TRUNC('month', quote_request.created_at) AS month`,
+          `COUNT(quote_request.id) AS count`,
+        ])
+        .where(
+          `quote_request.created_at > NOW() - INTERVAL '${lastMonths} month'`,
+        )
+        .andWhere(`quote_request.status = 'done'`)
+        .groupBy(`month`)
+        .orderBy(`month`)
+        .getRawMany()
+
+      return handleOK(quoteRequests)
+    } catch (error) {
+      return handleInternalServerError(error.message)
+    }
+  }
+
+  async asyncMethodToEquipment({ methodID, equipmentID }) {
+    try {
+      const quoteRequests = await this.equipmentQuoteRequestRepository.findOne({
+        where: { id: equipmentID },
+      })
+
+      if (!quoteRequests) {
+        return handleBadrequest(new Error('El equipo no existe'))
+      }
+
+      quoteRequests.method_id = methodID
+
+      const response =
+        await this.equipmentQuoteRequestRepository.save(quoteRequests)
+
+      return handleOK(response)
+    } catch (error) {
+      return handleInternalServerError(error.message)
+    }
+  }
+
+  async getQuoteRequestByStatus(status: any) {
+    try {
+      const quotes = await this.quoteRequestRepository.find({
+        where: { status: status },
+        relations: ['equipment_quote_request', 'client', 'activity'],
+      })
+
+      const quotesWithoutActivity = quotes.filter(
+        (quote) => quote.activity === null,
+      )
+
+      return handleOK(quotesWithoutActivity)
+    } catch (error) {
+      return handleInternalServerError(error.message)
+    }
+  }
+
+  async asyncDeleteMethodToEquipment({ methodID }: { methodID: number }) {
+    try {
+      const quoteRequests = await this.equipmentQuoteRequestRepository.findOne({
+        where: { method_id: methodID },
+      })
+
+      if (!quoteRequests) {
+        return handleBadrequest(new Error('El equipo no existe'))
+      }
+
+      quoteRequests.method_id = null
+
+      const response =
+        await this.equipmentQuoteRequestRepository.save(quoteRequests)
+
+      return handleOK(response)
+    } catch (error) {
+      return handleInternalServerError(error.message)
+    }
+  }
+
+  async addOrRemvoQuantityToEquipment({
+    quoteRequestID,
+    equipmentID,
+    actionType,
+  }: {
+    quoteRequestID: number
+    actionType: 'add' | 'remove'
+    equipmentID: number
+  }) {
+    try {
+      const quoteRequest = await this.quoteRequestRepository.findOne({
+        where: { id: quoteRequestID },
+        relations: ['equipment_quote_request'],
+      })
+
+      const equipment = quoteRequest.equipment_quote_request.find(
+        (equipment) => equipment.id === equipmentID,
+      )
+
+      if (actionType === 'add') {
+        equipment.count += 1
+      } else {
+        if (equipment.count === 1) {
+          return handleBadrequest(new Error('No se puede restar más'))
+        }
+
+        equipment.count -= 1
+      }
+
+      const response =
+        await this.equipmentQuoteRequestRepository.save(equipment)
+
+      await this.recalculateQuoteRequestPrice(quoteRequestID)
+
+      return handleOK(response)
+    } catch (error) {
+      return handleInternalServerError(error.message)
+    }
+  }
+
+  async recalculateQuoteRequestPrice(quoteRequestID: number) {
+    try {
+      const quoteRequest = await this.quoteRequestRepository.findOne({
+        where: { id: quoteRequestID },
+        relations: ['equipment_quote_request'],
+      })
+
+      let totalQuote = 0
+      let SubTotalEquipment = 0
+
+      await this.dataSource.transaction(async (manager) => {
+        for (const equipment of quoteRequest.equipment_quote_request) {
+          // subTotal to equipment
+          equipment.total =
+            equipment.count * equipment.price * (1 - equipment.discount / 100)
+
+          SubTotalEquipment += equipment.total
+
+          await manager.save(equipment)
+        }
+
+        totalQuote += quoteRequest.extras + SubTotalEquipment
+
+        // discount to totalQuote
+        totalQuote -= totalQuote * (quoteRequest.general_discount / 100)
+
+        // tax to totalQuote
+        totalQuote += totalQuote * (quoteRequest.tax / 100)
+
+        quoteRequest.price = totalQuote
+
+        await manager.save(quoteRequest)
+      })
+
+      return handleOK('ok')
+    } catch (error) {
+      return handleInternalServerError(error.message)
+    }
+  }
+
+  async reviewEquipment(id: number, review: ReviewEquipmentDto) {
+    try {
+      const equipment = await this.equipmentQuoteRequestRepository.findOne({
+        where: { id },
+      })
+
+      if (!equipment) {
+        return handleBadrequest(new Error('El equipo no existe'))
+      }
+
+      equipment.review_comment = review.review_comment
+      equipment.review_status = 'reviewed'
+
+      const response =
+        await this.equipmentQuoteRequestRepository.save(equipment)
+
+      return handleOK(response)
+    } catch (error) {
+      return handleInternalServerError(error.message)
     }
   }
 }

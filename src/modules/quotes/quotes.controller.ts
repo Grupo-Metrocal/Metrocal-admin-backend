@@ -1,12 +1,26 @@
 import { QuotesService } from './quotes.service'
 import { ApiProperty, ApiTags } from '@nestjs/swagger'
-import { Controller, Post, Body, Get, Param, Res, Delete } from '@nestjs/common'
+import {
+  Controller,
+  Post,
+  Body,
+  Get,
+  Param,
+  Res,
+  Delete,
+  UseGuards,
+  Query,
+} from '@nestjs/common'
 import { QuoteRequestDto } from './dto/quote-request.dto'
 import { updateEquipmentQuoteRequestDto } from './dto/update-equipment-quote-request.dto'
 import { UpdateQuoteRequestDto } from './dto/update-quote-request.dto'
-import { changeStatusQuoteRequestDto } from './dto/change-status-quote-request.dto'
+import { ApprovedOrRejectedQuoteByClientDto } from './dto/change-status-quote-request.dto'
 import { Response } from 'express'
-import { AddQuoteDto } from './dto/quote.dto'
+import { handleBadrequest } from 'src/common/handleHttp'
+import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard'
+import { PaginationQueryDto } from './dto/pagination-query.dto'
+import { PaginationQueryDinamicDto } from './dto/pagination-dinamic.dto'
+import { ReviewEquipmentDto } from './dto/review-equipment.dto'
 
 @ApiTags('quotes')
 @Controller('quotes')
@@ -19,9 +33,19 @@ export class QuotesController {
     return await this.quotesService.createQuoteRequest(quoteRequestDto)
   }
 
+  @UseGuards(JwtAuthGuard)
+  @Get('')
+  async getAll() {
+    return await this.quotesService.getAll({ filterActive: true })
+  }
+
   @Get('request/all')
-  async getAllQuoteRequest() {
-    return await this.quotesService.getAllQuoteRequest()
+  async getAllQuoteRequest(@Query() pagination?: PaginationQueryDto) {
+    if (isNaN(pagination.limit) || isNaN(pagination.offset)) {
+      return handleBadrequest(new Error('Limit y offset deben ser numeros'))
+    }
+
+    return await this.quotesService.getAllQuoteRequest(pagination)
   }
 
   @Post('request/reject')
@@ -29,6 +53,7 @@ export class QuotesController {
     return await this.quotesService.rejectQuoteRequest(id)
   }
 
+  @UseGuards(JwtAuthGuard)
   @Get('request/:id')
   async getQuoteRequestById(@Param('id') id: number) {
     return await this.quotesService.getQuoteRequestById(id)
@@ -77,34 +102,66 @@ export class QuotesController {
     res.send(pdfBuffer)
   }
 
-  @Post('request/change-status')
-  async changeStatusQuoteRequest(
-    @Body() quoteRequest: changeStatusQuoteRequestDto,
+  @Post('request/approved-rejected/client')
+  async approvedOrRejectedQuoteByClient(
+    @Body() quoteRequest: ApprovedOrRejectedQuoteByClientDto,
   ) {
     if (!quoteRequest) {
       return false
     }
 
-    return await this.quotesService.changeStatusQuoteRequest(quoteRequest)
+    return await this.quotesService.approvedOrRejectedQuoteByClient(
+      quoteRequest,
+    )
   }
 
-  @Get('add/:id')
-  async addQuote(@Param() addQuoteDto: AddQuoteDto) {
-    return await this.quotesService.addQuote(addQuoteDto)
-  }
-
-  @Get()
-  async getQuotes() {
-    return await this.quotesService.getQuotes()
-  }
-
-  @Get('registered')
-  async getQuoteRequestRegister() {
-    return await this.quotesService.getQuoteRequestRegister()
+  //Pagintaion and filters for registered quotes
+  @Get('registered/all')
+  async getQuoteRequestRegister(
+    @Query() pagination?: PaginationQueryDinamicDto,
+  ) {
+    if (isNaN(pagination.limit) || isNaN(pagination.offset)) {
+      return handleBadrequest(new Error('Limit y offset deben ser numeros'))
+    }
+    return await this.quotesService.getQuoteRequestRegister(pagination)
   }
 
   @Delete(':id')
   async delete(@Param('id') id: number) {
     return await this.quotesService.deleteQuoteRequest(id)
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Get('request/:id/remember')
+  async rememberQuoteRequest(@Param('id') id: number) {
+    if (!id) {
+      return handleBadrequest(new Error('Id is required'))
+    }
+    return await this.quotesService.rememberQuoteRequest(id)
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Get('request/monthly/graphic/:lastMonths')
+  async GetMonthlyQuoteRequests(@Param('lastMonths') lastMonths: number) {
+    return await this.quotesService.GetMonthlyQuoteRequests(lastMonths)
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Get('get-by-status/:status')
+  async getQuoteRequestByStatus(@Param('status') status: string) {
+    return await this.quotesService.getQuoteRequestByStatus(status)
+  }
+
+  @Get('recalculate/:id')
+  async recalculateQuoteRequest(@Param('id') id: number) {
+    return await this.quotesService.recalculateQuoteRequestPrice(id)
+  }
+
+  @Post('review/equipment/:id')
+  async reviewEquipment(
+    @Param('id') id: number,
+    @Body() review: ReviewEquipmentDto,
+  ) {
+    return await this.quotesService.reviewEquipment(id, review)
   }
 }

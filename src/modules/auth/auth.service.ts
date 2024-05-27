@@ -22,8 +22,8 @@ export class AuthService {
 
     const userFound = await this.userRepository.findOne({
       where: { email },
-      select: ['id', 'username', 'password'],
-      // relations: ['roles'],
+      select: ['id', 'username', 'password', 'imageURL'],
+      relations: ['roles'],
     })
     if (!userFound) return handleBadrequest(new Error('Credenciales inválidas'))
 
@@ -37,26 +37,27 @@ export class AuthService {
       // roles: userFound.roles.map((role) => role.name),
     }
     const token = this.jwtService.sign(payload)
+    const roleWithMinPriority = userFound.roles?.reduce(
+      (prev: any, current: any) => {
+        return prev.priority < current.priority ? prev : current
+      },
+    )
 
     return handleOK({
       username: userFound.username,
+      imageURL: userFound.imageURL,
+      id: userFound.id,
+      role: {
+        name: roleWithMinPriority.name,
+        priority: roleWithMinPriority.priority,
+        id: roleWithMinPriority.id,
+        label: roleWithMinPriority.label,
+      },
       token,
     })
   }
 
   async register(user: CreateUserDto) {
-    const userCreated = await this.usersService.create(user)
-
-    if (userCreated.success) {
-      const payload = {
-        username: userCreated.data.data.username,
-        email: userCreated.data.data.email,
-        id: userCreated.data.data.id,
-      }
-
-      return handleOK(payload)
-    }
-
-    return userCreated
+    return await this.usersService.create(user)
   }
 }

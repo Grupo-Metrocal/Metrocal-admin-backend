@@ -28,8 +28,8 @@ export class EquipmentQuoteRequest {
   @Column({ type: 'varchar' })
   model: string
 
-  @Column()
-  measuring_range?: boolean
+  @Column({ type: 'varchar', nullable: true })
+  measuring_range?: string
 
   @Column({ type: 'varchar', default: '' })
   calibration_method?: string
@@ -37,7 +37,7 @@ export class EquipmentQuoteRequest {
   @Column({ type: 'varchar', default: '' })
   additional_remarks?: string
 
-  @Column({ type: 'int' })
+  @Column({ type: 'float', nullable: true })
   discount?: number
 
   @Column({ default: 'pending' })
@@ -51,4 +51,13 @@ export class EquipmentQuoteRequest {
 
   @Column({ type: 'float', default: 0 })
   total?: number
+
+  @Column({ nullable: true })
+  method_id?: number
+
+  @Column({ nullable: true, default: 'pending' })
+  review_status?: string // reviewed, pending
+
+  @Column({ nullable: true })
+  review_comment?: string
 }

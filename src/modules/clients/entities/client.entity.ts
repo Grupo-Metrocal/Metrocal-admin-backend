@@ -30,6 +30,9 @@ export class Client {
   @Column({ type: 'varchar', nullable: false })
   requested_by: string
 
+  @Column({ type: 'varchar', nullable: true })
+  company_phone?: string
+
   @Column({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP' })
   created_at: Date
 }

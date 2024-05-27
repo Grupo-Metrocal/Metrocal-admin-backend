@@ -1,6 +1,9 @@
 import { Injectable } from '@nestjs/common'
 import { MailerService } from '@nestjs-modules/mailer'
 import { ApprovedQuoteRequestDto } from './dto/approved-quote-request.dto'
+import { InvitationMail } from './dto/invitation-mail.dto'
+import { RejectedQuoteRequest } from './dto/rejected-quote-request.dto'
+import { ServiceOrderDto } from './dto/service-order.dto'
 
 @Injectable()
 export class MailService {
@@ -26,13 +29,15 @@ export class MailService {
     })
   }
 
-  async sendMailWelcomeApp({ user, name }) {
+  async sendMailWelcomeApp({ user, name, loginURL }) {
     await this.sendMail({
       user,
       subject: 'Bienvenido a bordo 🚀 Metrocal te da la Bienvenida!',
       template: 'welcome',
       context: {
         name,
+        loginURL,
+        user,
       },
     })
   }
@@ -59,6 +64,93 @@ export class MailService {
       context: {
         ...approvedQuoteRequestDto,
       },
+    })
+  }
+
+  async sendMailrejectedQuoteRequest(rejected: RejectedQuoteRequest) {
+    await this.mailerService.sendMail({
+      to: rejected.email,
+      from: process.env.MAILER_FROM,
+      subject: 'Cotizacion rechazada',
+      template: 'rejected_quote_request',
+      context: {
+        ...rejected,
+      },
+    })
+  }
+
+  async sendInvitationMail(inv: InvitationMail) {
+    await this.mailerService.sendMail({
+      to: inv.email,
+      from: process.env.MAILER_FROM,
+      subject: 'Cotización de servicios',
+      template: 'invitation_for_user',
+      context: {
+        ...inv,
+      },
+    })
+  }
+
+  async sendServiceOrderMail({
+    to,
+    pdf,
+    clientName,
+    quoteNumber,
+    startDate,
+    endDate,
+    technicians,
+  }: ServiceOrderDto) {
+    await this.mailerService.sendMail({
+      to,
+      from: process.env.MAILER_FROM,
+      subject: 'Orden de servicio',
+      template: 'service_order',
+      context: {
+        clientName,
+        quoteNumber,
+        startDate,
+        endDate,
+        technicians,
+      },
+      attachments: [
+        {
+          filename: 'Orden de servicio.pdf',
+          content: pdf,
+        },
+      ],
+    })
+  }
+
+  async sendMailCertification({ user, pdf }: { user: string; pdf: Buffer }) {
+    return await this.mailerService.sendMail({
+      to: user,
+      from: process.env.MAILER_FROM,
+      subject: 'Certificación de actividad',
+      template: 'certification',
+      context: {},
+      attachments: [
+        {
+          filename: 'Certificado.pdf',
+          content: pdf,
+        },
+      ],
+    })
+  }
+
+  async sendMailCollectionCertificate({
+    user,
+    collection,
+  }: {
+    user: string
+    collection: []
+  }) {
+    return await this.mailerService.sendMail({
+      to: user,
+      from: process.env.MAILER_FROM,
+      subject: 'Certificación de actividad',
+      template: 'certification',
+      context: {},
+      attachments: collection,
     })
   }
 }

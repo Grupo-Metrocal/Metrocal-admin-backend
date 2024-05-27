@@ -15,7 +15,8 @@ import {
   handleOK,
 } from 'src/common/handleHttp'
 import { RolesService } from '../roles/roles.service'
-import { Role } from '../roles/entities/role.entity'
+import { TokenService } from '../auth/jwt/jwt.service'
+import { InvitationMail } from '../mail/dto/invitation-mail.dto'
 
 @Injectable()
 export class UsersService {
@@ -25,11 +26,13 @@ export class UsersService {
     private readonly resetPasswordRepository: Repository<ResetPassword>,
     private readonly mailService: MailService,
     private readonly rolesService: RolesService,
+    private readonly tokenService: TokenService,
   ) {}
   async create(createUserDto: CreateUserDto) {
     const user = await this.userRepository.findOneBy({
       email: createUserDto.email,
     })
+
     if (user) return handleBadrequest(new Error('El usuario ya existe'))
 
     const role = (await this.rolesService.getDefaultsRole()) as any
@@ -42,10 +45,13 @@ export class UsersService {
       await this.mailService.sendMailWelcomeApp({
         user: createUserDto.email,
         name: createUserDto.username,
+        loginURL: process.env.LOGIN_PAGE,
       })
       const response = await this.userRepository.save(newUser)
       const saved = await this.assignRole(response.id, role.data.id as number)
+
       delete saved.data.password
+
       return handleOK(saved.data)
     } catch (error) {
       return handleInternalServerError(error.message)
@@ -64,7 +70,26 @@ export class UsersService {
         relations: ['roles'],
       })
 
-      return handleOK(users)
+      const filteredUsers = users.map((user: User) => {
+        return {
+          id: user.id,
+          username: user.username,
+          email: user.email,
+          roles: user.roles.map((role) => {
+            return {
+              id: role.id,
+              name: role.name,
+              description: role.description,
+              priority: role.priority,
+              label: role.label,
+            }
+          }),
+          imageURL: user.imageURL,
+          creted_at: user.created_at,
+        }
+      })
+
+      return handleOK(filteredUsers)
     } catch (error) {
       handleBadrequest(error)
     }
@@ -73,24 +98,28 @@ export class UsersService {
   async findById(id: number) {
     const user = await this.userRepository.findOne({
       where: { id },
-      relations: ['roles', 'quote_requests', 'quotes'],
+      relations: ['roles', 'quote_requests', 'activities'],
     })
     if (!user) return handleBadrequest(new Error('Usuario no encontrado'))
 
     return handleOK(user)
   }
 
-  async updateById(id: number, updateUserDto: UpdateUserDto): Promise<User> {
-    const user = await this.userRepository.findOneBy({ id })
-    if (!user) throw new HttpException('Usuario no encontrado', 404)
+  async updateUserByToken(token: string, updateUserDto: UpdateUserDto) {
+    try {
+      const { sub: id } = this.tokenService.decodeToken(token)
 
-    const hashedPassword = await hash(updateUserDto.password, 10)
-    const updatedUser = this.userRepository.merge(user, {
-      ...updateUserDto,
-      password: hashedPassword,
-    })
+      const user = await this.userRepository.findOneBy({ id: +id })
+      if (!user) return handleBadrequest(new Error('Usuario no encontrado'))
 
-    return await this.userRepository.save(updatedUser)
+      user.username = updateUserDto.username
+      user.imageURL = updateUserDto.imageURL
+
+      await this.userRepository.update(user.id, user)
+      return handleOK(user)
+    } catch (error) {
+      return handleInternalServerError(error.message)
+    }
   }
 
   async findByEmail(email: string): Promise<User> {
@@ -228,8 +257,8 @@ export class UsersService {
   async createDefaultUsers() {
     const users = [
       {
-        username: 'Metrocal',
-        email: 'jjjchico1@gmail.com',
+        username: 'Roberto REGXI',
+        email: 'roberto.zelaya@regxi.com',
         password: 'Metrocal.2023',
         role: 'admin',
       },
@@ -239,16 +268,39 @@ export class UsersService {
       const userExists = await this.userRepository.findOne({
         where: { email: user.email },
       })
-
       if (!userExists) {
+        // if (user.ignore) return
         const userCreated = await this.create({
           username: user.username,
           email: user.email,
           password: user.password,
         })
-        const role = await this.rolesService.findByName(user.role)
-        await this.assignRole(userCreated.data.id, role.data.id as number)
+
+        if (userCreated.success) {
+          const role = await this.rolesService.findByName(user.role)
+          await this.assignRole(userCreated.data.id, role.data.id as number)
+        } else {
+          return handleBadrequest(new Error('Error al crear usuario'))
+        }
       }
     })
+  }
+
+  async invitationForUser(email: InvitationMail) {
+    try {
+      email.linkToNewQuote = `${process.env.DOMAIN}/`
+
+      await this.mailService.sendInvitationMail(email)
+      return handleOK('Ok')
+    } catch (error) {
+      return handleInternalServerError(error.message)
+    }
+  }
+
+  async getUserData(token: string) {
+    const { sub: id } = this.tokenService.decodeToken(token)
+    const user = await this.userRepository.findOneBy({ id: +id })
+    if (!user) return handleBadrequest(new Error('Usuario no encontrado'))
+    return user
   }
 }

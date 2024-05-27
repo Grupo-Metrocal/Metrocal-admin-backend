@@ -22,7 +22,7 @@ export class AuthController {
     return await this.authService.signin(user)
   }
 
-  @Post('register')
+  @Post('signup')
   async register(@Body() user: CreateUserDto) {
     return await this.authService.register(user)
   }

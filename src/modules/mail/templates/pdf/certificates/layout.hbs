@@ -1,0 +1,78 @@
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+      main {
+        font-family: 'Montserrat', sans-serif;
+        font-size: 13px;
+      }
+      table,
+      th,
+      td {
+        font-size: 13px;
+      }
+    </style>
+  </head>
+  <body>
+    <main>
+      {{{content}}}
+
+      <div
+        style="
+          margin: 5em 0 0 0;
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          position: relative;
+        "
+      >
+        <img
+          src="http://app-grupometrocal.com/development/api/images/image/firma-fredman-mendez.webp"
+          style="
+            width: 100px;
+            height: 100px;
+            object-fit: contain;
+            margin-bottom: -20px;
+          "
+        />
+        <img
+          src="http://app-grupometrocal.com/development/api/images/image/metrocal_sello.webp"
+          style="
+            width: 150px;
+            height: 150px;
+            object-fit: contain;
+            position: absolute;
+            right: 5%;
+            top: 15%;
+            z-index: 10;
+          "
+        />
+        <p
+          style="
+            border-top: 1px solid #333;
+            text-align: center;
+            width: 40%;
+            font-weight: 600;
+            z-index: 1;
+          "
+        >
+          Ing. Fredman A. Méndez M.
+        </p>
+        <span> Director Ténico </span>
+        <span> Nulo sin sello y firma </span>
+        <br />
+        <br />
+        <span style="width: fit-content; border-bottom: 1px dashed #333"
+          >Fin del certificado</span
+        >
+        <p></p>
+      </div>
+    </main>
+  </body>
+</html>

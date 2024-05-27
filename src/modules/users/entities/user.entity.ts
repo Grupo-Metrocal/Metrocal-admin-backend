@@ -9,7 +9,8 @@ import {
 } from 'typeorm'
 import { Role } from 'src/modules/roles/entities/role.entity'
 import { QuoteRequest } from 'src/modules/quotes/entities/quote-request.entity'
-import { Quote } from 'src/modules/quotes/entities/quote.entity'
+import { Activity } from 'src/modules/activities/entities/activities.entity'
+import { Notifications } from 'src/modules/notifications/entities/notification.entity'
 
 @Entity('users')
 export class User {
@@ -26,7 +27,10 @@ export class User {
   email: string
 
   @Column({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP' })
-  createdAt: Date
+  created_at: Date
+
+  @Column({ type: 'varchar', nullable: true })
+  imageURL: string
 
   @ManyToMany(() => Role, (role) => role.users)
   @JoinTable()
@@ -35,6 +39,12 @@ export class User {
   @OneToMany(() => QuoteRequest, (quoteRequest) => quoteRequest.approved_by)
   quote_requests: QuoteRequest[]
 
-  @ManyToOne(() => Quote, (quote) => quote.workers)
-  quotes: Quote[]
+  @ManyToMany(() => Activity, (activity) => activity.team_members)
+  activities: Activity[]
+
+  @OneToMany(() => Notifications, (notifications) => notifications.user)
+  notifications: Notifications[]
+
+  @Column({ type: 'varchar', nullable: true })
+  notification_token: string
 }

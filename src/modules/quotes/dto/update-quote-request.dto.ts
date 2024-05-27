@@ -19,6 +19,9 @@ export class UpdateQuoteRequestDto {
   price?: number
 
   @ApiProperty()
+  extras?: number
+
+  @ApiProperty()
   @IsNumber()
   general_discount?: number
 
@@ -28,4 +31,10 @@ export class UpdateQuoteRequestDto {
   @ApiProperty()
   @IsNotEmpty()
   authorized_token: string
+
+  @ApiProperty()
+  rejected_comment?: string
+
+  @ApiProperty()
+  rejected_options?: string[]
 }
