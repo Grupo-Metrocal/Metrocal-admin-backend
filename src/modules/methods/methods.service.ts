@@ -23,6 +23,7 @@ import { NI_MCIT_D_01 } from './entities/NI_MCIT_D_01/NI_MCIT_D_01.entity'
 import { PatternsService } from '../patterns/patterns.service'
 import { NI_MCIT_T_01 } from './entities/NI_MCIT_T_01/NI_MCIT_T_01.entity'
 import { NI_MCIT_M_01 } from './entities/NI_MCIT_M_01/NI_MCIT_M_01.entity'
+import { NI_MCIT_B_01 } from './entities/NI_MCIT_B_01/NI_MCIT_B_01.entity'
 
 import { NI_MCIT_P_01Service } from './ni-mcit-p-01.service'
 import { NI_MCIT_T_01Service } from './ni-mcit-t-01.service'
@@ -30,6 +31,8 @@ import { MailService } from '../mail/mail.service'
 import { NI_MCIT_D_01Service } from './ni-mcit-d-01.service'
 import { NI_MCIT_D_02Service } from './ni-mcit-d-02.service'
 import { NI_MCIT_T_03 } from './entities/NI_MCIT_T_03/NI_MCIT_T_03.entity'
+import { NI_MCIT_T_03Service } from './ni-mcit-t-03.service'
+import { NI_MCIT_B_01Service } from './ni-mcit-b-01.service'
 
 @Injectable()
 export class MethodsService {
@@ -51,6 +54,8 @@ export class MethodsService {
     private readonly NI_MCIT_M_01Repository: Repository<NI_MCIT_M_01>,
     @InjectRepository(NI_MCIT_T_03)
     private readonly NI_MCIT_T_03Repository: Repository<NI_MCIT_T_03>,
+    @InjectRepository(NI_MCIT_B_01)
+    private readonly NI_MCIT_B_01Repository: Repository<NI_MCIT_B_01>,
 
     @Inject(forwardRef(() => ActivitiesService))
     private readonly activitiesService: ActivitiesService,
@@ -65,6 +70,8 @@ export class MethodsService {
     private readonly NI_MCIT_T_01Services: NI_MCIT_T_01Service,
     private readonly NI_MCIT_D_01Services: NI_MCIT_D_01Service,
     private readonly NI_MCIT_D_02Services: NI_MCIT_D_02Service,
+    private readonly NI_MCIT_T_03Services: NI_MCIT_T_03Service,
+    private readonly NI_MCIT_B_01Services: NI_MCIT_B_01Service,
   ) {}
 
   async createMethod(createMethod: CreateMethodDto) {
