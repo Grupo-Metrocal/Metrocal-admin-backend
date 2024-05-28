@@ -164,4 +164,17 @@ export class QuotesController {
   ) {
     return await this.quotesService.reviewEquipment(id, review)
   }
+
+  @Get('request/client/:id/all/:page/:limit')
+  async getAllQuoteRequestByClientId(
+    @Param('id') id: number,
+    @Param('page') page: number,
+    @Param('limit') limit: number,
+  ) {
+    return await this.quotesService.getAllQuoteRequestByClientId(
+      id,
+      page,
+      limit,
+    )
+  }
 }
