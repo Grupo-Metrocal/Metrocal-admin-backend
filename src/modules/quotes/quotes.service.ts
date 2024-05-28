@@ -889,4 +889,51 @@ export class QuotesService {
       return handleInternalServerError(error.message)
     }
   }
+
+  async getAllQuoteRequestByClientId(id: number, page: number, limit: number) {
+    try {
+      const quotes = await this.quoteRequestRepository.find({
+        where: { client: { id } },
+        relations: ['equipment_quote_request', 'client', 'activity'],
+        skip: (page - 1) * limit,
+        take: limit,
+        order: { created_at: 'DESC' },
+      })
+
+      const pageQuotes = quotes.map((quote) => {
+        return {
+          id: quote.id,
+          total_price: quote.price,
+          tax: quote.tax,
+          no: quote.no,
+          created_at: quote.created_at,
+          extras: quote.extras,
+          activity_id: quote.activity?.id,
+        }
+      })
+
+      const totalRequest = await this.quoteRequestRepository.find({
+        where: { client: { id } },
+      })
+
+      const totalInvoice = totalRequest.reduce(
+        (acc, quote) => acc + quote.price,
+        0,
+      )
+
+      const quoteRejected = totalRequest.filter(
+        (quote) => quote.status === 'rejected',
+      )
+
+      const data = {
+        totalInvoice,
+        quoteRejected: quoteRejected.length,
+        paginationDataQuotes: pageQuotes,
+      }
+
+      return handlePaginate(data, totalRequest.length, limit, page)
+    } catch (error) {
+      return handleInternalServerError(error.message)
+    }
+  }
 }
