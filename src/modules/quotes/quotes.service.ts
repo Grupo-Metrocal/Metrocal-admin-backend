@@ -894,7 +894,12 @@ export class QuotesService {
     try {
       const quotes = await this.quoteRequestRepository.find({
         where: { client: { id } },
-        relations: ['equipment_quote_request', 'client', 'activity'],
+        relations: [
+          'equipment_quote_request',
+          'client',
+          'activity',
+          'approved_by',
+        ],
         skip: (page - 1) * limit,
         take: limit,
         order: { created_at: 'DESC' },
@@ -904,10 +909,10 @@ export class QuotesService {
         return {
           id: quote.id,
           total_price: quote.price,
-          tax: quote.tax,
+          approved_by: quote.approved_by.username,
           no: quote.no,
           created_at: quote.created_at,
-          extras: quote.extras,
+          status: quote.status,
           activity_id: quote.activity?.id,
         }
       })
