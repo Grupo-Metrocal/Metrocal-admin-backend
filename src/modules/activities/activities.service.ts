@@ -917,12 +917,8 @@ export class ActivitiesService {
       let previousMonthIncome = 0
 
       for (const activity of response) {
-        if (
-          activity.quote_request.created_at.getMonth() === new Date().getMonth()
-        ) {
+        if (activity.created_at.getMonth() === new Date().getMonth()) {
           currentMonthIncome += activity.quote_request.price
-          console.log(activity.quote_request.created_at)
-          console.log({ currentMonthIncome })
         }
 
         if (
@@ -930,7 +926,6 @@ export class ActivitiesService {
           new Date().getMonth() - 1
         ) {
           previousMonthIncome += activity.quote_request.price
-          console.log({ previousMonthIncome })
         }
 
         for (const equipment of activity.quote_request
