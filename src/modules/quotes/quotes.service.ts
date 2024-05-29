@@ -1,6 +1,13 @@
 import { Inject, Injectable, forwardRef } from '@nestjs/common'
 import { InjectRepository } from '@nestjs/typeorm'
-import { Repository, DataSource, In, IsNull, Not } from 'typeorm'
+import {
+  Repository,
+  DataSource,
+  In,
+  IsNull,
+  Not,
+  MoreThanOrEqual,
+} from 'typeorm'
 import { EquipmentQuoteRequest } from './entities/equipment-quote-request.entity'
 import { QuoteRequest } from './entities/quote-request.entity'
 import { QuoteRequestDto } from './dto/quote-request.dto'
@@ -942,13 +949,52 @@ export class QuotesService {
     }
   }
 
-  async getStatisticsAcitivities() {
+  async getFluctuationStatistic() {
     try {
+      const lastMonths = 5
+      const dateLimit = new Date()
+      dateLimit.setMonth(dateLimit.getMonth() - lastMonths)
+
       const quotes = await this.quoteRequestRepository.find({
-        where: [{ status: 'rejected' }, { status: 'done' }],
+        where: [
+          {
+            status: 'rejected',
+            created_at: MoreThanOrEqual(dateLimit),
+          },
+          {
+            status: 'done',
+            created_at: MoreThanOrEqual(dateLimit),
+          },
+        ],
       })
 
-      const totalQuotes = quotes.length
+      const monthlyRevenue = {}
+
+      quotes.forEach((quote) => {
+        const month = quote.created_at.getMonth() + 1
+        const year = quote.created_at.getFullYear()
+        const key = `${year}-${month}`
+
+        if (!monthlyRevenue[key]) {
+          monthlyRevenue[key] = {
+            count: 0,
+            totalRevenue: 0,
+          }
+        }
+
+        monthlyRevenue[key].count += 1
+        monthlyRevenue[key].totalRevenue += quote.price || 0
+      })
+
+      const results = Object.keys(monthlyRevenue).map((key) => {
+        return {
+          month: key,
+          count: monthlyRevenue[key].count,
+          totalRevenue: monthlyRevenue[key].totalRevenue,
+        }
+      })
+
+      return handleOK(results)
     } catch (error) {
       return handleInternalServerError(error.message)
     }
