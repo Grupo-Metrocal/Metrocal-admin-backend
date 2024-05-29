@@ -177,4 +177,9 @@ export class QuotesController {
       limit,
     )
   }
+
+  @Get('get-fluctuation-statistic')
+  async getFluctuationStatistic() {
+    return await this.quotesService.getFluctuationStatistic()
+  }
 }
