@@ -941,4 +941,16 @@ export class QuotesService {
       return handleInternalServerError(error.message)
     }
   }
+
+  async getStatisticsAcitivities() {
+    try {
+      const quotes = await this.quoteRequestRepository.find({
+        where: [{ status: 'rejected' }, { status: 'done' }],
+      })
+
+      const totalQuotes = quotes.length
+    } catch (error) {
+      return handleInternalServerError(error.message)
+    }
+  }
 }

@@ -1,7 +1,7 @@
 import { Injectable, Inject, forwardRef } from '@nestjs/common'
 import { InjectRepository } from '@nestjs/typeorm'
 import { Activity } from './entities/activities.entity'
-import { Repository, DataSource, IsNull } from 'typeorm'
+import { Repository, DataSource, IsNull, Between } from 'typeorm'
 import { QuotesService } from '../quotes/quotes.service'
 import {
   handleBadrequest,
@@ -884,8 +884,24 @@ export class ActivitiesService {
 
   async getStatisticsAcitivities() {
     try {
+      // Obtén el primer día del mes pasado
+      const startOfLastMonth = new Date()
+      startOfLastMonth.setMonth(startOfLastMonth.getMonth() - 1)
+      startOfLastMonth.setDate(1)
+      startOfLastMonth.setHours(0, 0, 0, 0)
+
+      // Obtén el último día del mes actual
+      const endOfCurrentMonth = new Date()
+      endOfCurrentMonth.setMonth(endOfCurrentMonth.getMonth() + 1)
+      endOfCurrentMonth.setDate(0)
+      endOfCurrentMonth.setHours(23, 59, 59, 999)
+
       const response = await this.activityRepository.find({
-        where: { status: 'done', reviewed: true },
+        where: {
+          status: 'done',
+          reviewed: true,
+          created_at: Between(startOfLastMonth, endOfCurrentMonth),
+        },
         relations: [
           'quote_request',
           'quote_request.equipment_quote_request',
@@ -902,9 +918,11 @@ export class ActivitiesService {
 
       for (const activity of response) {
         if (
-          activity.quote_request.created_at.getMonth() !== new Date().getMonth()
+          activity.quote_request.created_at.getMonth() === new Date().getMonth()
         ) {
           currentMonthIncome += activity.quote_request.price
+          console.log(activity.quote_request.created_at)
+          console.log({ currentMonthIncome })
         }
 
         if (
@@ -912,6 +930,7 @@ export class ActivitiesService {
           new Date().getMonth() - 1
         ) {
           previousMonthIncome += activity.quote_request.price
+          console.log({ previousMonthIncome })
         }
 
         for (const equipment of activity.quote_request
