@@ -19,6 +19,11 @@ export class ClientsController {
     return await this.clientsService.createClient(client)
   }
 
+  @Get()
+  async findAll() {
+    return await this.clientsService.findAll()
+  }
+
   @Get(':id')
   async findById(@Param('id') id: number) {
     if (!id) return handleBadrequest(new Error('El id es requerido'))
