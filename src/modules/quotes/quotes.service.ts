@@ -916,7 +916,7 @@ export class QuotesService {
         return {
           id: quote.id,
           total_price: quote.price,
-          approved_by: quote.approved_by.username,
+          approved_by: quote?.approved_by?.username || 'Sin aprobación',
           no: quote.no,
           created_at: quote.created_at,
           status: quote.status,
