@@ -8,7 +8,7 @@ export class EquipmentInformationNI_MCIT_T_03 {
 
   @OneToMany(
     () => NI_MCIT_T_03,
-    (NI_MCIT_P_03) => NI_MCIT_P_03.equipment_information,
+    (NI_MCIT_T_03) => NI_MCIT_T_03.equipment_information,
     {
       onDelete: 'CASCADE',
       onUpdate: 'CASCADE',
