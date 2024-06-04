@@ -27,7 +27,7 @@ import { generateServiceCodeToMethod } from 'src/utils/codeGenerator'
 import { formatDate } from 'src/utils/formatDate'
 
 @Injectable()
-export class NI_MCIT_T_0TService {
+export class NI_MCIT_T_05Service {
   constructor(
     @InjectRepository(NI_MCIT_T_05)
     private NI_MCIT_T_05Repository: Repository<NI_MCIT_T_05>,
