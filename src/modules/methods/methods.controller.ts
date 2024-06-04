@@ -55,6 +55,7 @@ import { LinearityTestNI_MCIT_B_01Dto } from './dto/NI_MCIT_B_01/b01linearity_te
 import { EnviromentalConditionsNI_MCIT_B_01Dto } from './dto/NI_MCIT_B_01/b01enviromental_condition.dto'
 import { UnitOfMeasurementNI_MCIT_B_01Dto } from './dto/NI_MCIT_B_01/b01unitOfMeasurement.dto'
 import { NI_MCIT_T_05Service } from './ni-mcit-t-05.service'
+import { EquipmentInformationT05Dto } from './dto/NI_MCIT_T_05/equipment-information.dto'
 
 @ApiTags('methods')
 @Controller('methods')
@@ -729,6 +730,17 @@ export class MethodsController {
   ) {
     return await this.ni_mcit_t_05Service.addCalibrationLocation(
       location,
+      methodId,
+    )
+  }
+
+  @Post('ni-mcit-t-05/equipment-information/:methodId')
+  async createNI_MCIT_T_05EquipmentInformation(
+    @Body() equipment: EquipmentInformationT05Dto,
+    @Param('methodId') methodId: number,
+  ) {
+    return await this.ni_mcit_t_05Service.equipmentInformation(
+      equipment,
       methodId,
     )
   }
