@@ -33,6 +33,8 @@ import { NI_MCIT_D_02Service } from './ni-mcit-d-02.service'
 import { NI_MCIT_T_03 } from './entities/NI_MCIT_T_03/NI_MCIT_T_03.entity'
 import { NI_MCIT_T_03Service } from './ni-mcit-t-03.service'
 import { NI_MCIT_B_01Service } from './ni-mcit-b-01.service'
+import { NI_MCIT_T_05Service } from './ni-mcit-t-05.service'
+import { NI_MCIT_T_05 } from './entities/NI_MCIT_T_05/NI_MCIT_T_05.entity'
 
 @Injectable()
 export class MethodsService {
@@ -56,6 +58,8 @@ export class MethodsService {
     private readonly NI_MCIT_T_03Repository: Repository<NI_MCIT_T_03>,
     @InjectRepository(NI_MCIT_B_01)
     private readonly NI_MCIT_B_01Repository: Repository<NI_MCIT_B_01>,
+    @InjectRepository(NI_MCIT_T_05)
+    private readonly NI_MCIT_T_05Repository: Repository<NI_MCIT_T_05>,
 
     @Inject(forwardRef(() => ActivitiesService))
     private readonly activitiesService: ActivitiesService,
@@ -72,6 +76,7 @@ export class MethodsService {
     private readonly NI_MCIT_D_02Services: NI_MCIT_D_02Service,
     private readonly NI_MCIT_T_03Services: NI_MCIT_T_03Service,
     private readonly NI_MCIT_B_01Services: NI_MCIT_B_01Service,
+    private readonly NI_MCIT_T_05Services: NI_MCIT_T_05Service,
   ) {}
 
   async createMethod(createMethod: CreateMethodDto) {
