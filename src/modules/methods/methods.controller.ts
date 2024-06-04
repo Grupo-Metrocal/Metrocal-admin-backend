@@ -54,6 +54,7 @@ import { RepeatabilityTestNI_MCIT_B_01Dto } from './dto/NI_MCIT_B_01/b01repeatab
 import { LinearityTestNI_MCIT_B_01Dto } from './dto/NI_MCIT_B_01/b01linearity_test.dto'
 import { EnviromentalConditionsNI_MCIT_B_01Dto } from './dto/NI_MCIT_B_01/b01enviromental_condition.dto'
 import { UnitOfMeasurementNI_MCIT_B_01Dto } from './dto/NI_MCIT_B_01/b01unitOfMeasurement.dto'
+import { NI_MCIT_T_05Service } from './ni-mcit-t-05.service'
 
 @ApiTags('methods')
 @Controller('methods')
@@ -67,6 +68,7 @@ export class MethodsController {
     private readonly ni_mcit_m_01Service: NI_MCIT_M_01Service,
     private readonly ni_mcit_b_01Service: NI_MCIT_B_01Service,
     private readonly ni_mcit_t_03Service: NI_MCIT_T_03Service,
+    private readonly ni_mcit_t_05Service: NI_MCIT_T_05Service,
   ) {}
 
   @Get()
@@ -718,5 +720,16 @@ export class MethodsController {
   @Get('ni-mcit-t-03/equipment/:id')
   async getEquipmentT_03ById(@Param('id') id: number) {
     return await this.ni_mcit_t_03Service.getMehotdById(id)
+  }
+
+  @Post('ni-mcit-t-05/calibration-location/:methodId')
+  async createNI_MCIT_T_05CalibrationLocation(
+    @Body() { location }: AddLocationDto,
+    @Param('methodId') methodId: number,
+  ) {
+    return await this.ni_mcit_t_05Service.addCalibrationLocation(
+      location,
+      methodId,
+    )
   }
 }
