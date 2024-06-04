@@ -89,4 +89,42 @@ export class NI_MCIT_T_05Service {
       return handleInternalServerError(error.message)
     }
   }
+
+  async equipmentInformation(
+    equipment: EquipmentInformationT05Dto,
+    methodId: number,
+  ) {
+    try {
+      const method = await this.NI_MCIT_T_05Repository.findOne({
+        where: { id: methodId },
+        relations: ['equipment_information'],
+      })
+
+      if (!method) {
+        return handleInternalServerError('El método no existe')
+      }
+
+      const existingEquipment = method.equipment_information
+
+      if (existingEquipment) {
+        this.equipmentInformationNI_MCIT_T_05Repository.merge(
+          existingEquipment,
+          equipment,
+        )
+      } else {
+        const newEquipment =
+          this.equipmentInformationNI_MCIT_T_05Repository.create(equipment)
+        method.equipment_information = newEquipment
+      }
+
+      await this.dataSource.transaction(async (manager) => {
+        await manager.save(method.equipment_information)
+        await manager.save(method)
+      })
+
+      return handleOK(method.equipment_information)
+    } catch (error: any) {
+      return handleInternalServerError(error.message)
+    }
+  }
 }
