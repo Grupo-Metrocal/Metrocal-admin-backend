@@ -9,10 +9,4 @@ export class DescriptionPatternT05Dto {
 
   @ApiProperty()
   creditable?: boolean
-
-  @ApiProperty()
-  no_points?: number
-
-  @ApiProperty()
-  no_readings?: number
 }

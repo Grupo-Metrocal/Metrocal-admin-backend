@@ -24,10 +24,4 @@ export class DescriptionPatternNI_MCIT_T_05 {
 
   @Column({ nullable: true })
   creditable?: boolean
-
-  @Column({ nullable: true })
-  no_points?: number
-
-  @Column({ nullable: true })
-  no_readings?: number
 }

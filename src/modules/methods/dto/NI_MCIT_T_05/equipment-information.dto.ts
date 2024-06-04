@@ -27,4 +27,10 @@ export class EquipmentInformationT05Dto {
 
   @ApiProperty()
   resolution?: number
+
+  @ApiProperty()
+  no_points?: number
+
+  @ApiProperty()
+  no_readings?: number
 }

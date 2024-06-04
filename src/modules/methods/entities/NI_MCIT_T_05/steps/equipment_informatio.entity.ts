@@ -45,4 +45,10 @@ export class EquipmentInformationNI_MCIT_T_05 {
 
   @Column({ type: 'float', nullable: true })
   resolution?: number
+
+  @Column({ nullable: true, type: 'int' })
+  no_points?: number
+
+  @Column({ nullable: true, type: 'int' })
+  no_readings?: number
 }
