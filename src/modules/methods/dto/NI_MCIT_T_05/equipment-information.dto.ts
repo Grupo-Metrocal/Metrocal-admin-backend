@@ -26,6 +26,9 @@ export class EquipmentInformationT05Dto {
   code?: string
 
   @ApiProperty()
+  type_thermometer?: string
+
+  @ApiProperty()
   resolution?: number
 
   @ApiProperty()
