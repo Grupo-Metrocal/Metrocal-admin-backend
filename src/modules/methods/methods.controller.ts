@@ -56,6 +56,7 @@ import { EnviromentalConditionsNI_MCIT_B_01Dto } from './dto/NI_MCIT_B_01/b01env
 import { UnitOfMeasurementNI_MCIT_B_01Dto } from './dto/NI_MCIT_B_01/b01unitOfMeasurement.dto'
 import { NI_MCIT_T_05Service } from './ni-mcit-t-05.service'
 import { EquipmentInformationT05Dto } from './dto/NI_MCIT_T_05/equipment-information.dto'
+import { CalibrationResultsT05Dto } from './dto/NI_MCIT_T_05/calibraion_results.dto'
 
 @ApiTags('methods')
 @Controller('methods')
@@ -741,6 +742,17 @@ export class MethodsController {
   ) {
     return await this.ni_mcit_t_05Service.equipmentInformation(
       equipment,
+      methodId,
+    )
+  }
+
+  @Post('ni-mcit-t-05/calibration-results/:methodId')
+  async createNI_MCIT_T_05CalibrationResults(
+    @Body() calibrations: CalibrationResultsT05Dto,
+    @Param('methodId') methodId: number,
+  ) {
+    return await this.ni_mcit_t_05Service.calibrationResults(
+      calibrations,
       methodId,
     )
   }
