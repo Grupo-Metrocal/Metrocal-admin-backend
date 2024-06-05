@@ -22,10 +22,10 @@ export class CalibrationResultsNI_MCIT_T_05 {
 
 export interface IResults_NI_MCIT_T_05 {
   temperature: number
-  point_number: number
 
   calibrations: {
+    point_number: number
     initial: number
     final: number
-  }
+  }[]
 }
