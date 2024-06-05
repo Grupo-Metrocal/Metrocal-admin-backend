@@ -768,4 +768,17 @@ export class MethodsController {
       methodId,
     )
   }
+
+  @Post('ni-mcit-t-05/description-pattern/:methodId/:activityId')
+  async createNI_MCIT_T_05DescriptionPattern(
+    @Body() descriptionPattern: DescriptionPatternT_03Dto,
+    @Param('methodId') methodId: number,
+    @Param('activityId') activityId: number,
+  ) {
+    return await this.ni_mcit_t_05Service.descriptionPattern(
+      descriptionPattern,
+      methodId,
+      activityId,
+    )
+  }
 }
