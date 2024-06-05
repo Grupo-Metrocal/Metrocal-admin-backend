@@ -781,4 +781,15 @@ export class MethodsController {
       activityId,
     )
   }
+
+  @Get('ni-mcit-t-05/certificates/activity/:activityId/method/:methodId')
+  async getNI_MCIT_T_05Certificate(
+    @Param('activityId') activityId: number,
+    @Param('methodId') methodId: number,
+  ) {
+    return await this.ni_mcit_t_05Service.generateCertificate({
+      activityID: activityId,
+      methodID: methodId,
+    })
+  }
 }
