@@ -128,6 +128,46 @@ export class NI_MCIT_T_05Service {
     }
   }
 
+  async environmentalConditions(
+    environmentalConditions: EnvironmentalConditionsT05Dto,
+    methodId: number,
+  ) {
+    const method = await this.NI_MCIT_T_05Repository.findOne({
+      where: { id: methodId },
+      relations: ['environmental_conditions'],
+    })
+
+    if (!method) {
+      return handleInternalServerError('El método no existe')
+    }
+
+    const existingEnvironmentalConditions = method.environmental_conditions
+
+    if (existingEnvironmentalConditions) {
+      this.environmentalConditionsNI_MCIT_T_05Repository.merge(
+        existingEnvironmentalConditions,
+        environmentalConditions,
+      )
+    } else {
+      const newEnvironmentalConditions =
+        this.environmentalConditionsNI_MCIT_T_05Repository.create(
+          environmentalConditions,
+        )
+      method.environmental_conditions = newEnvironmentalConditions
+    }
+
+    try {
+      await this.dataSource.transaction(async (manager) => {
+        await manager.save(method.environmental_conditions)
+        await manager.save(method)
+      })
+
+      return handleOK(method)
+    } catch (error) {
+      return handleInternalServerError(error.message)
+    }
+  }
+
   async calibrationResults(
     calibrationResults: CalibrationResultsT05Dto,
     methodId: number,
