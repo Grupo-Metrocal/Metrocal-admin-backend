@@ -279,4 +279,37 @@ export class NI_MCIT_T_05Service {
       return handleInternalServerError(error.message)
     }
   }
+
+  async autoSaveExcel(filePath: string) {
+    return new Promise((resolve, reject) => {
+      // save excel file from powershell
+
+      const powershellCommand = `
+      $Excel = New-Object -ComObject Excel.Application
+      $Excel.Visible = $false
+      $Excel.DisplayAlerts = $false
+      $Workbook = $Excel.Workbooks.Open('${filePath}')
+      $Workbook.Save()
+      $Workbook.Close()
+      $Excel.Quit()
+
+      `
+
+      exec(
+        powershellCommand,
+        { shell: 'powershell.exe' },
+        (error, stdout, stderr) => {
+          if (error) {
+            console.error(`Error al ejecutar el comando: ${error.message}`)
+            reject(error)
+          } else if (stderr) {
+            console.error(`Error en la salida estándar: ${stderr}`)
+            reject(new Error(stderr))
+          } else {
+            resolve(stdout)
+          }
+        },
+      )
+    })
+  }
 }
