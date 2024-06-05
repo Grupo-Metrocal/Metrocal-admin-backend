@@ -312,4 +312,143 @@ export class NI_MCIT_T_05Service {
       )
     })
   }
+
+  async generateCertificate({
+    activityID,
+    methodID,
+  }: {
+    activityID: number
+    methodID: number
+  }) {
+    const method = await this.NI_MCIT_T_05Repository.findOne({
+      where: { id: methodID },
+      relations: [
+        'equipment_information',
+        'environmental_conditions',
+        'description_pattern',
+        'calibration_results',
+      ],
+    })
+
+    if (!method) {
+      return handleInternalServerError('El método no existe')
+    }
+
+    const {
+      equipment_information,
+      environmental_conditions,
+      description_pattern,
+      calibration_results,
+    } = method
+
+    if (
+      !equipment_information ||
+      !environmental_conditions ||
+      !description_pattern ||
+      !calibration_results
+    ) {
+      return handleInternalServerError(
+        'El método no tiene la información necesaria para generar el certificado',
+      )
+    }
+
+    try {
+      const filePath = path.join(
+        __dirname,
+        '../mail/templates/excels/ni_mcit_t_05.xlsx',
+      )
+
+      if (fs.existsSync(method.certificate_url)) {
+        fs.unlinkSync(method.certificate_url)
+      }
+
+      fs.copyFileSync(filePath, method.certificate_url)
+
+      const workbook = await XlsxPopulate.fromFileAsync(method.certificate_url)
+
+      const sheet = workbook.sheet('DATOS')
+
+      // define unit
+      sheet.cell('S5').value(equipment_information.unit === 'ºC' ? 1 : 2)
+      sheet
+        .cell('V5')
+        .value(
+          equipment_information.type_thermometer === 'mercurio'
+            ? 1
+            : equipment_information.type_thermometer === 'Alcohol, etanol'
+              ? 2
+              : equipment_information.type_thermometer === 'Tolueno'
+                ? 3
+                : equipment_information.type_thermometer === 'pentano'
+                  ? 4
+                  : 1,
+        )
+      sheet.cell('O14').value(equipment_information.no_points)
+      sheet.cell('O15').value(equipment_information.no_readings)
+      sheet.cell('I14').value(equipment_information.resolution)
+      sheet
+        .cell('I13')
+        .value(
+          `${equipment_information.temperature_min} a ${equipment_information.temperature_max}`,
+        )
+
+      // define environmental conditions
+
+      for (let i = 0; i < environmental_conditions.points.length; i++) {
+        const point = environmental_conditions.points[i]
+        let row = 6 + (point.point_number - 1) * 2
+
+        if (point.point_number === -1) {
+          sheet.cell('H40').value(point.temperature.initial)
+          sheet.cell('I40').value(point.temperature.final)
+
+          sheet.cell('H41').value(point.humidity.initial)
+          sheet.cell('I41').value(point.humidity.final)
+
+          continue
+        }
+
+        point.point_number > 1 && (row += 2)
+
+        sheet.cell(40, row).value(point.temperature.initial)
+        sheet.cell(40, row + 1).value(point.temperature.final)
+
+        sheet.cell(41, row).value(point.humidity.initial)
+        sheet.cell(41, row + 1).value(point.humidity.final)
+      }
+
+      // define calibration results
+      for (let i = 0; i < calibration_results.results.length; i++) {
+        const result = calibration_results.results[i]
+
+        sheet.cell(`D${29 + i}`).value(result.temperature)
+
+        for (let j = 0; j < result.calibrations.length; j++) {
+          const calibration = result.calibrations[j]
+
+          if (calibration.point_number === -1) {
+            sheet.cell(`H${29 + i}`).value(calibration.initial)
+            sheet.cell(`I${29 + i}`).value(calibration.final)
+            continue
+          }
+
+          let row = 6 + (calibration.point_number - 1) * 2
+          const col = 29 + i
+
+          calibration.point_number > 1 && (row += 2)
+
+          sheet.cell(col, row).value(calibration.initial)
+          sheet.cell(col, row + 1).value(calibration.final)
+        }
+      }
+
+      workbook.toFileAsync(method.certificate_url)
+      await this.autoSaveExcel(method.certificate_url)
+
+      return handleOK({})
+    } catch (error) {
+      console.error(error)
+      return handleInternalServerError(error.message)
+    }
+  }
 }
