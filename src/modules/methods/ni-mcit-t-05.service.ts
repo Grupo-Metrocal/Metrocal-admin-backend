@@ -127,4 +127,42 @@ export class NI_MCIT_T_05Service {
       return handleInternalServerError(error.message)
     }
   }
+
+  async calibrationResults(
+    calibrationResults: CalibrationResultsT05Dto,
+    methodId: number,
+  ) {
+    const method = await this.NI_MCIT_T_05Repository.findOne({
+      where: { id: methodId },
+      relations: ['calibration_results'],
+    })
+
+    if (!method) {
+      return handleInternalServerError('El método no existe')
+    }
+
+    const existingCalibrationResults = method.calibration_results
+
+    if (existingCalibrationResults) {
+      this.calibrationResultsNI_MCIT_T_05Repository.merge(
+        existingCalibrationResults,
+        calibrationResults,
+      )
+    } else {
+      const newCalibrationResults =
+        this.calibrationResultsNI_MCIT_T_05Repository.create(calibrationResults)
+      method.calibration_results = newCalibrationResults
+    }
+
+    try {
+      await this.dataSource.transaction(async (manager) => {
+        await manager.save(method.calibration_results)
+        await manager.save(method)
+      })
+
+      return handleOK(method)
+    } catch (error) {
+      return handleInternalServerError(error.message)
+    }
+  }
 }
