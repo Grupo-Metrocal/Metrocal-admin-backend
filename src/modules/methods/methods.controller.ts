@@ -803,4 +803,9 @@ export class MethodsController {
       methodId,
     )
   }
+
+  @Get('ni-mcit-t-05/equipment/:id')
+  async getEquipmentT_05ById(@Param('id') id: number) {
+    return await this.ni_mcit_t_05Service.getMehotdById(id)
+  }
 }
