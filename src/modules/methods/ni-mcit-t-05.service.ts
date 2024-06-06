@@ -369,20 +369,31 @@ export class NI_MCIT_T_05Service {
       const sheet = workbook.sheet('DATOS')
 
       // define unit
-      sheet.cell('S5').value(equipment_information.unit === 'ºC' ? 1 : 2)
-      sheet
-        .cell('V5')
-        .value(
-          equipment_information.type_thermometer === 'mercurio'
-            ? 1
-            : equipment_information.type_thermometer === 'Alcohol, etanol'
-              ? 2
-              : equipment_information.type_thermometer === 'Tolueno'
-                ? 3
-                : equipment_information.type_thermometer === 'pentano'
-                  ? 4
-                  : 1,
-        )
+      let unit: number
+
+      if (equipment_information.unit === '°C') {
+        unit = 1
+      } else if (equipment_information.unit === '°F') {
+        unit = 2
+      }
+
+      let type_thermometer: number
+
+      if (equipment_information.type_thermometer === 'mercurio') {
+        type_thermometer = 1
+      } else if (equipment_information.type_thermometer === 'Alcohol, etanol') {
+        type_thermometer = 2
+      } else if (equipment_information.type_thermometer === 'Tolueno') {
+        type_thermometer = 3
+      } else if (equipment_information.type_thermometer === 'pentano') {
+        type_thermometer = 4
+      } else {
+        type_thermometer = 1
+      }
+
+      sheet.cell('S5').value(unit)
+      sheet.cell('V5').value(type_thermometer)
+
       sheet.cell('O14').value(equipment_information.no_points)
       sheet.cell('O15').value(equipment_information.no_readings)
       sheet.cell('I14').value(equipment_information.resolution)
@@ -445,9 +456,158 @@ export class NI_MCIT_T_05Service {
       workbook.toFileAsync(method.certificate_url)
       await this.autoSaveExcel(method.certificate_url)
 
-      return handleOK({})
+      return await this.getCertificateResult(methodID, activityID)
     } catch (error) {
       console.error(error)
+      return handleInternalServerError(error.message)
+    }
+  }
+
+  async getCertificateResult(methodID: number, activityID: number) {
+    try {
+      const method = await this.NI_MCIT_T_05Repository.findOne({
+        where: { id: methodID },
+        relations: [
+          'equipment_information',
+          'environmental_conditions',
+          'description_pattern',
+          'calibration_results',
+        ],
+      })
+
+      if (!method) {
+        return handleInternalServerError('El método no existe')
+      }
+
+      const {
+        equipment_information,
+        environmental_conditions,
+        description_pattern,
+        calibration_results,
+      } = method
+
+      if (
+        !equipment_information ||
+        !environmental_conditions ||
+        !description_pattern ||
+        !calibration_results
+      ) {
+        return handleInternalServerError(
+          'El método no tiene la información necesaria para generar el certificado',
+        )
+      }
+
+      const dataActivity =
+        await this.activitiesService.getActivitiesByID(activityID)
+
+      if (!dataActivity.success) {
+        return handleInternalServerError('La actividad no existe')
+      }
+
+      const activity = dataActivity.data as Activity
+
+      const workbook = await XlsxPopulate.fromFileAsync(method.certificate_url)
+
+      const sheet = workbook.sheet('DA °C (5 ptos)')
+
+      let reference_temperature = []
+      let thermometer_indication = []
+      let correction = []
+      let uncertainty = []
+
+      for (
+        let i = 0;
+        i <= method.calibration_results.results[0].calibrations.length;
+        i++
+      ) {
+        const referenceTemperature = sheet.cell(`D${28 + i}`).value()
+        reference_temperature.push(
+          typeof referenceTemperature === 'number'
+            ? referenceTemperature.toFixed(2)
+            : referenceTemperature,
+        )
+
+        const thermometerIndication = sheet.cell(`F${28 + i}`).value()
+        thermometer_indication.push(
+          typeof thermometerIndication === 'number'
+            ? thermometerIndication.toFixed(2)
+            : thermometerIndication,
+        )
+
+        const correctionValue = sheet.cell(`L${28 + i}`).value()
+        correction.push(
+          typeof correctionValue === 'number'
+            ? correctionValue.toFixed(2)
+            : correctionValue,
+        )
+
+        const uncertaintyValue = sheet.cell(`R${28 + i}`).value()
+        uncertainty.push(
+          typeof uncertaintyValue === 'number'
+            ? uncertaintyValue.toFixed(2)
+            : uncertaintyValue,
+        )
+      }
+
+      const calibration_results_certificate = {
+        reference_temperature,
+        thermometer_indication,
+        correction,
+        uncertainty,
+      }
+
+      const digitalThermometer = await this.patternsService.findByCodeAndMethod(
+        method.description_pattern.pattern,
+        'NI-MCIT-T-05',
+      )
+
+      const hygrothermometer = await this.patternsService.findByCodeAndMethod(
+        'NI-MCPPT-05',
+        'NI-MCIT-T-05',
+      )
+
+      const oilBath = await this.patternsService.findByCodeAndMethod(
+        'NI-MCPT-38',
+        'NI-MCIT-T-05',
+      )
+
+      return handleOK({
+        calibration_results: calibration_results_certificate,
+        digitalThermometer: digitalThermometer.data,
+        hygrothermometer: hygrothermometer.data,
+        oilBath: oilBath.data,
+        equipment_information: {
+          certification_code: method.certificate_code,
+          service_code: generateServiceCodeToMethod(method.id),
+          certificate_issue_date: formatDate(new Date().toString()),
+          calibration_date: formatDate(activity.updated_at as any),
+          device: method.equipment_information.device,
+          maker: method.equipment_information.maker,
+          serial_number: method.equipment_information.serial_number,
+          measurement_range: `${method.equipment_information.temperature_min} ${method.equipment_information.unit} a ${method.equipment_information.temperature_max} ${method.equipment_information.unit}`,
+          model: method.equipment_information.model,
+          code: method.equipment_information.code,
+          applicant: activity.quote_request.client.company_name,
+          address: activity.quote_request.client.address,
+          calibration_location: method.calibration_location,
+        },
+        environmental_conditions: {
+          temperature: `Temperatura: ${sheet.cell('E46').value()} °C ± ${sheet.cell('G46').value()} °C`,
+          humidity: `Humedad: ${sheet.cell('E47').value()} % ± ${sheet.cell('G47').value()} %`,
+        },
+        client_email: activity.quote_request.client.email,
+        observations: `
+        ${method.description_pattern.observation}
+        Es responsabilidad del encargado del instrumento establecer la frecuencia del servicio de calibración.
+        La corrección corresponde al valor del patrón menos las indicación del equipo.
+        La indicación del patrón de referencia y del equipo corresponde al promedio de 4 mediciones.
+        Los resultados emitidos en este certificado corresponden únicamente al objeto calibrado y a las magnitudes
+        especificadas al momento de realizar el servicio.
+        Este certificado de calibración no puede ser reproducido parcialmente excepto en su totalidad, sin previa
+        aprobación escrita del laboratorio que lo emite.
+        `,
+      })
+    } catch (error) {
       return handleInternalServerError(error.message)
     }
   }
