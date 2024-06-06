@@ -463,6 +463,28 @@ export class NI_MCIT_T_05Service {
     }
   }
 
+  async getMehotdById(methodId: number) {
+    try {
+      const method = await this.NI_MCIT_T_05Repository.findOne({
+        where: { id: methodId },
+        relations: [
+          'equipment_information',
+          'environmental_conditions',
+          'description_pattern',
+          'calibration_results',
+        ],
+      })
+
+      if (!method) {
+        return handleInternalServerError('El método no existe')
+      }
+
+      return handleOK(method)
+    } catch (error) {
+      return handleInternalServerError(error.message)
+    }
+  }
+
   async getCertificateResult(methodID: number, activityID: number) {
     try {
       const method = await this.NI_MCIT_T_05Repository.findOne({
