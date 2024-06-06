@@ -385,7 +385,7 @@ export class NI_MCIT_T_05Service {
         type_thermometer = 2
       } else if (equipment_information.type_thermometer === 'Tolueno') {
         type_thermometer = 3
-      } else if (equipment_information.type_thermometer === 'pentano') {
+      } else if (equipment_information.type_thermometer === 'Pentano') {
         type_thermometer = 4
       } else {
         type_thermometer = 1
