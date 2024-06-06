@@ -599,13 +599,78 @@ export class NI_MCIT_T_05Service {
         observations: `
         ${method.description_pattern.observation}
         Es responsabilidad del encargado del instrumento establecer la frecuencia del servicio de calibración.
-        La corrección corresponde al valor del patrón menos las indicación del equipo.
-        La indicación del patrón de referencia y del equipo corresponde al promedio de 4 mediciones.
-        Los resultados emitidos en este certificado corresponden únicamente al objeto calibrado y a las magnitudes
-        especificadas al momento de realizar el servicio.
-        Este certificado de calibración no puede ser reproducido parcialmente excepto en su totalidad, sin previa
-        aprobación escrita del laboratorio que lo emite.
+        ${sheet.cell('A91').value()}
+        ${sheet.cell('A92').value()}
+        Los resultados emitidos en este certificado corresponden únicamente al objeto calibrado y a las magnitudes especificadas al momento de realizar el servicio.
+        Este certificado de calibración no debe ser reproducido sin la aprobación del laboratorio, excepto cuando se reproduce en su totalidad.
         `,
+      })
+    } catch (error) {
+      return handleInternalServerError(error.message)
+    }
+  }
+
+  async generatePDFCertificate(
+    activityID: number,
+    methodID: number,
+    generatePDF = false,
+  ) {
+    try {
+      const method = await this.NI_MCIT_T_05Repository.findOne({
+        where: { id: methodID },
+        relations: [
+          'equipment_information',
+          'environmental_conditions',
+          'calibration_results',
+          'description_pattern',
+        ],
+      })
+
+      if (!method) {
+        return handleInternalServerError('El método no existe')
+      }
+
+      let dataCertificate: any
+
+      if (!fs.existsSync(method.certificate_url) || generatePDF) {
+        dataCertificate = await this.generateCertificate({
+          activityID,
+          methodID,
+        })
+      } else {
+        dataCertificate = await this.getCertificateResult(methodID, activityID)
+      }
+
+      if (!dataCertificate.success) {
+        return dataCertificate
+      }
+
+      dataCertificate.data.calibration_results =
+        dataCertificate.data.calibration_results.reference_temperature.map(
+          (indication, index) => ({
+            reference_temperature: indication,
+            thermometer_indication:
+              dataCertificate.data.calibration_results.thermometer_indication[
+                index
+              ],
+            correction:
+              dataCertificate.data.calibration_results.correction[index],
+            uncertainty:
+              dataCertificate.data.calibration_results.uncertainty[index],
+          }),
+        )
+      const PDF = await this.pdfService.generateCertificatePdf(
+        '/certificates/t-05.hbs',
+        dataCertificate.data,
+      )
+
+      if (!PDF) {
+        return handleInternalServerError('Error al generar el PDF')
+      }
+
+      return handleOK({
+        pdf: PDF,
+        client_email: dataCertificate.data.client_email,
       })
     } catch (error) {
       return handleInternalServerError(error.message)
