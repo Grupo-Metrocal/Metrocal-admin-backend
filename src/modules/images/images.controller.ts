@@ -48,9 +48,7 @@ export class ImagesController {
     try {
       const filePath = path.join(process.env.DESTINATION_CLOUD, filename)
 
-      console.log(filePath)
       if (!fs.existsSync(filePath)) {
-        console.log('File not found')
         return res.status(404).send('File not found')
       }
 
@@ -78,7 +76,6 @@ export class ImagesController {
       const filePath = path.join(process.env.DESTINATION_CLOUD, filename)
 
       if (!fs.existsSync(filePath)) {
-        console.log('File not found')
         return res.status(404).send('File not found')
       }
 

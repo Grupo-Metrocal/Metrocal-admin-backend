@@ -430,7 +430,6 @@ export class MethodsService {
   }
 
   async killExcelProcess(excel_url: string) {
-    console.log('Killing excel process')
     return new Promise((resolve, reject) => {
       const command = `powershell.exe Get-Process Excel | Where-Object { $_.MainWindowTitle -like "*${excel_url.replace(/\\/g, '\\\\')}*" } | ForEach-Object { $_.Kill() }`
 
@@ -517,7 +516,6 @@ export class MethodsService {
 
       return handleOK('Email enviado')
     } catch (error) {
-      console.log(error)
       return handleInternalServerError(error.message)
     }
   }
