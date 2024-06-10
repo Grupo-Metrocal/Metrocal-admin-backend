@@ -7,6 +7,7 @@ import {
   IsNull,
   Not,
   MoreThanOrEqual,
+  ILike,
 } from 'typeorm'
 import { EquipmentQuoteRequest } from './entities/equipment-quote-request.entity'
 import { QuoteRequest } from './entities/quote-request.entity'
@@ -897,10 +898,15 @@ export class QuotesService {
     }
   }
 
-  async getAllQuoteRequestByClientId(id: number, page: number, limit: number) {
+  async getAllQuoteRequestByClientId(
+    id: number,
+    page: number,
+    limit: number,
+    filterNo?: string,
+  ) {
     try {
       const quotes = await this.quoteRequestRepository.find({
-        where: { client: { id } },
+        where: { client: { id }, no: ILike(`%${filterNo}%`) },
         relations: [
           'equipment_quote_request',
           'client',
@@ -911,6 +917,8 @@ export class QuotesService {
         take: limit,
         order: { created_at: 'DESC' },
       })
+
+      console.log(quotes)
 
       const pageQuotes = quotes.map((quote) => {
         return {
