@@ -131,6 +131,7 @@ import { NI_MCIT_T_05Service } from './ni-mcit-t-05.service'
       DescriptionPatternNI_MCIT_T_05,
       EnvironmentalConditionsNI_MCIT_T_05,
       CalibrationResultsNI_MCIT_T_05,
+
     ]),
     forwardRef(() => ActivitiesModule),
     forwardRef(() => QuotesModule),

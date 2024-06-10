@@ -197,6 +197,27 @@ export class NI_MCIT_D_02Service {
     }
   }
 
+  async getMethodById(methodId: number) {
+    try {
+      const method = await this.NI_MCIT_D_02Repository.findOne({
+        where: { id: methodId },
+        relations: [
+          'equipment_information',
+          'environmental_conditions',
+          'description_pattern',
+        ],
+      })
+
+      if (!method) {
+        return handleInternalServerError('El método no existe')
+      }
+
+      return handleOK(method)
+    } catch (error) {
+      return handleInternalServerError(error.message)
+    }
+  }
+
   async preInstallationComment(
     preInstallationComment: PreInstallationCommentNI_MCIT_D_02Dto,
     methodId: number,
