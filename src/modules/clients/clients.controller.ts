@@ -19,15 +19,15 @@ export class ClientsController {
     return await this.clientsService.createClient(client)
   }
 
+  @Get()
+  async findAll() {
+    return await this.clientsService.findAll()
+  }
+
   @Get(':id')
   async findById(@Param('id') id: number) {
     if (!id) return handleBadrequest(new Error('El id es requerido'))
     return await this.clientsService.findById(id)
-  }
-
-  @Get()
-  async findAll() {
-    return await this.clientsService.findAll()
   }
 
   @Delete(':id')
@@ -46,5 +46,15 @@ export class ClientsController {
     @Param('limit') limit: number,
   ) {
     return await this.clientsService.getClientsPagination(page, limit)
+  }
+
+  @Post('update/:id')
+  async updateClient(@Param('id') id: number, @Body() client: CreateClientDto) {
+    if (!id) return handleBadrequest(new Error('El id es requerido'))
+    if (!client)
+      return handleBadrequest(
+        new Error('Porfavor envie un cliente que desea registrar'),
+      )
+    return await this.clientsService.updateClient(id, client)
   }
 }

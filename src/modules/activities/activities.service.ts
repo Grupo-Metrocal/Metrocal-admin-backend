@@ -1,7 +1,7 @@
 import { Injectable, Inject, forwardRef } from '@nestjs/common'
 import { InjectRepository } from '@nestjs/typeorm'
 import { Activity } from './entities/activities.entity'
-import { Repository, DataSource, IsNull } from 'typeorm'
+import { Repository, DataSource, IsNull, Between } from 'typeorm'
 import { QuotesService } from '../quotes/quotes.service'
 import {
   handleBadrequest,
@@ -651,75 +651,6 @@ export class ActivitiesService {
         ],
       })
 
-      let pendingCertification = 0
-      let currentMonthCertificates = 0
-      let previousMonthCertificatesTotal = 0
-      let currentMonthIncome = 0
-      let previousMonthIncome = 0
-
-      for (const activity of response) {
-        if (
-          activity.quote_request.created_at.getMonth() !== new Date().getMonth()
-        ) {
-          currentMonthIncome += activity.quote_request.price
-        }
-
-        if (
-          activity.quote_request.created_at.getMonth() !==
-          new Date().getMonth() - 1
-        ) {
-          previousMonthIncome += activity.quote_request.price
-        }
-
-        for (const equipment of activity.quote_request
-          .equipment_quote_request) {
-          const stack = await this.methodsService.getMethodsID(
-            equipment.method_id,
-          )
-
-          if (!stack.success) {
-            continue
-          }
-
-          const { data: methods } = stack as { data: any }
-
-          for (const method of methods) {
-            if (method.created_at.getMonth() === new Date().getMonth()) {
-              currentMonthCertificates += 1
-
-              if (
-                method.certificate_id &&
-                !method.review_state &&
-                !activity.is_certificate
-              ) {
-                pendingCertification += 1
-              }
-            }
-
-            if (method.created_at.getMonth() === new Date().getMonth() - 1) {
-              previousMonthCertificatesTotal += 1
-            }
-          }
-        }
-      }
-
-      const dataCertificates = {
-        certificates: {
-          currentMonth: currentMonthCertificates,
-          comparePreviousMonth:
-            ((currentMonthCertificates - previousMonthCertificatesTotal) /
-              previousMonthCertificatesTotal) *
-            100,
-        },
-        income: {
-          currentMonth: currentMonthIncome,
-          comparePreviousMonth:
-            ((currentMonthIncome - previousMonthIncome) / previousMonthIncome) *
-            100,
-        },
-        pendingCertification,
-      }
-
       const data = response.map((activity) => {
         return {
           id: activity.id,
@@ -761,7 +692,6 @@ export class ActivitiesService {
       })
 
       return handleOK({
-        statistics: dataCertificates,
         activities: data,
       })
     } catch (error) {
@@ -947,6 +877,107 @@ export class ActivitiesService {
       }
 
       return handlePaginate(data, totalActivitiesCount, limit, page)
+    } catch (error) {
+      return handleInternalServerError(error.message)
+    }
+  }
+
+  async getStatisticsAcitivities() {
+    try {
+      // Obtén el primer día del mes pasado
+      const startOfLastMonth = new Date()
+      startOfLastMonth.setMonth(startOfLastMonth.getMonth() - 1)
+      startOfLastMonth.setDate(1)
+      startOfLastMonth.setHours(0, 0, 0, 0)
+
+      // Obtén el último día del mes actual
+      const endOfCurrentMonth = new Date()
+      endOfCurrentMonth.setMonth(endOfCurrentMonth.getMonth() + 1)
+      endOfCurrentMonth.setDate(0)
+      endOfCurrentMonth.setHours(23, 59, 59, 999)
+
+      const response = await this.activityRepository.find({
+        where: {
+          status: 'done',
+          reviewed: true,
+          created_at: Between(startOfLastMonth, endOfCurrentMonth),
+        },
+        relations: [
+          'quote_request',
+          'quote_request.equipment_quote_request',
+          'quote_request.client',
+          'team_members',
+        ],
+      })
+
+      let pendingCertification = 0
+      let currentMonthCertificates = 0
+      let previousMonthCertificatesTotal = 0
+      let currentMonthIncome = 0
+      let previousMonthIncome = 0
+
+      for (const activity of response) {
+        if (activity.created_at.getMonth() === new Date().getMonth()) {
+          currentMonthIncome += activity.quote_request.price
+        }
+
+        if (
+          activity.quote_request.created_at.getMonth() !==
+          new Date().getMonth() - 1
+        ) {
+          previousMonthIncome += activity.quote_request.price
+        }
+
+        for (const equipment of activity.quote_request
+          .equipment_quote_request) {
+          const stack = await this.methodsService.getMethodsID(
+            equipment.method_id,
+          )
+
+          if (!stack.success) {
+            continue
+          }
+
+          const { data: methods } = stack as { data: any }
+
+          for (const method of methods) {
+            if (method.created_at.getMonth() === new Date().getMonth()) {
+              currentMonthCertificates += 1
+
+              if (
+                method.certificate_id &&
+                !method.review_state &&
+                !activity.is_certificate
+              ) {
+                pendingCertification += 1
+              }
+            }
+
+            if (method.created_at.getMonth() === new Date().getMonth() - 1) {
+              previousMonthCertificatesTotal += 1
+            }
+          }
+        }
+      }
+
+      const dataCertificates = {
+        certificates: {
+          currentMonth: currentMonthCertificates,
+          comparePreviousMonth:
+            ((currentMonthCertificates - previousMonthCertificatesTotal) /
+              previousMonthCertificatesTotal) *
+            100,
+        },
+        income: {
+          currentMonth: currentMonthIncome,
+          comparePreviousMonth:
+            ((currentMonthIncome - previousMonthIncome) / previousMonthIncome) *
+            100,
+        },
+        pendingCertification,
+      }
+
+      return handleOK(dataCertificates)
     } catch (error) {
       return handleInternalServerError(error.message)
     }

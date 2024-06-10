@@ -122,4 +122,9 @@ export class ActivitiesController {
   ) {
     return await this.activitiesService.getCertifiedActivities(page, limit)
   }
+
+  @Get('certified-activities/statistics')
+  async getStatisticsAcitivities() {
+    return await this.activitiesService.getStatisticsAcitivities()
+  }
 }

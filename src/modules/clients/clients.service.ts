@@ -171,4 +171,22 @@ export class ClientsService {
       return handleInternalServerError(error)
     }
   }
+
+  async updateClient(id: number, clientInfo: CreateClientDto) {
+    try {
+      const client = await this.clientRepository.findOne({
+        where: { id },
+      })
+
+      if (!client) {
+        return handleBadrequest(new Error('El cliente no existe'))
+      }
+
+      await this.clientRepository.update({ id }, clientInfo)
+
+      return handleOK(clientInfo)
+    } catch (error) {
+      return handleInternalServerError(error.message)
+    }
+  }
 }

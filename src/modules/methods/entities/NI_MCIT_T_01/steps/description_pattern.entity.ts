@@ -8,7 +8,7 @@ export class DescriptionPatternNI_MCIT_T_01 {
 
   @OneToMany(
     () => NI_MCIT_T_01,
-    (NI_MCIT_P_01) => NI_MCIT_P_01.description_pattern,
+    (NI_MCIT_T_01) => NI_MCIT_T_01.description_pattern,
     {
       onDelete: 'CASCADE',
       onUpdate: 'CASCADE',

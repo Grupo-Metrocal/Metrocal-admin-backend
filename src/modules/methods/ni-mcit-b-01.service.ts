@@ -392,7 +392,6 @@ export class NI_MCIT_B_01Service {
     const dataClient = activity.quote_request.client
     const dataQuote = activity.quote_request
 
-    console.log('dataClient', dataClient)
     const filePath = path.join(
       __dirname,
       `../mail/templates/excels/ni_mcit_b_01.xlsx`,
@@ -405,7 +404,6 @@ export class NI_MCIT_B_01Service {
 
       fs.copyFileSync(filePath, method.certificate_url)
 
-      console.log('method.certificate_url', method.certificate_url)
       const workbook = await XlsxPopulate.fromFileAsync(method.certificate_url)
 
       if (!workbook) {
@@ -587,7 +585,6 @@ export class NI_MCIT_B_01Service {
       sheetCalibración.cell('C15').value(method.unit_of_measurement.measure)
       sheetCalibración.cell('C16').value(method.unit_of_measurement.resolution)
 
-      console.log('method.certificate_url', method.certificate_url)
       workbook.toFileAsync(method.certificate_url)
       await this.autoSaveExcel(method.certificate_url)
       return this.getResultCertificateB01(methodID, activityID)
