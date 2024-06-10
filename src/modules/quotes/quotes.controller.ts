@@ -1,5 +1,5 @@
 import { QuotesService } from './quotes.service'
-import { ApiProperty, ApiTags } from '@nestjs/swagger'
+import { ApiBody, ApiProperty, ApiTags } from '@nestjs/swagger'
 import {
   Controller,
   Post,
@@ -165,16 +165,18 @@ export class QuotesController {
     return await this.quotesService.reviewEquipment(id, review)
   }
 
-  @Get('request/client/:id/all/:page/:limit')
+  @Get('request/client/:id/all/:page/:limit/:no?')
   async getAllQuoteRequestByClientId(
     @Param('id') id: number,
     @Param('page') page: number,
     @Param('limit') limit: number,
+    @Param('no') filter: string,
   ) {
     return await this.quotesService.getAllQuoteRequestByClientId(
       id,
       page,
       limit,
+      filter,
     )
   }
 
