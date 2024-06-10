@@ -195,7 +195,23 @@ export class MethodsService {
       const NI_MCIT_M_01 = await this.NI_MCIT_M_01Repository.find({
         relations: ['equipment_information', 'data'],
       })
-      return handleOK({ NI_MCIT_P_01, NI_MCIT_D_02, NI_MCIT_D_01 })
+      //B_01
+      const NI_MCIT_T_01 = await this.NI_MCIT_T_01Repository.find({
+        relations: [
+          'equipment_information',
+          'environmental_conditions',
+          'eccentricity_test',
+          'repeatability_test',
+          'linearity_test',
+        ],
+      })
+      return handleOK({
+        NI_MCIT_P_01,
+        NI_MCIT_D_02,
+        NI_MCIT_D_01,
+        NI_MCIT_T_01,
+        NI_MCIT_M_01,
+      })
     } catch (error) {
       return handleBadrequest(error.message)
     }
