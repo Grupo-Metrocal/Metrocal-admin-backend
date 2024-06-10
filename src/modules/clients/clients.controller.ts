@@ -40,12 +40,17 @@ export class ClientsController {
     return await this.clientsService.getClientsEmails()
   }
 
-  @Get(':page/:limit')
+  @Get(':page/:limit/:company_name?')
   async getClientsPagination(
     @Param('page') page: number,
     @Param('limit') limit: number,
+    @Param('company_name') company_name: string,
   ) {
-    return await this.clientsService.getClientsPagination(page, limit)
+    return await this.clientsService.getClientsPagination(
+      page,
+      limit,
+      company_name,
+    )
   }
 
   @Post('update/:id')
