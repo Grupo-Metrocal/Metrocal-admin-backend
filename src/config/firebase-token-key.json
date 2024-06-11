@@ -1,0 +1,13 @@
+{
+  "type": "service_account",
+  "project_id": "push-notifications---metrocal",
+  "private_key_id": "78dd9a36c8c10af1e0b7d0d733e3e8a52ea9e3f0",
+  "private_key": "-----BEGIN PRIVATE KEY-----\nMIIEvQIBADANBgkqhkiG9w0BAQEFAASCBKcwggSjAgEAAoIBAQCz7AJ5alLka2on\n9V1vlmLJXNeo4pordkH/wIc2+Zw90CRN6D0TDn03l5aWcOdjdPqgG+Eh2qcD4Vtu\nhd3RrP6rWouRhyQEhJFajftQkTaBPOddYqVWVlW+ZCrdBusA8yBfI31TV2thYBZP\nM+SfhNbTA+aFW8ymGWsgPEzkJnDieIn18NeioF7y+RxnILU30+6Rz8pVGQO3P6sb\nep32tpYxHRXM0bmXg0bV4E5v0Q0AHFrm/lVWsSFsYBwjlWTnp3yF6UxSrw9ERxP+\nydv6S6b8irFwtVhYUONBL698o/70l+HOf+XaCyzcwkRcRW6d0DulXE5BX57BvNaE\n083HvksDAgMBAAECggEAFCLBIiJ2lW66Ci/JHbBobN2xmwqFM4EAIOXEnC/yPu64\n6Wko0KWp+NtDtKF9G+HfHKUSHI5Sa7pAV82uhgVE2RuAjDBiJQlLFSXXruwZe/w7\nbnWYSGHQJccjDupzyX7sLAmWQIoDj/nHdWS63Olqe2Iv3dPowtwMY6ar+kqdDpM7\nZeM1imyUgprcn0zZeZp2iFy2kwP9JEuJCoKNkChriOnntveogD6TJEQgCg1LrJnS\nFVHOjpao14Tkhi10fiQFFxmXkGXTd/5mijOzJFWRF1p5puTwaUqsGATmgyxY4kyZ\nk9GjAx2BTC8y7xXXUOpgaBGvSNlEAp2t9xOXsMheTQKBgQD3B1Ro4ljXNuwco9u5\nlzDSFE6/6FJ7aM2wQr+Q7d9o4cD3oyTHvlcKbxmee8NRdx/6ReERA310SP8clIZo\nPu9z8XX24Djs0vGr25sbvm2loT9PAMHpTTKk4h4uDfJZjZlIDU+OuhuEO/dasNpR\ntYSuqt66QJnDP02xsZnf/HBh9QKBgQC6dMbKYrvUwp36/icYi/V/EF6cUE86BnxD\nwi4Az5ltCD74CP4qlmHaDIGaQS3EH/8GETX7n+UTc6GjW9Ik5kVVGgmWeQb0OCGb\n1+wXMeCko14yhPE068WXt72ze0OcVvlwboMnpasg7xlNTy0cN8OFNt7XikqDZlAP\nNfvcbxrGFwKBgC9BdrNNwYMCHa7o5aqeMpetjNcHYWf8R4TVcAIQjzFoJlr5GZsg\nXVRAppz7vgSCjlp5LbHsgf5RzIOyIfglOfdrFI7ym9EqFVM0AnsPNbh+nTbGxVGV\nFAAYxX836cmZ3d27tiFulr74Hbx6onkJCWXEiDEHFKMWJA2/FNmVWAZVAoGAX/pS\nhcVTGI7hkVyYNVt+EF0VxnLUhXLnLl3bHlG+kVBoUXcXlkZ4siwz3npkm4s41B+x\n4QeKfHvOHW/beWELGWZgvxMnkDkAm98GyV3EXBs4Fts16l7fBFzxil0ODYD7v3Mz\nkgoGT9qj9JaoCtltjLoU9XBbMM5OsbXBItQSPRsCgYEAoBj7RFV3KATH641Jc2Fg\nwrF2YZ1b+MTJHGqsF6z8nk0Q/8d3KC031Rn667xP3xVF03GIwLrlAL4DuCpOBiDm\n97t6UHu5LoA7ikSoGmECMy6dhbwyoNm+2UnQovUEFb0Fc8ZIOjF6mgpq9qmK3NfX\n8tHOG2vvhXvrgOEiDgOlUZI=\n-----END PRIVATE KEY-----\n",
+  "client_email": "firebase-adminsdk-esjsf@push-notifications---metrocal.iam.gserviceaccount.com",
+  "client_id": "117734220772487085488",
+  "auth_uri": "https://accounts.google.com/o/oauth2/auth",
+  "token_uri": "https://oauth2.googleapis.com/token",
+  "auth_provider_x509_cert_url": "https://www.googleapis.com/oauth2/v1/certs",
+  "client_x509_cert_url": "https://www.googleapis.com/robot/v1/metadata/x509/firebase-adminsdk-esjsf%40push-notifications---metrocal.iam.gserviceaccount.com",
+  "universe_domain": "googleapis.com"
+}

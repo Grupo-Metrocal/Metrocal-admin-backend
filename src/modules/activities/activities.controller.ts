@@ -127,9 +127,4 @@ export class ActivitiesController {
       company_name,
     )
   }
-
-  @Get('certified-activities/statistics')
-  async getStatisticsAcitivities() {
-    return await this.activitiesService.getStatisticsAcitivities()
-  }
 }

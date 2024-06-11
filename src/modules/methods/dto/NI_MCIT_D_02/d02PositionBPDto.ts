@@ -48,6 +48,7 @@ export function getPositionNominal(valor: string) {
 }
 
 export function getValor(valor: string) {
+  console.log('valor', valor)
   const valores: { [key: string]: string[] } = {
     'NI-MCPD-01': ['Micrómetro', 'SCM-00039459', 'SCM'],
     'NI-MCPD-02': ['Pie de Rey', 'SCM-00039460', 'SCM'],

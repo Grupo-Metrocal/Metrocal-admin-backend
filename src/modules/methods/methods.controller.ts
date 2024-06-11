@@ -54,10 +54,6 @@ import { RepeatabilityTestNI_MCIT_B_01Dto } from './dto/NI_MCIT_B_01/b01repeatab
 import { LinearityTestNI_MCIT_B_01Dto } from './dto/NI_MCIT_B_01/b01linearity_test.dto'
 import { EnviromentalConditionsNI_MCIT_B_01Dto } from './dto/NI_MCIT_B_01/b01enviromental_condition.dto'
 import { UnitOfMeasurementNI_MCIT_B_01Dto } from './dto/NI_MCIT_B_01/b01unitOfMeasurement.dto'
-import { NI_MCIT_T_05Service } from './ni-mcit-t-05.service'
-import { EquipmentInformationT05Dto } from './dto/NI_MCIT_T_05/equipment-information.dto'
-import { CalibrationResultsT05Dto } from './dto/NI_MCIT_T_05/calibraion_results.dto'
-import { EnvironmentalConditionsT05Dto } from './dto/NI_MCIT_T_05/environmental_condition.dto'
 
 @ApiTags('methods')
 @Controller('methods')
@@ -71,7 +67,6 @@ export class MethodsController {
     private readonly ni_mcit_m_01Service: NI_MCIT_M_01Service,
     private readonly ni_mcit_b_01Service: NI_MCIT_B_01Service,
     private readonly ni_mcit_t_03Service: NI_MCIT_T_03Service,
-    private readonly ni_mcit_t_05Service: NI_MCIT_T_05Service,
   ) {}
 
   @Get()
@@ -723,89 +718,5 @@ export class MethodsController {
   @Get('ni-mcit-t-03/equipment/:id')
   async getEquipmentT_03ById(@Param('id') id: number) {
     return await this.ni_mcit_t_03Service.getMehotdById(id)
-  }
-
-  @Post('ni-mcit-t-05/calibration-location/:methodId')
-  async createNI_MCIT_T_05CalibrationLocation(
-    @Body() { location }: AddLocationDto,
-    @Param('methodId') methodId: number,
-  ) {
-    return await this.ni_mcit_t_05Service.addCalibrationLocation(
-      location,
-      methodId,
-    )
-  }
-
-  @Post('ni-mcit-t-05/equipment-information/:methodId')
-  async createNI_MCIT_T_05EquipmentInformation(
-    @Body() equipment: EquipmentInformationT05Dto,
-    @Param('methodId') methodId: number,
-  ) {
-    return await this.ni_mcit_t_05Service.equipmentInformation(
-      equipment,
-      methodId,
-    )
-  }
-
-  @Post('ni-mcit-t-05/environmental-conditions/:methodId')
-  async createNI_MCIT_T_05EnvironmentalConditions(
-    @Body() environmentalConditions: EnvironmentalConditionsT05Dto,
-    @Param('methodId') methodId: number,
-  ) {
-    return await this.ni_mcit_t_05Service.environmentalConditions(
-      environmentalConditions,
-      methodId,
-    )
-  }
-
-  @Post('ni-mcit-t-05/calibration-results/:methodId')
-  async createNI_MCIT_T_05CalibrationResults(
-    @Body() calibrations: CalibrationResultsT05Dto,
-    @Param('methodId') methodId: number,
-  ) {
-    return await this.ni_mcit_t_05Service.calibrationResults(
-      calibrations,
-      methodId,
-    )
-  }
-
-  @Post('ni-mcit-t-05/description-pattern/:methodId/:activityId')
-  async createNI_MCIT_T_05DescriptionPattern(
-    @Body() descriptionPattern: DescriptionPatternT_03Dto,
-    @Param('methodId') methodId: number,
-    @Param('activityId') activityId: number,
-  ) {
-    return await this.ni_mcit_t_05Service.descriptionPattern(
-      descriptionPattern,
-      methodId,
-      activityId,
-    )
-  }
-
-  @Get('ni-mcit-t-05/certificates/activity/:activityId/method/:methodId')
-  async getNI_MCIT_T_05Certificate(
-    @Param('activityId') activityId: number,
-    @Param('methodId') methodId: number,
-  ) {
-    return await this.ni_mcit_t_05Service.generateCertificate({
-      activityID: activityId,
-      methodID: methodId,
-    })
-  }
-
-  @Get('ni-mcit-t-05/generate-certificate/send/pdf/:idActivity/:idMethod')
-  async sendCertificateToClientT05(
-    @Param('idActivity') activityId: number,
-    @Param('idMethod') methodId: number,
-  ) {
-    return await this.ni_mcit_t_05Service.sendCertificateToClient(
-      activityId,
-      methodId,
-    )
-  }
-
-  @Get('ni-mcit-t-05/equipment/:id')
-  async getEquipmentT_05ById(@Param('id') id: number) {
-    return await this.ni_mcit_t_05Service.getMehotdById(id)
   }
 }

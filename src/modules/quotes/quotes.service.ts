@@ -1,14 +1,6 @@
 import { Inject, Injectable, forwardRef } from '@nestjs/common'
 import { InjectRepository } from '@nestjs/typeorm'
-import {
-  Repository,
-  DataSource,
-  In,
-  IsNull,
-  Not,
-  MoreThanOrEqual,
-  ILike,
-} from 'typeorm'
+import { Repository, DataSource, In, IsNull, Not } from 'typeorm'
 import { EquipmentQuoteRequest } from './entities/equipment-quote-request.entity'
 import { QuoteRequest } from './entities/quote-request.entity'
 import { QuoteRequestDto } from './dto/quote-request.dto'
