@@ -2,17 +2,22 @@
     // Use IntelliSense para saber los atributos posibles.
     // Mantenga el puntero para ver las descripciones de los existentes atributos.
     // Para más información, visite: https://go.microsoft.com/fwlink/?linkid=830387
-    //para depurar ts
     "version": "0.2.0",
     "configurations": [
         {
+            "name": "ts-node",
             "type": "node",
             "request": "launch",
-            "name": "Launch Program",
-            "skipFiles": [
-                "<node_internals>/**"
+            "args": [
+                "${relativeFile}"
             ],
-            "program": "${file}"
+            "runtimeArgs": [
+                "-r",
+                "ts-node/register"
+            ],
+            "cwd": "${workspaceRoot}",
+            "protocol": "inspector",
+            "internalConsoleOptions": "openOnSessionStart"
         }
     ]
 }

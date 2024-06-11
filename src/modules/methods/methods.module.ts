@@ -118,6 +118,12 @@ import { EnvironmentalConditionsNI_MCIT_T_03 } from './entities/NI_MCIT_T_03/ste
       DescriptionPatternNI_MCIT_T_03,
       CalibrationResultsNI_MCIT_T_03,
       EnvironmentalConditionsNI_MCIT_T_03,
+
+      NI_MCIT_T_05,
+      EquipmentInformationNI_MCIT_T_05,
+      DescriptionPatternNI_MCIT_T_05,
+      EnvironmentalConditionsNI_MCIT_T_05,
+      CalibrationResultsNI_MCIT_T_05,
     ]),
     forwardRef(() => ActivitiesModule),
     forwardRef(() => QuotesModule),

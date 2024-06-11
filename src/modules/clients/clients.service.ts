@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common'
 import { InjectRepository } from '@nestjs/typeorm'
-import { Repository } from 'typeorm'
+import { ILike, Repository } from 'typeorm'
 import { Client } from './entities/client.entity'
 import { CreateClientDto } from './dto/client.dto'
 import { QuoteRequest } from '../quotes/entities/quote-request.entity'
@@ -130,9 +130,14 @@ export class ClientsService {
     }
   }
 
-  async getClientsPagination(page: number, limit: number) {
+  async getClientsPagination(
+    page: number,
+    limit: number,
+    company_name?: string,
+  ) {
     try {
       const response = await this.clientRepository.find({
+        where: company_name && { company_name: ILike(`%${company_name}%`) },
         relations: ['quote_requests', 'quote_requests.equipment_quote_request'],
         order: { created_at: 'DESC' },
         skip: (page - 1) * limit,

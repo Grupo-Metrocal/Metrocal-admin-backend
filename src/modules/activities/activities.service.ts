@@ -1,7 +1,7 @@
 import { Injectable, Inject, forwardRef } from '@nestjs/common'
 import { InjectRepository } from '@nestjs/typeorm'
 import { Activity } from './entities/activities.entity'
-import { Repository, DataSource, IsNull } from 'typeorm'
+import { Repository, DataSource, IsNull, Between, ILike } from 'typeorm'
 import { QuotesService } from '../quotes/quotes.service'
 import {
   handleBadrequest,
@@ -862,10 +862,21 @@ export class ActivitiesService {
     }
   }
 
-  async getCertifiedActivities(page: number, limit: number) {
+  async getCertifiedActivities(
+    page: number,
+    limit: number,
+    company_name?: string,
+  ) {
     try {
       const response = await this.activityRepository.find({
-        where: { is_certificate: true },
+        where: company_name
+          ? {
+              is_certificate: true,
+              quote_request: {
+                client: { company_name: ILike(`%${company_name}%`) },
+              },
+            }
+          : { is_certificate: true },
         relations: [
           'quote_request',
           'quote_request.client',
