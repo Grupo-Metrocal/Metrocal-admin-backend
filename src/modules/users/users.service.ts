@@ -257,7 +257,7 @@ export class UsersService {
   async createDefaultUsers() {
     const users = [
       {
-        username: 'Leandro',
+        username: 'Roberto',
         email: 'roberto.zelaya@regxi.com',
         password: 'Metrocal.2023',
         role: 'admin',
