@@ -8,7 +8,7 @@ export class CalibrationResultsNI_MCIT_T_01 {
 
   @OneToMany(
     () => NI_MCIT_T_01,
-    (NI_MCIT_T_01) => NI_MCIT_T_01.calibration_results,
+    (NI_MCIT_P_01) => NI_MCIT_P_01.calibration_results,
     {
       onDelete: 'CASCADE',
       onUpdate: 'CASCADE',

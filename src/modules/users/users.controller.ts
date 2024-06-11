@@ -106,6 +106,7 @@ export class UsersController {
   @UseGuards(JwtAuthGuard)
   @Post('profile/update/:token')
   async update(@Param('token') token: string, @Body() user: UpdateUserDto) {
+    console.log('update user', user)
     return await this.usersService.updateUserByToken(token, user)
   }
 

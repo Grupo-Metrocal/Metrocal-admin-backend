@@ -205,6 +205,9 @@ export class NI_MCIT_D_02Service {
           'equipment_information',
           'environmental_conditions',
           'description_pattern',
+          'pre_installation_comment',
+          'instrument_zero_check',
+          'accuracy_test'
         ],
       })
 

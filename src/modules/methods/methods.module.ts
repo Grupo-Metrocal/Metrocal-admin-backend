@@ -66,13 +66,6 @@ import { DescriptionPatternNI_MCIT_T_03 } from './entities/NI_MCIT_T_03/steps/de
 import { CalibrationResultsNI_MCIT_T_03 } from './entities/NI_MCIT_T_03/steps/calibration_results.entity'
 import { EnvironmentalConditionsNI_MCIT_T_03 } from './entities/NI_MCIT_T_03/steps/environmental_conditions.entity'
 
-import { NI_MCIT_T_05 } from './entities/NI_MCIT_T_05/NI_MCIT_T_05.entity'
-import { EquipmentInformationNI_MCIT_T_05 } from './entities/NI_MCIT_T_05/steps/equipment_informatio.entity'
-import { DescriptionPatternNI_MCIT_T_05 } from './entities/NI_MCIT_T_05/steps/description_pattern.entity'
-import { EnvironmentalConditionsNI_MCIT_T_05 } from './entities/NI_MCIT_T_05/steps/environmental_conditions.entity'
-import { CalibrationResultsNI_MCIT_T_05 } from './entities/NI_MCIT_T_05/steps/calibration_results.entity'
-import { NI_MCIT_T_05Service } from './ni-mcit-t-05.service'
-
 @Module({
   imports: [
     TypeOrmModule.forFeature([
@@ -125,13 +118,6 @@ import { NI_MCIT_T_05Service } from './ni-mcit-t-05.service'
       DescriptionPatternNI_MCIT_T_03,
       CalibrationResultsNI_MCIT_T_03,
       EnvironmentalConditionsNI_MCIT_T_03,
-
-      NI_MCIT_T_05,
-      EquipmentInformationNI_MCIT_T_05,
-      DescriptionPatternNI_MCIT_T_05,
-      EnvironmentalConditionsNI_MCIT_T_05,
-      CalibrationResultsNI_MCIT_T_05,
-
     ]),
     forwardRef(() => ActivitiesModule),
     forwardRef(() => QuotesModule),
@@ -148,7 +134,6 @@ import { NI_MCIT_T_05Service } from './ni-mcit-t-05.service'
     NI_MCIT_M_01Service,
     NI_MCIT_B_01Service,
     NI_MCIT_T_03Service,
-    NI_MCIT_T_05Service,
     PdfService,
     MailService,
     TokenService,

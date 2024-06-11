@@ -8,7 +8,7 @@ export class EnvironmentalConditionsNI_MCIT_T_03 {
 
   @OneToMany(
     () => NI_MCIT_T_03,
-    (NI_MCIT_T_03) => NI_MCIT_T_03.environmental_conditions,
+    (NI_MCIT_P_03) => NI_MCIT_P_03.environmental_conditions,
     {
       onDelete: 'CASCADE',
       onUpdate: 'CASCADE',
