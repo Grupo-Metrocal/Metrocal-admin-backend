@@ -918,8 +918,6 @@ export class QuotesService {
         order: { created_at: 'DESC' },
       })
 
-      console.log(quotes)
-
       const pageQuotes = quotes.map((quote) => {
         return {
           id: quote.id,
