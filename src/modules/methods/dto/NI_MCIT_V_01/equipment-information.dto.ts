@@ -1,0 +1,48 @@
+import { ApiProperty } from '@nestjs/swagger'
+
+export class EquipmentInformationV01Dto {
+  @ApiProperty()
+  device?: string
+
+  @ApiProperty()
+  nominal_range?: number
+
+  @ApiProperty()
+  scale_division?: number
+
+  @ApiProperty()
+  maker?: string
+
+  @ApiProperty()
+  unit?: string
+
+  @ApiProperty()
+  model?: string
+
+  @ApiProperty()
+  serial_number?: string
+
+  @ApiProperty()
+  code?: string
+
+  @ApiProperty()
+  type_thermometer?: string
+
+  @ApiProperty()
+  resolution?: number
+
+  @ApiProperty()
+  material?: string
+
+  @ApiProperty()
+  neck_diameter?: string
+
+  @ApiProperty()
+  volumetric_container?: string
+
+  @ApiProperty()
+  thermometer?: string
+
+  @ApiProperty()
+  balance?: string
+}
