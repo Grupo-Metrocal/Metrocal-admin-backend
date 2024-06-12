@@ -48,7 +48,6 @@ export class ActivitiesService {
     )
 
     const newActivity = this.activityRepository.create({
-      ...activity,
       quote_request: quoteRequest,
       status: 'pending',
     })
