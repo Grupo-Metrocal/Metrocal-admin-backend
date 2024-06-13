@@ -228,6 +228,13 @@ export class MethodsController {
     )
   }
 
+  //* Routing for D-02
+
+  @Get('ni-mcit-d-02/equipment/:id')
+  async getEquipmentD_02ById(@Param('id') id: number) {
+    return await this.ni_mcit_d_02Service.getMethodById(id)
+  }
+
   @Post('ni-mcit-d-02/create')
   async createNI_MCIT_D_02() {
     return await this.ni_mcit_d_02Service.create()
@@ -314,6 +321,11 @@ export class MethodsController {
   }
 
   //* Routing for D-01
+
+  @Get('ni-mcit-d-01/equipment/:id')
+  async getEquipmentD_01ById(@Param('id') id: number) {
+    return await this.ni_mcit_d_01Service.getMethodById(id)
+  }
 
   //create method for D-01
   @Post('ni-mcit-d-01/create')
@@ -537,7 +549,12 @@ export class MethodsController {
     return await this.ni_mcit_m_01Service.dataInformation(data, methodId)
   }
 
-  //controladores del method B01
+  //* controladores del method B01
+  @Get('ni-mcit-b-01/equipment/:id')
+  async getEquipmentB_01ById(@Param('id') id: number) {
+    return await this.ni_mcit_b_01Service.getMethodById(id)
+  }
+
   @Post('ni-mcit-b-01/create')
   async createNI_MCIT_B_01() {
     return await this.ni_mcit_b_01Service.createNI_MCIT_B_01()

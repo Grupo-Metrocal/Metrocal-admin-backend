@@ -197,7 +197,7 @@ export class NI_MCIT_D_02Service {
     }
   }
 
- async getMethodById(methodId: number) {
+  async getMethodById(methodId: number) {
     try {
       const method = await this.NI_MCIT_D_02Repository.findOne({
         where: { id: methodId },
