@@ -43,9 +43,6 @@ export class EquipmentInformationNI_MCIT_V_01 {
   @Column({ type: 'varchar', nullable: true })
   code?: string
 
-  @Column({ type: 'varchar', nullable: true })
-  type_thermometer?: string
-
   @Column({ type: 'float', nullable: true })
   resolution?: number
 

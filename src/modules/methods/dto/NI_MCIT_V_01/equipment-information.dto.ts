@@ -17,16 +17,10 @@ export class EquipmentInformationV01Dto {
   unit?: string
 
   @ApiProperty()
-  model?: string
-
-  @ApiProperty()
   serial_number?: string
 
   @ApiProperty()
   code?: string
-
-  @ApiProperty()
-  type_thermometer?: string
 
   @ApiProperty()
   resolution?: number
