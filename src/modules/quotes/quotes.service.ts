@@ -1,6 +1,6 @@
 import { Inject, Injectable, forwardRef } from '@nestjs/common'
 import { InjectRepository } from '@nestjs/typeorm'
-import { Repository, DataSource, In, IsNull, Not } from 'typeorm'
+import { Repository, DataSource, In, IsNull, Not, ILike, MoreThanOrEqual } from 'typeorm'
 import { EquipmentQuoteRequest } from './entities/equipment-quote-request.entity'
 import { QuoteRequest } from './entities/quote-request.entity'
 import { QuoteRequestDto } from './dto/quote-request.dto'
@@ -885,6 +885,113 @@ export class QuotesService {
         await this.equipmentQuoteRequestRepository.save(equipment)
 
       return handleOK(response)
+    } catch (error) {
+      return handleInternalServerError(error.message)
+    }
+  }
+  async getAllQuoteRequestByClientId(
+    id: number,
+    page: number,
+    limit: number,
+    filterNo?: string,
+  ) {
+    try {
+      const quotes = await this.quoteRequestRepository.find({
+        where: { client: { id }, no: ILike(`%${filterNo}%`) },
+        relations: [
+          'equipment_quote_request',
+          'client',
+          'activity',
+          'approved_by',
+        ],
+        skip: (page - 1) * limit,
+        take: limit,
+        order: { created_at: 'DESC' },
+      })
+
+      const pageQuotes = quotes.map((quote) => {
+        return {
+          id: quote.id,
+          total_price: quote.price,
+          approved_by: quote?.approved_by?.username || 'Sin aprobación',
+          no: quote.no,
+          created_at: quote.created_at,
+          status: quote.status,
+          activity_id: quote.activity?.id,
+        }
+      })
+
+      const totalRequest = await this.quoteRequestRepository.find({
+        where: { client: { id } },
+      })
+
+      const totalInvoice = totalRequest.reduce(
+        (acc, quote) => acc + quote.price,
+        0,
+      )
+
+      const quoteRejected = totalRequest.filter(
+        (quote) => quote.status === 'rejected',
+      )
+
+      const data = {
+        totalInvoice,
+        quoteRejected: quoteRejected.length,
+        paginationDataQuotes: pageQuotes,
+      }
+
+      return handlePaginate(data, totalRequest.length, limit, page)
+    } catch (error) {
+      return handleInternalServerError(error.message)
+    }
+  }
+
+  async getFluctuationStatistic() {
+    try {
+      const lastMonths = 5
+      const dateLimit = new Date()
+      dateLimit.setMonth(dateLimit.getMonth() - lastMonths)
+
+      const quotes = await this.quoteRequestRepository.find({
+        where: [
+          {
+            status: 'rejected',
+            created_at: MoreThanOrEqual(dateLimit),
+          },
+          {
+            status: 'done',
+            created_at: MoreThanOrEqual(dateLimit),
+          },
+        ],
+      })
+
+      const monthlyRevenue = {}
+
+      quotes.forEach((quote) => {
+        const month = quote.created_at.getMonth() + 1
+        const year = quote.created_at.getFullYear()
+        const key = `${year}-${month}`
+
+        if (!monthlyRevenue[key]) {
+          monthlyRevenue[key] = {
+            count: 0,
+            totalRevenue: 0,
+          }
+        }
+
+        monthlyRevenue[key].count += 1
+        monthlyRevenue[key].totalRevenue += quote.price || 0
+      })
+
+      const results = Object.keys(monthlyRevenue).map((key) => {
+        return {
+          month: key,
+          count: monthlyRevenue[key].count,
+          totalRevenue: monthlyRevenue[key].totalRevenue,
+        }
+      })
+
+      return handleOK(results)
     } catch (error) {
       return handleInternalServerError(error.message)
     }
