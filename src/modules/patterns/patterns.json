@@ -80,7 +80,7 @@
     "pattern_range": "0 mm a 100 mm",
     "next_calibration": "14/3/2025"
   },
-   {
+  {
     "method": "NI-MCIT-D-01",
     "equipment": "Higro Termómetro",
     "code": "NI-MCPPT-02",
@@ -89,7 +89,7 @@
     "pattern_range": "Depen. De la variable",
     "next_calibration": "2/3/2024"
   },
-     {
+  {
     "method": "NI-MCIT-D-01",
     "equipment": "Higro Termómetro",
     "code": "NI-MCPPT-05",
@@ -98,7 +98,7 @@
     "pattern_range": "Depen. De la variable",
     "next_calibration": "5/10/2025"
   },
-       {
+  {
     "method": "NI-MCIT-D-01",
     "equipment": "Higro Termómetro",
     "code": "NI-MCPPT-06",
@@ -983,7 +983,7 @@
   {
     "method": "NI-MCIT-V-01",
     "equipment": "Juego de Masas Patrón",
-    "code": "NI-MCPM-JM-03 ",
+    "code": "NI-MCPM-JM-03",
     "certificate": "RCP-LMV-MSWS-095-23",
     "traceability": "RECOPE",
     "pattern_range": "1 g a 5 000 g",
