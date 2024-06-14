@@ -130,6 +130,14 @@ export class MethodsController {
     )
   }
 
+  @Get('clear-report/:method_name/:id')
+  async clearReport(
+    @Param('method_name') method_name: string,
+    @Param('id') id: number,
+  ) {
+    return this.methodsService.clearReport(method_name, id)
+  }
+
   @Post('review-method/')
   async reviewMethod(
     @Body()
