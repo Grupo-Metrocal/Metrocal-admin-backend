@@ -355,7 +355,7 @@ export class NI_MCIT_V_01Service {
     try {
       const filePath = path.join(
         __dirname,
-        '../mail/templates/excels/ni_mcit_V_01.xlsx',
+        '../mail/templates/excels/ni_mcit_v_01.xlsx',
       )
 
       if (fs.existsSync(method.certificate_url)) {
@@ -366,9 +366,68 @@ export class NI_MCIT_V_01Service {
 
       const workbook = await XlsxPopulate.fromFileAsync(method.certificate_url)
 
-      const sheet = workbook.sheet('DATOS')
+      const sheet = workbook.sheet('Datos')
 
-      // --------------------------------------------------
+      // Equipment Information
+      sheet
+        .cell('D8')
+        .value(
+          `${method.equipment_information.nominal_range} ${method.equipment_information.unit}`,
+        )
+
+      sheet
+        .cell('D9')
+        .value(
+          `${method.equipment_information.scale_division} ${method.equipment_information.unit}`,
+        )
+
+      sheet.cell('K5').value(equipment_information.material)
+      sheet.cell('N5').value(equipment_information.balance)
+      sheet.cell('P5').value(equipment_information.neck_diameter)
+      sheet.cell('R5').value(equipment_information.thermometer)
+      sheet.cell('U4').value(equipment_information.volumetric_container)
+
+      // Environmental Conditions
+
+      const pointSkips = {
+        1: 0,
+        2: 11,
+        3: 21,
+        4: 32,
+        5: 43,
+      }
+
+      for (let point of environmental_conditions.points) {
+        const pointSkip = pointSkips[point.point_number]
+
+        sheet.cell(26 + pointSkip, 14).value(point.temperature.initial)
+        sheet.cell(26 + pointSkip, 15).value(point.temperature.final)
+        sheet.cell(26 + pointSkip, 16).value(point.temperature.resolution)
+
+        sheet.cell(27 + pointSkip, 14).value(point.humidity.initial)
+        sheet.cell(27 + pointSkip, 15).value(point.humidity.final)
+        sheet.cell(27 + pointSkip, 16).value(point.humidity.resolution)
+
+        sheet.cell(28 + pointSkip, 14).value(point.presion_pa.initial)
+        sheet.cell(28 + pointSkip, 15).value(point.presion_pa.final)
+        sheet.cell(28 + pointSkip, 16).value(point.presion_pa.resolution)
+      }
+
+      for (let calibrations of calibration_results.results) {
+        const pointSkip = pointSkips[calibrations.point_number]
+
+        for (let [index, calibration] of calibrations.calibrations.entries()) {
+          sheet
+            .cell(27 + pointSkip + index, 4)
+            .value(calibration.pattern_dough.full)
+          sheet
+            .cell(27 + pointSkip + index, 5)
+            .value(calibration.pattern_dough.empty)
+          sheet
+            .cell(27 + pointSkip + index, 6)
+            .value(calibration.water_temperature)
+        }
+      }
 
       workbook.toFileAsync(method.certificate_url)
       await this.autoSaveExcel(method.certificate_url)
