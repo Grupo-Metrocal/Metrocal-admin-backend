@@ -570,6 +570,7 @@ export class NI_MCIT_V_01Service {
           humidity: `Humedad Relativa: ${Number(sheet.cell('D39').value()).toFixed(2)} ± ${sheet.cell('F39').value()} % HR`,
           presion: `Presión: ${sheet.cell('J38').value()} ± ${sheet.cell('L38').value()} Pa`,
         },
+        creditable: description_pattern.creditable,
         client_email: activity.quote_request.client.email,
         observations: `
         ${method.description_pattern.observation || ''}
