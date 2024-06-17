@@ -28,6 +28,8 @@ import { UnitOfMeasurementNI_MCIT_B_01 } from './entities/NI_MCIT_B_01/steps/b01
 import { UnitOfMeasurementNI_MCIT_B_01Dto } from './dto/NI_MCIT_B_01/b01unitOfMeasurement.dto'
 import { generateServiceCodeToMethod } from 'src/utils/codeGenerator'
 import { formatDate } from 'src/utils/formatDate'
+import { MethodsService } from './methods.service'
+import { Methods } from './entities/method.entity'
 
 @Injectable()
 export class NI_MCIT_B_01Service {
@@ -62,6 +64,10 @@ export class NI_MCIT_B_01Service {
 
     @Inject(forwardRef(() => PatternsService))
     private readonly patternsService: PatternsService,
+
+    @Inject(forwardRef(() => MethodsService))
+    private readonly methodService: MethodsService,
+
   ) {}
 
   async createNI_MCIT_B_01() {
@@ -591,23 +597,24 @@ export class NI_MCIT_B_01Service {
 
       //fin de try
     } catch (error) {
+      await this.methodService.killExcelProcess(method.certificate_url)
       return handleInternalServerError(error)
     }
   }
 
   //resultados para generar PDF
   async getResultCertificateB01(methodID: number, activityID: number) {
+    const method = await this.NI_MCIT_B_01Repository.findOne({
+      where: { id: methodID },
+      relations: [
+        'equipment_information',
+        'environmental_conditions',
+        'eccentricity_test',
+        'repeatability_test',
+        'linearity_test',
+      ],
+    })
     try {
-      const method = await this.NI_MCIT_B_01Repository.findOne({
-        where: { id: methodID },
-        relations: [
-          'equipment_information',
-          'environmental_conditions',
-          'eccentricity_test',
-          'repeatability_test',
-          'linearity_test',
-        ],
-      })
 
       if (!method) {
         return handleInternalServerError('El metodo no existe')
@@ -772,17 +779,12 @@ export class NI_MCIT_B_01Service {
 
       return handleOK(certificate)
     } catch (error) {
+      await this.methodService.killExcelProcess(method.certificate_url)
       return handleInternalServerError(error)
     }
   }
 
-  async generatePDFCertificateB01({
-    activityID,
-    methodID,
-  }: {
-    activityID: number
-    methodID: number
-  }) {
+  async generatePDFCertificateB01(activityID: number, methodID: number) {
     try {
       const method = await this.NI_MCIT_B_01Repository.findOne({
         where: { id: methodID },
@@ -800,17 +802,17 @@ export class NI_MCIT_B_01Service {
       }
 
       let certificateData: any
-      if (!fs.existsSync(method.certificate_url)) {
+       if (!fs.existsSync(method.certificate_url)) {
         certificateData = await this.generateCertificateData({
           activityID,
           methodID,
         })
-      } else {
+     } else {
         certificateData = await this.getResultCertificateB01(
           activityID,
           methodID,
         )
-      }
+     }
 
       const PDF = await this.pdfService.generateCertificatePdf(
         '/certificates/NI_CMIT_B_01/B-01',
@@ -885,6 +887,27 @@ export class NI_MCIT_B_01Service {
       await this.NI_MCIT_B_01Repository.save(method)
 
       return handleOK(certificate)
+    } catch (error) {
+      return handleInternalServerError(error.message)
+    }
+  }
+
+  async sendCertificateToClient(activityID: number, methodID: number) {
+    try {
+      const data = await this.generatePDFCertificateB01(activityID, methodID)
+
+      if (!data.success) {
+        return data
+      }
+
+      const { pdf, client_email } = data.data
+
+      await this.mailService.sendMailCertification({
+        user: client_email,
+        pdf,
+      })
+
+      return handleOK('Certificado enviado con exito')
     } catch (error) {
       return handleInternalServerError(error.message)
     }
