@@ -717,10 +717,10 @@ export class MethodsController {
     @Param('activityId') activityId: number,
     @Param('methodId') methodId: number,
   ) {
-    return await this.ni_mcit_b_01Service.generatePDFCertificateB01({
-      activityID: activityId,
-      methodID: methodId,
-    })
+    return await this.ni_mcit_b_01Service.sendCertificateToClient(
+      activityId,
+      methodId,
+    )
   }
 
   @Get('ni-mcit-t-03/generate-certificate/send/pdf/:idActivity/:idMethod')
