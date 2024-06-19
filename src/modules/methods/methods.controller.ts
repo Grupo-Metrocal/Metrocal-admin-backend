@@ -39,8 +39,6 @@ import { DescriptionPatternT_01Dto } from './dto/NI_MCIT_T_01/description_patter
 import { EnvironmentalConditionsT_01Dto } from './dto/NI_MCIT_T_01/environmental_condition.dto'
 import { CalibrationResultsT_01Dto } from './dto/NI_MCIT_T_01/calibraion_results.dto'
 
-import { EquipmentInformationDto as EquipmentInformationM_01Dto } from './dto/NI_MCIT_M_01/equipment_information.dto'
-import { DataDto as DataM_01Dto } from './dto/NI_MCIT_M_01/data.dto'
 import { handleBadrequest } from 'src/common/handleHttp'
 
 import { EquipmentInformationT_03Dto } from './dto/NI_MCIT_T_03/equipment-information.dto'
@@ -63,6 +61,11 @@ import { EquipmentInformationV01Dto } from './dto/NI_MCIT_V_01/equipment-informa
 import { EnvironmentalConditionsV01Dto } from './dto/NI_MCIT_V_01/environmental_condition.dto'
 import { CalibrationResultsV01Dto } from './dto/NI_MCIT_V_01/calibraion_results.dto'
 import { DescriptionPatternV01Dto } from './dto/NI_MCIT_V_01/description_pattern.dto'
+
+import { EquipmentInformationM01Dto } from './dto/NI_MCIT_M_01/equipment_information.dto'
+import { EnvironmentalConditionsM01Dto } from './dto/NI_MCIT_M_01/environmental_condition.dto'
+import { CalibrationResultsM01Dto } from './dto/NI_MCIT_M_01/calibraion_results.dto'
+import { DescriptionPatternM01Dto } from './dto/NI_MCIT_M_01/description_pattern.dto'
 
 @ApiTags('methods')
 @Controller('methods')
@@ -537,9 +540,20 @@ export class MethodsController {
     return await this.ni_mcit_t_01Service.getMehotdById(id)
   }
 
+  @Post('ni-mcit-m-01/calibration-location/:methodId')
+  async createNI_MCIT_M_01CalibrationLocation(
+    @Body() { location }: AddLocationDto,
+    @Param('methodId') methodId: number,
+  ) {
+    return await this.ni_mcit_m_01Service.addCalibrationLocation(
+      location,
+      methodId,
+    )
+  }
+
   @Post('ni-mcit-m-01/equipment-information/:methodId')
   async createNI_MCIT_M_01EquipmentInformation(
-    @Body() equipment: EquipmentInformationM_01Dto,
+    @Body() equipment: EquipmentInformationM01Dto,
     @Param('methodId') methodId: number,
   ) {
     return await this.ni_mcit_m_01Service.equipmentInformation(
@@ -548,12 +562,66 @@ export class MethodsController {
     )
   }
 
-  @Post('ni-mcit-m-01/data-information/:methodId')
-  async createNI_MCIT_M_01Data(
-    @Body() data: DataM_01Dto,
+  @Post('ni-mcit-m-01/environmental-conditions/:methodId')
+  async createNI_MCIT_M_01EnvironmentalConditions(
+    @Body() environmentalConditions: EnvironmentalConditionsM01Dto,
     @Param('methodId') methodId: number,
   ) {
-    return await this.ni_mcit_m_01Service.dataInformation(data, methodId)
+    return await this.ni_mcit_m_01Service.environmentalConditions(
+      environmentalConditions,
+      methodId,
+    )
+  }
+
+  @Post('ni-mcit-m-01/calibration-results/:methodId')
+  async createNI_MCIT_M_01CalibrationResults(
+    @Body() calibrations: CalibrationResultsM01Dto,
+    @Param('methodId') methodId: number,
+  ) {
+    return await this.ni_mcit_m_01Service.calibrationResults(
+      calibrations,
+      methodId,
+    )
+  }
+
+  @Post('ni-mcit-m-01/description-pattern/:methodId/:activityId')
+  async createNI_MCIT_M_01DescriptionPattern(
+    @Body() descriptionPattern: DescriptionPatternM01Dto,
+    @Param('methodId') methodId: number,
+    @Param('activityId') activityId: number,
+  ) {
+    return await this.ni_mcit_m_01Service.descriptionPattern(
+      descriptionPattern,
+      methodId,
+      activityId,
+    )
+  }
+
+  @Get('ni-mcit-m-01/certificates/activity/:activityId/method/:methodId')
+  async getNI_MCIT_M_01Certificate(
+    @Param('activityId') activityId: number,
+    @Param('methodId') methodId: number,
+  ) {
+    return await this.ni_mcit_m_01Service.generateCertificate({
+      activityID: activityId,
+      methodID: methodId,
+    })
+  }
+
+  @Get('ni-mcit-m-01/generate-certificate/send/pdf/:idActivity/:idMethod')
+  async sendCertificateToClientM01(
+    @Param('idActivity') activityId: number,
+    @Param('idMethod') methodId: number,
+  ) {
+    return await this.ni_mcit_m_01Service.sendCertificateToClient(
+      activityId,
+      methodId,
+    )
+  }
+
+  @Get('ni-mcit-m-01/equipment/:id')
+  async getEquipmentM_01ById(@Param('id') id: number) {
+    return await this.ni_mcit_m_01Service.getMehotdById(id)
   }
 
   //controladores del method B01
