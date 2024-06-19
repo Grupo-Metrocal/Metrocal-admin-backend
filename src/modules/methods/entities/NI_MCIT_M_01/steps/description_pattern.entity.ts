@@ -20,6 +20,9 @@ export class DescriptionPatternNI_MCIT_M_01 {
   // pattern?: string
 
   @Column({ nullable: true })
+  maximum_capacity?: number
+
+  @Column({ nullable: true })
   observation?: string
 
   @Column({ nullable: true })
