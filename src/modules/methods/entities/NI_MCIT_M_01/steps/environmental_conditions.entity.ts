@@ -30,6 +30,5 @@ export interface IPoints_NI_MCIT_M_01 {
 interface IConditions {
   initial: number
   final: number
-  resolution: number
 }
 
