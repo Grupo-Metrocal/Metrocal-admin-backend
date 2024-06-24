@@ -1,6 +1,6 @@
 import { ApiProperty } from "@nestjs/swagger"
 
-export class EnvironmentalConditionsDto {
+export class EnvironmentalConditionsGENERIC_METHODDto {
   @ApiProperty()
   temperature: number
 

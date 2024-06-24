@@ -5,7 +5,7 @@ export class EquipmentInformationGENERIC_METHODDto {
   date?: Date
 
   @ApiProperty()
-device?: string
+  device?: string
 
   @ApiProperty()
   maker?: string

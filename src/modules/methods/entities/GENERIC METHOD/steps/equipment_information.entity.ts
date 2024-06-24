@@ -1,4 +1,4 @@
-import { Column, Entity, PrimaryGeneratedColumn } from "typeorm";
+import { Column, Entity, ManyToOne, PrimaryGeneratedColumn } from "typeorm";
 import { GENERIC_METHOD } from "../GENERIC_METHOD.entity";
 
 @Entity('equipment_information_GENERIC_METHOD')
@@ -7,7 +7,15 @@ export class EquipmentInformationGENERIC_METHOD {
   @PrimaryGeneratedColumn('increment')
     id?: number
     // Add your columns here
-    GENERIC_METHOD: GENERIC_METHOD[]
+    @ManyToOne(
+        () => GENERIC_METHOD,
+        (GENERIC_METHOD) => GENERIC_METHOD.equipment_information,
+        {
+          onDelete: 'CASCADE',
+          onUpdate: 'CASCADE',
+        },
+      )
+    GENERIC_METHOD: GENERIC_METHOD
     
     @Column({ type: 'date', nullable: true })
     date?: Date

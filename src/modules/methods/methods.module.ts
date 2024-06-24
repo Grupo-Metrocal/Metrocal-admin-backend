@@ -1,4 +1,4 @@
-import { Module, forwardRef } from '@nestjs/common'
+import { Module, Res, forwardRef } from '@nestjs/common'
 import { MethodsService } from './methods.service'
 
 import { MethodsController } from './methods.controller'
@@ -79,6 +79,14 @@ import { EnvironmentalConditionsNI_MCIT_V_01 } from './entities/NI_MCIT_V_01/ste
 import { CalibrationResultsNI_MCIT_V_01 } from './entities/NI_MCIT_V_01/steps/calibration_results.entity'
 import { NI_MCIT_V_01Service } from './ni-mcit-v-01.service'
 
+import { GENERIC_METHOD } from './entities/GENERIC METHOD/GENERIC_METHOD.entity'
+import { ComputerDataGENERIC_METHOD } from './entities/GENERIC METHOD/steps/computer_data.entity'
+import { EnvironmentalConditionsGENERIC_METHOD } from './entities/GENERIC METHOD/steps/enviromental_condition.entity'
+import { ResultMeditionGENERIC_METHOD } from './entities/GENERIC METHOD/steps/result_medition.entity'
+import { EquipmentInformationGENERIC_METHOD } from './entities/GENERIC METHOD/steps/equipment_information.entity'
+import { GENERIC_METHODService } from './generic-method.service'
+
+
 @Module({
   imports: [
     TypeOrmModule.forFeature([
@@ -143,6 +151,13 @@ import { NI_MCIT_V_01Service } from './ni-mcit-v-01.service'
       DescriptionPatternNI_MCIT_V_01,
       EnvironmentalConditionsNI_MCIT_V_01,
       CalibrationResultsNI_MCIT_V_01,
+
+      GENERIC_METHOD,
+      ComputerDataGENERIC_METHOD,
+      EnvironmentalConditionsGENERIC_METHOD,
+      EquipmentInformationGENERIC_METHOD,
+      ResultMeditionGENERIC_METHOD
+
     ]),
     forwardRef(() => ActivitiesModule),
     forwardRef(() => QuotesModule),
@@ -161,6 +176,7 @@ import { NI_MCIT_V_01Service } from './ni-mcit-v-01.service'
     NI_MCIT_T_03Service,
     NI_MCIT_T_05Service,
     NI_MCIT_V_01Service,
+    GENERIC_METHODService,
     PdfService,
     MailService,
     TokenService,

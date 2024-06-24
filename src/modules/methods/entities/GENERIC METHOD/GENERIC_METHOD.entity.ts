@@ -1,5 +1,8 @@
 import { Column, Entity, ManyToOne, PrimaryGeneratedColumn } from "typeorm";
 import { EquipmentInformationGENERIC_METHOD } from "./steps/equipment_information.entity";
+import { EnvironmentalConditionsGENERIC_METHOD } from "./steps/enviromental_condition.entity";
+import { ComputerDataGENERIC_METHOD } from "./steps/computer_data.entity";
+import { ResultMeditionGENERIC_METHOD } from "./steps/result_medition.entity";
 
 @Entity('GENERIC_METHOD')
 export class GENERIC_METHOD {
@@ -41,5 +44,39 @@ export class GENERIC_METHOD {
         },
     )
     equipment_information: EquipmentInformationGENERIC_METHOD
+
+    @ManyToOne(
+        () => EnvironmentalConditionsGENERIC_METHOD,
+        (environmentalConditionsGENERIC_METHOD) =>
+          environmentalConditionsGENERIC_METHOD.GENERIC_METHOD,
+        {
+          onDelete: 'CASCADE',
+          onUpdate: 'CASCADE',
+        },
+    )
+    environmental_conditions: EnvironmentalConditionsGENERIC_METHOD
+    
+    @ManyToOne(
+        () => ComputerDataGENERIC_METHOD,
+        (computerDataGENERIC_METHOD) =>
+          computerDataGENERIC_METHOD.GENERIC_METHOD,
+        {
+          onDelete: 'CASCADE',
+          onUpdate: 'CASCADE',
+        },
+    )
+    computer_data: ComputerDataGENERIC_METHOD
+
+    @ManyToOne(
+        () => ResultMeditionGENERIC_METHOD,
+        (resultMeditionGENERIC_METHOD) =>
+          resultMeditionGENERIC_METHOD.GENERIC_METHOD,
+        {
+          onDelete: 'CASCADE',
+          onUpdate: 'CASCADE',
+        },
+    )
+    result_medition: ResultMeditionGENERIC_METHOD
+
 
 }
