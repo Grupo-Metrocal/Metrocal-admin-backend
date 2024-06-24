@@ -17,6 +17,7 @@ import {
 import { RolesService } from '../roles/roles.service'
 import { TokenService } from '../auth/jwt/jwt.service'
 import { InvitationMail } from '../mail/dto/invitation-mail.dto'
+import { ChangePasswordDto } from './dto/change-password.dto'
 
 @Injectable()
 export class UsersService {
@@ -302,5 +303,20 @@ export class UsersService {
     const user = await this.userRepository.findOneBy({ id: +id })
     if (!user) return handleBadrequest(new Error('Usuario no encontrado'))
     return user
+  }
+
+  async changePassword({id, password }: ChangePasswordDto) {
+    try {
+      const user = await this.userRepository.findOneBy({ id })
+      if (!user) return handleBadrequest(new Error('Usuario no encontrado'))
+
+      const hashedPassword = await hash(password, 10)
+      user.password = hashedPassword
+
+      await this.userRepository.update(user.id, user)
+      return handleOK('Contraseña actualizada')
+    } catch (error) {
+      return handleInternalServerError(error.message)
+    }
   }
 }

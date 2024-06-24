@@ -164,4 +164,16 @@ export class ConfigurationService {
       return handleInternalServerError(error.message)
     }
   }
+
+  async getEquipmentByMethod(method: string) {
+    try {
+      const results = await this.authorizedService.find({
+        where: { method },
+      })
+
+      return handleOK([...results.map((result) => result.equipment)])
+    } catch (error) {
+      return handleInternalServerError(error.message)
+    }
+  }
 }

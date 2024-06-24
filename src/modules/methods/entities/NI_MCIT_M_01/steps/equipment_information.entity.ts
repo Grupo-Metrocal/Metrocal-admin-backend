@@ -17,29 +17,14 @@ export class EquipmentInformationNI_MCIT_M_01 {
   NI_MCIT_M_01: NI_MCIT_M_01[]
 
   @Column({ type: 'varchar', nullable: true })
-  certificate_id?: string
-
-  @Column({ type: 'varchar', nullable: true })
-  applicant?: string
-
-  @Column({ type: 'varchar', nullable: true })
   calibration_object?: string
 
   @Column({ type: 'varchar', nullable: true })
-  manofacturer_brand?: string
+  maker?: string
 
   @Column({ type: 'varchar', nullable: true })
   model?: string
 
   @Column({ type: 'varchar', nullable: true })
-  address_applicant?: string
-
-  @Column({ type: 'varchar', nullable: true })
-  calibration_place?: string
-
-  @Column({ type: 'varchar', nullable: true })
-  calibration_date?: string
-
-  @Column({ type: 'varchar', nullable: true })
-  Service_code?: string
+  code?: string
 }

@@ -1,6 +1,8 @@
 import { Column, Entity, PrimaryGeneratedColumn, ManyToOne } from 'typeorm'
 import { EquipmentInformationNI_MCIT_M_01 } from './steps/equipment_information.entity'
-import { DataNI_MCIT_M_01 } from './steps/data.entity'
+import { CalibrationResultsNI_MCIT_M_01 } from './steps/calibration_results.entity'
+import { EnvironmentalConditionsNI_MCIT_M_01 } from './steps/environmental_conditions.entity'
+import { DescriptionPatternNI_MCIT_M_01 } from './steps/description_pattern.entity'
 
 @Entity('NI_MCIT_M_01')
 export class NI_MCIT_M_01 {
@@ -46,14 +48,37 @@ export class NI_MCIT_M_01 {
   equipment_information: EquipmentInformationNI_MCIT_M_01
 
   @ManyToOne(
-    () => DataNI_MCIT_M_01,
-    (dataNI_MCIT_M_01) => dataNI_MCIT_M_01.NI_MCIT_M_01,
+    () => CalibrationResultsNI_MCIT_M_01,
+    (CalibrationResultsNI_MCIT_M_01) =>
+      CalibrationResultsNI_MCIT_M_01.NI_MCIT_M_01,
     {
       onDelete: 'CASCADE',
       onUpdate: 'CASCADE',
     },
   )
-  data: DataNI_MCIT_M_01
+  calibration_results: CalibrationResultsNI_MCIT_M_01
+  
+  @ManyToOne(
+    () => EnvironmentalConditionsNI_MCIT_M_01,
+    (EnvironmentalConditionsNI_MCIT_M_01) =>
+      EnvironmentalConditionsNI_MCIT_M_01.NI_MCIT_M_01,
+    {
+      onDelete: 'CASCADE',
+      onUpdate: 'CASCADE',
+    },
+  )
+  environmental_conditions: EnvironmentalConditionsNI_MCIT_M_01
+
+  @ManyToOne(
+    () => DescriptionPatternNI_MCIT_M_01,
+    (DescriptionPatternNI_MCIT_M_01) =>
+      DescriptionPatternNI_MCIT_M_01.NI_MCIT_M_01,
+    {
+      onDelete: 'CASCADE',
+      onUpdate: 'CASCADE',
+    },
+  )
+  description_pattern: DescriptionPatternNI_MCIT_M_01
 
   @Column({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP' })
   created_at: Date

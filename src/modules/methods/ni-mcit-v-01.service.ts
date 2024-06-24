@@ -355,7 +355,7 @@ export class NI_MCIT_V_01Service {
     try {
       const filePath = path.join(
         __dirname,
-        '../mail/templates/excels/ni_mcit_V_01.xlsx',
+        '../mail/templates/excels/ni_mcit_v_01.xlsx',
       )
 
       if (fs.existsSync(method.certificate_url)) {
@@ -366,9 +366,68 @@ export class NI_MCIT_V_01Service {
 
       const workbook = await XlsxPopulate.fromFileAsync(method.certificate_url)
 
-      const sheet = workbook.sheet('DATOS')
+      const sheet = workbook.sheet('Datos')
 
-      // --------------------------------------------------
+      // Equipment Information
+      sheet
+        .cell('D8')
+        .value(
+          `${method.equipment_information.nominal_range} ${method.equipment_information.unit}`,
+        )
+
+      sheet
+        .cell('D9')
+        .value(
+          `${method.equipment_information.scale_division} ${method.equipment_information.unit}`,
+        )
+
+      sheet.cell('K5').value(equipment_information.material)
+      sheet.cell('N5').value(equipment_information.balance)
+      sheet.cell('P5').value(equipment_information.neck_diameter)
+      sheet.cell('R5').value(equipment_information.thermometer)
+      sheet.cell('U4').value(equipment_information.volumetric_container)
+
+      // Environmental Conditions
+
+      const pointSkips = {
+        1: 0,
+        2: 11,
+        3: 21,
+        4: 32,
+        5: 43,
+      }
+
+      for (let point of environmental_conditions.points) {
+        const pointSkip = pointSkips[point.point_number]
+
+        sheet.cell(26 + pointSkip, 14).value(point.temperature.initial)
+        sheet.cell(26 + pointSkip, 15).value(point.temperature.final)
+        sheet.cell(26 + pointSkip, 16).value(point.temperature.resolution)
+
+        sheet.cell(27 + pointSkip, 14).value(point.humidity.initial)
+        sheet.cell(27 + pointSkip, 15).value(point.humidity.final)
+        sheet.cell(27 + pointSkip, 16).value(point.humidity.resolution)
+
+        sheet.cell(28 + pointSkip, 14).value(point.presion_pa.initial)
+        sheet.cell(28 + pointSkip, 15).value(point.presion_pa.final)
+        sheet.cell(28 + pointSkip, 16).value(point.presion_pa.resolution)
+      }
+
+      for (let calibrations of calibration_results.results) {
+        const pointSkip = pointSkips[calibrations.point_number]
+
+        for (let [index, calibration] of calibrations.calibrations.entries()) {
+          sheet
+            .cell(27 + pointSkip + index, 4)
+            .value(calibration.pattern_dough.full)
+          sheet
+            .cell(27 + pointSkip + index, 5)
+            .value(calibration.pattern_dough.empty)
+          sheet
+            .cell(27 + pointSkip + index, 6)
+            .value(calibration.water_temperature)
+        }
+      }
 
       workbook.toFileAsync(method.certificate_url)
       await this.autoSaveExcel(method.certificate_url)
@@ -447,40 +506,28 @@ export class NI_MCIT_V_01Service {
 
       const workbook = await XlsxPopulate.fromFileAsync(method.certificate_url)
 
-      const sheet = workbook.sheet('DA °C (5 ptos)')
+      const sheet = workbook.sheet('+ONA')
 
-      let reference_temperature = []
-      let thermometer_indication = []
-      let correction = []
+      let nominal_volume = []
+      let conventional_volume = []
+      let desviation = []
       let uncertainty = []
 
-      for (
-        let i = 0;
-        i <= method.calibration_results.results[0].calibrations.length;
-        i++
-      ) {
-        const referenceTemperature = sheet.cell(`D${28 + i}`).value()
-        reference_temperature.push(
-          typeof referenceTemperature === 'number'
-            ? referenceTemperature.toFixed(2)
-            : referenceTemperature,
+      for (let i = 0; i <= 5; i++) {
+        const nominalVolume = sheet.cell(`B${30 + i}`).value()
+        nominal_volume.push(
+          typeof nominalVolume === 'number'
+            ? nominalVolume.toFixed(2)
+            : nominalVolume,
         )
 
-        const thermometerIndication = sheet.cell(`F${28 + i}`).value()
-        thermometer_indication.push(
-          typeof thermometerIndication === 'number'
-            ? thermometerIndication.toFixed(2)
-            : thermometerIndication,
-        )
+        const conventionalVolume = sheet.cell(`D${30 + i}`).value()
+        conventional_volume.push(conventionalVolume)
 
-        const correctionValue = sheet.cell(`L${28 + i}`).value()
-        correction.push(
-          typeof correctionValue === 'number'
-            ? correctionValue.toFixed(2)
-            : correctionValue,
-        )
+        const desviationValue = sheet.cell(`H${30 + i}`).value()
+        desviation.push(desviationValue)
 
-        const uncertaintyValue = sheet.cell(`R${28 + i}`).value()
+        const uncertaintyValue = sheet.cell(`L${30 + i}`).value()
         uncertainty.push(
           typeof uncertaintyValue === 'number'
             ? uncertaintyValue.toFixed(2)
@@ -489,20 +536,20 @@ export class NI_MCIT_V_01Service {
       }
 
       const calibration_results_certificate = {
-        reference_temperature,
-        thermometer_indication,
-        correction,
+        nominal_volume,
+        conventional_volume,
+        desviation,
         uncertainty,
       }
 
-      const digitalThermometer = await this.patternsService.findByCodeAndMethod(
-        method.description_pattern.pattern,
+      const masas = await this.patternsService.findByCodeAndMethod(
+        'NI-MCPM-JM-03',
         'NI-MCIT-V-01',
       )
 
       return handleOK({
         calibration_results: calibration_results_certificate,
-        digitalThermometer: digitalThermometer.data,
+        masas: masas.data,
         equipment_information: {
           certification_code: method.certificate_code,
           service_code: generateServiceCodeToMethod(method.id),
@@ -511,23 +558,24 @@ export class NI_MCIT_V_01Service {
           device: method.equipment_information.device || '---',
           maker: method.equipment_information.maker || '---',
           serial_number: method.equipment_information.serial_number || '---',
-          // ------------------------------------------------
-          model: method.equipment_information.model || '---',
+          nominal_range: method.equipment_information.nominal_range || '---',
+          scale_division: method.equipment_information.scale_division || '---',
           code: method.equipment_information.code || '---',
           applicant: activity.quote_request.client.company_name,
           address: activity.quote_request.client.address,
           calibration_location: method.calibration_location || '---',
         },
         environmental_conditions: {
-          temperature: `Temperatura: ${sheet.cell('E46').value()} °C ± ${sheet.cell('G46').value()} °C`,
-          humidity: `Humedad: ${sheet.cell('E47').value()} % ± ${sheet.cell('G47').value()} %`,
+          temperature: `Temperatura: ${Number(sheet.cell('D38').value()).toFixed(2)} ± ${sheet.cell('F38').value()} °C`,
+          humidity: `Humedad Relativa: ${Number(sheet.cell('D39').value()).toFixed(2)} ± ${sheet.cell('F39').value()} % HR`,
+          presion: `Presión: ${sheet.cell('J38').value()} ± ${sheet.cell('L38').value()} Pa`,
         },
+        creditable: description_pattern.creditable,
         client_email: activity.quote_request.client.email,
         observations: `
-        ${method.description_pattern.observation}
+        ${method.description_pattern.observation || ''}
         Es responsabilidad del encargado del instrumento establecer la frecuencia del servicio de calibración.
-        ${sheet.cell('A91').value()}
-        ${sheet.cell('A92').value()}
+        El error corresponde al valor de la indicación del equipo menos el valor convencional de la masa de referencia.
         Los resultados emitidos en este certificado corresponden únicamente al objeto calibrado y a las magnitudes especificadas al momento de realizar el servicio.
         Este certificado de calibración no debe ser reproducido sin la aprobación del laboratorio, excepto cuando se reproduce en su totalidad.
         `,
@@ -573,21 +621,21 @@ export class NI_MCIT_V_01Service {
       }
 
       dataCertificate.data.calibration_results =
-        dataCertificate.data.calibration_results.reference_temperature.map(
+        dataCertificate.data.calibration_results.nominal_volume.map(
           (indication, index) => ({
-            reference_temperature: indication,
-            thermometer_indication:
-              dataCertificate.data.calibration_results.thermometer_indication[
+            nominal_volume: indication,
+            conventional_volume:
+              dataCertificate.data.calibration_results.conventional_volume[
                 index
               ],
-            correction:
-              dataCertificate.data.calibration_results.correction[index],
+            desviation:
+              dataCertificate.data.calibration_results.desviation[index],
             uncertainty:
               dataCertificate.data.calibration_results.uncertainty[index],
           }),
         )
       const PDF = await this.pdfService.generateCertificatePdf(
-        '/certificates/t-05.hbs',
+        '/certificates/v-01.hbs',
         dataCertificate.data,
       )
 

@@ -48,7 +48,9 @@ import { CalibrationResultsNI_MCIT_T_01 } from './entities/NI_MCIT_T_01/steps/ca
 import { NI_MCIT_M_01Service } from './ni-mcit-m-01.service'
 import { NI_MCIT_M_01 } from './entities/NI_MCIT_M_01/NI_MCIT_M_01.entity'
 import { EquipmentInformationNI_MCIT_M_01 } from './entities/NI_MCIT_M_01/steps/equipment_information.entity'
-import { DataNI_MCIT_M_01 } from './entities/NI_MCIT_M_01/steps/data.entity'
+import { DescriptionPatternNI_MCIT_M_01 } from './entities/NI_MCIT_M_01/steps/description_pattern.entity'
+import { CalibrationResultsNI_MCIT_M_01 } from './entities/NI_MCIT_M_01/steps/calibration_results.entity'
+import { EnvironmentalConditionsNI_MCIT_M_01 } from './entities/NI_MCIT_M_01/steps/environmental_conditions.entity'
 import { TokenService } from '../auth/jwt/jwt.service'
 import { NI_MCIT_B_01 } from './entities/NI_MCIT_B_01/NI_MCIT_B_01.entity'
 import { NI_MCIT_B_01Service } from './ni-mcit-b-01.service'
@@ -124,7 +126,9 @@ import { GENERIC_METHODService } from './generic-method.service'
 
       NI_MCIT_M_01,
       EquipmentInformationNI_MCIT_M_01,
-      DataNI_MCIT_M_01,
+      DescriptionPatternNI_MCIT_M_01,
+      CalibrationResultsNI_MCIT_M_01,
+      EnvironmentalConditionsNI_MCIT_M_01,
 
       NI_MCIT_B_01,
       EnvironmentalConditionsNI_MCIT_B_01,

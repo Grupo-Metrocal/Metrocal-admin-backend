@@ -62,4 +62,11 @@ export class ConfigurationController {
   async update(@Body() IVA: UpdateIvaRegisterDto) {
     return await this.configurationservice.updateIva(1, IVA)
   }
+
+  @Get('equipment/method/:method')
+  async getEquipmentByMethod(
+    @Param('method') method: string,
+  ){
+    return await this.configurationservice.getEquipmentByMethod(method)
+  }
 }

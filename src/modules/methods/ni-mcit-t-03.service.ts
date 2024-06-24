@@ -566,6 +566,7 @@ export class NI_MCIT_T_03Service {
           humidity: `Humedad: ${sheet.cell('E40').value()} % ± ${sheet.cell('G40').value()} %`,
         },
         client_email: activity.quote_request.client.email,
+        creditable: description_pattern.creditable,
         observations: `
         ${method.description_pattern.observation}
         Es responsabilidad del encargado del instrumento establecer la frecuencia del servicio de calibración.
