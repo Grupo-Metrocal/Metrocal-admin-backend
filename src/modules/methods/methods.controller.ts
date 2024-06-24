@@ -9,6 +9,7 @@ import { NI_MCIT_T_01Service } from './ni-mcit-t-01.service'
 import { NI_MCIT_M_01Service } from './ni-mcit-m-01.service'
 import { NI_MCIT_B_01Service } from './ni-mcit-b-01.service'
 import { NI_MCIT_T_03Service } from './ni-mcit-t-03.service'
+import { GENERIC_METHODService } from './generic-method.service'
 
 import { EquipmentInformationDto } from './dto/NI_MCIT_P_01/equipment_information.dto'
 import { EnvironmentalConditionsDto } from './dto/NI_MCIT_P_01/environmental_condition.dto'
@@ -62,6 +63,11 @@ import { EnvironmentalConditionsV01Dto } from './dto/NI_MCIT_V_01/environmental_
 import { CalibrationResultsV01Dto } from './dto/NI_MCIT_V_01/calibraion_results.dto'
 import { DescriptionPatternV01Dto } from './dto/NI_MCIT_V_01/description_pattern.dto'
 
+import { EnvironmentalConditionsGENERIC_METHODDto } from './dto/GENERIC METHOD/enviromental_condition.dto'
+import { EquipmentInformationGENERIC_METHODDto } from './dto/GENERIC METHOD/equipment_information.dto'
+import { ComputerDataGENERIC_METHODDto } from './dto/GENERIC METHOD/computer_data.dto'
+import { Result_MeditionGENERIC_METHODDto } from './dto/GENERIC METHOD/result_medition.dto'
+
 import { EquipmentInformationM01Dto } from './dto/NI_MCIT_M_01/equipment_information.dto'
 import { EnvironmentalConditionsM01Dto } from './dto/NI_MCIT_M_01/environmental_condition.dto'
 import { CalibrationResultsM01Dto } from './dto/NI_MCIT_M_01/calibraion_results.dto'
@@ -81,6 +87,7 @@ export class MethodsController {
     private readonly ni_mcit_t_03Service: NI_MCIT_T_03Service,
     private readonly ni_mcit_t_05Service: NI_MCIT_T_05Service,
     private readonly ni_mcit_v_01Service: NI_MCIT_V_01Service,
+    private readonly GenericMethodService: GENERIC_METHODService,
   ) {}
 
   @Get()
@@ -250,6 +257,11 @@ export class MethodsController {
     )
   }
 
+  @Get('ni-mcit-d-02/equipment/:id')
+  async getEquipmentD_02ById(@Param('id') id: number) {
+    return await this.ni_mcit_d_02Service.getMethodById(id)
+  }
+
   @Post('ni-mcit-d-02/create')
   async createNI_MCIT_D_02() {
     return await this.ni_mcit_d_02Service.create()
@@ -336,6 +348,10 @@ export class MethodsController {
   }
 
   //* Routing for D-01
+  @Get('ni-mcit-d-01/equipment/:id')
+  async getEquipmentD_01ById(@Param('id') id: number) {
+    return await this.ni_mcit_d_01Service.getMethodById(id)
+  }
 
   //create method for D-01
   @Post('ni-mcit-d-01/create')
@@ -624,6 +640,11 @@ export class MethodsController {
     return await this.ni_mcit_m_01Service.getMehotdById(id)
   }
 
+  @Get('ni-mcit-b-01/equipment/:id')
+  async getEquipmentB_01ById(@Param('id') id: number) {
+    return await this.ni_mcit_b_01Service.getMethodById(id)
+  }
+  
   //controladores del method B01
   @Post('ni-mcit-b-01/create')
   async createNI_MCIT_B_01() {
@@ -973,5 +994,55 @@ export class MethodsController {
   @Get('ni-mcit-v-01/equipment/:id')
   async getEquipmentV_01ById(@Param('id') id: number) {
     return await this.ni_mcit_v_01Service.getMehotdById(id)
+  }
+  
+
+  @Post('generic-method/create')
+  async createGenericMethod() {
+    return await this.GenericMethodService.create()
+  }
+
+  @Post('generic-method/equipment-information/:methodId')
+  async createGenericMethodEquipmentInformation(
+    @Body() equipment: EquipmentInformationGENERIC_METHODDto,
+    @Param('methodId') methodId: number,
+  ) {
+    return await this.GenericMethodService.equipmentInformationCreate(
+      equipment,
+      methodId,
+    )
+  }
+
+  @Post('generic-method/environmental-conditions/:methodId')
+  async createGenericMethodEnvironmentalConditions(
+    @Body() environmentalConditions: EnvironmentalConditionsGENERIC_METHODDto,
+    @Param('methodId') methodId: number,
+  ) {
+    return await this.GenericMethodService.environmentalConditionsCreate(
+      environmentalConditions,
+      methodId,
+    )
+  }
+
+  @Post('generic-method/results-medition/:methodId')
+  async createGenericMethodResultsMedition(
+    @Body() resultsMedition: Result_MeditionGENERIC_METHODDto,
+    @Param('methodId') methodId: number,
+  ) {
+    return await this.GenericMethodService.resultMeditionCreate(
+      resultsMedition,
+      methodId,
+    )
+  }
+
+  @Post('generic-method/computer-data/:methodId')
+  async createGenericMethodComputerData(
+    @Body() computerData: ComputerDataGENERIC_METHODDto,
+    @Param('methodId') methodId: number,
+  ) {
+    return await this.GenericMethodService.computerDataCreate(
+      computerData,
+      methodId,
+    )
   }
 }

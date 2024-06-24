@@ -23,4 +23,5 @@ export interface IMethods {
     | 'NI-MCIT-T-03'
     | 'NI-MCIT-T-05'
     | 'NI-MCIT-V-01'
+    | 'GENERIC_METHOD'
 }
