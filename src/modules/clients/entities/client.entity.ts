@@ -22,7 +22,7 @@ export class Client {
   address: string
 
   @Column({ type: 'varchar', nullable: true })
-  no_ruc?: string
+  no_ruc: string
 
   @Column({ type: 'varchar', nullable: false })
   email: string

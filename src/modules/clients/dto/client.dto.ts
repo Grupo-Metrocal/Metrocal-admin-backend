@@ -15,7 +15,7 @@ export class CreateClientDto {
   address: string
 
   @ApiProperty()
-  no_ruc?: string
+  no_ruc: string
 
   @ApiProperty()
   @IsNotEmpty()
