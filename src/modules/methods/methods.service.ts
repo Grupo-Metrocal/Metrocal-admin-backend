@@ -403,6 +403,31 @@ export class MethodsService {
     }
   }
 
+  async clearReport(method_name: string, method_id: number) {
+    try {
+      const repository = `${method_name}Repository`
+      const method = await this[repository].findOne({
+        where: {
+          id: method_id,
+        },
+      })
+
+      if (!method) {
+        return handleBadrequest(new Error('El método no existe'))
+      }
+
+      await this.dataSource.transaction(async (manager) => {
+        method.report_status = false
+        method.report_messages = []
+        await manager.save(method)
+      })
+
+      return handleOK('Reportes eliminados')
+    } catch (error) {
+      return handleInternalServerError(error.message)
+    }
+  }
+
   async getPatternsByMethodAndCode(method_name: string, code: string) {
     const patterns = await this.patternsService.findByCodeAndMethod(
       code,

@@ -5,7 +5,9 @@
     "equipment": "Calibrador universal, (vernier o pie de rey) - Analogico",
     "description": "ACREDITADO",
     "measuring_range": "(0 a 200) mm",
-    "accuracy": ["0.01 mm"],
+    "accuracy": [
+      "0.01 mm"
+    ],
     "document_delivered": "Certificado de Calibracion acreditado",
     "price": 45
   },
@@ -15,7 +17,9 @@
     "equipment": "Calibrador universal, (vernier o pie de rey) - Digital",
     "description": "ACREDITADO",
     "measuring_range": "(0 a 200) mm",
-    "accuracy": ["0.01 mm"],
+    "accuracy": [
+      "0.01 mm"
+    ],
     "document_delivered": "Certificado de Calibracion acreditado",
     "price": 45
   },
@@ -25,7 +29,9 @@
     "equipment": "Micrómetro de exteriores - Analógico",
     "description": "ACREDITADO",
     "measuring_range": "(0 a 25) mm",
-    "accuracy": ["0.001 mm"],
+    "accuracy": [
+      "0.001 mm"
+    ],
     "document_delivered": "Certificado de Calibracion acreditado",
     "price": 45
   },
@@ -35,7 +41,9 @@
     "equipment": "Micrometro de exteriores - Digital",
     "description": "",
     "measuring_range": "(0 a 25) mm",
-    "accuracy": ["0.001 mm"],
+    "accuracy": [
+      "0.001 mm"
+    ],
     "document_delivered": "Certificado de Calibracion acreditado",
     "price": 45
   },
@@ -45,7 +53,9 @@
     "equipment": "*Pin de longitud",
     "description": "Variable con micrometros (Unidad - Válido para mas de 5)",
     "measuring_range": "(0 a 200) mm",
-    "accuracy": ["0.001 mm"],
+    "accuracy": [
+      "0.001 mm"
+    ],
     "document_delivered": "Certificado trazable",
     "price": 25
   },
@@ -55,7 +65,9 @@
     "equipment": "*Compradores de caratula",
     "description": "",
     "measuring_range": "(0 a 300) mm",
-    "accuracy": ["0.001 mm"],
+    "accuracy": [
+      "0.001 mm"
+    ],
     "document_delivered": "Certificado trazable",
     "price": 45
   },
@@ -65,7 +77,9 @@
     "equipment": "*Medidor de altura, altimetro",
     "description": "",
     "measuring_range": "(0 a 300) mm",
-    "accuracy": ["0.01 mm"],
+    "accuracy": [
+      "0.01 mm"
+    ],
     "document_delivered": "Certificado trazable",
     "price": 70
   },
@@ -75,7 +89,9 @@
     "equipment": "*Medidor de profundidad",
     "description": "",
     "measuring_range": "(0 a 25) mm",
-    "accuracy": ["0.1 mm"],
+    "accuracy": [
+      "0.1 mm"
+    ],
     "document_delivered": "Certificado trazable",
     "price": 45
   },
@@ -85,7 +101,9 @@
     "equipment": "*Reglas rigidas",
     "description": "",
     "measuring_range": "(0 a 1000) mm",
-    "accuracy": ["0.1 mm"],
+    "accuracy": [
+      "0.1 mm"
+    ],
     "document_delivered": "Certificado trazable",
     "price": 70
   },
@@ -95,7 +113,9 @@
     "equipment": "*Cintas metricas",
     "description": "",
     "measuring_range": "(0 a 1000) mm",
-    "accuracy": ["10 mm"],
+    "accuracy": [
+      "10 mm"
+    ],
     "document_delivered": "Certificado trazable",
     "price": 70
   },
@@ -105,7 +125,9 @@
     "equipment": "*Calibracion de bloques longitudinales (unidad)",
     "description": "",
     "measuring_range": "(0 a 100) mm",
-    "accuracy": ["N/A"],
+    "accuracy": [
+      "N/A"
+    ],
     "document_delivered": "Certificado trazable",
     "price": 10
   },
@@ -115,7 +137,9 @@
     "equipment": "*Calibre pasa no pasa",
     "description": "",
     "measuring_range": "(0 a 200) mm",
-    "accuracy": ["N/A"],
+    "accuracy": [
+      "N/A"
+    ],
     "document_delivered": "Certificado trazable",
     "price": 30
   },
@@ -125,7 +149,9 @@
     "equipment": "*Gaje para engargolado",
     "description": "",
     "measuring_range": "(0 a 200) mm",
-    "accuracy": ["N/A"],
+    "accuracy": [
+      "N/A"
+    ],
     "document_delivered": "Certificado trazable",
     "price": 30
   },
@@ -135,8 +161,1414 @@
     "equipment": "*Medidor de nivel",
     "description": "",
     "measuring_range": "(0 a 200) mm",
-    "accuracy": ["N/A"],
+    "accuracy": [
+      "N/A"
+    ],
     "document_delivered": "Certificado trazable",
     "price": 70
+  },
+  {
+    "method": "NI-MCIT-FQ-01",
+    "service": "Calibración",
+    "equipment": "*pHmetro de banco",
+    "description": "",
+    "measuring_range": "(4, 7 y 10) pH",
+    "accuracy": [
+      "0,1 pH"
+    ],
+    "document_delivered": "Certificado trazable",
+    "price": 70
+  },
+  {
+    "method": "NI-MCIT-FQ-01",
+    "service": "Calibración",
+    "equipment": "*pHmetro portátil",
+    "description": "",
+    "measuring_range": "(4, 7 y 10) pH",
+    "accuracy": [
+      "0,1 pH"
+    ],
+    "document_delivered": "Certificado trazable",
+    "price": 70
+  },
+  {
+    "method": "N/A",
+    "service": "Comprobación Intermedia",
+    "equipment": "*Comprobación intermedia de pH metro",
+    "description": "Aplica solo equipos calibrados previamente por Metrocal (máximo 2 puntos de comprobación)",
+    "measuring_range": "(4, 7 y 10) pH",
+    "accuracy": [
+      "0,1 pH"
+    ],
+    "document_delivered": "Certificado trazable",
+    "price": 30
+  },
+  {
+    "method": "N/A",
+    "service": "Calibración",
+    "equipment": "*Conductivímetro, de banco y/o portátil",
+    "description": "",
+    "measuring_range": "Variable",
+    "accuracy": [
+      "Variable"
+    ],
+    "document_delivered": "Certificado trazable",
+    "price": 70
+  },
+  {
+    "method": "Comparación directa",
+    "service": "Calibración",
+    "equipment": "*Refractómetro",
+    "description": "",
+    "measuring_range": "85° Brix",
+    "accuracy": [
+      "N/A"
+    ],
+    "document_delivered": "Certificado trazable",
+    "price": 70
+  },
+  {
+    "method": "Comparación directa",
+    "service": "Calibración",
+    "equipment": "*Medidor de fuerza",
+    "description": "",
+    "measuring_range": "Hasta 3 kgf",
+    "accuracy": [
+      "N/A"
+    ],
+    "document_delivered": "Certificado trazable",
+    "price": 70
+  },
+  {
+    "method": "Comparación directa",
+    "service": "Calibración",
+    "equipment": "*Torquímetro",
+    "description": "",
+    "measuring_range": "Hasta 50 lb/in",
+    "accuracy": [
+      "N/A"
+    ],
+    "document_delivered": "Certificado trazable",
+    "price": 70
+  },
+  {
+    "method": "NI-MCIT-M-01",
+    "service": "Calibración",
+    "equipment": "Masas con forma paralelepípedo rectangulares o cilíndricas (individual)",
+    "description": "",
+    "measuring_range": "(2, 5, 10, 50, 100, 200, 500) g, (10, 20) kg",
+    "accuracy": [
+      "OIML F2. *(ASTM 3 y 4)"
+    ],
+    "document_delivered": "Certificado de Calibración Acreditado",
+    "price": 0
+  },
+  {
+    "method": "Doble sustitución",
+    "service": "Calibración",
+    "equipment": "*Masa individual",
+    "description": "",
+    "measuring_range": "Mayor a 20 kg",
+    "accuracy": [
+      "ASTM 3 y 4"
+    ],
+    "document_delivered": "Certificado trazable",
+    "price": 0
+  },
+  {
+    "method": "Doble sustitución",
+    "service": "Calibración",
+    "equipment": "*Masa individual",
+    "description": "",
+    "measuring_range": "Mayor a 20 kg",
+    "accuracy": [
+      "ASTM 5 A 7"
+    ],
+    "document_delivered": "Certificado trazable",
+    "price": 0
+  },
+  {
+    "method": "N/A",
+    "service": "Mantenimiento",
+    "equipment": "*Ajuste y pintura",
+    "description": "",
+    "measuring_range": "Acorde al valor nominal de la masa",
+    "accuracy": [
+      "De acuerdo a la tolerancia"
+    ],
+    "document_delivered": "Observación en el certificado trazable",
+    "price": 15
+  },
+  {
+    "method": "NI-MCIT-B-01",
+    "service": "Calibración",
+    "equipment": "Balanza (Digital o Analógica)",
+    "description": "Instrumentos de Pesaje de funcionamiento no automático con indicador analógico o digital",
+    "measuring_range": "Max 500 g, d ≤ 10 mg",
+    "accuracy": [
+      "I, II"
+    ],
+    "document_delivered": "Certificado de Calibración Acreditado",
+    "price": 55
+  },
+  {
+    "method": "NI-MCIT-B-01",
+    "service": "Calibración",
+    "equipment": "Balanza (Digital o Analógica)",
+    "description": "Instrumentos de Pesaje de funcionamiento no automático con indicador analógico o digital",
+    "measuring_range": "(0 a 200) kg, d ≥ 0,1 g",
+    "accuracy": [
+      "II, III"
+    ],
+    "document_delivered": "Certificado de Calibración Acreditado",
+    "price": 55
+  },
+  {
+    "method": "NI-MCIT-B-01",
+    "service": "Calibración",
+    "equipment": "Balanza (Digital o Analógica)",
+    "description": "Instrumentos de Pesaje de funcionamiento no automático con indicador analógico o digital",
+    "measuring_range": "(201 a 500) kg, d ≥ 0,01 kg",
+    "accuracy": [
+      "III, IIII"
+    ],
+    "document_delivered": "Certificado de Calibración Acreditado",
+    "price": 70
+  },
+  {
+    "method": "NI-MCIT-B-01",
+    "service": "Calibración",
+    "equipment": "Balanza (Digital o Analógica)",
+    "description": "Instrumentos de Pesaje de funcionamiento no automático con indicador analógico o digital",
+    "measuring_range": "Max 1 000 kg",
+    "accuracy": [
+      "III, IIII"
+    ],
+    "document_delivered": "Certificado de Calibración Acreditado",
+    "price": 90
+  },
+  {
+    "method": "Comparación directa",
+    "service": "Calibración",
+    "equipment": "*Tolvas",
+    "description": "",
+    "measuring_range": "Max 1 000 kg",
+    "accuracy": [
+      "N/A"
+    ],
+    "document_delivered": "Certificado trazable",
+    "price": 90
+  },
+  {
+    "method": "N/A",
+    "service": "Comprobación Intermedia",
+    "equipment": "*Comprobación intermedia de Balanza (Digital o Analógica)",
+    "description": "Aplica solo equipos calibrados previamente por Metrocal (máximo 4 puntos de comprobación)",
+    "measuring_range": "Max 1 000 kg",
+    "accuracy": [
+      "N/A"
+    ],
+    "document_delivered": "Certificado trazable",
+    "price": 30
+  },
+  {
+    "method": "N/A",
+    "service": "Comprobación Intermedia",
+    "equipment": "*Comprobación intermedia de Balanza (Digital o Analógica)",
+    "description": "Aplica solo equipos calibrados previamente por Metrocal (máximo 3 puntos de comprobación)",
+    "measuring_range": "Max 1 000 kg",
+    "accuracy": [
+      "N/A"
+    ],
+    "document_delivered": "Certificado trazable",
+    "price": 30
+  },
+  {
+    "method": "Mantenimiento Preventivo",
+    "service": "Mantenimiento Preventivo",
+    "equipment": "*Mantenimiento de Balanzas (Digital o Analógica)",
+    "description": "No incluye cambio de piezas",
+    "measuring_range": "N/A",
+    "accuracy": [
+      "N/A"
+    ],
+    "document_delivered": "Informe técnico",
+    "price": 25
+  },
+  {
+    "method": "Mantenimiento Preventivo",
+    "service": "Mantenimiento Preventivo",
+    "equipment": "*Mantenimiento tolvas (Digital o Analógica)",
+    "description": "No incluye cambio de piezas",
+    "measuring_range": "N/A",
+    "accuracy": [
+      "N/A"
+    ],
+    "document_delivered": "Informe técnico",
+    "price": 25
+  },
+  {
+    "method": "NI-MCIT-P-01",
+    "service": "Calibración",
+    "equipment": "Manómetros (Analógico o Digital)",
+    "description": "(5 Puntos de Calibración)",
+    "measuring_range": "(-82,74 a 34 500) kPa",
+    "accuracy": [
+      "0,2% F.S"
+    ],
+    "document_delivered": "Certificado de Calibración Acreditado",
+    "price": 45
+  },
+  {
+    "method": "NI-MCIT-P-01",
+    "service": "Calibración",
+    "equipment": "Mano vacuómetros (Analógico o Digital) – Presión positiva y Presión Negativa.",
+    "description": "(8 Puntos de Calibración – 3 en vacío y 5 en presión positiva)",
+    "measuring_range": "(-82,74 a 34 500) kPa",
+    "accuracy": [
+      "0,2% F.S"
+    ],
+    "document_delivered": "Certificado de Calibración Acreditado",
+    "price": 80
+  },
+  {
+    "method": "NI-MCIT-P-01",
+    "service": "Calibración",
+    "equipment": "Vacuómetros (Analógico o Digital)",
+    "description": "(5 Puntos de Calibración)",
+    "measuring_range": "(-82,74 a 34 500) kPa",
+    "accuracy": [
+      "0,2% F.S"
+    ],
+    "document_delivered": "Certificado de Calibración Acreditado",
+    "price": 45
+  },
+  {
+    "method": "NI-MCIT-P-01",
+    "service": "Calibración",
+    "equipment": "Vacuómetros (Analógico o Digital)",
+    "description": "(5 Puntos de Calibración)",
+    "measuring_range": "(-82,74 a 34 500) kPa",
+    "accuracy": [
+      "0,2% F.S"
+    ],
+    "document_delivered": "Certificado de Calibración Acreditado",
+    "price": 10
+  },
+  {
+    "method": "NI-MCIT-P-01",
+    "service": "Calibración",
+    "equipment": "Mano vacuómetros (Analógico o Digital) – Presión positiva y Presión Negativa.",
+    "description": "(punto adicional)",
+    "measuring_range": "(-82,74 a 34 500) kPa",
+    "accuracy": [
+      "0,2% F.S"
+    ],
+    "document_delivered": "Certificado de Calibración Acreditado",
+    "price": 10
+  },
+  {
+    "method": "NI-MCIT-P-01",
+    "service": "Calibración",
+    "equipment": "Vacuómetros (Analógico o Digital)",
+    "description": "(5 Puntos de Calibración)",
+    "measuring_range": "(-82,74 a 34 500) kPa",
+    "accuracy": [
+      "0,2% F.S"
+    ],
+    "document_delivered": "Certificado de Calibración Acreditado",
+    "price": 10
+  },
+  {
+    "method": "N/A",
+    "service": "Comprobación Intermedia",
+    "equipment": "*Comprobación intermedia de Manómetros (Analógico o Digital)",
+    "description": "Aplica solo equipos calibrados previamente por Metrocal (máximo 2 puntos de comprobación)",
+    "measuring_range": "(-10 a 10 000) psi",
+    "accuracy": [
+      "0,2% F.S"
+    ],
+    "document_delivered": "Certificado trazable",
+    "price": 25
+  },
+  {
+    "method": "N/A",
+    "service": "Comprobación Intermedia",
+    "equipment": "*Comprobación intermedia de Mano vacuómetros (Analógico o Digital)",
+    "description": "Aplica solo equipos calibrados previamente por Metrocal (máximo 2 puntos de comprobación)",
+    "measuring_range": "(-10 a 10 000) psi",
+    "accuracy": [
+      "0,2% F.S"
+    ],
+    "document_delivered": "Certificado trazable",
+    "price": 25
+  },
+  {
+    "method": "N/A",
+    "service": "Comprobación Intermedia",
+    "equipment": "*Comprobación intermedia de Vacuómetros (Analógico o Digital)",
+    "description": "Aplica solo equipos calibrados previamente por Metrocal (máximo 2 puntos de comprobación)",
+    "measuring_range": "(-10 a 10 000) psi",
+    "accuracy": [
+      "0,2% F.S"
+    ],
+    "document_delivered": "Certificado trazable",
+    "price": 25
+  },
+  {
+    "method": "NI-MCIT-P-01",
+    "service": "Calibración",
+    "equipment": "*Manómetro (Analógico o Digital)",
+    "description": "",
+    "measuring_range": "(-82,74 a 68 947,6) kPa",
+    "accuracy": [
+      "0,2% F.S"
+    ],
+    "document_delivered": "Certificado trazable",
+    "price": 45
+  },
+  {
+    "method": "NI-MCIT-P-01",
+    "service": "Calibración",
+    "equipment": "*Mano Vacuómetro (Analógico o Digital)",
+    "description": "",
+    "measuring_range": "(-82,74 a 68 947,6) kPa",
+    "accuracy": [
+      "0,2% F.S"
+    ],
+    "document_delivered": "Certificado trazable",
+    "price": 45
+  },
+  {
+    "method": "NI-MCIT-P-01",
+    "service": "Calibración",
+    "equipment": "*Esfigmomanómetro (Analógico o Digital)",
+    "description": "",
+    "measuring_range": "(-82,74 a 68 947,6) kPa",
+    "accuracy": [
+      "0,2% F.S"
+    ],
+    "document_delivered": "Certificado trazable",
+    "price": 45
+  },
+  {
+    "method": "NI-MCIT-P-01",
+    "service": "Calibración",
+    "equipment": "*Transductores de presión (Modulo de Presión) – Analógico o Digital",
+    "description": "",
+    "measuring_range": "(0 a 10 000) psi",
+    "accuracy": [
+      "0,2% F.S"
+    ],
+    "document_delivered": "Certificado trazable",
+    "price": 250
+  },
+  {
+    "method": "Comparación directa",
+    "service": "Calibración",
+    "equipment": "*Válvulas de seguridad o de alivio",
+    "description": "",
+    "measuring_range": "(0 a 10 000) psi",
+    "accuracy": [
+      "0,2% F.S"
+    ],
+    "document_delivered": "Certificado trazable",
+    "price": 70
+  },
+  {
+    "method": "Mantenimiento preventivo",
+    "service": "Mantenimiento Preventivo",
+    "equipment": "*Válvulas de seguridad o de alivio",
+    "description": "No incluye Kit repuestos, este debe ser proporcionado por el cliente",
+    "measuring_range": "(0 a 1 000) psi",
+    "accuracy": [
+      "0,2% F.S"
+    ],
+    "document_delivered": "Certificado trazable",
+    "price": 25
+  },
+  {
+    "method": "Comparación directa",
+    "service": "Mantenimiento Preventivo",
+    "equipment": "*Presostato",
+    "description": "",
+    "measuring_range": "(0 a 1 000) psi",
+    "accuracy": [
+      "0,2% F.S"
+    ],
+    "document_delivered": "Certificado trazable",
+    "price": 45
+  },
+  {
+    "method": "NI-MCIT-P-02",
+    "service": "Calibración",
+    "equipment": "*Transmisor de presión con salida de corriente/voltaje",
+    "description": "",
+    "measuring_range": "(0 a 1 000) psi",
+    "accuracy": [
+      "0,2% F.S"
+    ],
+    "document_delivered": "Certificado trazable",
+    "price": 45
+  },
+  {
+    "method": "N/A",
+    "service": "Comprobación Intermedia",
+    "equipment": "*Comprobación intermedia de Transmisor de presión",
+    "description": "Aplica solo equipos calibrados previamente por Metrocal (máximo 2 puntos de comprobación)",
+    "measuring_range": "(0 a 1 000) psi",
+    "accuracy": [
+      "0,2% F.S"
+    ],
+    "document_delivered": "Certificado trazable",
+    "price": 25
+  },
+  {
+    "method": "Comparación directa",
+    "service": "Calibración",
+    "equipment": "*Transmisor de nivel con salida de corriente/voltaje",
+    "description": "",
+    "measuring_range": "(0 a 1 000) psi",
+    "accuracy": [
+      "0,2% F.S"
+    ],
+    "document_delivered": "Certificado trazable",
+    "price": 45
+  },
+  {
+    "method": "NI-MCIT-T-01",
+    "service": "Calibración",
+    "equipment": "*Termómetro Digital",
+    "description": "(3 puntos de calibración)",
+    "measuring_range": "-30 °C a 350 °C",
+    "accuracy": [
+      "0,1 °C"
+    ],
+    "document_delivered": "Certificado de Calibración Acreditado",
+    "price": 45
+  },
+  {
+    "method": "NI-MCIT-T-01",
+    "service": "Calibración",
+    "equipment": "*Termómetro Bimetálico (Analógico)",
+    "description": "(3 puntos de calibración)",
+    "measuring_range": "-30 °C a 350 °C",
+    "accuracy": [
+      "0,1 °C"
+    ],
+    "document_delivered": "Certificado de Calibración Acreditado",
+    "price": 45
+  },
+  {
+    "method": "NI-MCIT-T-01",
+    "service": "Calibración",
+    "equipment": "*Termómetro Digital con sensor RTD",
+    "description": "(3 puntos de calibración)",
+    "measuring_range": "-30 °C a 350 °C",
+    "accuracy": [
+      "0,1 °C"
+    ],
+    "document_delivered": "Certificado de Calibración Acreditado",
+    "price": 45
+  },
+  {
+    "method": "NI-MCIT-T-01",
+    "service": "Calibración",
+    "equipment": "*Termómetro Digital con sensor termopar",
+    "description": "(3 puntos)",
+    "measuring_range": "-30 °C a 350 °C",
+    "accuracy": [
+      "0,1 °C"
+    ],
+    "document_delivered": "Certificado de Calibración Acreditado",
+    "price": 45
+  },
+  {
+    "method": "NI-MCIT-T-01",
+    "service": "Calibración",
+    "equipment": "*Termómetro Digital con sensor termistor",
+    "description": "(3 puntos)",
+    "measuring_range": "-30 °C a 350 °C",
+    "accuracy": [
+      "0,1 °C"
+    ],
+    "document_delivered": "Certificado de Calibración Acreditado",
+    "price": 45
+  },
+  {
+    "method": "NI-MCIT-T-01",
+    "service": "Calibración",
+    "equipment": "*Termómetro Digital",
+    "description": "(punto de calibración adicional)",
+    "measuring_range": "-30 °C a 350 °C",
+    "accuracy": [
+      "0,1 °C"
+    ],
+    "document_delivered": "Certificado de Calibración Acreditado",
+    "price": 10
+  },
+  {
+    "method": "NI-MCIT-T-01",
+    "service": "Calibración",
+    "equipment": "*Termómetro Bimetálico (Analógico)",
+    "description": "(punto de calibración adicional)",
+    "measuring_range": "-30 °C a 350 °C",
+    "accuracy": [
+      "0,1 °C"
+    ],
+    "document_delivered": "Certificado de Calibración Acreditado",
+    "price": 10
+  },
+  {
+    "method": "NI-MCIT-T-01",
+    "service": "Calibración",
+    "equipment": "*Termómetro Digital con sensor RTD",
+    "description": "(punto de calibración adicional)",
+    "measuring_range": "-30 °C a 350 °C",
+    "accuracy": [
+      "0,1 °C"
+    ],
+    "document_delivered": "Certificado de Calibración Acreditado",
+    "price": 10
+  },
+  {
+    "method": "NI-MCIT-T-01",
+    "service": "Calibración",
+    "equipment": "*Termómetro Digital con sensor termopar",
+    "description": "(punto de calibración adicional)",
+    "measuring_range": "-30 °C a 350 °C",
+    "accuracy": [
+      "0,1 °C"
+    ],
+    "document_delivered": "Certificado de Calibración Acreditado",
+    "price": 10
+  },
+  {
+    "method": "NI-MCIT-T-01",
+    "service": "Calibración",
+    "equipment": "*Termómetro Digital con sensor termistor",
+    "description": "(punto de calibración adicional)",
+    "measuring_range": "-30 °C a 350 °C",
+    "accuracy": [
+      "0,1 °C"
+    ],
+    "document_delivered": "Certificado de Calibración Acreditado",
+    "price": 10
+  },
+  {
+    "method": "N/A",
+    "service": "Comprobación Intermedia",
+    "equipment": "*Comprobación intermedia de termómetro (Digital o Analógico)",
+    "description": "Aplica solo equipos calibrados previamente por Metrocal (máximo 2 puntos de comprobación)",
+    "measuring_range": "-30 °C a 350 °C",
+    "accuracy": [
+      "0,1 °C"
+    ],
+    "document_delivered": "Certificado trazable",
+    "price": 25
+  },
+  {
+    "method": "NI-MCIT-T-02",
+    "service": "Caracterización",
+    "equipment": "*Caracterización de pozo seco, baños de recirculación",
+    "description": "(4 puntos de caracterización)",
+    "measuring_range": "-30 °C a 250 °C",
+    "accuracy": [
+      "0,1 °C"
+    ],
+    "document_delivered": "Certificado trazable",
+    "price": 300
+  },
+  {
+    "method": "NI-MCIT-T-02",
+    "service": "Caracterización",
+    "equipment": "*Caracterización de pozo seco, baños de recirculación",
+    "description": "(punto de calibración adicional)",
+    "measuring_range": "-30 °C a 250 °C",
+    "accuracy": [
+      "0,1 °C"
+    ],
+    "document_delivered": "Certificado trazable",
+    "price": 50
+  },
+  {
+    "method": "N/A",
+    "service": "Comprobación Intermedia",
+    "equipment": "*Comprobación intermedia de Medios térmicos",
+    "description": "Aplica solo equipos calibrados previamente por Metrocal (máximo 2 puntos de comprobación)",
+    "measuring_range": "-30 °C a 250 °C",
+    "accuracy": [
+      "0,1 °C"
+    ],
+    "document_delivered": "Certificado trazable",
+    "price": 50
+  },
+  {
+    "method": "NI-MCIT-T-03",
+    "service": "Calibración",
+    "equipment": "*Indicadores de temperatura con sensor RTD",
+    "description": "2, 3 y 4 hilos, con sensor termopar tipo K (5 puntos, por tipo sensor)",
+    "measuring_range": "-180 °C a 800 °C / -180 °C a 1 300 °C",
+    "accuracy": [
+      "0,1 °C"
+    ],
+    "document_delivered": "Certificado de Calibración Acreditado",
+    "price": 70
+  },
+  {
+    "method": "N/A",
+    "service": "Comprobación Intermedia",
+    "equipment": "*Comprobación intermedia de indicadores de temperatura",
+    "description": "Aplica solo equipos calibrados previamente por Metrocal (máximo 2 puntos de comprobación)",
+    "measuring_range": "-180 °C a 1300 °C",
+    "accuracy": [
+      "0,1 °C"
+    ],
+    "document_delivered": "Certificado trazable",
+    "price": 70
+  },
+  {
+    "method": "NI-MCIT-T-03",
+    "service": "Calibración",
+    "equipment": "*Controlador/Indicador de temperatura con sensor RTD, TCK",
+    "description": "(punto de calibración adicional)",
+    "measuring_range": "-180 °C a 800 °C / -180 °C a 1300 °C",
+    "accuracy": [
+      "0,1 °C"
+    ],
+    "document_delivered": "Certificado de Calibración Acreditado",
+    "price": 10
+  },
+  {
+    "method": "NI-MCIT-T-04",
+    "service": "Calibración",
+    "equipment": "*Transmisor de temperatura con sensor RTD",
+    "description": "",
+    "measuring_range": "-180 °C a 800 °C",
+    "accuracy": [
+      "0,1 °C"
+    ],
+    "document_delivered": "Certificado trazable",
+    "price": 45
+  },
+  {
+    "method": "N/A",
+    "service": "Comprobación Intermedia",
+    "equipment": "*Comprobación intermedia de transmisor de temperatura",
+    "description": "Aplica solo equipos calibrados previamente por Metrocal (máximo 2 puntos de comprobación)",
+    "measuring_range": "-180 °C a 1300 °C",
+    "accuracy": [
+      "0,1 °C"
+    ],
+    "document_delivered": "Certificado trazable",
+    "price": 25
+  },
+  {
+    "method": "NI-MCIT-T-05",
+    "service": "Calibración",
+    "equipment": "*Termómetro de líquido en vidrio",
+    "description": "(3 puntos de calibración)",
+    "measuring_range": "-4 °C a 110 °C",
+    "accuracy": [
+      "0,1 °C"
+    ],
+    "document_delivered": "Certificado de Calibración Acreditado",
+    "price": 45
+  },
+  {
+    "method": "NI-MCIT-T-05",
+    "service": "Calibración",
+    "equipment": "*Termómetro de líquido en vidrio",
+    "description": "(punto de calibración adicional)",
+    "measuring_range": "-4 °C a 110 °C",
+    "accuracy": [
+      "0,1 °C"
+    ],
+    "document_delivered": "Certificado de Calibración Acreditado",
+    "price": 10
+  },
+  {
+    "method": "N/A",
+    "service": "Comprobación Intermedia",
+    "equipment": "*Comprobación intermedia de TLV",
+    "description": "Aplica solo equipos calibrados previamente por Metrocal (máximo 2 puntos de comprobación)",
+    "measuring_range": "-25 °C a 150 °C",
+    "accuracy": [
+      "0,1 °C"
+    ],
+    "document_delivered": "Certificado trazable",
+    "price": 25
+  },
+  {
+    "method": "Comparación directa",
+    "service": "Calibración",
+    "equipment": "*Higrotermómetro Temperatura (Digital o Analógico)",
+    "description": "(3 puntos de calibración en temperatura)",
+    "measuring_range": "-25 °C a 150 °C",
+    "accuracy": [
+      "0,1 °C"
+    ],
+    "document_delivered": "Certificado trazable",
+    "price": 45
+  },
+  {
+    "method": "Comparación directa",
+    "service": "Calibración",
+    "equipment": "*Higrotermómetro Humedad Relativa (Digital o Analógico)",
+    "description": "(2 puntos de calibración en %RH)",
+    "measuring_range": "30 %RH a 75 %RH",
+    "accuracy": [
+      "0,1 °C"
+    ],
+    "document_delivered": "Certificado trazable",
+    "price": 40
+  },
+  {
+    "method": "Comparación directa",
+    "service": "Calibración",
+    "equipment": "*Higrotermómetro – Temperatura y Humedad",
+    "description": "(3 puntos Temperatura, 2 puntos %RH)",
+    "measuring_range": "-25 °C a 150 °C 30 %RH a 75 %RH",
+    "accuracy": [
+      "0,1 °C 0,1 %RH"
+    ],
+    "document_delivered": "Certificado trazable",
+    "price": 85
+  },
+  {
+    "method": "Comparación directa",
+    "service": "Calibración",
+    "equipment": "*Termo registrador ",
+    "description": "(3 puntos de calibración temperatura)",
+    "measuring_range": "-25 °C a 150 °C",
+    "accuracy": [
+      "0,1 °C"
+    ],
+    "document_delivered": "Certificado trazable",
+    "price": 45
+  },
+  {
+    "method": "Comparación directa",
+    "service": "Calibración",
+    "equipment": "*Termo registrador",
+    "description": "(3 puntos de calibración temperatura)",
+    "measuring_range": "30 %RH a 75 %RH",
+    "accuracy": [
+      "0,1 %RH"
+    ],
+    "document_delivered": "Certificado trazable Informe trazable",
+    "price": 45
+  },
+  {
+    "method": "Comparación directa",
+    "service": "Calibración",
+    "equipment": "*Termómetro Infrarrojo (Termómetro de no contacto)",
+    "description": "(3 puntos de calibración temperatura)",
+    "measuring_range": "-30 °C a 150 °C",
+    "accuracy": [
+      "0,1 °C"
+    ],
+    "document_delivered": "Certificado trazable",
+    "price": 45
+  },
+  {
+    "method": "Comparación directa",
+    "service": "Caracterización Térmica",
+    "equipment": "*Caracterización térmica Incubadora",
+    "description": "(3 puntos de calibración temperatura)",
+    "measuring_range": "-40 °C a 80 °C",
+    "accuracy": [
+      "0,1 °C"
+    ],
+    "document_delivered": "Informe trazable",
+    "price": 70
+  },
+  {
+    "method": "Comparación directa",
+    "service": "Caracterización Térmica",
+    "equipment": "*Caracterización térmica Refrigerador",
+    "description": "(3 puntos de calibración temperatura)",
+    "measuring_range": "-40 °C a 80 °C",
+    "accuracy": [
+      "0,1 °C"
+    ],
+    "document_delivered": "Informe trazable",
+    "price": 70
+  },
+  {
+    "method": "Comparación directa",
+    "service": "Caracterización Térmica",
+    "equipment": "*Caracterización térmica Freezer",
+    "description": "(3 puntos de calibración temperatura)",
+    "measuring_range": "-40 °C a 80 °C",
+    "accuracy": [
+      "0,1 °C"
+    ],
+    "document_delivered": "Informe trazable",
+    "price": 70
+  },
+  {
+    "method": "Comparación directa",
+    "service": "Caracterización Térmica",
+    "equipment": "*Caracterización térmica Horno",
+    "description": "(3 puntos de calibración temperatura)",
+    "measuring_range": "-40 °C a 80 °C",
+    "accuracy": [
+      "0,1 °C"
+    ],
+    "document_delivered": "Informe trazable",
+    "price": 70
+  },
+  {
+    "method": "Comparación directa",
+    "service": "Caracterización Térmica",
+    "equipment": "*Caracterización térmica Baño María",
+    "description": "(3 puntos de calibración temperatura)",
+    "measuring_range": "-40 °C a 80 °C",
+    "accuracy": [
+      "0,1 °C"
+    ],
+    "document_delivered": "Informe trazable",
+    "price": 70
+  },
+  {
+    "method": "Comparación directa",
+    "service": "Caracterización Térmica",
+    "equipment": "*Caracterización térmica Cuarto Frío, Bodegas, Almacén",
+    "description": "(costo del servicio por 24 horas, instalando 8 termo registradores, tomando lecturas con intervalos de 1 minuto, incluye la tabulación de los datos y el informe de las mediciones).",
+    "measuring_range": "-40 °C a 25 °C",
+    "accuracy": [
+      "0,1 °C"
+    ],
+    "document_delivered": "Informe trazable",
+    "price": 240
+  },
+  {
+    "method": "Comparación directa",
+    "service": "Calibración ",
+    "equipment": "*Autoclave",
+    "description": "(1 punto de calibración en temperatura o un ciclo completo)",
+    "measuring_range": "-40 °C a 121 °C",
+    "accuracy": [
+      "0,1 °C"
+    ],
+    "document_delivered": "Informe trazable",
+    "price": 70
+  },
+  {
+    "method": "Comparación directa",
+    "service": "Calibración ",
+    "equipment": "*Esterilizador",
+    "description": "(1 punto de calibración en temperatura o un ciclo completo)",
+    "measuring_range": "-40 °C a 121 °C",
+    "accuracy": [
+      "0,1 °C"
+    ],
+    "document_delivered": "Informe trazable",
+    "price": 70
+  },
+  {
+    "method": "Comparación directa",
+    "service": "Calibración ",
+    "equipment": "*Termostato",
+    "description": "(3 punto de calibración en temperatura)",
+    "measuring_range": "-40 °C a 150 °C",
+    "accuracy": [
+      "0,1 °C"
+    ],
+    "document_delivered": "Informe trazable",
+    "price": 70
+  },
+  {
+    "method": "Comparación directa",
+    "service": "Calibración ",
+    "equipment": "*Termobalanza (Temperatura)",
+    "description": "(3 punto de calibración en temperatura)",
+    "measuring_range": "hasta 121 °C",
+    "accuracy": [
+      "0,1 °C"
+    ],
+    "document_delivered": "Informe trazable",
+    "price": 45
+  },
+  {
+    "method": "Comparación directa",
+    "service": "Calibración ",
+    "equipment": "*Cronómetro",
+    "description": "",
+    "measuring_range": "hasta 10 h",
+    "accuracy": [
+      "N/A"
+    ],
+    "document_delivered": "Informe trazable",
+    "price": 70
+  },
+  {
+    "method": "Comparación directa",
+    "service": "Calibración ",
+    "equipment": "*Tacómetro",
+    "description": "",
+    "measuring_range": "1 rpm a 99,999 rpm",
+    "accuracy": [
+      "N/A"
+    ],
+    "document_delivered": "Informe trazable",
+    "price": 70
+  },
+  {
+    "method": "Comparación directa",
+    "service": "Calibración ",
+    "equipment": "*Sonómetro",
+    "description": "",
+    "measuring_range": "60 dB a 118 dB",
+    "accuracy": [
+      "N/A"
+    ],
+    "document_delivered": "Informe trazable",
+    "price": 70
+  },
+  {
+    "method": "Comparación directa",
+    "service": "Calibración ",
+    "equipment": "*Luxómetro",
+    "description": "",
+    "measuring_range": "(100 a 1 800) lux",
+    "accuracy": [
+      "N/A"
+    ],
+    "document_delivered": "Informe trazable",
+    "price": 70
+  },
+  {
+    "method": "Comparación directa",
+    "service": "Calibración ",
+    "equipment": "*Multímetro",
+    "description": "",
+    "measuring_range": "Dependiendo las magnitudes que el equipo pueda medir",
+    "accuracy": [
+      "N/A"
+    ],
+    "document_delivered": "Informe trazable",
+    "price": 150
+  },
+  {
+    "method": "Comparación directa",
+    "service": "Calibración ",
+    "equipment": "*Amperímetro",
+    "description": "",
+    "measuring_range": "Dependiendo las magnitudes que el equipo pueda medir",
+    "accuracy": [
+      "N/A"
+    ],
+    "document_delivered": "Informe trazable",
+    "price": 150
+  },
+  {
+    "method": "Comparación directa",
+    "service": "Calibración ",
+    "equipment": "*Calibrador de proceso Fluke 726",
+    "description": "Se calibran las variables que el instrumento es capaz de medir o simular",
+    "measuring_range": "Dependiendo las magnitudes que el equipo pueda medir",
+    "accuracy": [
+      "N/A"
+    ],
+    "document_delivered": "Informe trazable",
+    "price": 250
+  },
+  {
+    "method": "Comparación directa",
+    "service": "Calibración ",
+    "equipment": "*Calibrador de proceso Fluke 715-B",
+    "description": "Se calibran las variables que el instrumento es capaz de medir o simular",
+    "measuring_range": "Dependiendo las magnitudes que el equipo pueda medir",
+    "accuracy": [
+      "N/A"
+    ],
+    "document_delivered": "Informe trazable",
+    "price": 250
+  },
+  {
+    "method": "Comparación directa",
+    "service": "Calibración ",
+    "equipment": "*Calibrador de proceso Fluke 789",
+    "description": "Se calibran las variables que el instrumento es capaz de medir o simular",
+    "measuring_range": "Dependiendo las magnitudes que el equipo pueda medir",
+    "accuracy": [
+      "N/A"
+    ],
+    "document_delivered": "Informe trazable",
+    "price": 250
+  },
+  {
+    "method": "NI-MCIT-V-01",
+    "service": "Calibración ",
+    "equipment": "*Calibración de Pipetas",
+    "description": "(Material Volumétrico)",
+    "measuring_range": "(10 a 250) ml y (2 a 20) L",
+    "accuracy": [
+      "N/A"
+    ],
+    "document_delivered": "Certificado de Calibración Acreditado",
+    "price": 45
+  },
+  {
+    "method": "NI-MCIT-V-01",
+    "service": "Calibración ",
+    "equipment": "*Calibración de Matraz",
+    "description": "(Material Volumétrico)",
+    "measuring_range": "(10 a 250) ml y (2 a 20) L",
+    "accuracy": [
+      "N/A"
+    ],
+    "document_delivered": "Certificado de Calibración Acreditado",
+    "price": 45
+  },
+  {
+    "method": "NI-MCIT-V-01",
+    "service": "Calibración ",
+    "equipment": "*Calibración de Dispensador",
+    "description": "(Material Volumétrico)",
+    "measuring_range": "(10 a 250) ml y (2 a 20) L",
+    "accuracy": [
+      "N/A"
+    ],
+    "document_delivered": "Certificado de Calibración Acreditado",
+    "price": 45
+  },
+  {
+    "method": "NI-MCIT-V-01",
+    "service": "Calibración ",
+    "equipment": "*Calibración de Bureta",
+    "description": "(Material Volumétrico)",
+    "measuring_range": "(10 a 250) ml y (2 a 20) L",
+    "accuracy": [
+      "N/A"
+    ],
+    "document_delivered": "Certificado de Calibración Acreditado",
+    "price": 45
+  },
+  {
+    "method": "NI-MCIT-V-01",
+    "service": "Calibración ",
+    "equipment": "*Calibración de Probeta",
+    "description": "(Material Volumétrico)",
+    "measuring_range": "(10 a 250) ml y (2 a 20) L",
+    "accuracy": [
+      "N/A"
+    ],
+    "document_delivered": "Certificado de Calibración Acreditado",
+    "price": 45
+  },
+  {
+    "method": "NI-MCIT-V-01",
+    "service": "Calibración ",
+    "equipment": "*Calibración Tubo para Centrifuga",
+    "description": "(Material Volumétrico)",
+    "measuring_range": "(10 a 250) ml y (2 a 20) L",
+    "accuracy": [
+      "N/A"
+    ],
+    "document_delivered": "Certificado de Calibración Acreditado",
+    "price": 45
+  },
+  {
+    "method": "NI-MCIT-V-01",
+    "service": "Calibración ",
+    "equipment": "*Calibración de Beaker",
+    "description": "(Material Volumétrico)",
+    "measuring_range": "(10 a 250) ml y (2 a 20) L",
+    "accuracy": [
+      "N/A"
+    ],
+    "document_delivered": "Certificado de Calibración Acreditado",
+    "price": 45
+  },
+  {
+    "method": "NI-MCIT-V-01",
+    "service": "Calibración ",
+    "equipment": "*Calibración de Erlenmeyer",
+    "description": "(Material Volumétrico)",
+    "measuring_range": "(10 a 250) ml y (2 a 20) L",
+    "accuracy": [
+      "N/A"
+    ],
+    "document_delivered": "Certificado de Calibración Acreditado",
+    "price": 45
+  },
+  {
+    "method": "NI-MCIT-V-01",
+    "service": "Calibración ",
+    "equipment": "*Calibración de Balón Aforado",
+    "description": "(Material Volumétrico)",
+    "measuring_range": "(10 a 250) ml y (2 a 20) L",
+    "accuracy": [
+      "N/A"
+    ],
+    "document_delivered": "Certificado de Calibración Acreditado",
+    "price": 45
+  },
+  {
+    "method": "NI-MCIT-V-01",
+    "service": "Calibración ",
+    "equipment": "*Calibración de Dosificadores Volumétricos",
+    "description": "(Material Volumétrico)",
+    "measuring_range": "(10 a 250) ml y (2 a 20) L",
+    "accuracy": [
+      "N/A"
+    ],
+    "document_delivered": "Certificado de Calibración Acreditado",
+    "price": 45
+  },
+  {
+    "method": "NI-MC-IT-FL-01",
+    "service": "Calibración ",
+    "equipment": "*Calibración de Flujómetros por el método de Comparación directa",
+    "description": "(Material Volumétrico)",
+    "measuring_range": "(10 a 250) ml y (2 a 20) L",
+    "accuracy": [
+      "N/A"
+    ],
+    "document_delivered": "Certificado de Calibración Acreditado",
+    "price": 250
+  },
+  {
+    "method": "N/A",
+    "service": "Calibración ",
+    "equipment": "*Traslado técnico del banco de trabajo “servicio in situ” ",
+    "description": "En ocasiones se debe diluir o incluir en el precio de calibración del flujómetro y la cisterna).",
+    "measuring_range": "N/A",
+    "accuracy": [
+      "N/A"
+    ],
+    "document_delivered": "N/A",
+    "price": 100
+  },
+  {
+    "method": "Comparación directa",
+    "service": "Calibración ",
+    "equipment": "*Cisterna (realizado en las instalaciones de Metrocal)",
+    "description": "",
+    "measuring_range": "hasta 10 000 l/h",
+    "accuracy": [
+      "N/A"
+    ],
+    "document_delivered": "Certificado trazable",
+    "price": 200
+  },
+  {
+    "method": "N/A",
+    "service": "Traslado Técnico y logística para el servicio ",
+    "equipment": "*Traslado técnico del banco de trabajo “servicio in situ”",
+    "description": "En ocasiones se debe diluir o incluir en el precio de calibración del flujómetro y la cisterna.",
+    "measuring_range": "N/A",
+    "accuracy": [
+      "N/A"
+    ],
+    "document_delivered": "N/A",
+    "price": 100
+  },
+  {
+    "method": "Comparación directa",
+    "service": "Calibración",
+    "equipment": "*Densímetro",
+    "description": "",
+    "measuring_range": "hasta 500 ml",
+    "accuracy": [
+      "N/A"
+    ],
+    "document_delivered": "Certificado trazable",
+    "price": 45
+  },
+  {
+    "method": "Comparación directa",
+    "service": "Calibración",
+    "equipment": "*Micropipeta",
+    "description": "",
+    "measuring_range": "≥ 5 ml",
+    "accuracy": [
+      "N/A"
+    ],
+    "document_delivered": "Certificado trazable",
+    "price": 45
+  },
+  {
+    "method": "NI-MCIT-T-01",
+    "service": "Calibración",
+    "equipment": "Termómetro Analógico",
+    "description": "",
+    "measuring_range": "",
+    "accuracy": [
+      ""
+    ],
+    "document_delivered": "",
+    "price": 0
+  },
+  {
+    "method": "NI-MCIT-T-01",
+    "service": "Calibración",
+    "equipment": "Datalogger",
+    "description": "",
+    "measuring_range": "",
+    "accuracy": [
+      ""
+    ],
+    "document_delivered": "",
+    "price": 0
+  },
+  {
+    "method": "NI-MCIT-T-01",
+    "service": "Calibración",
+    "equipment": "Termómetro Digital",
+    "description": "",
+    "measuring_range": "",
+    "accuracy": [
+      ""
+    ],
+    "document_delivered": "",
+    "price": 0
+  },
+  {
+    "method": "NI-MCIT-T-01",
+    "service": "Calibración",
+    "equipment": "Termómetro Bimetálico",
+    "description": "",
+    "measuring_range": "",
+    "accuracy": [
+      ""
+    ],
+    "document_delivered": "",
+    "price": 0
+  },
+  {
+    "method": "NI-MCIT-T-01",
+    "service": "Calibración",
+    "equipment": "Termómetro Infrarrojo",
+    "description": "",
+    "measuring_range": "",
+    "accuracy": [
+      ""
+    ],
+    "document_delivered": "",
+    "price": 0
+  },
+  {
+    "method": "NI-MCIT-T-01",
+    "service": "Calibración",
+    "equipment": "Termómetro Líquido en Vidrio",
+    "description": "",
+    "measuring_range": "",
+    "accuracy": [
+      ""
+    ],
+    "document_delivered": "",
+    "price": 0
+  },
+  {
+    "method": "NI-MCIT-T-01",
+    "service": "Calibración",
+    "equipment": "Termo Balanza",
+    "description": "",
+    "measuring_range": "",
+    "accuracy": [
+      ""
+    ],
+    "document_delivered": "",
+    "price": 0
+  },
+  {
+    "method": "NI-MCIT-T-01",
+    "service": "Calibración",
+    "equipment": "Termoregistrador",
+    "description": "",
+    "measuring_range": "",
+    "accuracy": [
+      ""
+    ],
+    "document_delivered": "",
+    "price": 0
+  },
+  {
+    "method": "NI-MCIT-T-01",
+    "service": "Calibración",
+    "equipment": "Transmisores de Temperatura",
+    "description": "",
+    "measuring_range": "",
+    "accuracy": [
+      ""
+    ],
+    "document_delivered": "",
+    "price": 0
+  },
+  {
+    "method": "NI-MCIT-T-01",
+    "service": "Calibración",
+    "equipment": "Sensor de RTD",
+    "description": "",
+    "measuring_range": "",
+    "accuracy": [
+      ""
+    ],
+    "document_delivered": "",
+    "price": 0
+  },
+  {
+    "method": "NI-MCIT-T-01",
+    "service": "Calibración",
+    "equipment": "Sensor Termopar",
+    "description": "",
+    "measuring_range": "",
+    "accuracy": [
+      ""
+    ],
+    "document_delivered": "",
+    "price": 0
+  },
+  {
+    "method": "NI-MCIT-T-01",
+    "service": "Calibración",
+    "equipment": "Sensor Termocupla",
+    "description": "",
+    "measuring_range": "",
+    "accuracy": [
+      ""
+    ],
+    "document_delivered": "",
+    "price": 0
+  },
+  {
+    "method": "NI-MCIT-T-01",
+    "service": "Calibración",
+    "equipment": "Baño María",
+    "description": "",
+    "measuring_range": "",
+    "accuracy": [
+      ""
+    ],
+    "document_delivered": "",
+    "price": 0
+  },
+  {
+    "method": "NI-MCIT-T-01",
+    "service": "Calibración",
+    "equipment": "Incubadora",
+    "description": "",
+    "measuring_range": "",
+    "accuracy": [
+      ""
+    ],
+    "document_delivered": "",
+    "price": 0
+  },
+  {
+    "method": "NI-MCIT-T-01",
+    "service": "Calibración",
+    "equipment": "Baño de líquido",
+    "description": "",
+    "measuring_range": "",
+    "accuracy": [
+      ""
+    ],
+    "document_delivered": "",
+    "price": 0
   }
 ]

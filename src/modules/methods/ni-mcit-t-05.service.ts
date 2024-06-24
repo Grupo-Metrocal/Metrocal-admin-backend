@@ -617,6 +617,7 @@ export class NI_MCIT_T_05Service {
           temperature: `Temperatura: ${sheet.cell('E46').value()} °C ± ${sheet.cell('G46').value()} °C`,
           humidity: `Humedad: ${sheet.cell('E47').value()} % ± ${sheet.cell('G47').value()} %`,
         },
+        creditable: method.description_pattern.creditable,
         client_email: activity.quote_request.client.email,
         observations: `
         ${method.description_pattern.observation}

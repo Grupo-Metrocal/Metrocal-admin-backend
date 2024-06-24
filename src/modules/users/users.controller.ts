@@ -3,25 +3,20 @@ import {
   Get,
   Post,
   Body,
-  Put,
   Param,
   Delete,
-  UploadedFile,
-  UseInterceptors,
   UseGuards,
   HttpException,
-  ParseFilePipeBuilder,
 } from '@nestjs/common'
 import { UsersService } from './users.service'
 import { CreateUserDto } from './dto/create-user.dto'
 import { UpdateUserDto } from './dto/update-user.dto'
-import { UpdateProfileImageDto } from './dto/update-profile-image.dto'
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard'
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger'
 import { PasswordRestoreDto } from './dto/password-restore.dto'
-import { handleBadrequest, handleOK } from 'src/common/handleHttp'
+import { handleBadrequest } from 'src/common/handleHttp'
 import { InvitationMail } from '../mail/dto/invitation-mail.dto'
-import { FileInterceptor } from '@nestjs/platform-express'
+import { ChangePasswordDto } from './dto/change-password.dto'
 
 @ApiBearerAuth()
 @ApiTags('users')
@@ -121,5 +116,11 @@ export class UsersController {
   @Get('data-user/:token')
   async dataUser(@Param('token') token: string) {
     return await this.usersService.getUserData(token)
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Post('change-password')
+  async changePassword(@Body() body: ChangePasswordDto) {
+    return await this.usersService.changePassword(body)
   }
 }
