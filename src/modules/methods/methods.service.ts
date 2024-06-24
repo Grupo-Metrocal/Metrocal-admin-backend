@@ -556,4 +556,23 @@ export class MethodsService {
       return handleInternalServerError(error.message)
     }
   }
+
+  async getMethodByID(method_name: string, method_id: number) {
+    try {
+      const repository = `${method_name}Repository`
+      const method = await this[repository].findOne({
+        where: {
+          id: method_id,
+        },
+      })
+
+      if (!method) {
+        return handleBadrequest(new Error('El método no existe'))
+      }
+
+      return handleOK(method)
+    } catch (error) {
+      return handleInternalServerError(error.message)
+    }
+  }
 }

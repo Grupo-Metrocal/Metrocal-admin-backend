@@ -709,7 +709,7 @@ export class NI_MCIT_P_01Service {
         return handleOK('El método ya tiene un código de certificado')
       }
 
-      const certificate = await this.certificateService.create('P')
+      const certificate = await this.certificateService.create('P', methodID)
 
       method.certificate_code = certificate.data.code
       method.certificate_id = certificate.data.id

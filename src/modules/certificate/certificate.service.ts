@@ -13,7 +13,7 @@ export class CertificateService {
     private readonly dataSource: DataSource,
   ) {}
 
-  async create(prefix: string) {
+  async create(prefix: string, methodId: number) {
     try {
       const certificate = new Certificate()
 
@@ -21,8 +21,8 @@ export class CertificateService {
         const certificateCreated = await manager.save(certificate)
 
         const code = generateCertCode({
-          id: certificateCreated.id,
-          modificationsNumber: 1,
+          id: methodId,
+          modificationsNumber: 0,
           prefix: prefix,
         })
         certificateCreated.code = code
