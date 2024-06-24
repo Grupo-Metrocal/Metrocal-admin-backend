@@ -73,6 +73,7 @@ export class GENERIC_METHODService {
             await manager.save(method.equipment_information);
             await manager.save(method);
           });
+          return handleOK(method.equipment_information);
     }
     catch (error) {
       return handleInternalServerError(error.message);
@@ -108,6 +109,7 @@ export class GENERIC_METHODService {
             await manager.save(method.environmental_conditions);
             await manager.save(method);
           });
+          return handleOK(method.environmental_conditions);
     }
     catch (error) {
       return handleInternalServerError(error.message);
@@ -143,6 +145,7 @@ export class GENERIC_METHODService {
             await manager.save(method.computer_data);
             await manager.save(method);
           });
+          return handleOK(method.computer_data);
     }
     catch (error) {
       return handleInternalServerError(error.message);
@@ -178,6 +181,7 @@ export class GENERIC_METHODService {
             await manager.save(method.result_medition);
             await manager.save(method);
           });
+          return handleOK(method.result_medition);
     }
     catch (error) {
       return handleInternalServerError(error.message);
