@@ -37,6 +37,7 @@ import { formatPrice } from 'src/utils/formatPrices'
 import { MethodsService } from '../methods/methods.service'
 import { PaginationQueryDinamicDto } from './dto/pagination-dinamic.dto'
 import { ReviewEquipmentDto } from './dto/review-equipment.dto'
+import { formatDate } from 'src/utils/formatDate'
 
 @Injectable()
 export class QuotesService {
@@ -371,11 +372,7 @@ export class QuotesService {
     )
     data['total'] = quote.price
     data['client'] = quote.client
-    data['date'] = quote.created_at.toLocaleDateString('es-ES', {
-      year: 'numeric',
-      month: 'short',
-      day: 'numeric',
-    })
+    data['date'] = formatDate(quote.created_at)
 
     return await this.pdfService.generatePdf(template, data)
   }
