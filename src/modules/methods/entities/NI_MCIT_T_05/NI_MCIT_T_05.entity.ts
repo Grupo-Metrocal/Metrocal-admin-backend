@@ -12,6 +12,12 @@ export class NI_MCIT_T_05 {
   @Column({ nullable: true })
   calibration_location?: string
 
+  @Column({ nullable: true })
+  applicant_address?: string
+
+  @Column({ nullable: true })
+  applicant_name: string
+
   @Column({ nullable: true, default: false, type: 'boolean' })
   report_status?: boolean
 
