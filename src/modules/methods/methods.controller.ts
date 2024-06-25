@@ -32,7 +32,7 @@ import { InstrumentZeroCheckNI_MCIT_D_01Dto } from './dto/NI_MCIT_D_01/instrumen
 import { ExteriorParallelismMeasurementNI_MCIT_D_01Dto } from './dto/NI_MCIT_D_01/exterior_parallelism_measurement.dto'
 import { InteriorParallelismMeasurementNI_MCIT_D_01Dto } from './dto/NI_MCIT_D_01/interior_parallelism_measurement.dto'
 import { ExteriorMeasurementAccuracyNI_MCIT_D_01Dto } from './dto/NI_MCIT_D_01/exterior_measurement_accuracy.dto'
-import { AddLocationDto } from './dto/NI_MCIT_P_01/add_location.dto'
+import { CertificationDetailsDto } from './dto/NI_MCIT_P_01/certification_details.dto'
 import { EmmitReportDto } from './dto/emmit-report.dto'
 
 import { EquipmentInformationT_01Dto } from './dto/NI_MCIT_T_01/equipment-information.dto'
@@ -175,11 +175,11 @@ export class MethodsController {
 
   @Post('ni-mcit-p-01/calibration-location/:methodId')
   async createNI_MCIT_P_01CalibrationLocation(
-    @Body() { location }: AddLocationDto,
+    @Body() certificationDetails: CertificationDetailsDto,
     @Param('methodId') methodId: number,
   ) {
     return await this.ni_mcit_p_01Service.addCalibrationLocation(
-      location,
+      certificationDetails,
       methodId,
     )
   }
@@ -475,11 +475,11 @@ export class MethodsController {
   //T-01
   @Post('ni-mcit-t-01/calibration-location/:methodId')
   async createNI_MCIT_T_01CalibrationLocation(
-    @Body() { location }: AddLocationDto,
+    @Body() certificationDetails: CertificationDetailsDto,
     @Param('methodId') methodId: number,
   ) {
     return await this.ni_mcit_t_01Service.addCalibrationLocation(
-      location,
+      certificationDetails,
       methodId,
     )
   }
@@ -558,11 +558,11 @@ export class MethodsController {
 
   @Post('ni-mcit-m-01/calibration-location/:methodId')
   async createNI_MCIT_M_01CalibrationLocation(
-    @Body() { location }: AddLocationDto,
+    @Body() certificationDetails: CertificationDetailsDto,
     @Param('methodId') methodId: number,
   ) {
     return await this.ni_mcit_m_01Service.addCalibrationLocation(
-      location,
+      certificationDetails,
       methodId,
     )
   }
@@ -665,11 +665,11 @@ export class MethodsController {
   //T-03
   @Post('ni-mcit-t-03/calibration-location/:methodId')
   async createNI_MCIT_T_03CalibrationLocation(
-    @Body() { location }: AddLocationDto,
+    @Body() certificationDetails: CertificationDetailsDto,
     @Param('methodId') methodId: number,
   ) {
     return await this.ni_mcit_t_03Service.addCalibrationLocation(
-      location,
+      certificationDetails,
       methodId,
     )
   }
@@ -830,11 +830,11 @@ export class MethodsController {
 
   @Post('ni-mcit-t-05/calibration-location/:methodId')
   async createNI_MCIT_T_05CalibrationLocation(
-    @Body() { location }: AddLocationDto,
+    @Body() certificationDetails: CertificationDetailsDto,
     @Param('methodId') methodId: number,
   ) {
     return await this.ni_mcit_t_05Service.addCalibrationLocation(
-      location,
+      certificationDetails,
       methodId,
     )
   }
@@ -914,11 +914,11 @@ export class MethodsController {
 
   @Post('ni-mcit-v-01/calibration-location/:methodId')
   async createNI_MCIT_V_01CalibrationLocation(
-    @Body() { location }: AddLocationDto,
+    @Body() certificationDetails: CertificationDetailsDto,
     @Param('methodId') methodId: number,
   ) {
     return await this.ni_mcit_v_01Service.addCalibrationLocation(
-      location,
+      certificationDetails,
       methodId,
     )
   }
