@@ -12,6 +12,11 @@ export class PdfService {
     const templatePath = join(__dirname, 'templates/pdf', template)
     const templateContent = readFileSync(templatePath, 'utf-8')
 
+    const metrocalLogo = await this.fetchImageAsBase64(
+      'https://app-grupometrocal.com/development/api/images/image/metrocal.webp',
+    )
+    data.metrocalLogo = metrocalLogo
+
     const compiledTemplate = compile(templateContent)
 
     const html = compiledTemplate(data)
@@ -32,7 +37,7 @@ export class PdfService {
         format: 'A4',
         printBackground: true,
         displayHeaderFooter: true,
-        footerTemplate: `true`,
+        footerTemplate: "<div style=\"text-align: right;width: 297mm;font-size: 8px;\"><span style=\"margin-right: 1cm\"><span class=\"pageNumber\"></span> de <span class=\"totalPages\"></span></span></div>",
       })
     } catch (e) {
       return false
@@ -102,6 +107,73 @@ export class PdfService {
         height: '11in',
         margin: {
           top: '1in',
+          bottom: '1in',
+          left: '0.4in',
+          right: '0.4in',
+        },
+      })
+
+      return pdfBuffer
+    } catch (error) {
+      console.error(error.message)
+      return false
+    } finally {
+      await browser.close()
+    }
+  }
+
+  async generateQuoteRequestPdf( data: any) {
+    const templatePath = join(__dirname, 'templates/pdf/quoteRequestDownload/approved_quote_request.hbs')
+    const templateContent = readFileSync(templatePath, 'utf-8')
+
+    const compiledTemplate = compile(templateContent)
+
+    const html = compiledTemplate(data)
+
+    const browser = await launch({
+      headless: 'new',
+      executablePath:
+        process.env.NODE_ENV === 'production'
+          ? process.env.PUPPETEER_EXEC_PATH
+          : executablePath(),
+    })
+    try {
+      const page = await browser.newPage()
+      data.metrocalLogo = await this.fetchImageAsBase64(
+        'https://app-grupometrocal.com/development/api/images/image/metrocal.webp',
+      )
+      data.onaLogo = await this.fetchImageAsBase64(
+        'https://app-grupometrocal.com/development/api/images/image/ona.webp',
+      )
+
+      // Agregar encabezado y pie de página
+      const headerTemplate = compile(
+        readFileSync(
+          join(__dirname, 'templates/pdf/quoteRequestDownload/header.hbs'),
+          'utf-8',
+        ),
+      )(data)
+
+      const footerTemplate = compile(
+        readFileSync(
+          join(__dirname, 'templates/pdf/quoteRequestDownload/footer.hbs'),
+          'utf-8',
+        ),
+      )(data)
+
+      await page.setContent(html)
+      await page.waitForTimeout(1000)
+
+      const pdfBuffer = await page.pdf({
+        format: 'A4',
+        printBackground: true,
+        displayHeaderFooter: true,
+        headerTemplate,
+        footerTemplate,
+        width: '8.5in',
+        height: '11in',
+        margin: {
+          top: '1.1in',
           bottom: '1in',
           left: '0.4in',
           right: '0.4in',
