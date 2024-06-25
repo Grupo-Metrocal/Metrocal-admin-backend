@@ -89,7 +89,6 @@ export class QuotesController {
   @Get('request/pdf/:id')
   async getQuoteRequestPdf(@Param('id') id: number, @Res() res: Response) {
     const pdfBuffer = await this.quotesService.getQuoteRequestPdf(
-      'approved_quote_request.hbs',
       id,
     )
 
