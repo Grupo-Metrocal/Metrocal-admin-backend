@@ -343,7 +343,7 @@ export class QuotesService {
     return await this.getQuoteRequestById(id)
   }
 
-  async getQuoteRequestPdf(template: string, id: number) {
+  async getQuoteRequestPdf(id: number) {
     const { data: quote } = await this.getQuoteRequestById(id)
 
     if (!quote) {
@@ -353,28 +353,31 @@ export class QuotesService {
     const data = {}
 
     data['servicesAndEquipments'] = quote.equipment_quote_request.map(
-      (equipment) => {
+      (equipment, index) => {
         return {
+          index: index + 1,
           service: equipment.type_service,
           equipment: equipment.name,
+          method: equipment.calibration_method || 'Sin asignar',
           count: equipment.count,
-          unitPrice: equipment.price,
-          subTotal: equipment.total,
-          discount: equipment.discount,
+          unitPrice: formatPrice(equipment.price),
+          subTotal: formatPrice(equipment.total),
+          discount: equipment.discount > 0 ? equipment.discount : 'N/A',
         }
       },
     )
     data['tax'] = quote.tax
-    data['discount'] = quote.general_discount
-    data['subtotal'] = quote.equipment_quote_request.reduce(
+    data['discount'] = quote.general_discount > 0 ? quote.general_discount : 'N/A'
+    data['subtotal'] = formatPrice(quote.equipment_quote_request.reduce(
       (acc, equipment) => acc + equipment.total,
       0,
-    )
-    data['total'] = quote.price
+    ))
+    data['total'] = formatPrice(quote.price)
     data['client'] = quote.client
     data['date'] = formatDate(quote.created_at)
+    data['no'] = quote.no
 
-    return await this.pdfService.generatePdf(template, data)
+    return await this.pdfService.generateQuoteRequestPdf(data)
   }
 
   async approvedOrRejectedQuoteByClient(
