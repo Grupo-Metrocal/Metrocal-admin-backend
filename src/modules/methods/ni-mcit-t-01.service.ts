@@ -305,7 +305,7 @@ export class NI_MCIT_T_01Service {
       !equipment_information ||
       !environmental_conditions ||
       !description_pattern ||
-      !calibration_results
+      calibration_results.results.length === 0
     ) {
       return handleInternalServerError(
         'El método no tiene la información necesaria para generar el certificado',
@@ -359,6 +359,7 @@ export class NI_MCIT_T_01Service {
 
       // calibration results
       let initialRow = 23
+
       for (const value of calibration_results.results) {
         initialRow++
 
@@ -406,7 +407,6 @@ export class NI_MCIT_T_01Service {
 
       return this.getCertificateResult(method.id, activityID)
     } catch (error) {
-      await this.methodService.killExcelProcess(method.certificate_url)
       return handleInternalServerError(error.message)
     }
   }
