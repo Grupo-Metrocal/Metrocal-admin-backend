@@ -25,6 +25,7 @@ import * as fs from 'fs'
 import { Activity } from '../activities/entities/activities.entity'
 import { generateServiceCodeToMethod } from 'src/utils/codeGenerator'
 import { formatDate } from 'src/utils/formatDate'
+import { CertificationDetailsDto } from './dto/NI_MCIT_P_01/certification_details.dto'
 
 @Injectable()
 export class NI_MCIT_T_03Service {
@@ -70,7 +71,7 @@ export class NI_MCIT_T_03Service {
     }
   }
 
-  async addCalibrationLocation(calibrationLocation: string, methodId: number) {
+  async addCalibrationLocation(certificatonDetails: CertificationDetailsDto, methodId: number) {
     const method = await this.NI_MCIT_T_03Repository.findOne({
       where: { id: methodId },
     })
@@ -79,7 +80,9 @@ export class NI_MCIT_T_03Service {
       return handleInternalServerError('El método no existe')
     }
 
-    method.calibration_location = calibrationLocation
+    method.calibration_location = certificatonDetails.location
+    method.applicant_name = certificatonDetails.applicant_address
+    method.applicant_address = certificatonDetails.applicant_name
 
     try {
       await this.NI_MCIT_T_03Repository.save(method)

@@ -27,6 +27,7 @@ import * as fs from 'fs'
 import { MailService } from '../mail/mail.service'
 import { PatternsService } from '../patterns/patterns.service'
 import { MethodsService } from './methods.service'
+import { CertificationDetailsDto } from './dto/NI_MCIT_P_01/certification_details.dto'
 
 @Injectable()
 export class NI_MCIT_P_01Service {
@@ -112,7 +113,7 @@ export class NI_MCIT_P_01Service {
     }
   }
 
-  async addCalibrationLocation(calibrationLocation: string, methodId: number) {
+  async addCalibrationLocation(certificatonDetails: CertificationDetailsDto, methodId: number) {
     const method = await this.NI_MCIT_P_01Repository.findOne({
       where: { id: methodId },
     })
@@ -121,7 +122,9 @@ export class NI_MCIT_P_01Service {
       return handleInternalServerError('El método no existe')
     }
 
-    method.calibration_location = calibrationLocation
+    method.calibration_location = certificatonDetails.location
+    method.applicant_name = certificatonDetails.applicant_address
+    method.applicant_address = certificatonDetails.applicant_name
 
     try {
       await this.NI_MCIT_P_01Repository.save(method)
