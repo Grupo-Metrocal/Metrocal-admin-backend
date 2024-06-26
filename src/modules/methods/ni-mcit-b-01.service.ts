@@ -30,6 +30,7 @@ import { generateServiceCodeToMethod } from 'src/utils/codeGenerator'
 import { formatDate } from 'src/utils/formatDate'
 import { MethodsService } from './methods.service'
 import { Methods } from './entities/method.entity'
+import { CertificationDetailsDto } from './dto/NI_MCIT_P_01/certification_details.dto'
 
 @Injectable()
 export class NI_MCIT_B_01Service {
@@ -77,6 +78,28 @@ export class NI_MCIT_B_01Service {
       return handleOK(method)
     } catch (error) {
       return handleInternalServerError(error)
+    }
+  }
+
+  async addCalibrationLocation(certificatonDetails: CertificationDetailsDto, methodId: number) {
+    const method = await this.NI_MCIT_B_01Repository.findOne({
+      where: { id: methodId },
+    })
+
+    if (!method) {
+      return handleInternalServerError('El método no existe')
+    }
+
+    method.calibration_location = certificatonDetails.location
+    method.applicant_name = certificatonDetails.applicant_address
+    method.applicant_address = certificatonDetails.applicant_name
+
+    try {
+      await this.NI_MCIT_B_01Repository.save(method)
+
+      return handleOK(method)
+    } catch (error) {
+      return handleInternalServerError(error.message)
     }
   }
 
@@ -430,7 +453,7 @@ export class NI_MCIT_B_01Service {
 
       //environmental conditions
       const environmentalConditions = method.environmental_conditions
-      sheetGeneral.cell('I3').value(environmentalConditions.stabilization_site)
+      sheetGeneral.cell('I3').value(method.calibration_location)
       sheetGeneral.cell('I4').value(environmentalConditions.equipment_used)
       sheetGeneral.cell('I6').value(environmentalConditions.cycles.ta.initial)
       sheetGeneral.cell('I7').value(environmentalConditions.cycles.ta.end)
@@ -738,17 +761,17 @@ export class NI_MCIT_B_01Service {
           serviceCode: generateServiceCodeToMethod(method.id),
           certificate_issue_date: formatDate(new Date().toString()),
           calibrationDate: formatDate(activity.update_at),
-          ObjetCalibrated: equipment_information.device,
-          maker: equipment_information.maker,
-          serial_number: equipment_information.serial_number,
-          model: equipment_information.model,
-          measure_range: equipment_information.measurement_range,
-          resolution: equipment_information.resolution,
-          code: equipment_information.code,
-          applicant: activity.quote_request.client.company_name,
-          address: activity.quote_request.client.address,
+          ObjetCalibrated: equipment_information.device || '---',
+          maker: equipment_information.maker || '---',
+          serial_number: equipment_information.serial_number || '---',
+          model: equipment_information.model || '---',
+          measure_range: equipment_information.measurement_range || '---',
+          resolution: equipment_information.resolution || '---',
+          code: equipment_information.code || '---',
+          applicant: method?.applicant_name || activity.quote_request.client.company_name,
+          address: method?.applicant_address || activity.quote_request.client.address,
           calibrationLocation:
-            method.environmental_conditions.stabilization_site,
+            method.calibration_location,
         },
         calibratioResult: {
           referentMass: referentMass,
