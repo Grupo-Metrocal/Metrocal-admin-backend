@@ -39,6 +39,7 @@ import {
 } from './dto/NI_MCIT_D_01/PositionBPDto'
 import { formatDate } from 'src/utils/formatDate'
 import { CertificateService } from '../certificate/certificate.service'
+import { CertificationDetailsDto } from './dto/NI_MCIT_P_01/certification_details.dto'
 
 @Injectable()
 export class NI_MCIT_D_01Service {
@@ -82,6 +83,28 @@ export class NI_MCIT_D_01Service {
     try {
       const newNI_MCIT_D_01 = this.NI_MCIT_D_01Repository.create()
       const method = await this.NI_MCIT_D_01Repository.save(newNI_MCIT_D_01)
+      return handleOK(method)
+    } catch (error) {
+      return handleInternalServerError(error.message)
+    }
+  }
+
+  async addCalibrationLocation(certificatonDetails: CertificationDetailsDto, methodId: number) {
+    const method = await this.NI_MCIT_D_01Repository.findOne({
+      where: { id: methodId },
+    })
+
+    if (!method) {
+      return handleInternalServerError('El método no existe')
+    }
+
+    method.calibration_location = certificatonDetails.location
+    method.applicant_name = certificatonDetails.applicant_address
+    method.applicant_address = certificatonDetails.applicant_name
+
+    try {
+      await this.NI_MCIT_D_01Repository.save(method)
+
       return handleOK(method)
     } catch (error) {
       return handleInternalServerError(error.message)
@@ -520,7 +543,7 @@ export class NI_MCIT_D_01Service {
       sheetEC.cell('D20').value(method.environmental_conditions.equipment_used)
       sheetEC
         .cell('F20')
-        .value(method.environmental_conditions.stabilization_site)
+        .value(method.calibration_location)
       sheetEC
         .cell('E20')
         .value(
@@ -1006,18 +1029,6 @@ export class NI_MCIT_D_01Service {
       let tiempo = sheetDA.cell('J69').value()
       condicionesAmbientales.push(tiempo)
 
-      //Fecha
-      const fechaOriginal = method.equipment_information.date
-      const fecha = new Date(fechaOriginal)
-
-      // Obteniendo los componentes de la fecha
-      const dia = fecha.getDate().toString().padStart(2, '0')
-      const mes = (fecha.getMonth() + 1).toString().padStart(2, '0') // Enero es 0, así que necesitas sumar 1
-      const año = fecha.getFullYear()
-
-      // Formato de fecha: dd/mm/yyyy
-      const fechaFormateada = `${dia}/${mes}/${año}`
-
       const descipcioPatrines = []
 
       //lectura de datos para pdf
@@ -1025,10 +1036,10 @@ export class NI_MCIT_D_01Service {
       const dataNI_R01_MCIT_D_01 = {
         client: {
           Empresa: dataClient.company_name,
-          fecha: fechaFormateada,
+          fecha: formatDate(method.equipment_information.date),
           LugarCalibracion: dataClient.address,
           Codigo: dataQuote.no,
-          fechaCertificate: Date.now(),
+          fechaCertificate: formatDate(Date.now().toString()),
         },
         informacionEquipo: {
           Dispositivo: method.equipment_information.device,
@@ -1046,7 +1057,7 @@ export class NI_MCIT_D_01Service {
           CicloInicialHr: method.environmental_conditions.cycles.hr.initial,
           CicloFinalHr: method.environmental_conditions.cycles.hr.end,
           EquipoUsado: method.environmental_conditions.equipment_used,
-          Estabilizacion: method.environmental_conditions.stabilization_site,
+          Estabilizacion: method.calibration_location,
         },
         descipcioPatrines,
         dataCalibrationExterior,
@@ -1082,18 +1093,18 @@ export class NI_MCIT_D_01Service {
           datoscabecera: {
             numeroCertificado: serviceCode,
             codigoServicio: methodAcredited.certificate_code,
-            fechaCalibracion: method.created_at,
+            fechaCalibracion: formatDate(method.created_at.toString()),
             fechaEmision: formatDate(new Date().toString()),
-            objetoCalibracion: method.equipment_information.device,
-            marca: method.equipment_information.maker,
-            serie: method.equipment_information.serial_number,
-            modelo: method.equipment_information.model,
-            rangoMedida: method.equipment_information.measurement_range,
-            resolucion: method.equipment_information.resolution,
-            codigoIdentificacion: method.equipment_information.code,
-            Solicitante: dataClient.company_name,
-            direccion: dataClient.address,
-            lugarCalibracion: dataClient.address,
+            objetoCalibracion: method.equipment_information.device  || '---',
+            marca: method.equipment_information.maker || '---',
+            serie: method.equipment_information.serial_number || '---',
+            modelo: method.equipment_information.model || '---',
+            rangoMedida: method.equipment_information.measurement_range || '---',
+            resolucion: method.equipment_information.resolution || '---',
+            codigoIdentificacion: method.equipment_information.code || '---',
+            Solicitante: method?.applicant_name || dataClient.company_name,
+            direccion: method?.applicant_address || dataClient.address,
+            lugarCalibracion: method.calibration_location,
           },
           ResultadoCalibracion: {
             dataCalibration,
@@ -1110,18 +1121,18 @@ export class NI_MCIT_D_01Service {
         dataDA = {
           datoscabecera: {
             numeroCertificado: serviceCode,
-            fechaCalibracion: method.created_at,
+            fechaCalibracion: formatDate(method.created_at.toString()),
             fechaEmision: formatDate(new Date().toString()),
-            objetoCalibracion: method.equipment_information.device,
-            marca: method.equipment_information.maker,
-            serie: method.equipment_information.serial_number,
-            modelo: method.equipment_information.model,
-            rangoMedida: method.equipment_information.measurement_range,
-            resolucion: method.equipment_information.resolution,
-            codigoIdentificacion: method.equipment_information.code,
-            Solicitante: dataClient.company_name,
-            direccion: dataClient.address,
-            lugarCalibracion: dataClient.address,
+            objetoCalibracion: method.equipment_information.device || '---',
+            marca: method.equipment_information.maker || '---',
+            serie: method.equipment_information.serial_number || '---',
+            modelo: method.equipment_information.model || '---',
+            rangoMedida: method.equipment_information.measurement_range || '---',
+            resolucion: method.equipment_information.resolution || '---',
+            codigoIdentificacion: method.equipment_information.code || '---',
+            Solicitante: method?.applicant_name || dataClient.company_name,
+            direccion: method?.applicant_address || dataClient.address,
+            lugarCalibracion: method.calibration_location,
           },
           ResultadoCalibracion: {
             dataCalibration,
