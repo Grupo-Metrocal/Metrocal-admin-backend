@@ -257,6 +257,17 @@ export class MethodsController {
     )
   }
 
+  @Post('ni-mcit-d-02/calibration-location/:methodId')
+  async createNI_MCIT_D_02CalibrationLocation(
+    @Body() certificationDetails: CertificationDetailsDto,
+    @Param('methodId') methodId: number,
+  ) {
+    return await this.ni_mcit_d_02Service.addCalibrationLocation(
+      certificationDetails,
+      methodId,
+    )
+  }
+
   @Get('ni-mcit-d-02/equipment/:id')
   async getEquipmentD_02ById(@Param('id') id: number) {
     return await this.ni_mcit_d_02Service.getMethodById(id)
@@ -345,6 +356,17 @@ export class MethodsController {
       activityID: activityId,
       methodID: methodId,
     })
+  }
+
+  @Post('ni-mcit-d-01/calibration-location/:methodId')
+  async createNI_MCIT_D_01CalibrationLocation(
+    @Body() certificationDetails: CertificationDetailsDto,
+    @Param('methodId') methodId: number,
+  ) {
+    return await this.ni_mcit_d_01Service.addCalibrationLocation(
+      certificationDetails,
+      methodId,
+    )
   }
 
   //* Routing for D-01
@@ -638,6 +660,17 @@ export class MethodsController {
   @Get('ni-mcit-m-01/equipment/:id')
   async getEquipmentM_01ById(@Param('id') id: number) {
     return await this.ni_mcit_m_01Service.getMehotdById(id)
+  }
+
+  @Post('ni-mcit-b-01/calibration-location/:methodId')
+  async createNI_MCIT_B_01CalibrationLocation(
+    @Body() certificationDetails: CertificationDetailsDto,
+    @Param('methodId') methodId: number,
+  ) {
+    return await this.ni_mcit_b_01Service.addCalibrationLocation(
+      certificationDetails,
+      methodId,
+    )
   }
 
   @Get('ni-mcit-b-01/equipment/:id')
