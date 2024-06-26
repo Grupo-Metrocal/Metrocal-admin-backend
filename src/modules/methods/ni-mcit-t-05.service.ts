@@ -612,8 +612,8 @@ export class NI_MCIT_T_05Service {
           measurement_range: `${method.equipment_information.temperature_min} ${method.equipment_information.unit} a ${method.equipment_information.temperature_max} ${method.equipment_information.unit}`,
           model: method.equipment_information.model || '---',
           code: method.equipment_information.code || '---',
-          applicant: activity.quote_request.client.company_name,
-          address: activity.quote_request.client.address,
+          applicant: method?.applicant_name || activity.quote_request.client.company_name,
+          address: method?.applicant_address || activity.quote_request.client.address,
           calibration_location: method.calibration_location || '---',
         },
         environmental_conditions: {

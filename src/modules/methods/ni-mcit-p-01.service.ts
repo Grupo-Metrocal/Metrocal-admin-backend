@@ -620,8 +620,8 @@ export class NI_MCIT_P_01Service {
             `${method.equipment_information.resolution} ${method.equipment_information.unit}` ||
             '---',
           code: method.equipment_information.code || '---',
-          applicant: activity.quote_request.client.company_name,
-          address: activity.quote_request.client.address,
+          applicant: method?.applicant_name || activity.quote_request.client.company_name,
+          address: method?.applicant_address || activity.quote_request.client.address,
           calibration_location: method.calibration_location || '---',
         },
         calibration_results,

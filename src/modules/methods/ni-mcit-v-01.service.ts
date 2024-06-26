@@ -564,8 +564,8 @@ export class NI_MCIT_V_01Service {
           nominal_range: method.equipment_information.nominal_range || '---',
           scale_division: method.equipment_information.scale_division || '---',
           code: method.equipment_information.code || '---',
-          applicant: activity.quote_request.client.company_name,
-          address: activity.quote_request.client.address,
+          applicant: method?.applicant_name || activity.quote_request.client.company_name,
+          address: method?.applicant_address || activity.quote_request.client.address,
           calibration_location: method.calibration_location || '---',
         },
         environmental_conditions: {

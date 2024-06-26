@@ -503,8 +503,8 @@ export class NI_MCIT_M_01Service {
           device: method.equipment_information.calibration_object || '---',
           maker: method.equipment_information.maker || '---',
           maximum_capacity: method.description_pattern.maximum_capacity || '---',
-          applicant: activity.quote_request.client.company_name,
-          address: activity.quote_request.client.address,
+          applicant: method?.applicant_name || activity.quote_request.client.company_name,
+          address: method?.applicant_address || activity.quote_request.client.address,
           calibration_location: method.calibration_location || '---',
         },
         environmental_conditions: {
