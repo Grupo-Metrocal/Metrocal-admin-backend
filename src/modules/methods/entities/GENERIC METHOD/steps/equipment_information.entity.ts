@@ -42,9 +42,6 @@ export class EquipmentInformationGENERIC_METHOD {
     code?: string
 
     @Column({ type: 'varchar', nullable: true })
-    length?: string
-
-    @Column({ type: 'varchar', nullable: true })
     estabilization_site?: string
 
 }

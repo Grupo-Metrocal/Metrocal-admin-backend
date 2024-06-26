@@ -1,4 +1,4 @@
-import { Injectable } from "@nestjs/common";
+import { Inject, Injectable, forwardRef } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
 import { DataSource, Repository } from "typeorm";
 import { GENERIC_METHOD } from "./entities/GENERIC METHOD/GENERIC_METHOD.entity";
@@ -11,6 +11,18 @@ import { EquipmentInformationGENERIC_METHOD } from "./entities/GENERIC METHOD/st
 import { ComputerDataGENERIC_METHOD } from "./entities/GENERIC METHOD/steps/computer_data.entity";
 import { ComputerDataGENERIC_METHODDto } from "./dto/GENERIC METHOD/computer_data.dto";
 import { ResultMeditionGENERIC_METHOD } from "./entities/GENERIC METHOD/steps/result_medition.entity";
+import { formatDate } from 'src/utils/formatDate'
+import { PdfService } from '../mail/pdf.service'
+import { MailService } from '../mail/mail.service'
+import { MethodsService } from './methods.service'
+
+import * as path from 'path'
+import * as fs from 'fs'
+import * as XlsxPopulate from 'xlsx-populate';
+import { PatternsService } from "../patterns/patterns.service";
+import { CertificateService } from "../certificate/certificate.service";
+import { exec } from "child_process";
+import { ActivitiesService } from "../activities/activities.service";
 
 @Injectable()
 export class GENERIC_METHODService {
@@ -31,6 +43,24 @@ export class GENERIC_METHODService {
     
     @InjectRepository(ResultMeditionGENERIC_METHOD)
     private readonly resultMeditionGENERIC_METHODRepository: Repository<ResultMeditionGENERIC_METHOD>,
+  
+    @Inject(forwardRef(() => ActivitiesService))
+    private activitiesService: ActivitiesService, 
+    
+    @Inject(forwardRef(() => PatternsService))
+    private readonly patternsService: PatternsService,
+
+    @Inject(forwardRef(() => CertificateService))
+    private readonly certificateService: CertificateService,
+
+    @Inject(forwardRef(() => PdfService))
+    private readonly pdfService: PdfService,
+
+    @Inject(forwardRef(() => MailService))
+    private readonly mailService: MailService,
+
+    @Inject(forwardRef(() => MethodsService))
+    private readonly methodService: MethodsService,
   ) {}
 
   async create(){
@@ -187,4 +217,190 @@ export class GENERIC_METHODService {
       return handleInternalServerError(error.message);
     }
   }
+
+  //get generate certificate 
+  async generateCertificate({
+    activityID,
+    methodID,
+  }:{
+    activityID: number
+    methodID: number
+  }){
+    const method = await this.GENERIC_METHODRepository.findOne({
+      where: { id: methodID },
+      relations: [
+        'equipment_information', 
+        'environmental_conditions',
+        'computer_data', 
+        'result_medition'],
+    })
+
+    if (!method) {
+      return handleInternalServerError('El método no existe');
+    }
+
+    const { 
+      equipment_information, 
+      environmental_conditions,
+      computer_data, 
+      result_medition } = method;
+
+      if(!equipment_information || 
+        !environmental_conditions || 
+        !computer_data || 
+        !result_medition){
+          return handleInternalServerError('Faltan datos para generar el certificado');
+        }
+
+    
+    try{
+      let filePath = path.join(
+        __dirname,
+        '../mail/templates/excels/method-generic.xlsx',
+      )
+
+      if(fs.existsSync(method.certificate_url)){
+        fs.unlinkSync(method.certificate_url);
+      }
+
+      fs.copyFileSync(filePath, method.certificate_url);
+
+      const workbook = await this.XlsxPopulate.fromFileAsync(method.certificate_url);
+
+      const worksheetGenerales = workbook.sheet('Generales');
+      const worksheetEntradaDatos = workbook.sheet('Entrada de Datos');
+      
+      //date
+      worksheetGenerales.cell('C7').vaue(method.equipment_information.date);
+      //device
+      worksheetGenerales.cell('C9').value(method.equipment_information.device);
+      //maker
+      worksheetGenerales.cell('C11').value(method.equipment_information.maker);
+      //serial_number
+      worksheetGenerales.cell('C13').value(method.equipment_information.serial_number);
+      //model
+      worksheetGenerales.cell('C15').value(method.equipment_information.model);
+      //measurement_range
+      worksheetGenerales.cell('C17').value(method.equipment_information.measurement_range);
+      //scale_interval
+      worksheetGenerales.cell('C19').value(method.equipment_information.scale_interval);
+      //code
+      worksheetGenerales.cell('C21').value(method.equipment_information.code);
+      //estabilization_site
+      worksheetGenerales.cell('C27').value(method.equipment_information.estabilization_site);
+
+      //temperature
+      worksheetGenerales.cell('C30').value(method.environmental_conditions.temperature);
+      //humidity
+      worksheetGenerales.cell('C31').value(method.environmental_conditions.hr);
+
+      let fila = 10;
+      for(let i = fila; i < method.result_medition.medition.length; i++){
+        worksheetEntradaDatos.cell(`A${fila}`).value(method.result_medition.medition[i].patron1);
+        worksheetEntradaDatos.cell(`B${fila}`).value(method.result_medition.medition[i].equiopo1);
+        worksheetEntradaDatos.cell(`C${fila}`).value(method.result_medition.medition[i].patron2);
+        worksheetEntradaDatos.cell(`D${fila}`).value(method.result_medition.medition[i].equiopo2);
+        worksheetEntradaDatos.cell(`E${fila}`).value(method.result_medition.medition[i].patron3);
+        worksheetEntradaDatos.cell(`F${fila}`).value(method.result_medition.medition[i].equiopo3);
+        fila++;
+      }
+
+      worksheetEntradaDatos.cell('C2').value(method.computer_data.scale_unit);
+      worksheetEntradaDatos.cell('C3').value(method.computer_data.unit_of_measurement);
+      worksheetEntradaDatos.cell('C4').value(method.environmental_conditions.equipment_used);
+
+      workbook.toFileAsync(method.certificate_url)
+      await this.autoSaveExcel(method.certificate_url)
+
+      return this.getCertificateResult(method.id, activityID)
+    }catch(error){
+      return handleInternalServerError(error.message);
+    }
+  }
+
+  async getCertificateResult(methodID: number, activityID: number)
+  {
+    try{
+      const method = await this.GENERIC_METHODRepository.findOne({
+        where: { id: methodID },
+        relations: [
+          'equipment_information', 
+          'environmental_conditions',
+          'computer_data', 
+          'result_medition'],
+      })
+
+      if (!method) {
+        return handleInternalServerError('El método no existe');
+      }
+
+      const { 
+        equipment_information, 
+        environmental_conditions,
+        computer_data, 
+        result_medition } = method;
+
+        if(!equipment_information || 
+          !environmental_conditions || 
+          !computer_data || 
+          !result_medition){
+            return handleInternalServerError('Faltan datos para generar el certificado');
+          }
+
+      const dataActivity = await this.activitiesService.getActivitiesByID(activityID);
+
+      if(!dataActivity){
+        return handleInternalServerError('La actividad no existe');
+      }
+
+      const activity = dataActivity.data;
+
+      const reopnedWorkbook = await this.XlsxPopulate.fromFileAsync(method.certificate_url);
+
+      const worksheetFa1pto = reopnedWorkbook.sheet('FA  1 pto');
+      
+
+
+
+
+   
+    }catch(error){
+      return handleInternalServerError(error.message);
+    }
+  }
+
+  async autoSaveExcel(filePath: string) {
+    return new Promise((resolve, reject) => {
+      // save excel file from powershell
+
+      const powershellCommand = `
+      $Excel = New-Object -ComObject Excel.Application
+      $Excel.Visible = $false
+      $Excel.DisplayAlerts = $false
+      $Workbook = $Excel.Workbooks.Open('${filePath}')
+      $Workbook.Save()
+      $Workbook.Close()
+      $Excel.Quit()
+
+      `
+
+      exec(
+        powershellCommand,
+        { shell: 'powershell.exe' },
+        (error, stdout, stderr) => {
+          if (error) {
+            console.error(`Error al ejecutar el comando: ${error.message}`)
+            reject(error)
+          } else if (stderr) {
+            console.error(`Error en la salida estándar: ${stderr}`)
+            reject(new Error(stderr))
+          } else {
+            resolve(stdout)
+          }
+        },
+      )
+    })
+  }
+
+
 }
