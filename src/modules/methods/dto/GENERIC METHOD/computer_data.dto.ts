@@ -6,5 +6,4 @@ export class ComputerDataGENERIC_METHODDto {
 
     @ApiProperty()
     scale_unit : string
-
 }
