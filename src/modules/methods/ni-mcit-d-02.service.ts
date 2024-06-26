@@ -33,6 +33,7 @@ import { generateServiceCodeToMethod } from 'src/utils/codeGenerator'
 import { CertificateService } from '../certificate/certificate.service'
 import { formatDate } from 'src/utils/formatDate'
 import { MailService } from '../mail/mail.service'
+import { CertificationDetailsDto } from './dto/NI_MCIT_P_01/certification_details.dto'
 
 @Injectable()
 export class NI_MCIT_D_02Service {
@@ -70,6 +71,28 @@ export class NI_MCIT_D_02Service {
     try {
       const newNI_MCIT_D_02 = this.NI_MCIT_D_02Repository.create()
       const method = await this.NI_MCIT_D_02Repository.save(newNI_MCIT_D_02)
+      return handleOK(method)
+    } catch (error) {
+      return handleInternalServerError(error.message)
+    }
+  }
+
+  async addCalibrationLocation(certificatonDetails: CertificationDetailsDto, methodId: number) {
+    const method = await this.NI_MCIT_D_02Repository.findOne({
+      where: { id: methodId },
+    })
+
+    if (!method) {
+      return handleInternalServerError('El método no existe')
+    }
+
+    method.calibration_location = certificatonDetails.location
+    method.applicant_name = certificatonDetails.applicant_address
+    method.applicant_address = certificatonDetails.applicant_name
+
+    try {
+      await this.NI_MCIT_D_02Repository.save(method)
+
       return handleOK(method)
     } catch (error) {
       return handleInternalServerError(error.message)
@@ -417,7 +440,7 @@ export class NI_MCIT_D_02Service {
         .value(environmentalConditions.time.minute)
       sheetNI_R01_MCIT_D_02
         .cell('J19')
-        .value(environmentalConditions.stabilization_site)
+        .value(method.calibration_location)
       sheetNI_R01_MCIT_D_02
         .cell('B19')
         .value(environmentalConditions.cycles.ta.initial)
@@ -747,24 +770,17 @@ export class NI_MCIT_D_02Service {
       }
 
       const patronsUtilizados = []
-      //Para generar la certificacion
-      const fechaOriginal = method.equipment_information.date
-      const fecha = new Date(fechaOriginal)
-      const dia = fecha.getDate().toString().padStart(2, '0')
-      const mes = (fecha.getMonth() + 1).toString().padStart(2, '0') // Enero es 0, así que necesitas sumar 1
-      const año = fecha.getFullYear()
-      // Formato de fecha: dd/mm/yyyy
-      const fechaFormateada = `${dia}/${mes}/${año}`
+
 
       //Datos de la certificacion
       const serviceCode = generateServiceCodeToMethod(method.id)
       const dataNI_MCIT_D_02 = {
         client: {
           Empresa: dataClient.company_name,
-          fechaCalibracion: fechaFormateada,
+          fechaCalibracion: formatDate(method.equipment_information.date),
           LugarCalibracion: dataClient.address,
           Codigo: dataQuote.no,
-          fechaCertificado: Date.now(),
+          fechaCertificado: formatDate(Date.now().toString()),
         },
         patronsUtilizados,
       }
@@ -779,18 +795,18 @@ export class NI_MCIT_D_02Service {
           datosCabecera: {
             identificacionServicio: methodAcredited.certificate_code,
             codigoServicio: serviceCode,
-            fechaCalibracion: fecha,
+            fechaCalibracion: formatDate(method.equipment_information.date),
             fechaEmision: formatDate(new Date().toString()),
-            objetocalibracion: method.equipment_information.device,
-            marca: method.equipment_information.maker,
-            serie: method.equipment_information.serial_number,
-            modelo: method.equipment_information.model,
-            rango: method.equipment_information.measurement_range,
-            resolucion: method.equipment_information.resolution,
+            objetocalibracion: method.equipment_information.device || '---',
+            marca: method.equipment_information.maker || '---',
+            serie: method.equipment_information.serial_number || '---',
+            modelo: method.equipment_information.model || '---',
+            rango: method.equipment_information.measurement_range || '---',
+            resolucion: method.equipment_information.resolution || '---',
             codigoIdentificacion: method.equipment_information.code,
-            solicitante: dataClient.company_name,
-            direccion: dataClient.address,
-            lugarCalibracion: dataClient.address,
+            solicitante: method?.applicant_name || dataClient.company_name ,
+            direccion: method?.applicant_address || dataClient.address,
+            lugarCalibracion: method.calibration_location,
           },
           temperatura1DA,
           temperatura2DA,
@@ -803,18 +819,18 @@ export class NI_MCIT_D_02Service {
         dataDA = {
           datosCabecera: {
             codigoServicio: serviceCode,
-            fechaCalibracion: fecha,
+            fechaCalibracion: formatDate(method.equipment_information.date),
             fechaEmision: formatDate(new Date().toString()),
-            objetocalibracion: method.equipment_information.device,
-            marca: method.equipment_information.maker,
-            serie: method.equipment_information.serial_number,
-            modelo: method.equipment_information.model,
-            rango: method.equipment_information.measurement_range,
-            resolucion: method.equipment_information.resolution,
+            objetocalibracion: method.equipment_information.device || '---',
+            marca: method.equipment_information.maker || '---',
+            serie: method.equipment_information.serial_number || '---',
+            modelo: method.equipment_information.model || '---',
+            rango: method.equipment_information.measurement_range || '---',
+            resolucion: method.equipment_information.resolution || '---',
             codigoIdentificacion: method.equipment_information.code,
-            solicitante: dataClient.company_name,
-            direccion: dataClient.address,
-            lugarCalibracion: dataClient.address,
+            solicitante: method?.applicant_name || dataClient.company_name ,
+            direccion: method?.applicant_address || dataClient.address,
+            lugarCalibracion: method.calibration_location,
           },
           temperatura1FA,
           temperatura2FA,
