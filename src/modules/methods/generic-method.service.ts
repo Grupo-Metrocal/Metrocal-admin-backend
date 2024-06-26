@@ -265,7 +265,7 @@ export class GENERIC_METHODService {
 
       fs.copyFileSync(filePath, method.certificate_url);
 
-      const workbook = await this.XlsxPopulate.fromFileAsync(method.certificate_url);
+      const workbook = await XlsxPopulate.fromFileAsync(method.certificate_url);
 
       const worksheetGenerales = workbook.sheet('Generales');
       const worksheetEntradaDatos = workbook.sheet('Entrada de Datos');
@@ -355,7 +355,7 @@ export class GENERIC_METHODService {
 
       const activity = dataActivity.data;
 
-      const reopnedWorkbook = await this.XlsxPopulate.fromFileAsync(method.certificate_url);
+      const reopnedWorkbook = await XlsxPopulate.fromFileAsync(method.certificate_url);
 
       const worksheetFa1pto = reopnedWorkbook.sheet('FA  1 pto');
       

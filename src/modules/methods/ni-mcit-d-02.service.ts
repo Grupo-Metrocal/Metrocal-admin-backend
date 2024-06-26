@@ -87,8 +87,8 @@ export class NI_MCIT_D_02Service {
     }
 
     method.calibration_location = certificatonDetails.location
-    method.applicant_name = certificatonDetails.applicant_address
-    method.applicant_address = certificatonDetails.applicant_name
+    method.applicant_name = certificatonDetails.applicant_name
+    method.applicant_address = certificatonDetails.applicant_address
 
     try {
       await this.NI_MCIT_D_02Repository.save(method)
