@@ -102,6 +102,7 @@ export class NI_MCIT_D_02Service {
   async equipmentInformation(
     equipment: EquipmentInformationNI_MCIT_D_02Dto,
     methodId: number,
+    increase?: boolean,
   ) {
     try {
       // Buscar el método existente
@@ -127,6 +128,11 @@ export class NI_MCIT_D_02Service {
       try {
         this.dataSource.transaction(async (manager) => {
           await manager.save(method.equipment_information)
+
+          if (increase) {
+            method.modification_number = method.modification_number === null ? 1 : method.modification_number + 1
+          }
+
           await manager.save(method)
         })
         return handleOK(method.equipment_information)
@@ -141,6 +147,7 @@ export class NI_MCIT_D_02Service {
   async environmentalConditions(
     environmentalConditions: EnvironmentalConditionsNI_MCIT_D_02Dto,
     methodId: number,
+    increase?: boolean,
   ) {
     try {
       // Buscar el método existente
@@ -167,6 +174,11 @@ export class NI_MCIT_D_02Service {
       try {
         this.dataSource.transaction(async (manager) => {
           await manager.save(method.environmental_conditions)
+
+          if (increase) {
+            method.modification_number = method.modification_number === null ? 1 : method.modification_number + 1
+          }
+
           await manager.save(method)
         })
         return handleOK(method.environmental_conditions)
@@ -181,6 +193,7 @@ export class NI_MCIT_D_02Service {
   async descriptionPattern(
     descriptionPattern: DescriptionPatternNI_MCIT_D_02Dto,
     methodId: number,
+    increase?: boolean,
   ) {
     try {
       // Buscar el método existente
@@ -209,6 +222,11 @@ export class NI_MCIT_D_02Service {
       try {
         this.dataSource.transaction(async (manager) => {
           await manager.save(method.description_pattern)
+
+          if (increase) {
+            method.modification_number = method.modification_number === null ? 1 : method.modification_number + 1
+          }
+
           await manager.save(method)
         })
         return handleOK(method.description_pattern)
@@ -223,6 +241,7 @@ export class NI_MCIT_D_02Service {
   async preInstallationComment(
     preInstallationComment: PreInstallationCommentNI_MCIT_D_02Dto,
     methodId: number,
+    increase?: boolean,
   ) {
     try {
       // Buscar el método existente
@@ -251,6 +270,11 @@ export class NI_MCIT_D_02Service {
       try {
         this.dataSource.transaction(async (manager) => {
           await manager.save(method.pre_installation_comment)
+
+          if (increase) {
+            method.modification_number = method.modification_number === null ? 1 : method.modification_number + 1
+          }
+
           await manager.save(method)
         })
         return handleOK(method.pre_installation_comment)
@@ -265,6 +289,7 @@ export class NI_MCIT_D_02Service {
   async instrumentZeroCheck(
     instrumentZeroCheck: InstrumentZeroCheckNI_MCIT_D_02Dto,
     methodId: number,
+    increase?: boolean,
   ) {
     try {
       // Buscar el método existente
@@ -293,6 +318,11 @@ export class NI_MCIT_D_02Service {
       try {
         this.dataSource.transaction(async (manager) => {
           await manager.save(method.instrument_zero_check)
+
+          if (increase) {
+            method.modification_number = method.modification_number === null ? 1 : method.modification_number + 1
+          }
+
           await manager.save(method)
         })
         return handleOK(method.instrument_zero_check)
@@ -308,6 +338,7 @@ export class NI_MCIT_D_02Service {
     accuracyTest: AccuracyTestNI_MCIT_D_02Dto,
     methodId: number,
     activityID: number,
+    increase?: boolean,
   ) {
     try {
       // Buscar el método existente
@@ -333,6 +364,10 @@ export class NI_MCIT_D_02Service {
         this.dataSource.transaction(async (manager) => {
           await manager.save(method.accuracy_test)
           method.status = 'done'
+
+          if (increase) {
+            method.modification_number = method.modification_number === null ? 1 : method.modification_number + 1
+          }
 
           await manager.save(method)
         })
