@@ -290,71 +290,89 @@ export class MethodsController {
     return await this.ni_mcit_d_02Service.create()
   }
 
+  @ApiQuery({ name: 'increase', required: false, type: Boolean})
   @Post('ni-mcit-d-02/equipment-information/:methodId')
   async createNI_MCIT_D_02EquipmentInformation(
     @Body() equipment: EquipmentInformationNI_MCIT_D_02Dto,
     @Param('methodId') methodId: number,
+    @Query('increase') increase?: boolean
   ) {
     return await this.ni_mcit_d_02Service.equipmentInformation(
       equipment,
       methodId,
+      increase
     )
   }
 
+  @ApiQuery({ name: 'increase', required: false, type: Boolean})
   @Post('ni-mcit-d-02/environmental-conditions/:methodId')
   async createNI_MCIT_D_02EnvironmentalConditions(
     @Body() environmentalConditions: EnvironmentalConditionsNI_MCIT_D_02Dto,
     @Param('methodId') methodId: number,
+    @Query('increase') increase?: boolean
   ) {
     return await this.ni_mcit_d_02Service.environmentalConditions(
       environmentalConditions,
       methodId,
+      increase
     )
   }
 
+  @ApiQuery({ name: 'increase', required: false, type: Boolean})
   @Post('ni-mcit-d-02/description-pattern/:methodId')
   async createNI_MCIT_D_02DescriptionPattern(
     @Body() descriptionPattern: DescriptionPatternNI_MCIT_D_02Dto,
     @Param('methodId') methodId: number,
+    @Query('increase') increase?: boolean
   ) {
     return await this.ni_mcit_d_02Service.descriptionPattern(
       descriptionPattern,
       methodId,
+      increase
     )
   }
 
+  @ApiQuery({ name: 'increase', required: false, type: Boolean})
   @Post('ni-mcit-d-02/pre-installation-comment/:methodId')
   async createNI_MCIT_D_02PreInstallationComment(
     @Body() preInstallationComment: PreInstallationCommentNI_MCIT_D_02Dto,
     @Param('methodId') methodId: number,
+    @Query('increase') increase?: boolean
   ) {
     return await this.ni_mcit_d_02Service.preInstallationComment(
       preInstallationComment,
       methodId,
+      increase
     )
   }
 
+  @ApiQuery({ name: 'increase', required: false, type: Boolean})
   @Post('ni-mcit-d-02/instrument-zero-check/:methodId')
   async createNI_MCIT_D_02InstrumentZeroCheck(
     @Body() instrumentZeroCheck: InstrumentZeroCheckNI_MCIT_D_02Dto,
     @Param('methodId') methodId: number,
+    @Query('increase') increase?: boolean
   ) {
     return await this.ni_mcit_d_02Service.instrumentZeroCheck(
       instrumentZeroCheck,
       methodId,
+      increase
     )
   }
 
+  @ApiQuery({ name: 'increase', required: false, type: Boolean})
   @Post('ni-mcit-d-02/accuracy-test/:methodId/:activityId')
   async createNI_MCIT_D_02AccuracyTest(
     @Body() accuracyTest: AccuracyTestNI_MCIT_D_02Dto,
     @Param('methodId') methodId: number,
     @Param('activityId') activityId: number,
+    @Query('increase') increase?: boolean
   ) {
     return await this.ni_mcit_d_02Service.accuracyTest(
       accuracyTest,
       methodId,
       activityId,
+      increase
     )
   }
 
