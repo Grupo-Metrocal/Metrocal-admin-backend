@@ -9,11 +9,11 @@ export const generateCertCode = ({
   const year = new Date().getFullYear()
   return `NI-MC-${prefix}-${id
     .toString()
-    .padStart(4, '0')}}-${year}`
+    .padStart(4, '0')}-${year}`
 }
 
 export const formatCertCode = (code: string, modificationsNumber: number) => {
-  if (modificationsNumber === 0) {
+  if (modificationsNumber === 0 || modificationsNumber === null) {
     return code
   }
 
