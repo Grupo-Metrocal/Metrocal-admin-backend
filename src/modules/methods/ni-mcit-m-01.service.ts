@@ -26,6 +26,7 @@ import { Activity } from '../activities/entities/activities.entity'
 import { generateServiceCodeToMethod } from 'src/utils/codeGenerator'
 import { formatDate } from 'src/utils/formatDate'
 import { CertificationDetailsDto } from './dto/NI_MCIT_P_01/certification_details.dto'
+import { formatCertCode } from 'src/utils/generateCertCode'
 
 @Injectable()
 export class NI_MCIT_M_01Service {
@@ -520,7 +521,7 @@ export class NI_MCIT_M_01Service {
         calibration_results: calibration_results_certificate,
         masas: masas.data,
         equipment_information: {
-          certification_code: method.certificate_code,
+          certification_code: formatCertCode(method.certificate_code, method.modification_number),
           service_code: generateServiceCodeToMethod(method.id),
           certificate_issue_date: formatDate(new Date().toString()),
           calibration_date: formatDate(activity.updated_at as any),
