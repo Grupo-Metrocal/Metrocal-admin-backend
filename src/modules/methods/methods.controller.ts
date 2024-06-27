@@ -723,14 +723,17 @@ export class MethodsController {
     return await this.ni_mcit_b_01Service.createNI_MCIT_B_01()
   }
 
+  @ApiQuery({ name: 'increase', required: false, type: Boolean})
   @Post('ni-mcit-b-01/equipment-information/:methodId')
   async createNI_MCIT_B_01EquipmentInformation(
     @Body() equipment: EquipmentInformationNI_MCIT_B_01Dto,
     @Param('methodId') methodId: number,
+    @Query('increase') increase?: boolean
   ) {
     return await this.ni_mcit_b_01Service.equipmentInfomationB01(
       equipment,
       methodId,
+      increase
     )
   }
 
@@ -746,26 +749,31 @@ export class MethodsController {
     )
   }
 
+  @ApiQuery({ name: 'increase', required: false, type: Boolean})
   @Post('ni-mcit-b-01/enviromental-condition/:methodId')
   async createNI_MCIT_B_01EnviromentalCondition(
     @Body() enviromentalCondition: EnviromentalConditionsNI_MCIT_B_01Dto,
     @Param('methodId') methodId: number,
+    @Query('increase') increase?: boolean,
   ) {
     return await this.ni_mcit_b_01Service.enviromentalConditionB01(
       enviromentalCondition,
       methodId,
+      increase
     )
   }
 
-  //eccentricityTestB01
+  @ApiQuery({ name: 'increase', required: false, type: Boolean})
   @Post('ni-mcit-b-01/eccentricity-test/:methodId')
   async createNI_MCIT_B_01EccentricityTest(
     @Body() eccentricityTest: EccentricityTestNI_MCIT_B_01Dto,
     @Param('methodId') methodId: number,
+    @Query('increase') increase?: boolean,
   ) {
     return await this.ni_mcit_b_01Service.eccentricityTestB01(
       eccentricityTest,
       methodId,
+      increase
     )
   }
 
@@ -784,15 +792,17 @@ export class MethodsController {
     )
   }
 
-  //repeatabilityTestB01
+  @ApiQuery({ name: 'increase', required: false, type: Boolean})
   @Post('ni-mcit-b-01/repeatability-test/:methodId')
   async createNI_MCIT_B_01RepeatabilityTest(
     @Body() repeatabilityTest: RepeatabilityTestNI_MCIT_B_01Dto,
     @Param('methodId') methodId: number,
+    @Query('increase') increase?: boolean,
   ) {
     return await this.ni_mcit_b_01Service.repeatabilityTestB01(
       repeatabilityTest,
       methodId,
+      increase
     )
   }
 
@@ -810,27 +820,31 @@ export class MethodsController {
     )
   }
 
-  //linearityTestB01
+  @ApiQuery({ name: 'increase', required: false, type: Boolean})
   @Post('ni-mcit-b-01/linearity-test/:methodId')
   async createNI_MCIT_B_01LinearityTest(
     @Body() linearityTest: LinearityTestNI_MCIT_B_01Dto,
     @Param('methodId') methodId: number,
+    @Query('increase') increase?: boolean
   ) {
     return await this.ni_mcit_b_01Service.linearityTestB01(
       linearityTest,
       methodId,
+      increase
     )
   }
 
-  //unitOfMeasurementB01
+  @ApiQuery({ name: 'increase', required: false, type: Boolean})
   @Post('ni-mcit-b-01/unit-of-measurement/:methodId')
   async createNI_MCIT_B_01UnitOfMeasurement(
     @Body() unitOfMeasurement: UnitOfMeasurementNI_MCIT_B_01Dto,
     @Param('methodId') methodId: number,
+    @Query('increase') increase?: boolean
   ) {
     return await this.ni_mcit_b_01Service.unitOfMeasurementB01(
       unitOfMeasurement,
       methodId,
+      increase
     )
   }
 
