@@ -96,6 +96,7 @@ export class NI_MCIT_M_01Service {
   async equipmentInformation(
     equipment: EquipmentInformationM01Dto,
     methodId: number,
+    increase?: boolean,
   ) {
     try {
       const method = await this.NI_MCIT_M_01Repository.findOne({
@@ -122,6 +123,11 @@ export class NI_MCIT_M_01Service {
 
       await this.dataSource.transaction(async (manager) => {
         await manager.save(method.equipment_information)
+
+        if (increase) {
+          method.modification_number = method.modification_number === null ? 1 : method.modification_number + 1
+        }
+
         await manager.save(method)
       })
 
@@ -134,6 +140,7 @@ export class NI_MCIT_M_01Service {
   async environmentalConditions(
     environmentalConditions: EnvironmentalConditionsM01Dto,
     methodId: number,
+    increase?: boolean,
   ) {
     const method = await this.NI_MCIT_M_01Repository.findOne({
       where: { id: methodId },
@@ -162,6 +169,11 @@ export class NI_MCIT_M_01Service {
     try {
       await this.dataSource.transaction(async (manager) => {
         await manager.save(method.environmental_conditions)
+
+        if (increase) {
+          method.modification_number = method.modification_number === null ? 1 : method.modification_number + 1
+        }
+
         await manager.save(method)
       })
 
@@ -174,6 +186,7 @@ export class NI_MCIT_M_01Service {
   async calibrationResults(
     calibrationResults: CalibrationResultsM01Dto,
     methodId: number,
+    increase?: boolean,
   ) {
     const method = await this.NI_MCIT_M_01Repository.findOne({
       where: { id: methodId },
@@ -200,6 +213,11 @@ export class NI_MCIT_M_01Service {
     try {
       await this.dataSource.transaction(async (manager) => {
         await manager.save(method.calibration_results)
+
+        if (increase) {
+          method.modification_number = method.modification_number === null ? 1 : method.modification_number + 1
+        }
+
         await manager.save(method)
       })
 
@@ -213,6 +231,7 @@ export class NI_MCIT_M_01Service {
     descriptionPattern: DescriptionPatternM01Dto,
     methodId: number,
     activityId: number,
+    increase?: boolean,
   ) {
     try {
       const method = await this.NI_MCIT_M_01Repository.findOne({
@@ -243,6 +262,11 @@ export class NI_MCIT_M_01Service {
         await manager.save(method.description_pattern)
 
         method.status = 'done'
+
+        if (increase) {
+          method.modification_number = method.modification_number === null ? 1 : method.modification_number + 1
+        }
+
         await manager.save(method)
       })
 
