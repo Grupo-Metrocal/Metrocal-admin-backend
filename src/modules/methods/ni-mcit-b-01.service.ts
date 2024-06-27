@@ -31,6 +31,7 @@ import { formatDate } from 'src/utils/formatDate'
 import { MethodsService } from './methods.service'
 import { Methods } from './entities/method.entity'
 import { CertificationDetailsDto } from './dto/NI_MCIT_P_01/certification_details.dto'
+import { formatCertCode } from 'src/utils/generateCertCode'
 
 @Injectable()
 export class NI_MCIT_B_01Service {
@@ -793,7 +794,7 @@ export class NI_MCIT_B_01Service {
         pattern: 'NI_MCIT_B_01',
         email: activity.quote_request.client.email,
         equipment_info: {
-          certificacion_code: method.certificate_code,
+          certificacion_code: formatCertCode(method.certificate_code, method.modification_number),
           serviceCode: generateServiceCodeToMethod(method.id),
           certificate_issue_date: formatDate(new Date().toString()),
           calibrationDate: formatDate(activity.update_at),
