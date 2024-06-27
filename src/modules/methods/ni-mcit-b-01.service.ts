@@ -106,6 +106,7 @@ export class NI_MCIT_B_01Service {
   async equipmentInfomationB01(
     equipment: EquipmentInformationNI_MCIT_B_01Dto,
     methodId: number,
+    increase?: boolean,
   ) {
     try {
       const method = await this.NI_MCIT_B_01Repository.findOne({
@@ -136,6 +137,11 @@ export class NI_MCIT_B_01Service {
       try {
         this.DataSource.transaction(async (manager) => {
           await manager.save(method.equipment_information)
+
+          if (increase) {
+            method.modification_number = method.modification_number === null ? 1 : method.modification_number + 1
+          }
+
           await manager.save(method)
         })
         return handleOK(method.equipment_information)
@@ -150,6 +156,7 @@ export class NI_MCIT_B_01Service {
   async enviromentalConditionB01(
     enviromentalConditions: EnviromentalConditionsNI_MCIT_B_01Dto,
     methodId: number,
+    increase?: boolean,
   ) {
     try {
       const method = await this.NI_MCIT_B_01Repository.findOne({
@@ -179,6 +186,11 @@ export class NI_MCIT_B_01Service {
       try {
         this.DataSource.transaction(async (manager) => {
           await manager.save(method.environmental_conditions)
+
+          if (increase) {
+            method.modification_number = method.modification_number === null ? 1 : method.modification_number + 1
+          }
+
           await manager.save(method)
         })
         return handleOK(method.environmental_conditions)
@@ -193,6 +205,7 @@ export class NI_MCIT_B_01Service {
   async eccentricityTestB01(
     eccentricityTest: EccentricityTestNI_MCIT_B_01Dto,
     methodId: number,
+    increase?: boolean,
   ) {
     try {
       const method = await this.NI_MCIT_B_01Repository.findOne({
@@ -220,6 +233,11 @@ export class NI_MCIT_B_01Service {
       try {
         this.DataSource.transaction(async (manager) => {
           await manager.save(method.eccentricity_test)
+
+          if (increase) {
+            method.modification_number = method.modification_number === null ? 1 : method.modification_number + 1
+          }
+
           await manager.save(method)
         })
         return handleOK(method.eccentricity_test)
@@ -234,6 +252,7 @@ export class NI_MCIT_B_01Service {
   async repeatabilityTestB01(
     repeatabilityTest: RepeatabilityTestNI_MCIT_B_01Dto,
     methodId: number,
+    increase?: boolean,
   ) {
     try {
       const method = await this.NI_MCIT_B_01Repository.findOne({
@@ -261,6 +280,11 @@ export class NI_MCIT_B_01Service {
       try {
         this.DataSource.transaction(async (manager) => {
           await manager.save(method.repeatability_test)
+
+          if (increase) {
+            method.modification_number = method.modification_number === null ? 1 : method.modification_number + 1
+          }
+
           await manager.save(method)
         })
         return handleOK(method.repeatability_test)
@@ -275,6 +299,7 @@ export class NI_MCIT_B_01Service {
   async linearityTestB01(
     linearityTest: LinearityTestNI_MCIT_B_01Dto,
     methodId: number,
+    increase?: boolean,
   ) {
     try {
       const method = await this.NI_MCIT_B_01Repository.findOne({
@@ -302,6 +327,11 @@ export class NI_MCIT_B_01Service {
       try {
         this.DataSource.transaction(async (manager) => {
           await manager.save(method.linearity_test)
+
+          if (increase) {
+            method.modification_number = method.modification_number === null ? 1 : method.modification_number + 1
+          }
+
           await manager.save(method)
         })
         return handleOK(method.linearity_test)
@@ -316,6 +346,7 @@ export class NI_MCIT_B_01Service {
   async unitOfMeasurementB01(
     unitOfMeasurement: UnitOfMeasurementNI_MCIT_B_01Dto,
     methodId: number,
+    increase?: boolean,
   ) {
     try {
       const method = await this.NI_MCIT_B_01Repository.findOne({
@@ -343,6 +374,11 @@ export class NI_MCIT_B_01Service {
       try {
         this.DataSource.transaction(async (manager) => {
           await manager.save(method.unit_of_measurement)
+
+          if (increase) {
+            method.modification_number = method.modification_number === null ? 1 : method.modification_number + 1
+          }
+
           await manager.save(method)
         })
         return handleOK(method.unit_of_measurement)
