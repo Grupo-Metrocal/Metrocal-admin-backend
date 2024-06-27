@@ -184,49 +184,61 @@ export class MethodsController {
     )
   }
 
+  @ApiQuery({ name: 'increase', required: false, type: Boolean})
   @Post('ni-mcit-p-01/equipment-information/:methodId')
   async createNI_MCIT_P_01EquipmentInformation(
     @Body() equipment: EquipmentInformationDto,
     @Param('methodId') methodId: number,
+    @Query('increase') increase?: boolean,
   ) {
     return await this.ni_mcit_p_01Service.equipmentInformation(
       equipment,
       methodId,
+      increase
     )
   }
 
+  @ApiQuery({ name: 'increase', required: false, type: Boolean})
   @Post('ni-mcit-p-01/environmental-conditions/:methodId')
   async createNI_MCIT_P_01EnvironmentalConditions(
     @Body() environmentalConditions: EnvironmentalConditionsDto,
     @Param('methodId') methodId: number,
+    @Query('increase') increase?: boolean,
   ) {
     return await this.ni_mcit_p_01Service.environmentalConditions(
       environmentalConditions,
       methodId,
+      increase
     )
   }
 
+  @ApiQuery({ name: 'increase', required: false, type: Boolean})
   @Post('ni-mcit-p-01/calibration-results/:methodId')
   async createNI_MCIT_P_01CalibrationResults(
     @Body() calibrations: CalibrationResultsDto,
     @Param('methodId') methodId: number,
+    @Query('increase') increase?: boolean,
   ) {
     return await this.ni_mcit_p_01Service.calibrationResults(
       calibrations,
       methodId,
+      increase
     )
   }
 
+  @ApiQuery({ name: 'increase', required: false, type: Boolean})
   @Post('ni-mcit-p-01/description-pattern/:methodId/:activityId')
   async createNI_MCIT_P_01DescriptionPattern(
     @Body() descriptionPattern: DescriptionPatternDto,
     @Param('methodId') methodId: number,
     @Param('activityId') activityId: number,
+    @Query('increase') increase?: boolean,
   ) {
     return await this.ni_mcit_p_01Service.descriptionPattern(
       descriptionPattern,
       methodId,
       activityId,
+      increase
     )
   }
 
