@@ -1,6 +1,6 @@
-import { Controller, Get, Post, Body, Param, Delete } from '@nestjs/common'
+import { Controller, Get, Post, Body, Param, Delete, Query } from '@nestjs/common'
 import { MethodsService } from './methods.service'
-import { ApiTags } from '@nestjs/swagger'
+import { ApiQuery, ApiTags } from '@nestjs/swagger'
 
 import { NI_MCIT_P_01Service } from './ni-mcit-p-01.service'
 import { NI_MCIT_D_01Service } from './ni-mcit-d-01.service'
@@ -956,49 +956,61 @@ export class MethodsController {
     )
   }
 
+  @ApiQuery({ name: 'increase', required: false, type: Boolean})
   @Post('ni-mcit-v-01/equipment-information/:methodId')
   async createNI_MCIT_V_01EquipmentInformation(
     @Body() equipment: EquipmentInformationV01Dto,
     @Param('methodId') methodId: number,
+    @Query('increase') increase?: boolean,
   ) {
     return await this.ni_mcit_v_01Service.equipmentInformation(
       equipment,
       methodId,
+      increase
     )
   }
 
+  @ApiQuery({ name: 'increase', required: false, type: Boolean})
   @Post('ni-mcit-v-01/environmental-conditions/:methodId')
   async createNI_MCIT_V_01EnvironmentalConditions(
     @Body() environmentalConditions: EnvironmentalConditionsV01Dto,
     @Param('methodId') methodId: number,
+    @Query('increase') increase?: boolean,
   ) {
     return await this.ni_mcit_v_01Service.environmentalConditions(
       environmentalConditions,
       methodId,
+      increase
     )
   }
 
+  @ApiQuery({ name: 'increase', required: false, type: Boolean})
   @Post('ni-mcit-v-01/calibration-results/:methodId')
   async createNI_MCIT_V_01CalibrationResults(
     @Body() calibrations: CalibrationResultsV01Dto,
     @Param('methodId') methodId: number,
+    @Query('increase') increase?: boolean,
   ) {
     return await this.ni_mcit_v_01Service.calibrationResults(
       calibrations,
       methodId,
+      increase
     )
   }
 
+  @ApiQuery({ name: 'increase', required: false, type: Boolean})
   @Post('ni-mcit-v-01/description-pattern/:methodId/:activityId')
   async createNI_MCIT_V_01DescriptionPattern(
     @Body() descriptionPattern: DescriptionPatternV01Dto,
     @Param('methodId') methodId: number,
     @Param('activityId') activityId: number,
+    @Query('increase') increase?: boolean,
   ) {
     return await this.ni_mcit_v_01Service.descriptionPattern(
       descriptionPattern,
       methodId,
       activityId,
+      increase
     )
   }
 
