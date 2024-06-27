@@ -393,104 +393,127 @@ export class MethodsController {
     return await this.ni_mcit_d_01Service.create()
   }
 
-  //equipment-information
+  @ApiQuery({ name: 'increase', required: false, type: Boolean})
   @Post('ni-mcit-d-01/equipment-information/:methodId')
   async createNI_MCIT_D_01EquipmentInformation(
     @Body() equipment: EquipmentInformationNI_MCIT_D_01Dto,
     @Param('methodId') methodId: number,
+    @Query('increase') increase?: boolean
   ) {
     return await this.ni_mcit_d_01Service.equipmentInformation(
       equipment,
       methodId,
+      increase
     )
   }
 
-  //environmental-conditions
+  @ApiQuery({ name: 'increase', required: false, type: Boolean})
   @Post('ni-mcit-d-01/environmental-conditions/:methodId')
   async createNI_MCIT_D_01EnvironmentalConditions(
     @Body() environmentalConditions: EnvironmentalConditionsNI_MCIT_D_01Dto,
     @Param('methodId') methodId: number,
+    @Query('increase') increase?: boolean
+
   ) {
     return await this.ni_mcit_d_01Service.environmentalConditions(
       environmentalConditions,
       methodId,
+      increase
     )
   }
 
-  //description-pattern
+  @ApiQuery({ name: 'increase', required: false, type: Boolean})
   @Post('ni-mcit-d-01/description-pattern/:methodId')
   async createNI_MCIT_D_01DescriptionPattern(
     @Body() descriptionPatterns: DescriptionPatternNI_MCIT_D_01Dto,
     @Param('methodId') methodId: number,
+    @Query('increase') increase?: boolean
+
   ) {
     return await this.ni_mcit_d_01Service.descriptionPattern(
       descriptionPatterns,
       methodId,
+      increase
     )
   }
 
-  //pre-installation-comment
+  @ApiQuery({ name: 'increase', required: false, type: Boolean})
   @Post('ni-mcit-d-01/pre-installation-comment/:methodId')
   async createNI_MCIT_D_01PreInstallationComment(
     @Body() preInstallationComment: PreInstallationCommentNI_MCIT_D_01Dto,
     @Param('methodId') methodId: number,
+    @Query('increase') increase?: boolean
+
   ) {
     return await this.ni_mcit_d_01Service.preInstallationComment(
       preInstallationComment,
       methodId,
+      increase
     )
   }
 
-  //instrument-zero-check
+  @ApiQuery({ name: 'increase', required: false, type: Boolean})
   @Post('ni-mcit-d-01/instrument-zero-check/:methodId')
   async createNI_MCIT_D_01InstrumentZeroCheck(
     @Body() instrumentZeroCheck: InstrumentZeroCheckNI_MCIT_D_01Dto,
     @Param('methodId') methodId: number,
+    @Query('increase') increase?: boolean
+
   ) {
     return await this.ni_mcit_d_01Service.instrumentZeroCheck(
       instrumentZeroCheck,
       methodId,
+      increase
     )
   }
 
-  //exterior-parallelism-measurement
+  @ApiQuery({ name: 'increase', required: false, type: Boolean})
   @Post('ni-mcit-d-01/exterior-parallelism-measurement/:methodId')
   async createNI_MCIT_D_01ExteriorParallelismMeasurement(
     @Body()
     exteriorParallelismMeasurement: ExteriorParallelismMeasurementNI_MCIT_D_01Dto,
     @Param('methodId') methodId: number,
+    @Query('increase') increase?: boolean
+
   ) {
     return await this.ni_mcit_d_01Service.exteriorParallelismMeasurement(
       exteriorParallelismMeasurement,
       methodId,
+      increase
     )
   }
 
-  //interior-parallelism-measurement
+  @ApiQuery({ name: 'increase', required: false, type: Boolean})
   @Post('ni-mcit-d-01/interior-parallelism-measurement/:methodId')
   async createNI_MCIT_D_01InteriorParallelismMeasurement(
     @Body()
     interiorParallelismMeasurement: InteriorParallelismMeasurementNI_MCIT_D_01Dto,
     @Param('methodId') methodId: number,
+    @Query('increase') increase?: boolean
+
   ) {
     return await this.ni_mcit_d_01Service.interiorParallelismMeasurement(
       interiorParallelismMeasurement,
       methodId,
+      increase
     )
   }
 
-  //exterior-measurement-accuracy
+  @ApiQuery({ name: 'increase', required: false, type: Boolean})
   @Post('ni-mcit-d-01/exterior-measurement-accuracy/:methodId/:activityId')
   async createNI_MCIT_D_01ExteriorMeasurementAccuracy(
     @Body()
     exteriorMeasurementAccuracy: ExteriorMeasurementAccuracyNI_MCIT_D_01Dto,
     @Param('methodId') methodId: number,
     @Param('activityId') activityId: number,
+    @Query('increase') increase?: boolean
+
   ) {
     return await this.ni_mcit_d_01Service.exteriorMeasurementAccuracy(
       exteriorMeasurementAccuracy,
       methodId,
       activityId,
+      increase
     )
   }
 
