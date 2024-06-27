@@ -730,14 +730,18 @@ export class MethodsController {
     )
   }
 
+
+  @ApiQuery({ name: 'increase', required: false, type: Boolean})
   @Post('ni-mcit-t-03/equipment-information/:methodId')
   async createNI_MCIT_T_03EquipmentInformation(
     @Body() equipment: EquipmentInformationT_03Dto,
     @Param('methodId') methodId: number,
+    @Query('increase') increase?: boolean,
   ) {
     return await this.ni_mcit_t_03Service.equipmentInformation(
       equipment,
       methodId,
+      increase
     )
   }
 
@@ -753,14 +757,17 @@ export class MethodsController {
     )
   }
 
+  @ApiQuery({ name: 'increase', required: false, type: Boolean})
   @Post('ni-mcit-t-03/environmental-conditions/:methodId')
   async createNI_MCIT_T_03EnvironmentalConditions(
     @Body() environmentalConditions: EnvironmentalConditionsT_03Dto,
     @Param('methodId') methodId: number,
+    @Query('increase') increase?: boolean,
   ) {
     return await this.ni_mcit_t_03Service.environmentalConditions(
       environmentalConditions,
       methodId,
+      increase
     )
   }
 
@@ -800,26 +807,32 @@ export class MethodsController {
     })
   }
 
+  @ApiQuery({ name: 'increase', required: false, type: Boolean})
   @Post('ni-mcit-t-03/calibration-results/:methodId')
   async createNI_MCIT_T_03CalibrationResults(
     @Body() calibrations: CalibrationResultsT_03Dto,
     @Param('methodId') methodId: number,
+    @Query('increase') increase?: boolean,
   ) {
     return await this.ni_mcit_t_03Service.calibrationResults(
       calibrations,
       methodId,
+      increase
     )
   }
+  @ApiQuery({ name: 'increase', required: false, type: Boolean})
   @Post('ni-mcit-t-03/description-pattern/:methodId/:activityId')
   async createNI_MCIT_T_03DescriptionPattern(
     @Body() descriptionPattern: DescriptionPatternT_03Dto,
     @Param('methodId') methodId: number,
     @Param('activityId') activityId: number,
+    @Query('increase') increase?: boolean,
   ) {
     return await this.ni_mcit_t_03Service.descriptionPattern(
       descriptionPattern,
       methodId,
       activityId,
+      increase
     )
   }
 
