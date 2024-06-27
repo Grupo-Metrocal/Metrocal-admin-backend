@@ -115,6 +115,7 @@ export class NI_MCIT_D_01Service {
   async equipmentInformation(
     equipment: EquipmentInformationNI_MCIT_D_01Dto,
     methodId: number,
+    increase?: boolean,
   ) {
     try {
       const method = await this.NI_MCIT_D_01Repository.findOne({
@@ -140,6 +141,11 @@ export class NI_MCIT_D_01Service {
       try {
         this.dataSource.transaction(async (manager) => {
           await manager.save(method.equipment_information)
+
+          if (increase) {
+            method.modification_number = method.modification_number === null ? 1 : method.modification_number + 1
+          }
+
           await manager.save(method)
         })
 
@@ -155,6 +161,7 @@ export class NI_MCIT_D_01Service {
   async environmentalConditions(
     environmentalConditions: EnvironmentalConditionsNI_MCIT_D_01Dto,
     methodId: number,
+    increase?: boolean,
   ) {
     try {
       const method = await this.NI_MCIT_D_01Repository.findOne({
@@ -182,6 +189,9 @@ export class NI_MCIT_D_01Service {
       try {
         this.dataSource.transaction(async (manager) => {
           await manager.save(method.environmental_conditions)
+          if (increase) {
+            method.modification_number = method.modification_number === null ? 1 : method.modification_number + 1
+          }
           await manager.save(method)
         })
         return handleOK(method.environmental_conditions)
@@ -197,6 +207,7 @@ export class NI_MCIT_D_01Service {
   async descriptionPattern(
     descriptionPatterns: DescriptionPatternNI_MCIT_D_01Dto,
     methodId: number,
+    increase?: boolean,
   ) {
     try {
       const method = await this.NI_MCIT_D_01Repository.findOne({
@@ -224,6 +235,9 @@ export class NI_MCIT_D_01Service {
       try {
         this.dataSource.transaction(async (manager) => {
           await manager.save(method.description_pattern)
+          if (increase) {
+            method.modification_number = method.modification_number === null ? 1 : method.modification_number + 1
+          }
           await manager.save(method)
         })
         return handleOK(method.description_pattern)
@@ -238,6 +252,7 @@ export class NI_MCIT_D_01Service {
   async preInstallationComment(
     preInstallationComment: PreInstallationCommentNI_MCIT_D_01Dto,
     methodId: number,
+    increase?: boolean,
   ) {
     try {
       const method = await this.NI_MCIT_D_01Repository.findOne({
@@ -261,6 +276,9 @@ export class NI_MCIT_D_01Service {
       try {
         this.dataSource.transaction(async (manager) => {
           await manager.save(method.pre_installation_comment)
+          if (increase) {
+            method.modification_number = method.modification_number === null ? 1 : method.modification_number + 1
+          }
           await manager.save(method)
         })
         return handleOK(method)
@@ -276,6 +294,7 @@ export class NI_MCIT_D_01Service {
   async instrumentZeroCheck(
     instrumentZeroCheck: InstrumentZeroCheckNI_MCIT_D_01Dto,
     methodId: number,
+    increase?: boolean,
   ) {
     try {
       const method = await this.NI_MCIT_D_01Repository.findOne({
@@ -299,6 +318,9 @@ export class NI_MCIT_D_01Service {
       try {
         this.dataSource.transaction(async (manager) => {
           await manager.save(method.instrument_zero_check)
+          if (increase) {
+            method.modification_number = method.modification_number === null ? 1 : method.modification_number + 1
+          }
           await manager.save(method)
         })
         return handleOK(method)
@@ -314,6 +336,7 @@ export class NI_MCIT_D_01Service {
   async exteriorParallelismMeasurement(
     exteriorParallelismMeasurement: ExteriorParallelismMeasurementNI_MCIT_D_01Dto,
     methodId: number,
+    increase?: boolean,
   ) {
     try {
       const method = await this.NI_MCIT_D_01Repository.findOne({
@@ -338,6 +361,9 @@ export class NI_MCIT_D_01Service {
       try {
         this.dataSource.transaction(async (manager) => {
           await manager.save(method.exterior_parallelism_measurement)
+          if (increase) {
+            method.modification_number = method.modification_number === null ? 1 : method.modification_number + 1
+          }
           await manager.save(method)
         })
         return handleOK(method)
@@ -353,6 +379,7 @@ export class NI_MCIT_D_01Service {
   async interiorParallelismMeasurement(
     interiorParallelismMeasurement: InteriorParallelismMeasurementNI_MCIT_D_01Dto,
     methodId: number,
+    increase?: boolean,
   ) {
     try {
       const method = await this.NI_MCIT_D_01Repository.findOne({
@@ -379,6 +406,9 @@ export class NI_MCIT_D_01Service {
       try {
         this.dataSource.transaction(async (manager) => {
           await manager.save(method.interior_parallelism_measurement)
+          if (increase) {
+            method.modification_number = method.modification_number === null ? 1 : method.modification_number + 1
+          }
           await manager.save(method)
         })
         return handleOK(method)
@@ -395,6 +425,7 @@ export class NI_MCIT_D_01Service {
     exteriorMeasurementAccuracy: ExteriorMeasurementAccuracyNI_MCIT_D_01Dto,
     methodId: number,
     activityID: number,
+    increase?: boolean,
   ) {
     try {
       const method = await this.NI_MCIT_D_01Repository.findOne({
@@ -421,6 +452,10 @@ export class NI_MCIT_D_01Service {
         this.dataSource.transaction(async (manager) => {
           await manager.save(method.exterior_measurement_accuracy)
           method.status = 'done'
+
+          if (increase) {
+            method.modification_number = method.modification_number === null ? 1 : method.modification_number + 1
+          }
 
           await manager.save(method)
         })
