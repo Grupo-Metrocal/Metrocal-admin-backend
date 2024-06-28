@@ -575,4 +575,29 @@ export class MethodsService {
       return handleInternalServerError(error.message)
     }
   }
+
+  async increseModificationNumber(method_name: string, method_id: number) {
+    try {
+      const repository = `${method_name}Repository`
+
+      const method = await this[repository].findOne({
+        where: {
+          id: method_id,
+        },
+      })
+
+      if (!method) {
+        return handleBadrequest(new Error('El método no existe'))
+      }
+
+      await this.dataSource.transaction(async (manager) => {
+        method.modification_number += 1
+        await manager.save(method)
+      })
+
+      return handleOK({ modification_number: method.modification_number })
+    }catch(e) {
+      return handleInternalServerError(e.message)
+    }
+  }
 }

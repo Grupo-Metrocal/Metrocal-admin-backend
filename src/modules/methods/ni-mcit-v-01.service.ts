@@ -26,6 +26,7 @@ import { Activity } from '../activities/entities/activities.entity'
 import { generateServiceCodeToMethod } from 'src/utils/codeGenerator'
 import { formatDate } from 'src/utils/formatDate'
 import { CertificationDetailsDto } from './dto/NI_MCIT_P_01/certification_details.dto'
+import { formatCertCode } from 'src/utils/generateCertCode'
 
 @Injectable()
 export class NI_MCIT_V_01Service {
@@ -81,8 +82,8 @@ export class NI_MCIT_V_01Service {
     }
 
     method.calibration_location = certificatonDetails.location
-    method.applicant_name = certificatonDetails.applicant_address
-    method.applicant_address = certificatonDetails.applicant_name
+    method.applicant_name = certificatonDetails.applicant_name
+    method.applicant_address = certificatonDetails.applicant_address
  
     try {
       await this.NI_MCIT_V_01Repository.save(method)
@@ -96,6 +97,7 @@ export class NI_MCIT_V_01Service {
   async equipmentInformation(
     equipment: EquipmentInformationV01Dto,
     methodId: number,
+    increase?: boolean,
   ) {
     try {
       const method = await this.NI_MCIT_V_01Repository.findOne({
@@ -122,6 +124,11 @@ export class NI_MCIT_V_01Service {
 
       await this.dataSource.transaction(async (manager) => {
         await manager.save(method.equipment_information)
+
+        if (increase) {
+          method.modification_number = method.modification_number === null ? 1 : method.modification_number + 1
+        }
+
         await manager.save(method)
       })
 
@@ -134,6 +141,7 @@ export class NI_MCIT_V_01Service {
   async environmentalConditions(
     environmentalConditions: EnvironmentalConditionsV01Dto,
     methodId: number,
+    increase?: boolean,
   ) {
     const method = await this.NI_MCIT_V_01Repository.findOne({
       where: { id: methodId },
@@ -162,6 +170,9 @@ export class NI_MCIT_V_01Service {
     try {
       await this.dataSource.transaction(async (manager) => {
         await manager.save(method.environmental_conditions)
+        if (increase) {
+          method.modification_number = method.modification_number === null ? 1 : method.modification_number + 1
+        }
         await manager.save(method)
       })
 
@@ -174,6 +185,7 @@ export class NI_MCIT_V_01Service {
   async calibrationResults(
     calibrationResults: CalibrationResultsV01Dto,
     methodId: number,
+    increase?: boolean,
   ) {
     const method = await this.NI_MCIT_V_01Repository.findOne({
       where: { id: methodId },
@@ -200,6 +212,9 @@ export class NI_MCIT_V_01Service {
     try {
       await this.dataSource.transaction(async (manager) => {
         await manager.save(method.calibration_results)
+        if (increase) {
+          method.modification_number = method.modification_number === null ? 1 : method.modification_number + 1
+        }
         await manager.save(method)
       })
 
@@ -213,6 +228,7 @@ export class NI_MCIT_V_01Service {
     descriptionPattern: DescriptionPatternV01Dto,
     methodId: number,
     activityId: number,
+    increase?: boolean,
   ) {
     try {
       const method = await this.NI_MCIT_V_01Repository.findOne({
@@ -243,6 +259,11 @@ export class NI_MCIT_V_01Service {
         await manager.save(method.description_pattern)
 
         method.status = 'done'
+
+        if (increase) {
+          method.modification_number = method.modification_number === null ? 1 : method.modification_number + 1
+        }
+
         await manager.save(method)
       })
 
@@ -267,7 +288,7 @@ export class NI_MCIT_V_01Service {
       }
 
       if (method.certificate_code) {
-        return handleOK('El método ya tiene un código de certificado')
+        // return handleOK('El método ya tiene un código de certificado')
       }
 
       const certificate = await this.certificateService.create('V', methodID)
@@ -554,7 +575,7 @@ export class NI_MCIT_V_01Service {
         calibration_results: calibration_results_certificate,
         masas: masas.data,
         equipment_information: {
-          certification_code: method.certificate_code,
+          certification_code: formatCertCode(method.certificate_code, method.modification_number),
           service_code: generateServiceCodeToMethod(method.id),
           certificate_issue_date: formatDate(new Date().toString()),
           calibration_date: formatDate(activity.updated_at as any),

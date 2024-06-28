@@ -20,6 +20,9 @@ export class NI_MCIT_B_01 {
   @Column({ nullable: true })
   applicant_name: string
 
+  @Column({ nullable: true })
+  modification_number?: number
+
   @Column({ nullable: true, default: false, type: 'boolean' })
   report_status?: boolean
 

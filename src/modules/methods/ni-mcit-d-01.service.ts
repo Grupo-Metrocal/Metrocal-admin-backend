@@ -89,7 +89,10 @@ export class NI_MCIT_D_01Service {
     }
   }
 
-  async addCalibrationLocation(certificatonDetails: CertificationDetailsDto, methodId: number) {
+  async addCalibrationLocation(
+    certificatonDetails: CertificationDetailsDto,
+    methodId: number,
+  ) {
     const method = await this.NI_MCIT_D_01Repository.findOne({
       where: { id: methodId },
     })
@@ -99,8 +102,8 @@ export class NI_MCIT_D_01Service {
     }
 
     method.calibration_location = certificatonDetails.location
-    method.applicant_name = certificatonDetails.applicant_address
-    method.applicant_address = certificatonDetails.applicant_name
+    method.applicant_name = certificatonDetails.applicant_name
+    method.applicant_address = certificatonDetails.applicant_address
 
     try {
       await this.NI_MCIT_D_01Repository.save(method)
@@ -115,6 +118,7 @@ export class NI_MCIT_D_01Service {
   async equipmentInformation(
     equipment: EquipmentInformationNI_MCIT_D_01Dto,
     methodId: number,
+    increase?: boolean,
   ) {
     try {
       const method = await this.NI_MCIT_D_01Repository.findOne({
@@ -140,6 +144,11 @@ export class NI_MCIT_D_01Service {
       try {
         this.dataSource.transaction(async (manager) => {
           await manager.save(method.equipment_information)
+
+          if (increase) {
+            method.modification_number = method.modification_number === null ? 1 : method.modification_number + 1
+          }
+
           await manager.save(method)
         })
 
@@ -155,6 +164,7 @@ export class NI_MCIT_D_01Service {
   async environmentalConditions(
     environmentalConditions: EnvironmentalConditionsNI_MCIT_D_01Dto,
     methodId: number,
+    increase?: boolean,
   ) {
     try {
       const method = await this.NI_MCIT_D_01Repository.findOne({
@@ -182,6 +192,9 @@ export class NI_MCIT_D_01Service {
       try {
         this.dataSource.transaction(async (manager) => {
           await manager.save(method.environmental_conditions)
+          if (increase) {
+            method.modification_number = method.modification_number === null ? 1 : method.modification_number + 1
+          }
           await manager.save(method)
         })
         return handleOK(method.environmental_conditions)
@@ -197,6 +210,7 @@ export class NI_MCIT_D_01Service {
   async descriptionPattern(
     descriptionPatterns: DescriptionPatternNI_MCIT_D_01Dto,
     methodId: number,
+    increase?: boolean,
   ) {
     try {
       const method = await this.NI_MCIT_D_01Repository.findOne({
@@ -224,6 +238,9 @@ export class NI_MCIT_D_01Service {
       try {
         this.dataSource.transaction(async (manager) => {
           await manager.save(method.description_pattern)
+          if (increase) {
+            method.modification_number = method.modification_number === null ? 1 : method.modification_number + 1
+          }
           await manager.save(method)
         })
         return handleOK(method.description_pattern)
@@ -238,6 +255,7 @@ export class NI_MCIT_D_01Service {
   async preInstallationComment(
     preInstallationComment: PreInstallationCommentNI_MCIT_D_01Dto,
     methodId: number,
+    increase?: boolean,
   ) {
     try {
       const method = await this.NI_MCIT_D_01Repository.findOne({
@@ -261,6 +279,9 @@ export class NI_MCIT_D_01Service {
       try {
         this.dataSource.transaction(async (manager) => {
           await manager.save(method.pre_installation_comment)
+          if (increase) {
+            method.modification_number = method.modification_number === null ? 1 : method.modification_number + 1
+          }
           await manager.save(method)
         })
         return handleOK(method)
@@ -276,6 +297,7 @@ export class NI_MCIT_D_01Service {
   async instrumentZeroCheck(
     instrumentZeroCheck: InstrumentZeroCheckNI_MCIT_D_01Dto,
     methodId: number,
+    increase?: boolean,
   ) {
     try {
       const method = await this.NI_MCIT_D_01Repository.findOne({
@@ -299,6 +321,9 @@ export class NI_MCIT_D_01Service {
       try {
         this.dataSource.transaction(async (manager) => {
           await manager.save(method.instrument_zero_check)
+          if (increase) {
+            method.modification_number = method.modification_number === null ? 1 : method.modification_number + 1
+          }
           await manager.save(method)
         })
         return handleOK(method)
@@ -314,6 +339,7 @@ export class NI_MCIT_D_01Service {
   async exteriorParallelismMeasurement(
     exteriorParallelismMeasurement: ExteriorParallelismMeasurementNI_MCIT_D_01Dto,
     methodId: number,
+    increase?: boolean,
   ) {
     try {
       const method = await this.NI_MCIT_D_01Repository.findOne({
@@ -338,6 +364,9 @@ export class NI_MCIT_D_01Service {
       try {
         this.dataSource.transaction(async (manager) => {
           await manager.save(method.exterior_parallelism_measurement)
+          if (increase) {
+            method.modification_number = method.modification_number === null ? 1 : method.modification_number + 1
+          }
           await manager.save(method)
         })
         return handleOK(method)
@@ -353,6 +382,7 @@ export class NI_MCIT_D_01Service {
   async interiorParallelismMeasurement(
     interiorParallelismMeasurement: InteriorParallelismMeasurementNI_MCIT_D_01Dto,
     methodId: number,
+    increase?: boolean,
   ) {
     try {
       const method = await this.NI_MCIT_D_01Repository.findOne({
@@ -379,6 +409,9 @@ export class NI_MCIT_D_01Service {
       try {
         this.dataSource.transaction(async (manager) => {
           await manager.save(method.interior_parallelism_measurement)
+          if (increase) {
+            method.modification_number = method.modification_number === null ? 1 : method.modification_number + 1
+          }
           await manager.save(method)
         })
         return handleOK(method)
@@ -395,6 +428,7 @@ export class NI_MCIT_D_01Service {
     exteriorMeasurementAccuracy: ExteriorMeasurementAccuracyNI_MCIT_D_01Dto,
     methodId: number,
     activityID: number,
+    increase?: boolean,
   ) {
     try {
       const method = await this.NI_MCIT_D_01Repository.findOne({
@@ -421,6 +455,10 @@ export class NI_MCIT_D_01Service {
         this.dataSource.transaction(async (manager) => {
           await manager.save(method.exterior_measurement_accuracy)
           method.status = 'done'
+
+          if (increase) {
+            method.modification_number = method.modification_number === null ? 1 : method.modification_number + 1
+          }
 
           await manager.save(method)
         })
@@ -541,9 +579,7 @@ export class NI_MCIT_D_01Service {
         .value(method.environmental_conditions.cycles.ta.initial)
       sheetEC.cell('B21').value(method.environmental_conditions.cycles.ta.end)
       sheetEC.cell('D20').value(method.environmental_conditions.equipment_used)
-      sheetEC
-        .cell('F20')
-        .value(method.calibration_location)
+      sheetEC.cell('F20').value(method.calibration_location)
       sheetEC
         .cell('E20')
         .value(
@@ -1095,11 +1131,12 @@ export class NI_MCIT_D_01Service {
             codigoServicio: methodAcredited.certificate_code,
             fechaCalibracion: formatDate(method.created_at.toString()),
             fechaEmision: formatDate(new Date().toString()),
-            objetoCalibracion: method.equipment_information.device  || '---',
+            objetoCalibracion: method.equipment_information.device || '---',
             marca: method.equipment_information.maker || '---',
             serie: method.equipment_information.serial_number || '---',
             modelo: method.equipment_information.model || '---',
-            rangoMedida: method.equipment_information.measurement_range || '---',
+            rangoMedida:
+              method.equipment_information.measurement_range || '---',
             resolucion: method.equipment_information.resolution || '---',
             codigoIdentificacion: method.equipment_information.code || '---',
             Solicitante: method?.applicant_name || dataClient.company_name,
@@ -1127,7 +1164,8 @@ export class NI_MCIT_D_01Service {
             marca: method.equipment_information.maker || '---',
             serie: method.equipment_information.serial_number || '---',
             modelo: method.equipment_information.model || '---',
-            rangoMedida: method.equipment_information.measurement_range || '---',
+            rangoMedida:
+              method.equipment_information.measurement_range || '---',
             resolucion: method.equipment_information.resolution || '---',
             codigoIdentificacion: method.equipment_information.code || '---',
             Solicitante: method?.applicant_name || dataClient.company_name,
@@ -1147,11 +1185,69 @@ export class NI_MCIT_D_01Service {
         }
       }
 
+      const calibration_method_used =
+        await this.patternsService.findByCodeAndMethod(
+          method.description_pattern[0],
+          'NI-MCIT-D-01',
+        )
+
+      const certificate = {
+        pattern: 'NI-MCIT-D-01',
+        email: activity.quote_request.client.email,
+        equipment_information: {
+          certification_code: method.certificate_code || '---',
+          service_code: generateServiceCodeToMethod(method.id),
+          certificate_issue_date: formatDate(new Date().toString()),
+          calibration_date: formatDate(activity.updated_at.toString()),
+          object_calibrated: method.equipment_information.device || '---',
+          maker: method.equipment_information.maker || '---',
+          serial_number: method.equipment_information.serial_number || '---',
+          model: method.equipment_information.model || '---',
+          measurement_range:
+            method.equipment_information.measurement_range || '---',
+          resolution: method.equipment_information.resolution || '---',
+          identification_code: method.equipment_information.code || '---',
+          applicant:
+            method?.applicant_address ||
+            activity.quote_request.client.company_name,
+          address:
+            method?.applicant_address || activity.quote_request.client.address,
+          calibration_location: method.calibration_location || '---',
+        },
+        calibration_results: {
+          calibration_points: dataCalibration,
+          exterior_measurement_faces: dataCalibrationExterior,
+          interior_measurement_faces: dataCalibrationInterior,
+        },
+        environmental_conditions: {
+          temperature:temperatura,
+          humidity:humedad,
+          stabilization: estabilizacion,
+          time: tiempo,
+        },
+        calibration_method_used: calibration_method_used.data,
+        description_pattern: method.description_pattern.descriptionPatterns,
+        creditable: method.pre_installation_comment.accredited,
+        observations: `
+          ${method.pre_installation_comment.comment || ''}
+          Es responsabilidad del encargado del instrumento establecer la frecuencia del servicio de calibración.
+          La corrección corresponde al valor del patrón menos las indicación del equipo.
+          La indicación de temperatura de referencia y del equipo, corresponden al promedio de 3 mediciones.
+          El factor de conversión al SI corresponde a T(K) = t(°C) + 273,15
+          De acuerdo a lo establecido en NTON 07-004-01 Norma Metrológica del Sistema Internacional de Unidades (SI).
+          Los resultados emitidos en este certificado corresponden únicamente al objeto calibrado y a las magnitudes
+          especificadas al momento de realizar el servicio.
+          Este certificado de calibración no debe ser reproducido sin la aprobación del laboratorio, excepto cuando se
+          reproduce en su totalidad.
+        `,
+      }
+
       //guardar en base de datos
       const CertificateData = {
         dataNI_R01_MCIT_D_01,
         dataDA,
         creditable: method.pre_installation_comment.accredited,
+        certificate,
       }
 
       return handleOK(CertificateData)
@@ -1324,7 +1420,7 @@ export class NI_MCIT_D_01Service {
           'instrument_zero_check',
           'exterior_parallelism_measurement',
           'interior_parallelism_measurement',
-          'exterior_measurement_accuracy'
+          'exterior_measurement_accuracy',
         ],
       })
 

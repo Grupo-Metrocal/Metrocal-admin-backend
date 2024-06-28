@@ -31,6 +31,7 @@ import { formatDate } from 'src/utils/formatDate'
 import { MethodsService } from './methods.service'
 import { Methods } from './entities/method.entity'
 import { CertificationDetailsDto } from './dto/NI_MCIT_P_01/certification_details.dto'
+import { formatCertCode } from 'src/utils/generateCertCode'
 
 @Injectable()
 export class NI_MCIT_B_01Service {
@@ -91,8 +92,8 @@ export class NI_MCIT_B_01Service {
     }
 
     method.calibration_location = certificatonDetails.location
-    method.applicant_name = certificatonDetails.applicant_address
-    method.applicant_address = certificatonDetails.applicant_name
+    method.applicant_name = certificatonDetails.applicant_name
+    method.applicant_address = certificatonDetails.applicant_address
 
     try {
       await this.NI_MCIT_B_01Repository.save(method)
@@ -106,6 +107,7 @@ export class NI_MCIT_B_01Service {
   async equipmentInfomationB01(
     equipment: EquipmentInformationNI_MCIT_B_01Dto,
     methodId: number,
+    increase?: boolean,
   ) {
     try {
       const method = await this.NI_MCIT_B_01Repository.findOne({
@@ -136,6 +138,11 @@ export class NI_MCIT_B_01Service {
       try {
         this.DataSource.transaction(async (manager) => {
           await manager.save(method.equipment_information)
+
+          if (increase) {
+            method.modification_number = method.modification_number === null ? 1 : method.modification_number + 1
+          }
+
           await manager.save(method)
         })
         return handleOK(method.equipment_information)
@@ -150,6 +157,7 @@ export class NI_MCIT_B_01Service {
   async enviromentalConditionB01(
     enviromentalConditions: EnviromentalConditionsNI_MCIT_B_01Dto,
     methodId: number,
+    increase?: boolean,
   ) {
     try {
       const method = await this.NI_MCIT_B_01Repository.findOne({
@@ -179,6 +187,11 @@ export class NI_MCIT_B_01Service {
       try {
         this.DataSource.transaction(async (manager) => {
           await manager.save(method.environmental_conditions)
+
+          if (increase) {
+            method.modification_number = method.modification_number === null ? 1 : method.modification_number + 1
+          }
+
           await manager.save(method)
         })
         return handleOK(method.environmental_conditions)
@@ -193,6 +206,7 @@ export class NI_MCIT_B_01Service {
   async eccentricityTestB01(
     eccentricityTest: EccentricityTestNI_MCIT_B_01Dto,
     methodId: number,
+    increase?: boolean,
   ) {
     try {
       const method = await this.NI_MCIT_B_01Repository.findOne({
@@ -220,6 +234,11 @@ export class NI_MCIT_B_01Service {
       try {
         this.DataSource.transaction(async (manager) => {
           await manager.save(method.eccentricity_test)
+
+          if (increase) {
+            method.modification_number = method.modification_number === null ? 1 : method.modification_number + 1
+          }
+
           await manager.save(method)
         })
         return handleOK(method.eccentricity_test)
@@ -234,6 +253,7 @@ export class NI_MCIT_B_01Service {
   async repeatabilityTestB01(
     repeatabilityTest: RepeatabilityTestNI_MCIT_B_01Dto,
     methodId: number,
+    increase?: boolean,
   ) {
     try {
       const method = await this.NI_MCIT_B_01Repository.findOne({
@@ -261,6 +281,11 @@ export class NI_MCIT_B_01Service {
       try {
         this.DataSource.transaction(async (manager) => {
           await manager.save(method.repeatability_test)
+
+          if (increase) {
+            method.modification_number = method.modification_number === null ? 1 : method.modification_number + 1
+          }
+
           await manager.save(method)
         })
         return handleOK(method.repeatability_test)
@@ -275,6 +300,7 @@ export class NI_MCIT_B_01Service {
   async linearityTestB01(
     linearityTest: LinearityTestNI_MCIT_B_01Dto,
     methodId: number,
+    increase?: boolean,
   ) {
     try {
       const method = await this.NI_MCIT_B_01Repository.findOne({
@@ -302,6 +328,11 @@ export class NI_MCIT_B_01Service {
       try {
         this.DataSource.transaction(async (manager) => {
           await manager.save(method.linearity_test)
+
+          if (increase) {
+            method.modification_number = method.modification_number === null ? 1 : method.modification_number + 1
+          }
+
           await manager.save(method)
         })
         return handleOK(method.linearity_test)
@@ -316,6 +347,7 @@ export class NI_MCIT_B_01Service {
   async unitOfMeasurementB01(
     unitOfMeasurement: UnitOfMeasurementNI_MCIT_B_01Dto,
     methodId: number,
+    increase?: boolean,
   ) {
     try {
       const method = await this.NI_MCIT_B_01Repository.findOne({
@@ -343,6 +375,11 @@ export class NI_MCIT_B_01Service {
       try {
         this.DataSource.transaction(async (manager) => {
           await manager.save(method.unit_of_measurement)
+
+          if (increase) {
+            method.modification_number = method.modification_number === null ? 1 : method.modification_number + 1
+          }
+
           await manager.save(method)
         })
         return handleOK(method.unit_of_measurement)
@@ -756,24 +793,24 @@ export class NI_MCIT_B_01Service {
       const certificate = {
         pattern: 'NI_MCIT_B_01',
         email: activity.quote_request.client.email,
-        equipment_info: {
-          certificacion_code: method.certificate_code,
-          serviceCode: generateServiceCodeToMethod(method.id),
+        equipment_information: {
+          certification_code: formatCertCode(method.certificate_code, method.modification_number),
+          service_code: generateServiceCodeToMethod(method.id),
           certificate_issue_date: formatDate(new Date().toString()),
-          calibrationDate: formatDate(activity.update_at),
-          ObjetCalibrated: equipment_information.device || '---',
+          calibration_date: formatDate(activity.update_at),
+          object_calibrated: equipment_information.device || '---',
           maker: equipment_information.maker || '---',
           serial_number: equipment_information.serial_number || '---',
           model: equipment_information.model || '---',
-          measure_range: equipment_information.measurement_range || '---',
+          measurement_range: equipment_information.measurement_range || '---',
           resolution: equipment_information.resolution || '---',
-          code: equipment_information.code || '---',
+          identification_code: equipment_information.code || '---',
           applicant: method?.applicant_name || activity.quote_request.client.company_name,
           address: method?.applicant_address || activity.quote_request.client.address,
-          calibrationLocation:
+          calibration_location:
             method.calibration_location,
         },
-        calibratioResult: {
+      /*   calibratioResult: {
           referentMass: referentMass,
           indicationEquipment: indicationEquipment,
           error: error,
@@ -797,9 +834,9 @@ export class NI_MCIT_B_01Service {
           repetibilidadLBKG: repetibilidadLBKG,
           eccentricityLBKG: eccentricityLBKG,
           incertidumbreLBKG: incertidumbreLBKG,
-        },
+        }, */
       }
-
+        console.log(certificate)
       return handleOK(certificate)
     } catch (error) {
       await this.methodService.killExcelProcess(method.certificate_url)

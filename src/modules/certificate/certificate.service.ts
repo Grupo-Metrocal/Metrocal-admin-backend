@@ -22,7 +22,6 @@ export class CertificateService {
 
         const code = generateCertCode({
           id: methodId,
-          modificationsNumber: 0,
           prefix: prefix,
         })
         certificateCreated.code = code
