@@ -21,3 +21,14 @@ export const formatCertCode = (code: string, modificationsNumber: number) => {
   const id = parts[3]
   return code.replace(id, `${id}-${modificationsNumber}`)
 }
+
+export const getCertCodeId = (code: string) => {
+  if (!code) {
+    return '0'
+  }
+
+  const parts = code.split('-')
+  const id = parts[3]
+
+  return id
+}
