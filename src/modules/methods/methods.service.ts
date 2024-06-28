@@ -600,4 +600,29 @@ export class MethodsService {
       return handleInternalServerError(e.message)
     }
   }
+
+  async getCeritifationCodeFromLastMethod(method_name: string){
+    try {
+      const repository = `${method_name}Repository`
+      const lastMethod = await this[repository].find({
+        order: {
+          id: 'DESC',
+        },
+        take: 1,
+      })
+
+      const method = lastMethod[0]
+
+      if(!method){ 
+        return handleBadrequest(new Error('No se encontró el método'))
+      }
+
+      console.log(method)
+
+      return handleOK({ code: method.certificate_code })
+    }catch(e) {
+      console.log(e)
+      return handleInternalServerError(e.message)
+    }
+  }
 }
