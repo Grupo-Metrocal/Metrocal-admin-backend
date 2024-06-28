@@ -77,7 +77,10 @@ export class NI_MCIT_D_02Service {
     }
   }
 
-  async addCalibrationLocation(certificatonDetails: CertificationDetailsDto, methodId: number) {
+  async addCalibrationLocation(
+    certificatonDetails: CertificationDetailsDto,
+    methodId: number,
+  ) {
     const method = await this.NI_MCIT_D_02Repository.findOne({
       where: { id: methodId },
     })
@@ -130,7 +133,10 @@ export class NI_MCIT_D_02Service {
           await manager.save(method.equipment_information)
 
           if (increase) {
-            method.modification_number = method.modification_number === null ? 1 : method.modification_number + 1
+            method.modification_number =
+              method.modification_number === null
+                ? 1
+                : method.modification_number + 1
           }
 
           await manager.save(method)
@@ -176,7 +182,10 @@ export class NI_MCIT_D_02Service {
           await manager.save(method.environmental_conditions)
 
           if (increase) {
-            method.modification_number = method.modification_number === null ? 1 : method.modification_number + 1
+            method.modification_number =
+              method.modification_number === null
+                ? 1
+                : method.modification_number + 1
           }
 
           await manager.save(method)
@@ -224,7 +233,10 @@ export class NI_MCIT_D_02Service {
           await manager.save(method.description_pattern)
 
           if (increase) {
-            method.modification_number = method.modification_number === null ? 1 : method.modification_number + 1
+            method.modification_number =
+              method.modification_number === null
+                ? 1
+                : method.modification_number + 1
           }
 
           await manager.save(method)
@@ -272,7 +284,10 @@ export class NI_MCIT_D_02Service {
           await manager.save(method.pre_installation_comment)
 
           if (increase) {
-            method.modification_number = method.modification_number === null ? 1 : method.modification_number + 1
+            method.modification_number =
+              method.modification_number === null
+                ? 1
+                : method.modification_number + 1
           }
 
           await manager.save(method)
@@ -320,7 +335,10 @@ export class NI_MCIT_D_02Service {
           await manager.save(method.instrument_zero_check)
 
           if (increase) {
-            method.modification_number = method.modification_number === null ? 1 : method.modification_number + 1
+            method.modification_number =
+              method.modification_number === null
+                ? 1
+                : method.modification_number + 1
           }
 
           await manager.save(method)
@@ -366,7 +384,10 @@ export class NI_MCIT_D_02Service {
           method.status = 'done'
 
           if (increase) {
-            method.modification_number = method.modification_number === null ? 1 : method.modification_number + 1
+            method.modification_number =
+              method.modification_number === null
+                ? 1
+                : method.modification_number + 1
           }
 
           await manager.save(method)
@@ -473,9 +494,7 @@ export class NI_MCIT_D_02Service {
       sheetNI_R01_MCIT_D_02
         .cell('F19')
         .value(environmentalConditions.time.minute)
-      sheetNI_R01_MCIT_D_02
-        .cell('J19')
-        .value(method.calibration_location)
+      sheetNI_R01_MCIT_D_02.cell('J19').value(method.calibration_location)
       sheetNI_R01_MCIT_D_02
         .cell('B19')
         .value(environmentalConditions.cycles.ta.initial)
@@ -806,7 +825,6 @@ export class NI_MCIT_D_02Service {
 
       const patronsUtilizados = []
 
-
       //Datos de la certificacion
       const serviceCode = generateServiceCodeToMethod(method.id)
       const dataNI_MCIT_D_02 = {
@@ -839,7 +857,7 @@ export class NI_MCIT_D_02Service {
             rango: method.equipment_information.measurement_range || '---',
             resolucion: method.equipment_information.resolution || '---',
             codigoIdentificacion: method.equipment_information.code,
-            solicitante: method?.applicant_name || dataClient.company_name ,
+            solicitante: method?.applicant_name || dataClient.company_name,
             direccion: method?.applicant_address || dataClient.address,
             lugarCalibracion: method.calibration_location,
           },
@@ -863,7 +881,7 @@ export class NI_MCIT_D_02Service {
             rango: method.equipment_information.measurement_range || '---',
             resolucion: method.equipment_information.resolution || '---',
             codigoIdentificacion: method.equipment_information.code,
-            solicitante: method?.applicant_name || dataClient.company_name ,
+            solicitante: method?.applicant_name || dataClient.company_name,
             direccion: method?.applicant_address || dataClient.address,
             lugarCalibracion: method.calibration_location,
           },
@@ -876,10 +894,55 @@ export class NI_MCIT_D_02Service {
         }
       }
 
+      const certificate = {
+        pattern: 'NI-MCIT-D-02',
+        email: activity.quote_request.client.email,
+        equipment_information: {
+          certification_code: method.certificate_code || '---',
+          service_code: generateServiceCodeToMethod(method.id),
+          certificate_issue_date: formatDate(new Date().toString()),
+          calibration_date: formatDate(activity.updated_at.toString()),
+          object_calibrated: method.equipment_information.device || '---',
+          maker: method.equipment_information.maker || '---',
+          serial_number: method.equipment_information.serial_number || '---',
+          model: method.equipment_information.model || '---',
+          measurement_range:
+            method.equipment_information.measurement_range || '---',
+          resolution: method.equipment_information.resolution || '---',
+          identification_code: method.equipment_information.code || '---',
+          applicant:
+            method?.applicant_address ||
+            activity.quote_request.client.company_name,
+          address:
+            method?.applicant_address || activity.quote_request.client.address,
+          calibration_location: method.calibration_location || '---',
+        },
+        environmental_conditions: {
+          temperature: temperatura1DA,
+          humidity: humedad1DA,
+          temperature2: temperatura2DA,
+          humidity2: humedad2DA,
+        },
+        calibration_results: {
+          calibration_accuracy_tests: dataResultCalibrationDAmm,
+        },
+        creditable: method.pre_installation_comment.accredited,
+        description_pattern: method.description_pattern.descriptionPattern,
+        observations: `
+          ${method.pre_installation_comment.comment || ''}
+          Es responsabilidad del encargado del instrumento establecer la frecuencia del servicio de calibración.
+          La corrección corresponde al valor del patrón menos las indicación del equipo.																														
+          La indicación del equipo corresponde al promedio de 3 mediciones en cada punto de calibración.																														
+          Los resultados emitidos en este certificado corresponden únicamente al objeto calibrado y a las magnitudes especificadas al momento de realizar el servicio.																														
+          Este certificado de calibración no debe ser reproducido sin la aprobación del laboratorio, excepto cuando se reproduce en su totalidad.
+        `,
+      }
+
       const CertificateData = {
         dataNI_MCIT_D_02,
         dataDA,
         creditable: method.pre_installation_comment.accredited,
+        certificate: certificate,
       }
 
       return handleOK(CertificateData)
@@ -1060,7 +1123,7 @@ export class NI_MCIT_D_02Service {
           'description_pattern',
           'pre_installation_comment',
           'instrument_zero_check',
-          'accuracy_test'
+          'accuracy_test',
         ],
       })
 
