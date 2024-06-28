@@ -99,6 +99,8 @@ export class GENERIC_METHODService {
             method.equipment_information = newEquipment;         
           }
 
+          await this.generateCertificateCodeToMethod(method.id)
+
           await this.dataSource.transaction(async (manager) => {
             await manager.save(method.equipment_information);
             await manager.save(method);
@@ -354,13 +356,10 @@ export class GENERIC_METHODService {
       }
 
       const activity = dataActivity.data;
-
       const reopnedWorkbook = await XlsxPopulate.fromFileAsync(method.certificate_url);
-
       const worksheetFa1pto = reopnedWorkbook.sheet('FA  1 pto');
       
-
-
+      
 
 
    
@@ -402,5 +401,31 @@ export class GENERIC_METHODService {
     })
   }
 
+  async generateCertificateCodeToMethod(methodID: number) {
+    try {
+      const method = await this.GENERIC_METHODRepository.findOne({
+        where: { id: methodID },
+      })
+
+      if (!method) {
+        return handleInternalServerError('El método no existe')
+      }
+
+      if (method.certificate_code) {
+        return handleOK('El método ya tiene un código de certificado')
+      }
+
+      const certificate = await this.certificateService.create('T', methodID)
+
+      method.certificate_code = certificate.data.code
+      method.certificate_id = certificate.data.id
+
+      await this.GENERIC_METHODRepository.save(method)
+
+      return handleOK(certificate)
+    } catch (error) {
+      return handleInternalServerError(error.message)
+    }
+  }
 
 }
