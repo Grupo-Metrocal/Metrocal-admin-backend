@@ -793,24 +793,24 @@ export class NI_MCIT_B_01Service {
       const certificate = {
         pattern: 'NI_MCIT_B_01',
         email: activity.quote_request.client.email,
-        equipment_info: {
-          certificacion_code: formatCertCode(method.certificate_code, method.modification_number),
-          serviceCode: generateServiceCodeToMethod(method.id),
+        equipment_information: {
+          certification_code: formatCertCode(method.certificate_code, method.modification_number),
+          service_code: generateServiceCodeToMethod(method.id),
           certificate_issue_date: formatDate(new Date().toString()),
-          calibrationDate: formatDate(activity.update_at),
-          ObjetCalibrated: equipment_information.device || '---',
+          calibration_date: formatDate(activity.update_at),
+          object_calibrated: equipment_information.device || '---',
           maker: equipment_information.maker || '---',
           serial_number: equipment_information.serial_number || '---',
           model: equipment_information.model || '---',
-          measure_range: equipment_information.measurement_range || '---',
+          measurement_range: equipment_information.measurement_range || '---',
           resolution: equipment_information.resolution || '---',
-          code: equipment_information.code || '---',
+          identification_code: equipment_information.code || '---',
           applicant: method?.applicant_name || activity.quote_request.client.company_name,
           address: method?.applicant_address || activity.quote_request.client.address,
-          calibrationLocation:
+          calibration_location:
             method.calibration_location,
         },
-        calibratioResult: {
+      /*   calibratioResult: {
           referentMass: referentMass,
           indicationEquipment: indicationEquipment,
           error: error,
@@ -834,9 +834,9 @@ export class NI_MCIT_B_01Service {
           repetibilidadLBKG: repetibilidadLBKG,
           eccentricityLBKG: eccentricityLBKG,
           incertidumbreLBKG: incertidumbreLBKG,
-        },
+        }, */
       }
-
+        console.log(certificate)
       return handleOK(certificate)
     } catch (error) {
       await this.methodService.killExcelProcess(method.certificate_url)
