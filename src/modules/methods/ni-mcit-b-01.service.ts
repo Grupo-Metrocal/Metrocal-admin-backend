@@ -69,7 +69,6 @@ export class NI_MCIT_B_01Service {
 
     @Inject(forwardRef(() => MethodsService))
     private readonly methodService: MethodsService,
-
   ) {}
 
   async createNI_MCIT_B_01() {
@@ -82,7 +81,10 @@ export class NI_MCIT_B_01Service {
     }
   }
 
-  async addCalibrationLocation(certificatonDetails: CertificationDetailsDto, methodId: number) {
+  async addCalibrationLocation(
+    certificatonDetails: CertificationDetailsDto,
+    methodId: number,
+  ) {
     const method = await this.NI_MCIT_B_01Repository.findOne({
       where: { id: methodId },
     })
@@ -140,7 +142,10 @@ export class NI_MCIT_B_01Service {
           await manager.save(method.equipment_information)
 
           if (increase) {
-            method.modification_number = method.modification_number === null ? 1 : method.modification_number + 1
+            method.modification_number =
+              method.modification_number === null
+                ? 1
+                : method.modification_number + 1
           }
 
           await manager.save(method)
@@ -189,7 +194,10 @@ export class NI_MCIT_B_01Service {
           await manager.save(method.environmental_conditions)
 
           if (increase) {
-            method.modification_number = method.modification_number === null ? 1 : method.modification_number + 1
+            method.modification_number =
+              method.modification_number === null
+                ? 1
+                : method.modification_number + 1
           }
 
           await manager.save(method)
@@ -236,7 +244,10 @@ export class NI_MCIT_B_01Service {
           await manager.save(method.eccentricity_test)
 
           if (increase) {
-            method.modification_number = method.modification_number === null ? 1 : method.modification_number + 1
+            method.modification_number =
+              method.modification_number === null
+                ? 1
+                : method.modification_number + 1
           }
 
           await manager.save(method)
@@ -283,7 +294,10 @@ export class NI_MCIT_B_01Service {
           await manager.save(method.repeatability_test)
 
           if (increase) {
-            method.modification_number = method.modification_number === null ? 1 : method.modification_number + 1
+            method.modification_number =
+              method.modification_number === null
+                ? 1
+                : method.modification_number + 1
           }
 
           await manager.save(method)
@@ -330,7 +344,10 @@ export class NI_MCIT_B_01Service {
           await manager.save(method.linearity_test)
 
           if (increase) {
-            method.modification_number = method.modification_number === null ? 1 : method.modification_number + 1
+            method.modification_number =
+              method.modification_number === null
+                ? 1
+                : method.modification_number + 1
           }
 
           await manager.save(method)
@@ -377,7 +394,10 @@ export class NI_MCIT_B_01Service {
           await manager.save(method.unit_of_measurement)
 
           if (increase) {
-            method.modification_number = method.modification_number === null ? 1 : method.modification_number + 1
+            method.modification_number =
+              method.modification_number === null
+                ? 1
+                : method.modification_number + 1
           }
 
           await manager.save(method)
@@ -648,22 +668,22 @@ export class NI_MCIT_B_01Service {
         }
       }
 
-      sheetCalibración.cell('C15').value(method.unit_of_measurement.measure)
-      sheetCalibración.cell('C16').value(method.unit_of_measurement.resolution)
+      /*    sheetCalibración.cell('C15').value(method.unit_of_measurement.measure)
+      sheetCalibración.cell('C16').value(method.unit_of_measurement.resolution) */
 
       workbook.toFileAsync(method.certificate_url)
-      await this.autoSaveExcel(method.certificate_url)
       return this.getResultCertificateB01(methodID, activityID)
-
+      
       //fin de try
     } catch (error) {
       await this.methodService.killExcelProcess(method.certificate_url)
       return handleInternalServerError(error)
     }
   }
-
+  
   //resultados para generar PDF
   async getResultCertificateB01(methodID: number, activityID: number) {
+    console.log(methodID, activityID)
     const method = await this.NI_MCIT_B_01Repository.findOne({
       where: { id: methodID },
       relations: [
@@ -674,8 +694,8 @@ export class NI_MCIT_B_01Service {
         'linearity_test',
       ],
     })
-    try {
-
+    console.log(method)
+    /* try { */
       if (!method) {
         return handleInternalServerError('El metodo no existe')
       }
@@ -689,7 +709,7 @@ export class NI_MCIT_B_01Service {
         unit_of_measurement,
       } = method
 
-      if (
+/*       if (
         !equipment_information ||
         !environmental_conditions ||
         !eccentricity_test ||
@@ -700,7 +720,7 @@ export class NI_MCIT_B_01Service {
         return handleInternalServerError(
           'El método no tiene la información necesaria para generar el certificado',
         )
-      }
+      } */
 
       const dataActivity =
         await this.activitiesService.getActivitiesByID(activityID)
@@ -751,12 +771,12 @@ export class NI_MCIT_B_01Service {
       let enviromentalConditionLBKG = []
 
       for (let i = 45; i <= 52; i++) {
-        referenceMassLBKG.push(
+      /*   referenceMassLBKG.push(
           sheetResultONAlbkg.cell(`B${i}`).value().toString(),
-        )
-        indicationEquipmentLBKG.push(
+        ) */
+      /*   indicationEquipmentLBKG.push(
           sheetResultONAlbkg.cell(`D${i}`).value().toString(),
-        )
+        ) */
         errorLBKG.push(sheetResultONAlbkg.cell(`F${i}`).value().toString())
         repetibilidadLBKG.push(
           sheetResultONAlbkg.cell(`H${46}`).value().toString(),
@@ -765,6 +785,7 @@ export class NI_MCIT_B_01Service {
           sheetResultONAlbkg.cell(`J${46}`).value().toString(),
         )
         incertidumbreLBKG.push(
+          
           sheetResultONAlbkg.cell(`L${i}`).value().toString(),
         )
       }
@@ -794,7 +815,10 @@ export class NI_MCIT_B_01Service {
         pattern: 'NI_MCIT_B_01',
         email: activity.quote_request.client.email,
         equipment_information: {
-          certification_code: formatCertCode(method.certificate_code, method.modification_number),
+          certification_code: formatCertCode(
+            method.certificate_code,
+            method.modification_number,
+          ),
           service_code: generateServiceCodeToMethod(method.id),
           certificate_issue_date: formatDate(new Date().toString()),
           calibration_date: formatDate(activity.update_at),
@@ -805,12 +829,14 @@ export class NI_MCIT_B_01Service {
           measurement_range: equipment_information.measurement_range || '---',
           resolution: equipment_information.resolution || '---',
           identification_code: equipment_information.code || '---',
-          applicant: method?.applicant_name || activity.quote_request.client.company_name,
-          address: method?.applicant_address || activity.quote_request.client.address,
-          calibration_location:
-            method.calibration_location,
+          applicant:
+            method?.applicant_name ||
+            activity.quote_request.client.company_name,
+          address:
+            method?.applicant_address || activity.quote_request.client.address,
+          calibration_location: method.calibration_location,
         },
-      /*   calibratioResult: {
+        /*   calibratioResult: {
           referentMass: referentMass,
           indicationEquipment: indicationEquipment,
           error: error,
@@ -836,12 +862,12 @@ export class NI_MCIT_B_01Service {
           incertidumbreLBKG: incertidumbreLBKG,
         }, */
       }
-        console.log(certificate)
+      console.log(certificate)
       return handleOK(certificate)
-    } catch (error) {
+  /*   } catch (error) {
       await this.methodService.killExcelProcess(method.certificate_url)
       return handleInternalServerError(error)
-    }
+    } */
   }
 
   async generatePDFCertificateB01(activityID: number, methodID: number) {
@@ -862,17 +888,17 @@ export class NI_MCIT_B_01Service {
       }
 
       let certificateData: any
-       if (!fs.existsSync(method.certificate_url)) {
+      if (!fs.existsSync(method.certificate_url)) {
         certificateData = await this.generateCertificateData({
           activityID,
           methodID,
         })
-     } else {
+      } else {
         certificateData = await this.getResultCertificateB01(
           activityID,
           methodID,
         )
-     }
+      }
 
       const PDF = await this.pdfService.generateCertificatePdf(
         '/certificates/NI_CMIT_B_01/B-01',
@@ -983,7 +1009,7 @@ export class NI_MCIT_B_01Service {
           'linearity_test',
           'repeatability_test',
           'eccentricity_test',
-          'unit_of_measurement'
+          'unit_of_measurement',
         ],
       })
 
