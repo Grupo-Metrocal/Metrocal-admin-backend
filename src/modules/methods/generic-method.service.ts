@@ -268,7 +268,6 @@ export class GENERIC_METHODService {
       fs.copyFileSync(filePath, method.certificate_url);
 
       const workbook = await XlsxPopulate.fromFileAsync(method.certificate_url);
-      const workbook = await XlsxPopulate.fromFileAsync(method.certificate_url);
 
       const worksheetGenerales = workbook.sheet('Generales');
       const worksheetEntradaDatos = workbook.sheet('Entrada de Datos');
