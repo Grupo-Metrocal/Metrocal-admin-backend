@@ -170,19 +170,19 @@
     <div class="grid">
         {{#if dataDA.acreedited}}
         <div class="grid-item"><b>Identificación del certificado:</b></div>
-        <div class="grid-item"><b>{{certificate.equipment_info.certificacion_code}}</b></div>
+        <div class="grid-item"><b>{{certificate.equipment_info.certification_code}}</b></div>
         {{/if}}
         <div class="grid-item"><b>Código de servicio:</b></div>
-        <div class="grid-item"><b>{{certificate.equipment-information.serviceCode}}</b></div>
+        <div class="grid-item"><b>{{certificate.equipment-information.service_code}}</b></div>
 
         <div class="grid-item"><b>Fecha de calibración:</b></div>
         <div class="grid-item">{{certificate.equipment-information.certificate_issue_date}}</div>
 
         <div class="grid-item"><b>Fecha de emisión del certificado:</b></div>
-        <div class="grid-item">{{certificate.equipment-information.calibrationDate}}</div>
+        <div class="grid-item">{{certificate.equipment-information.calibration_date}}</div>
 
         <div class="grid-item"><b>Objeto de calibración:</b></div>
-        <div class="grid-item">{{certificate.equipment-information.ObjectCalibrated}}</div>
+        <div class="grid-item">{{certificate.equipment-information.object_calibrated}}</div>
 
         <div class="grid-item"><b>Fabricante/Marca:</b></div>
         <div class="grid-item">{{certificate.equipment-information.maker}}</div>
@@ -230,7 +230,7 @@
             </tr> 
         </thead>
         <tbody>
-            {{#each certificate.calibratioResult as |data|}}
+            {{#each certificate.calibration_reults.result_test as |data|}}
             <tr>
                 <td>{{referentMass}}</td>
                 <td>{{indicationEquipment}}</td>
@@ -256,7 +256,7 @@
                 </tr>
             </thead>
             <tbody>
-                {{#each certificate.calibrationResultLBGK as |data|}}
+                {{#each certificate.calibration_reults.result_tests_lb as |data|}}
                 <tr>
                     <td>{{referentMassLBKG}}</td>
                     <td>{{indicationEquipmentLBKG}}</td>
@@ -334,7 +334,7 @@
             </tr>
         </thead>
         <tbody>
-            {{#each certificate.calibratioResult.descriptionPatron as |data|}}
+            {{#each certificate.description_pattern as |data|}}
             <tr>
                 <td>{{data.equipment}}</td>
                 <td>{{data.code}}</td>
