@@ -32,6 +32,7 @@ import { MethodsService } from './methods.service'
 import { Methods } from './entities/method.entity'
 import { CertificationDetailsDto } from './dto/NI_MCIT_P_01/certification_details.dto'
 import { formatCertCode } from 'src/utils/generateCertCode'
+import { time } from 'console'
 
 @Injectable()
 export class NI_MCIT_B_01Service {
@@ -460,6 +461,7 @@ export class NI_MCIT_B_01Service {
         'eccentricity_test',
         'repeatability_test',
         'linearity_test',
+        'unit_of_measurement'
       ],
     })
 
@@ -668,8 +670,8 @@ export class NI_MCIT_B_01Service {
         }
       }
 
-      /*    sheetCalibración.cell('C15').value(method.unit_of_measurement.measure)
-      sheetCalibración.cell('C16').value(method.unit_of_measurement.resolution) */
+      sheetCalibración.cell('C15').value(method.unit_of_measurement.measure)
+      sheetCalibración.cell('C16').value(method.unit_of_measurement.resolution)
 
       workbook.toFileAsync(method.certificate_url)
       return this.getResultCertificateB01(methodID, activityID)
@@ -683,7 +685,6 @@ export class NI_MCIT_B_01Service {
   
   //resultados para generar PDF
   async getResultCertificateB01(methodID: number, activityID: number) {
-    console.log(methodID, activityID)
     const method = await this.NI_MCIT_B_01Repository.findOne({
       where: { id: methodID },
       relations: [
@@ -692,10 +693,10 @@ export class NI_MCIT_B_01Service {
         'eccentricity_test',
         'repeatability_test',
         'linearity_test',
+        'unit_of_measurement',
       ],
     })
-    console.log(method)
-    /* try { */
+    try { 
       if (!method) {
         return handleInternalServerError('El metodo no existe')
       }
@@ -709,7 +710,7 @@ export class NI_MCIT_B_01Service {
         unit_of_measurement,
       } = method
 
-/*       if (
+    if (
         !equipment_information ||
         !environmental_conditions ||
         !eccentricity_test ||
@@ -720,7 +721,7 @@ export class NI_MCIT_B_01Service {
         return handleInternalServerError(
           'El método no tiene la información necesaria para generar el certificado',
         )
-      } */
+      } 
 
       const dataActivity =
         await this.activitiesService.getActivitiesByID(activityID)
@@ -733,12 +734,7 @@ export class NI_MCIT_B_01Service {
       const respWorkBook = await XlsxPopulate.fromFileAsync(
         method.certificate_url,
       )
-      let referentMass = []
-      let indicationEquipment = []
-      let error = []
-      let repetibilidad = []
-      let eccentricity = []
-      let incertidumbre = []
+    
       let enviromentalCondition = []
       let temperatura1
       let temperatura2
@@ -748,55 +744,75 @@ export class NI_MCIT_B_01Service {
       let presion2
       let descriptionPatron
       let dataClient = []
+      let result_test = []
+      let reference_mass1
+      let equipment_indication1
+      let error1
+      let repeatability1
+      let maximum_eccentricity1
+      let expanded_uncertainty1
 
-      const sheetsResultONAkg = respWorkBook.sheet('+ONA_kg')
+
       const sheetResultONAlbkg = respWorkBook.sheet('+ONA_lb&kg')
-
-      for (let i = 30; i <= 37; i++) {
-        referentMass.push(sheetsResultONAkg.cell(`B${i}`).value().toString())
-        indicationEquipment.push(
-          sheetsResultONAkg.cell(`D${i}`).value().toString(),
-        )
-        error.push(sheetsResultONAkg.cell(`F${i}`).value().toString())
-        repetibilidad.push(sheetsResultONAkg.cell(`H${31}`).value().toString())
-        eccentricity.push(sheetsResultONAkg.cell(`J${31}`).value().toString())
-        incertidumbre.push(sheetsResultONAkg.cell(`L${i}`).value().toString())
-      }
-      let referenceMassLBKG = []
-      let indicationEquipmentLBKG = []
-      let errorLBKG = []
-      let repetibilidadLBKG = []
-      let eccentricityLBKG = []
-      let incertidumbreLBKG = []
-      let enviromentalConditionLBKG = []
-
+      //resultados
+      // Resultados
+     for (let i = 30; i <= 37; i++) {
+       let result = {
+         reference_mass: sheetResultONAlbkg.cell(`B${i}`).value().toString(),
+         equipment_indication: sheetResultONAlbkg.cell(`D${i}`).value().toString(),
+         error: sheetResultONAlbkg.cell(`F${i}`).value().toString(),
+         expanded_uncertainty: sheetResultONAlbkg.cell(`L${i}`).value().toString()
+       };
+     
+       // Solo agregar repeatability y maximum_eccentricity en las filas 30 y 31
+       if (i === 30 || i === 31) {
+         result['repeatability'] = sheetResultONAlbkg.cell(`H${i}`).value().toString();
+         result['maximum_eccentricity'] = sheetResultONAlbkg.cell(`J${i}`).value().toString();
+       }
+     
+       result_test.push(result);
+     }
+     //result data 
+     let result_tests_lb = []
+     let reference_mass2
+     let equipment_indication2
+     let error2
+     let repeatability2
+     let maximum_eccentricity2
+     let expanded_uncertainty2
+     if (method.unit_of_measurement.measure === 'lb') {
       for (let i = 45; i <= 52; i++) {
-      /*   referenceMassLBKG.push(
-          sheetResultONAlbkg.cell(`B${i}`).value().toString(),
-        ) */
-      /*   indicationEquipmentLBKG.push(
-          sheetResultONAlbkg.cell(`D${i}`).value().toString(),
-        ) */
-        errorLBKG.push(sheetResultONAlbkg.cell(`F${i}`).value().toString())
-        repetibilidadLBKG.push(
-          sheetResultONAlbkg.cell(`H${46}`).value().toString(),
-        )
-        eccentricityLBKG.push(
-          sheetResultONAlbkg.cell(`J${46}`).value().toString(),
-        )
-        incertidumbreLBKG.push(
-          
-          sheetResultONAlbkg.cell(`L${i}`).value().toString(),
-        )
+        let reference_mass = sheetResultONAlbkg.cell(`B${i}`).value();
+        let equipment_indication = sheetResultONAlbkg.cell(`D${i}`).value();
+        let error = sheetResultONAlbkg.cell(`F${i}`).value();
+        let expanded_uncertainty = sheetResultONAlbkg.cell(`L${i}`).value();
+        let repeatability = i === 45 || i === 46 ? sheetResultONAlbkg.cell(`H${i}`).value() : null;
+        let maximum_eccentricity = i === 45 || i === 46 ? sheetResultONAlbkg.cell(`J${i}`).value() : null;
+    
+        let result_lb = {
+          reference_mass: reference_mass !== undefined ? reference_mass.toString() : '',
+          equipment_indication: equipment_indication !== undefined ? equipment_indication.toString() : '',
+          error: error !== undefined ? error.toString() : '',
+          expanded_uncertainty: expanded_uncertainty !== undefined ? expanded_uncertainty.toString() : ''
+        };
+    
+        if (repeatability !== null && maximum_eccentricity !== null) {
+          result_lb['repeatability'] = repeatability !== undefined ? repeatability.toString() : '';
+          result_lb['maximum_eccentricity'] = maximum_eccentricity !== undefined ? maximum_eccentricity.toString() : '';
+        }
+    
+        result_tests_lb.push(result_lb);
       }
+    }
+    
       //condiciones ambientales
       enviromentalCondition.push(
-        (temperatura1 = sheetsResultONAkg.cell('D40').value().toString()),
-        (temperatura2 = sheetsResultONAkg.cell('F40').value().toString()),
-        (humedad1 = sheetsResultONAkg.cell('D41').value().toString()),
-        (humedad2 = sheetsResultONAkg.cell('F41').value().toString()),
-        (presion1 = sheetsResultONAkg.cell('J42').value().toString()),
-        (presion2 = sheetsResultONAkg.cell('L42').value().toString()),
+        (temperatura1 = sheetResultONAlbkg.cell('D55').value().toString()),
+        (temperatura2 = sheetResultONAlbkg.cell('F55').value().toString()),
+        (humedad1 = sheetResultONAlbkg.cell('J55').value().toString()),
+        (humedad2 = sheetResultONAlbkg.cell('L55').value().toString()),
+        (presion1 = sheetResultONAlbkg.cell('D56').value().toString()),
+        (presion2 = sheetResultONAlbkg.cell('F56').value().toString()),
       )
       //descripcion patron
       descriptionPatron = await this.patternsService.findByCodeAndMethod(
@@ -818,10 +834,10 @@ export class NI_MCIT_B_01Service {
           certification_code: formatCertCode(
             method.certificate_code,
             method.modification_number,
-          ),
+          ) || '---',
           service_code: generateServiceCodeToMethod(method.id),
           certificate_issue_date: formatDate(new Date().toString()),
-          calibration_date: formatDate(activity.update_at),
+          calibration_date: formatDate(method.equipment_information.date),
           object_calibrated: equipment_information.device || '---',
           maker: equipment_information.maker || '---',
           serial_number: equipment_information.serial_number || '---',
@@ -836,38 +852,39 @@ export class NI_MCIT_B_01Service {
             method?.applicant_address || activity.quote_request.client.address,
           calibration_location: method.calibration_location,
         },
-        /*   calibratioResult: {
-          referentMass: referentMass,
-          indicationEquipment: indicationEquipment,
-          error: error,
-          repetibilidad: repetibilidad,
-          eccentricity: eccentricity,
-          incertidumbre: incertidumbre,
-          enviromentalCondition: enviromentalCondition,
-          temperatura1: temperatura1,
-          temperatura2: temperatura2,
-          humedad1: humedad1,
-          humedad2: humedad2,
-          presion1: presion1,
-          presion2: presion2,
-          descriptionPatron: descriptionPatron,
-          dataClient: dataClient,
+        calibration_reults: {
+          result_test,
+          result_tests_lb,
         },
-        calibrationResultLBGK: {
-          referentMassLBKG: referenceMassLBKG,
-          indicationEquipmentLBKG: indicationEquipmentLBKG,
-          errorLBKG: errorLBKG,
-          repetibilidadLBKG: repetibilidadLBKG,
-          eccentricityLBKG: eccentricityLBKG,
-          incertidumbreLBKG: incertidumbreLBKG,
-        }, */
+        environmental_conditions:{
+         temperature1 : temperatura1,
+          temperature2 : temperatura2,
+          humidity1 : humedad1,
+          humidity2 : humedad2,
+          pressure1 : presion1,
+          pressure2 : presion2,
+          stabilzation : environmental_conditions.stabilization_site,
+          time : environmental_conditions.time.hours+' horas '+environmental_conditions.time.minute+' minutos',
+        },
+        description_pattern: descriptionPatron,
+        creditable: method.equipment_information.acredited,
+        observations: `
+          Es responsabilidad del encargado del instrumento establecer la frecuencia del servicio de calibración.
+          La corrección corresponde al valor del patrón menos las indicación del equipo.
+          La indicación de temperatura de referencia y del equipo, corresponden al promedio de 3 mediciones.
+          El factor de conversión al SI corresponde a T(K) = t(°C) + 273,15
+          De acuerdo a lo establecido en NTON 07-004-01 Norma Metrológica del Sistema Internacional de Unidades (SI).
+          Los resultados emitidos en este certificado corresponden únicamente al objeto calibrado y a las magnitudes
+          especificadas al momento de realizar el servicio.
+          Este certificado de calibración no debe ser reproducido sin la aprobación del laboratorio, excepto cuando se
+          reproduce en su totalidad.`,
+          withLb: method.unit_of_measurement.measure === 'lb' ? true : false,
       }
-      console.log(certificate)
       return handleOK(certificate)
-  /*   } catch (error) {
+    } catch (error) {
       await this.methodService.killExcelProcess(method.certificate_url)
       return handleInternalServerError(error)
-    } */
+    } 
   }
 
   async generatePDFCertificateB01(activityID: number, methodID: number) {
@@ -880,6 +897,7 @@ export class NI_MCIT_B_01Service {
           'eccentricity_test',
           'repeatability_test',
           'linearity_test',
+          'unit_of_measurement'
         ],
       })
 
@@ -901,8 +919,8 @@ export class NI_MCIT_B_01Service {
       }
 
       const PDF = await this.pdfService.generateCertificatePdf(
-        '/certificates/NI_CMIT_B_01/B-01',
-        certificateData.data,
+        '/certificates/NI_CMIT_B_01/b01.hbs',
+        certificateData,
       )
 
       if (!PDF) {
@@ -929,9 +947,7 @@ export class NI_MCIT_B_01Service {
       $Workbook.Save()
       $Workbook.Close()
       $Excel.Quit()
-
       `
-
       exec(
         powershellCommand,
         { shell: 'powershell.exe' },

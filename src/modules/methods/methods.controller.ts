@@ -901,6 +901,17 @@ export class MethodsController {
     })
   }
 
+  @Get('ni-mcit-b-01/generate-certificate/pdf/:idActivity/:idMethod')
+  async getCertificatePdfB01(
+    @Param('idActivity') idActivity: number,
+    @Param('idMethod') idMethod: number,
+  ) {
+    return await this.ni_mcit_b_01Service.generatePDFCertificateB01(
+      idActivity,
+      idMethod,
+    )
+  }
+
   @ApiQuery({ name: 'increase', required: false, type: Boolean})
   @Post('ni-mcit-t-03/calibration-results/:methodId')
   async createNI_MCIT_T_03CalibrationResults(
@@ -941,16 +952,7 @@ export class MethodsController {
     })
   }
 
-  @Get('ni-mcit-b-01/generate-certificate/pdf/:idActivity/:idMethod')
-  async getCertificatePdfB01(
-    @Param('activityId') activityId: number,
-    @Param('methodId') methodId: number,
-  ) {
-    return await this.ni_mcit_b_01Service.sendCertificateToClient(
-      activityId,
-      methodId,
-    )
-  }
+
 
   @Get('ni-mcit-t-03/generate-certificate/send/pdf/:idActivity/:idMethod')
   async sendCertificateToClient(
