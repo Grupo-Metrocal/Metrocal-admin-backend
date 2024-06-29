@@ -847,7 +847,7 @@ export class NI_MCIT_B_01Service {
             method?.applicant_address || activity.quote_request.client.address,
           calibration_location: method.calibration_location,
         },
-        calibration_reults: {
+        calibration_results: {
           result_test,
           result_tests_lb,
         },
@@ -882,7 +882,7 @@ export class NI_MCIT_B_01Service {
     } 
   }
 
-  async generatePDFCertificateB01(activityID: number, methodID: number) {
+  async generatePDFCertificate(activityID: number, methodID: number) {
     try {
       const method = await this.NI_MCIT_B_01Repository.findOne({
         where: { id: methodID },
@@ -991,7 +991,7 @@ export class NI_MCIT_B_01Service {
 
   async sendCertificateToClient(activityID: number, methodID: number) {
     try {
-      const data = await this.generatePDFCertificateB01(activityID, methodID)
+      const data = await this.generatePDFCertificate(activityID, methodID)
 
       if (!data.success) {
         return data

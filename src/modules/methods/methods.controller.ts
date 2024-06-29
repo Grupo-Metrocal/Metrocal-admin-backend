@@ -906,7 +906,7 @@ export class MethodsController {
     @Param('idActivity') idActivity: number,
     @Param('idMethod') idMethod: number,
   ) {
-    return await this.ni_mcit_b_01Service.generatePDFCertificateB01(
+    return await this.ni_mcit_b_01Service.generatePDFCertificate(
       idActivity,
       idMethod,
     )
