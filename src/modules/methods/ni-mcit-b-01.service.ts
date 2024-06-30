@@ -774,12 +774,7 @@ export class NI_MCIT_B_01Service {
      }
      //result data 
      let result_tests_lb = []
-     let reference_mass2
-     let equipment_indication2
-     let error2
-     let repeatability2
-     let maximum_eccentricity2
-     let expanded_uncertainty2
+
      if (method.unit_of_measurement.measure === 'lb') {
       for (let i = 45; i <= 52; i++) {
         let reference_mass = sheetResultONAlbkg.cell(`B${i}`).value();
