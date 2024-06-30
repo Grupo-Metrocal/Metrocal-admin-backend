@@ -1238,7 +1238,7 @@ async getCetficateGeneric(
 
 @Get('generic-method/equipment/:id')
 async getEquipmentGeneric(@Param('id') id: number) {
-  return await this.ni_mcit_p_01Service.getMehotdById(id)
+  return await this.GenericMethodService.getMehotdById(id)
 }
 
 }
