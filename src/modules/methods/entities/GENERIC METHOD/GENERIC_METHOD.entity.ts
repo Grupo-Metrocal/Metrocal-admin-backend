@@ -34,6 +34,9 @@ export class GENERIC_METHOD {
     @Column({ nullable: true })
     review_user_id?: number
 
+    @Column({ nullable: true })
+    modification_number?: number
+
     @ManyToOne(
         () => EquipmentInformationGENERIC_METHOD,
         (equipmentInformationGENERIC_METHOD) =>

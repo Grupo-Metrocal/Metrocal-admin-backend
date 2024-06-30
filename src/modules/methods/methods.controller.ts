@@ -1213,4 +1213,32 @@ export class MethodsController {
       methodId,
     )
   }
+
+  @Get('generic-method/generate-certificate/send/pdf/:idActivity/:idMethod')
+  async sendCertificateToClientGenericMethod(
+    @Param('idActivity') activityId: number,
+    @Param('idMethod') methodId: number,
+  ) {
+    return await this.GenericMethodService.generatePDFCertificateGenericMethod(
+      activityId,
+      methodId,
+    )
+}
+
+@Get('generic-method/certificates/activity/:activityId/method/:methodId')
+async getCetficateGeneric(
+  @Param('activityId') activityId: number,
+  @Param('methodId') methodId: number,
+) {
+  return await this.GenericMethodService.generateCertificate({
+    activityID: activityId,
+    methodID: methodId,
+  })
+}
+
+@Get('generic-method/equipment/:id')
+async getEquipmentGeneric(@Param('id') id: number) {
+  return await this.ni_mcit_p_01Service.getMehotdById(id)
+}
+
 }

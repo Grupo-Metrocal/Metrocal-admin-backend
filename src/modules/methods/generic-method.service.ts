@@ -23,6 +23,8 @@ import { PatternsService } from "../patterns/patterns.service";
 import { CertificateService } from "../certificate/certificate.service";
 import { exec } from "child_process";
 import { ActivitiesService } from "../activities/activities.service";
+import { formatCertCode } from "src/utils/generateCertCode";
+import { generateServiceCodeToMethod } from "src/utils/codeGenerator";
 
 @Injectable()
 export class GENERIC_METHODService {
@@ -357,12 +359,68 @@ export class GENERIC_METHODService {
 
       const activity = dataActivity.data;
       const reopnedWorkbook = await XlsxPopulate.fromFileAsync(method.certificate_url);
-      const worksheetFa1pto = reopnedWorkbook.sheet('FA  1 pto');
+      const sheetFA1pto = reopnedWorkbook.sheet('FA  1 pto');
       
-      
+       let result = []
+       for(let i = 28; i <= 30; i++){
+        let results_test ={
+          pattern_indication : sheetFA1pto.cell(`D${i}`).value().toString(),
+          instrument_indication : sheetFA1pto.cell(`F${i}`).value().toString(),
+          correction : sheetFA1pto.cell(`L${i}`).value().toString(),
+          expanded_uncertainty : sheetFA1pto.cell(`R${i}`).value().toString(),
+        }
+        result.push(results_test);
+       }
 
-
-   
+       let temperature = sheetFA1pto.cell('E33').value().toString();
+       let humidity = sheetFA1pto.cell('E33').value().toString();
+       let temperature2 = sheetFA1pto.cell('G34').value().toString();
+       let humidity2 = sheetFA1pto.cell('G34').value().toString();
+       
+       const certificate = {
+        pattern: 'GENERIC_METHOD',
+        email: activity.quote_request.client.email,
+        equipment_information:{
+          certification_code: formatCertCode(
+            method.certificate_code,
+            method.modification_number,
+          ) || '---',
+          service_code:generateServiceCodeToMethod(method.id),
+          certificate_issue_date: formatDate(new Date().toString()),
+          calibration_date: method.equipment_information.date,
+          object_calibrated: method.equipment_information.device || '---',
+          maker: method.equipment_information.maker || '---',
+          serial_number: method.equipment_information.serial_number || '---',
+          model: method.equipment_information.model || '---',
+          measurement_range: method.equipment_information.measurement_range || '---',
+          scale_interval: method.equipment_information.scale_interval || '---',
+          identification_code: method.equipment_information.code || '---',
+          applicant: activity.quote_request.client.name,
+          address:   activity.quote_request.client.address,
+          calibration_location: method.equipment_information.estabilization_site || '---',
+        },
+        calibration_results: {
+          results: result,
+        },
+        environmental_conditions: {
+          temperature: temperature,
+          humidity: humidity,
+          temperature2: temperature2,
+          humidity2: humidity2,
+          equipment_used: method.environmental_conditions.equipment_used,
+        },
+        description_pattern: "Standard calibration pattern",
+        observations:
+        `Es responsabilidad del encargado del instrumento establecer la frecuencia del servicio de calibración.			
+         La corrección corresponde al valor del patrón menos las indicación del equipo.			
+         La indicación del patrón de referencia y del equipo corresponde al promedio de 3 mediciones.			
+         Los resultados emitidos en este certificado corresponden únicamente al objeto calibrado y a las magnitudes			
+         especificadas al momento de realizar el servicio.			
+         Este certificado de calibración no debe ser reproducido sin la aprobación del laboratorio, excepto cuando se			
+         reproduce en su totalidad.			
+         `
+       }
+       return handleOK(certificate);
     }catch(error){
       return handleInternalServerError(error.message);
     }
@@ -380,9 +438,7 @@ export class GENERIC_METHODService {
       $Workbook.Save()
       $Workbook.Close()
       $Excel.Quit()
-
       `
-
       exec(
         powershellCommand,
         { shell: 'powershell.exe' },
@@ -399,6 +455,52 @@ export class GENERIC_METHODService {
         },
       )
     })
+  }
+
+  async generatePDFCertificateGenericMethod(activityID: number, methodID: number) {
+    try {
+      const method = await this.GENERIC_METHODRepository.findOne({
+        where: { id: methodID },
+        relations: [
+          'equipment_information', 
+          'environmental_conditions',
+          'computer_data', 
+          'result_medition'],
+      })
+
+      if (!method) {
+        return handleInternalServerError('El método no existe');
+      }
+      let dataCertificate:any
+      if(!fs.existsSync(method.certificate_url)){
+        dataCertificate = await this.generateCertificate({
+          activityID,
+          methodID,
+        })
+      }else{
+        dataCertificate = await this.getCertificateResult(methodID, activityID)
+      }
+
+      if (!dataCertificate.success) {
+        return dataCertificate
+      }
+
+      const PDF = await this.pdfService.generateCertificatePdf(
+        '/certificates/generic-method.hbs',
+         dataCertificate.data)
+
+        if(!PDF){
+          return handleInternalServerError('Error al generar el PDF');
+        }
+
+        return handleOK({
+          pdf : PDF,
+          client_email: dataCertificate.data.email,
+        })
+ 
+    } catch (error) {
+      return handleInternalServerError(error.message);
+    }
   }
 
   async generateCertificateCodeToMethod(methodID: number) {
@@ -427,5 +529,29 @@ export class GENERIC_METHODService {
       return handleInternalServerError(error.message)
     }
   }
+
+  
+  async getMehotdById(methodId: number) {
+    try {
+      const method = await this.GENERIC_METHODRepository.findOne({
+        where: { id: methodId },
+        relations: [
+          'equipment_information',
+          'environmental_conditions',
+          'computer_data',
+          'result_medition',
+        ],
+      })
+
+      if (!method) {
+        return handleInternalServerError('El método no existe')
+      }
+
+      return handleOK(method)
+    } catch (error) {
+      return handleInternalServerError(error.message)
+    }
+  }
+
 
 }
