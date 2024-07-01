@@ -277,6 +277,17 @@ export class MethodsController {
     )
   }
 
+  @Get('ni-mcit-p-01/generate-certificate/send/pdf/:idActivity/:idMethod')
+  async sendCertificateToClientP01(
+    @Param('idActivity') activityId: number,
+    @Param('idMethod') methodId: number,
+  ) {
+    return await this.ni_mcit_p_01Service.sendCertificateToClient(
+      activityId,
+      methodId,
+    )
+  }
+
   @Post('ni-mcit-d-02/calibration-location/:methodId')
   async createNI_MCIT_D_02CalibrationLocation(
     @Body() certificationDetails: CertificationDetailsDto,
