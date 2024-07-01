@@ -1,38 +1,94 @@
 <style>
-  * { margin: 0; padding: 0; box-sizing: border-box; } footer { width: 100%;
-  font-size: 11px; font-family: 'Montserrat', sans-serif; } a { color: #1f3c88;
-  font-weight: bold; } .creditable { display: flex; justify-content:
-  space-between; align-items: center; padding: 0.5em; border-bottom: 1px dashed
-  #1f3c88; font-size: 9px; } .layout-footer { display: flex; flex-direction:
-  column; justify-content: center; align-items: center; padding: 0.5em;
-  border-top: 1px solid #222; margin-top: 0.5em; } .layout-footer div { display:
-  flex; gap: 2em; }
+  * {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+  }
+  footer {
+    width: 100%;
+    font-size: 11px;
+    font-family: 'Montserrat', sans-serif;
+    display: block;
+    flex-direction: column;
+    justify-content: center;
+    margin-top: 2em;
+    position: absolute;
+    bottom: 0;
+    left: 50%;
+    transform: translateX(-50%);
+  }
+  a {
+    color: #1f3c88;
+    font-weight: bold;
+  }
+  .creditable {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.5em;
+    border-bottom: 1px dashed #1f3c88;
+    font-size: 9px;
+  }
+  .layout-footer {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    padding: 0.5em;
+    border-top: 1px solid #222;
+    margin-top: 0.5em;
+  }
+  .layout-footer div {
+    display: flex;
+    gap: 2em;
+  }
 </style>
 
 <footer>
   {{#if creditable}}
-    <div class='creditable'>
-      <p>
-        1- Certificado de calibración emitido dentro de los alcances de
-        acreditación con código LC-002-14-R1.
-      </p>
+  <div class="creditable">
+    <p>
+      1- Certificado de calibración emitido dentro de los alcances de
+      acreditación con código LC-002-14-R1.
+    </p>
 
-      <p>
-        2- Puntos de calibración marcados con (*). son fuera de alcance de
-        acreditación.
-      </p>
-    </div>
+    <p>
+      2- Puntos de calibración marcados con (*). son fuera de alcance de
+      acreditación.
+    </p>
+  </div>
   {{/if}}
 
-  <div class='layout-footer'>
-    <p style='font-weight: bold'>
+  <div class="layout-footer">
+    <p style="font-weight: bold">
       Bello Horizonte VI etapa, casa #135. De la iglesia Pio X, 350 m al este
       Managua, Nicaragua
     </p>
     <div>
-      <p>Email: <a href='mailto:info@metrocal.co.ni'>info@metrocal.co.ni</a></p>
-      <p>Web: <a href='https://grupometrocal.com'>grupometrocal.com</a></p>
+      <p>Email: <a href="mailto:info@metrocal.co.ni">info@metrocal.co.ni</a></p>
+      <p>Web: <a href="https://grupometrocal.com">grupometrocal.com</a></p>
     </div>
-    <p>Teléfono: <a href='tel:+50522490758'>(505) 2249 0758</a></p>
+    <p>Teléfono: <a href="tel:+50522490758">(505) 2249 0758</a></p>
+  </div>
+
+  <div
+    style="
+      display: flex;
+      flex-direction: column;
+      align-items: flex-end;
+      gap: 10px;
+      margin-right: 2em;
+      padding-bottom: 10px;
+    "
+  >
+    <div style="text-align: right">
+      Pág.
+      <span
+        ><span class="pageNumber"></span>
+        de
+        <span class="totalPages"></span
+      ></span>
+    </div>
+    <span>v3 Ap NI-MCPR-20 v1 2020-12-01</span>
   </div>
 </footer>
