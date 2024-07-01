@@ -1225,7 +1225,7 @@ export class MethodsController {
     )
 }
 
-@Get('generic-method/certificates/activity/:activityId/method/:methodId')
+@Get('generic_method/certificates/activity/:activityId/method/:methodId')
 async getCetficateGeneric(
   @Param('activityId') activityId: number,
   @Param('methodId') methodId: number,
@@ -1236,7 +1236,7 @@ async getCetficateGeneric(
   })
 }
 
-@Get('generic-method/equipment/:id')
+@Get('generic_method/equipment/:id')
 async getEquipmentGeneric(@Param('id') id: number) {
   return await this.GenericMethodService.getMehotdById(id)
 }

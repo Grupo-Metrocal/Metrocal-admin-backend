@@ -275,7 +275,7 @@ export class GENERIC_METHODService {
       const worksheetEntradaDatos = workbook.sheet('Entrada de Datos');
       
       //date
-      worksheetGenerales.cell('C7').vaue(method.equipment_information.date);
+      worksheetGenerales.cell('C7').value(method.equipment_information.date);
       //device
       worksheetGenerales.cell('C9').value(method.equipment_information.device);
       //maker
@@ -324,7 +324,7 @@ export class GENERIC_METHODService {
 
   async getCertificateResult(methodID: number, activityID: number)
   {
-    try{
+    try{ 
       const method = await this.GENERIC_METHODRepository.findOne({
         where: { id: methodID },
         relations: [
@@ -364,18 +364,18 @@ export class GENERIC_METHODService {
        let result = []
        for(let i = 28; i <= 30; i++){
         let results_test ={
-          pattern_indication : sheetFA1pto.cell(`D${i}`).value().toString(),
-          instrument_indication : sheetFA1pto.cell(`F${i}`).value().toString(),
+ /*          pattern_indication : sheetFA1pto.cell(`D${i}`).value().toString(), */
+/*           instrument_indication : sheetFA1pto.cell(`F${i}`).value().toString(),
           correction : sheetFA1pto.cell(`L${i}`).value().toString(),
-          expanded_uncertainty : sheetFA1pto.cell(`R${i}`).value().toString(),
+          expanded_uncertainty : sheetFA1pto.cell(`R${i}`).value().toString(), */
         }
         result.push(results_test);
        }
 
-       let temperature = sheetFA1pto.cell('E33').value().toString();
+ /*       let temperature = sheetFA1pto.cell('E33').value().toString();
        let humidity = sheetFA1pto.cell('E33').value().toString();
        let temperature2 = sheetFA1pto.cell('G34').value().toString();
-       let humidity2 = sheetFA1pto.cell('G34').value().toString();
+       let humidity2 = sheetFA1pto.cell('G34').value().toString(); */
        
        const certificate = {
         pattern: 'GENERIC_METHOD',
@@ -403,10 +403,10 @@ export class GENERIC_METHODService {
           results: result,
         },
         environmental_conditions: {
-          temperature: temperature,
+     /*      temperature: temperature,
           humidity: humidity,
           temperature2: temperature2,
-          humidity2: humidity2,
+          humidity2: humidity2, */
           equipment_used: method.environmental_conditions.equipment_used,
         },
         description_pattern: "Standard calibration pattern",
@@ -421,9 +421,9 @@ export class GENERIC_METHODService {
          `
        }
        return handleOK(certificate);
-    }catch(error){
+  }catch(error){
       return handleInternalServerError(error.message);
-    }
+    } 
   }
 
   async autoSaveExcel(filePath: string) {
