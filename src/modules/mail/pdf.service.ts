@@ -37,7 +37,8 @@ export class PdfService {
         format: 'A4',
         printBackground: true,
         displayHeaderFooter: true,
-        footerTemplate: "<div style=\"text-align: right;width: 297mm;font-size: 8px;\"><span style=\"margin-right: 1cm\"><span class=\"pageNumber\"></span> de <span class=\"totalPages\"></span></span></div>",
+        footerTemplate:
+          '<div style="text-align: right;width: 297mm;font-size: 8px;"><span style="margin-right: 1cm"><span class="pageNumber"></span> de <span class="totalPages"></span></span></div>',
       })
     } catch (e) {
       return false
@@ -73,11 +74,11 @@ export class PdfService {
     try {
       const page = await browser.newPage()
       data.metrocalLogo = await this.fetchImageAsBase64(
-        'https://app-grupometrocal.com/development/api/images/image/metrocal.webp',
+        'https://app-grupometrocal.com/development/api/images/image/header-2024-certificados_metrocal.png',
       )
-      data.onaLogo = await this.fetchImageAsBase64(
-        'https://app-grupometrocal.com/development/api/images/image/ona.webp',
-      )
+      // data.onaLogo = await this.fetchImageAsBase64(
+      //   'https://app-grupometrocal.com/development/api/images/image/ona.webp',
+      // )
 
       // Agregar encabezado y pie de página
       const headerTemplate = compile(
@@ -106,7 +107,7 @@ export class PdfService {
         width: '8.5in',
         height: '11in',
         margin: {
-          top: '1in',
+          top: '2in',
           bottom: '1in',
           left: '0.4in',
           right: '0.4in',
@@ -122,8 +123,11 @@ export class PdfService {
     }
   }
 
-  async generateQuoteRequestPdf( data: any) {
-    const templatePath = join(__dirname, 'templates/pdf/quoteRequestDownload/approved_quote_request.hbs')
+  async generateQuoteRequestPdf(data: any) {
+    const templatePath = join(
+      __dirname,
+      'templates/pdf/quoteRequestDownload/approved_quote_request.hbs',
+    )
     const templateContent = readFileSync(templatePath, 'utf-8')
 
     const compiledTemplate = compile(templateContent)
