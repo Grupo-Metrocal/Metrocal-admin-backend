@@ -29,6 +29,7 @@ import { PatternsService } from '../patterns/patterns.service'
 import { MethodsService } from './methods.service'
 import { CertificationDetailsDto } from './dto/NI_MCIT_P_01/certification_details.dto'
 import { formatCertCode } from 'src/utils/generateCertCode'
+import { formatPrice } from 'src/utils/formatPrices'
 
 @Injectable()
 export class NI_MCIT_P_01Service {
@@ -108,7 +109,10 @@ export class NI_MCIT_P_01Service {
         await manager.save(method.equipment_information)
 
         if (increase) {
-          method.modification_number = method.modification_number === null ? 1 : method.modification_number + 1
+          method.modification_number =
+            method.modification_number === null
+              ? 1
+              : method.modification_number + 1
         }
 
         await manager.save(method)
@@ -120,7 +124,10 @@ export class NI_MCIT_P_01Service {
     }
   }
 
-  async addCalibrationLocation(certificatonDetails: CertificationDetailsDto, methodId: number) {
+  async addCalibrationLocation(
+    certificatonDetails: CertificationDetailsDto,
+    methodId: number,
+  ) {
     const method = await this.NI_MCIT_P_01Repository.findOne({
       where: { id: methodId },
     })
@@ -176,7 +183,10 @@ export class NI_MCIT_P_01Service {
         await manager.save(method.environmental_conditions)
 
         if (increase) {
-          method.modification_number = method.modification_number === null ? 1 : method.modification_number + 1
+          method.modification_number =
+            method.modification_number === null
+              ? 1
+              : method.modification_number + 1
         }
 
         await manager.save(method)
@@ -220,7 +230,10 @@ export class NI_MCIT_P_01Service {
         await manager.save(method.calibration_results)
 
         if (increase) {
-          method.modification_number = method.modification_number === null ? 1 : method.modification_number + 1
+          method.modification_number =
+            method.modification_number === null
+              ? 1
+              : method.modification_number + 1
         }
 
         await manager.save(method)
@@ -269,7 +282,10 @@ export class NI_MCIT_P_01Service {
         method.status = 'done'
 
         if (increase) {
-          method.modification_number = method.modification_number === null ? 1 : method.modification_number + 1
+          method.modification_number =
+            method.modification_number === null
+              ? 1
+              : method.modification_number + 1
         }
 
         await manager.save(method)
@@ -548,56 +564,56 @@ export class NI_MCIT_P_01Service {
         const pressureValue = sheetCER.cell(`D${27 + i}`).value()
         reference_pressure.push(
           typeof pressureValue === 'number'
-            ? pressureValue.toFixed(2)
+            ? formatPrice(Number(pressureValue.toFixed(2)))
             : pressureValue,
         )
 
         const indicationValue = sheetCER.cell(`F${27 + i}`).value()
         equipment_indication.push(
           typeof indicationValue === 'number'
-            ? indicationValue.toFixed(2)
+            ? formatPrice(Number(indicationValue.toFixed(2)))
             : indicationValue,
         )
 
         const correctionValue = sheetCER.cell(`L${27 + i}`).value()
         correction.push(
           typeof correctionValue === 'number'
-            ? correctionValue.toFixed(2)
+            ? formatPrice(Number(correctionValue.toFixed(2)))
             : correctionValue,
         )
 
         const uncertaintyValue = sheetCER.cell(`R${27 + i}`).value()
         uncertainty.push(
           typeof uncertaintyValue === 'number'
-            ? uncertaintyValue.toFixed(2)
+            ? formatPrice(Number(uncertaintyValue.toFixed(2)))
             : uncertaintyValue,
         )
 
         const pressureSysValue = sheetCER.cell(`D${64 + i}`).value()
         reference_pressureSys.push(
           typeof pressureSysValue === 'number'
-            ? pressureSysValue.toFixed(1)
+            ? formatPrice(Number(pressureSysValue.toFixed(1)))
             : pressureSysValue,
         )
 
         const indicationSysValue = sheetCER.cell(`F${64 + i}`).value()
         equipment_indicationSys.push(
           typeof indicationSysValue === 'number'
-            ? indicationSysValue.toFixed(1)
+            ? formatPrice(Number(indicationSysValue.toFixed(1)))
             : indicationSysValue,
         )
 
         const correctionSysValue = sheetCER.cell(`L${64 + i}`).value()
         correctionSys.push(
           typeof correctionSysValue === 'number'
-            ? correctionSysValue.toFixed(1)
+            ? formatPrice(Number(correctionSysValue.toFixed(1)))
             : correctionSysValue,
         )
 
         const uncertaintySysValue = sheetCER.cell(`R${64 + i}`).value()
         uncertaintySys.push(
           typeof uncertaintySysValue === 'number'
-            ? uncertaintySysValue.toFixed(1)
+            ? formatPrice(Number(uncertaintySysValue.toFixed(1)))
             : uncertaintySysValue,
         )
       }
@@ -632,7 +648,10 @@ export class NI_MCIT_P_01Service {
         pattern: 'NI-MCIT-P-01',
         email: activity.quote_request.client.email,
         equipment_information: {
-          certification_code: formatCertCode(method.certificate_code, method.modification_number),
+          certification_code: formatCertCode(
+            method.certificate_code,
+            method.modification_number,
+          ),
           service_code: generateServiceCodeToMethod(method.id),
           certificate_issue_date: formatDate(new Date().toString()),
           calibration_date: formatDate(activity.updated_at.toString()),
@@ -645,8 +664,11 @@ export class NI_MCIT_P_01Service {
             `${method.equipment_information.resolution} ${method.equipment_information.unit}` ||
             '---',
           code: method.equipment_information.code || '---',
-          applicant: method?.applicant_name || activity.quote_request.client.company_name,
-          address: method?.applicant_address || activity.quote_request.client.address,
+          applicant:
+            method?.applicant_name ||
+            activity.quote_request.client.company_name,
+          address:
+            method?.applicant_address || activity.quote_request.client.address,
           calibration_location: method.calibration_location || '---',
         },
         calibration_results,
