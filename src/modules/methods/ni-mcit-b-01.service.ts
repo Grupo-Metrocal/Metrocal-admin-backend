@@ -461,7 +461,7 @@ export class NI_MCIT_B_01Service {
         'eccentricity_test',
         'repeatability_test',
         'linearity_test',
-        'unit_of_measurement'
+        'unit_of_measurement',
       ],
     })
 
@@ -484,205 +484,201 @@ export class NI_MCIT_B_01Service {
       __dirname,
       `../mail/templates/excels/ni_mcit_b_01.xlsx`,
     )
+  
+    try { 
+    if (fs.existsSync(method.certificate_url)) {
+      fs.unlinkSync(method.certificate_url)
+    }
 
-    try {
-      if (fs.existsSync(method.certificate_url)) {
-        fs.unlinkSync(method.certificate_url)
+    fs.copyFileSync(filePath, method.certificate_url)
+
+    const workbook = await XlsxPopulate.fromFileAsync(method.certificate_url)
+
+    if (!workbook) {
+      return handleInternalServerError('Error al abrir el archivo')
+    }
+
+    const sheetGeneral = workbook.sheet('General')
+    const sheetCalibración = workbook.sheet('Calibración')
+
+    //informacion de equipo
+    const equipment = method.equipment_information
+    sheetGeneral.cell('F7').value(equipment.device)
+    sheetGeneral.cell('F8').value(equipment.maker)
+    sheetGeneral.cell('F9').value(equipment.model)
+    sheetGeneral.cell('F10').value(equipment.serial_number)
+    sheetGeneral.cell('F12').value(equipment.measurement_range)
+    sheetGeneral.cell('F14').value(equipment.resolution)
+
+    //environmental conditions
+    const environmentalConditions = method.environmental_conditions
+    sheetGeneral.cell('I3').value(method.calibration_location)
+    sheetGeneral.cell('I4').value(environmentalConditions.equipment_used)
+    sheetGeneral.cell('I6').value(environmentalConditions.cycles.ta.initial)
+    sheetGeneral.cell('I7').value(environmentalConditions.cycles.ta.end)
+    sheetGeneral.cell('I11').value(environmentalConditions.cycles.hr.initial)
+    sheetGeneral.cell('I12').value(environmentalConditions.cycles.hr.end)
+    sheetGeneral.cell('I16').value(environmentalConditions.cycles.hPa.initial)
+    sheetGeneral.cell('I17').value(environmentalConditions.cycles.hPa.end)
+
+    //linearity test
+    const linearityTest = method.linearity_test
+    for (let i = 0; i < linearityTest.linearity_test.length; i++) {
+      const test = linearityTest.linearity_test[i]
+      if (test.point === 1) {
+        sheetCalibración.cell('D24').value(test.indicationIL)
+        sheetCalibración.cell('E24').value(test.noLoadInfdication)
+        const punto = 'M'
+        let fila1 = 5
+        Object.entries(test.pointsComposition).forEach(([key, value]) => {
+          sheetCalibración.cell(`${punto}${fila1}`).value(value)
+          fila1++
+        })
       }
 
-      fs.copyFileSync(filePath, method.certificate_url)
-
-      const workbook = await XlsxPopulate.fromFileAsync(method.certificate_url)
-
-      if (!workbook) {
-        return handleInternalServerError('Error al abrir el archivo')
+      if (test.point === 2) {
+        sheetCalibración.cell('D25').value(test.indicationIL)
+        sheetCalibración.cell('E25').value(test.noLoadInfdication)
+        const punto = 'T'
+        let fila2 = 5
+        Object.entries(test.pointsComposition).forEach(([key, value]) => {
+          sheetCalibración.cell(`${punto}${fila2}`).value(value)
+          fila2++
+        })
       }
 
-      const sheetGeneral = workbook.sheet('General')
-      const sheetCalibración = workbook.sheet('Calibración')
-
-      //informacion de equipo
-      const equipment = method.equipment_information
-      sheetGeneral.cell('F7').value(equipment.device)
-      sheetGeneral.cell('F8').value(equipment.maker)
-      sheetGeneral.cell('F9').value(equipment.model)
-      sheetGeneral.cell('F10').value(equipment.serial_number)
-      sheetGeneral.cell('F12').value(equipment.measurement_range)
-      sheetGeneral.cell('F14').value(equipment.resolution)
-
-      //environmental conditions
-      const environmentalConditions = method.environmental_conditions
-      sheetGeneral.cell('I3').value(method.calibration_location)
-      sheetGeneral.cell('I4').value(environmentalConditions.equipment_used)
-      sheetGeneral.cell('I6').value(environmentalConditions.cycles.ta.initial)
-      sheetGeneral.cell('I7').value(environmentalConditions.cycles.ta.end)
-      sheetGeneral.cell('I11').value(environmentalConditions.cycles.hr.initial)
-      sheetGeneral.cell('I12').value(environmentalConditions.cycles.hr.end)
-      sheetGeneral.cell('I16').value(environmentalConditions.cycles.hPa.initial)
-      sheetGeneral.cell('I17').value(environmentalConditions.cycles.hPa.end)
-
-      //linearity test
-      const linearityTest = method.linearity_test
-      for (let i = 0; i < linearityTest.linearity_test.length; i++) {
-        const test = linearityTest.linearity_test[i]
-        if (test.point === 1) {
-          sheetCalibración.cell('D24').value(test.indicationIL)
-          sheetCalibración.cell('E24').value(test.noLoadInfdication)
-          const punto = 'M'
-          let fila1 = 5
-          Object.entries(test.pointsComposition).forEach(([key, value]) => {
-            sheetCalibración.cell(`${punto}${fila1}`).value(value)
-            fila1++
-          })
-        }
-
-        if (test.point === 2) {
-          sheetCalibración.cell('D25').value(test.indicationIL)
-          sheetCalibración.cell('E25').value(test.noLoadInfdication)
-          const punto = 'T'
-          let fila2 = 5
-          Object.entries(test.pointsComposition).forEach(([key, value]) => {
-            sheetCalibración.cell(`${punto}${fila2}`).value(value)
-            fila2++
-          })
-        }
-
-        if (test.point === 3) {
-          sheetCalibración.cell('D26').value(test.indicationIL)
-          sheetCalibración.cell('E26').value(test.noLoadInfdication)
-          const punto = 'AA'
-          let fila3 = 5
-          Object.entries(test.pointsComposition).forEach(([key, value]) => {
-            sheetCalibración.cell(`${punto}${fila3}`).value(value)
-            fila3++
-          })
-        }
-
-        if (test.point === 4) {
-          sheetCalibración.cell('D27').value(test.indicationIL)
-          sheetCalibración.cell('E27').value(test.noLoadInfdication)
-          const punto = 'AH'
-          let fila4 = 5
-          Object.entries(test.pointsComposition).forEach(([key, value]) => {
-            sheetCalibración.cell(`${punto}${fila4}`).value(value)
-            fila4++
-          })
-        }
-
-        if (test.point === 5) {
-          sheetCalibración.cell('D28').value(test.indicationIL)
-          sheetCalibración.cell('E28').value(test.noLoadInfdication)
-          const punto = 'AO'
-          let fila5 = 5
-          Object.entries(test.pointsComposition).forEach(([key, value]) => {
-            sheetCalibración.cell(`${punto}${fila5}`).value(value)
-            fila5++
-          })
-        }
-
-        if (test.point === 6) {
-          sheetCalibración.cell('D29').value(test.indicationIL)
-          sheetCalibración.cell('E29').value(test.noLoadInfdication)
-          const punto = 'AV'
-          let fila6 = 5
-          Object.entries(test.pointsComposition).forEach(([key, value]) => {
-            sheetCalibración.cell(`${punto}${fila6}`).value(value)
-            fila6++
-          })
-        }
-
-        if (test.point === 7) {
-          sheetCalibración.cell('D30').value(test.indicationIL)
-          sheetCalibración.cell('E30').value(test.noLoadInfdication)
-          const punto = 'BC'
-          let fila7 = 5
-          Object.entries(test.pointsComposition).forEach(([key, value]) => {
-            sheetCalibración.cell(`${punto}${fila7}`).value(value)
-            fila7++
-          })
-        }
-
-        if (test.point === 8) {
-          sheetCalibración.cell('D31').value(test.indicationIL)
-          sheetCalibración.cell('E31').value(test.noLoadInfdication)
-          const punto = 'BI'
-          let fila8 = 5
-          Object.entries(test.pointsComposition).forEach(([key, value]) => {
-            sheetCalibración.cell(`${punto}${fila8}`).value(value)
-            fila8++
-          })
-        }
-
-        if (test.point === 9) {
-          sheetCalibración.cell('D32').value(test.indicationIL)
-          sheetCalibración.cell('E32').value(test.noLoadInfdication)
-          const punto = 'BQ'
-          let fila9 = 5
-          Object.entries(test.pointsComposition).forEach(([key, value]) => {
-            sheetCalibración.cell(`${punto}${fila9}`).value(value)
-            fila9++
-          })
-        }
-
-        if (test.point === 10) {
-          sheetCalibración.cell('D33').value(test.indicationIL)
-          sheetCalibración.cell('E33').value(test.noLoadInfdication)
-          const punto = 'BX'
-          let fila10 = 5
-          Object.entries(test.pointsComposition).forEach(([key, value]) => {
-            sheetCalibración.cell(`${punto}${fila10}`).value(value)
-            fila10++
-          })
-        }
+      if (test.point === 3) {
+        sheetCalibración.cell('D26').value(test.indicationIL)
+        sheetCalibración.cell('E26').value(test.noLoadInfdication)
+        const punto = 'AA'
+        let fila3 = 5
+        Object.entries(test.pointsComposition).forEach(([key, value]) => {
+          sheetCalibración.cell(`${punto}${fila3}`).value(value)
+          fila3++
+        })
       }
 
-      //repeatibility test
-      if (method.repeatability_test !== null) {
-        const repeatibilityTest = method.repeatability_test
-        sheetCalibración.cell('C37').value(repeatibilityTest.pointNumber)
-        let FilaR = 40
-        for (
-          let i = FilaR;
-          i <= repeatibilityTest.repeatability_test.length;
-          i++
-        ) {
-          const test = repeatibilityTest.repeatability_test[i]
-          sheetCalibración.cell(`E${FilaR}`).value(test.indicationIL)
-          sheetCalibración.cell(`F${FilaR}`).value(test.noLoadInfdication)
-          FilaR++
-        }
+      if (test.point === 4) {
+        sheetCalibración.cell('D27').value(test.indicationIL)
+        sheetCalibración.cell('E27').value(test.noLoadInfdication)
+        const punto = 'AH'
+        let fila4 = 5
+        Object.entries(test.pointsComposition).forEach(([key, value]) => {
+          sheetCalibración.cell(`${punto}${fila4}`).value(value)
+          fila4++
+        })
       }
 
-      //eccentricity test
-      if (method.eccentricity_test !== null) {
-        const eccentricityTest = method.eccentricity_test
-        sheetCalibración.cell('C48').value(eccentricityTest.pointNumber)
-        let FilaE = 51
-        for (
-          let i = FilaE;
-          i <= eccentricityTest.eccentricity_test.length;
-          i++
-        ) {
-          const test = eccentricityTest.eccentricity_test[i]
-          sheetCalibración.cell(`E${FilaE}`).value(test.indicationIL)
-          sheetCalibración.cell(`F${FilaE}`).value(test.noLoadInfdication)
-          FilaE++
-        }
+      if (test.point === 5) {
+        sheetCalibración.cell('D28').value(test.indicationIL)
+        sheetCalibración.cell('E28').value(test.noLoadInfdication)
+        const punto = 'AO'
+        let fila5 = 5
+        Object.entries(test.pointsComposition).forEach(([key, value]) => {
+          sheetCalibración.cell(`${punto}${fila5}`).value(value)
+          fila5++
+        })
       }
 
-      sheetCalibración.cell('C15').value(method.unit_of_measurement.measure)
-      sheetCalibración.cell('C16').value(method.unit_of_measurement.resolution)
+      if (test.point === 6) {
+        sheetCalibración.cell('D29').value(test.indicationIL)
+        sheetCalibración.cell('E29').value(test.noLoadInfdication)
+        const punto = 'AV'
+        let fila6 = 5
+        Object.entries(test.pointsComposition).forEach(([key, value]) => {
+          sheetCalibración.cell(`${punto}${fila6}`).value(value)
+          fila6++
+        })
+      }
 
-      workbook.toFileAsync(method.certificate_url)
-      return this.getResultCertificateB01(methodID, activityID)
-      
-      //fin de try
+      if (test.point === 7) {
+        sheetCalibración.cell('D30').value(test.indicationIL)
+        sheetCalibración.cell('E30').value(test.noLoadInfdication)
+        const punto = 'BC'
+        let fila7 = 5
+        Object.entries(test.pointsComposition).forEach(([key, value]) => {
+          sheetCalibración.cell(`${punto}${fila7}`).value(value)
+          fila7++
+        })
+      }
+
+      if (test.point === 8) {
+        sheetCalibración.cell('D31').value(test.indicationIL)
+        sheetCalibración.cell('E31').value(test.noLoadInfdication)
+        const punto = 'BI'
+        let fila8 = 5
+        Object.entries(test.pointsComposition).forEach(([key, value]) => {
+          sheetCalibración.cell(`${punto}${fila8}`).value(value)
+          fila8++
+        })
+      }
+
+      if (test.point === 9) {
+        sheetCalibración.cell('D32').value(test.indicationIL)
+        sheetCalibración.cell('E32').value(test.noLoadInfdication)
+        const punto = 'BQ'
+        let fila9 = 5
+        Object.entries(test.pointsComposition).forEach(([key, value]) => {
+          sheetCalibración.cell(`${punto}${fila9}`).value(value)
+          fila9++
+        })
+      }
+
+      if (test.point === 10) {
+        sheetCalibración.cell('D33').value(test.indicationIL)
+        sheetCalibración.cell('E33').value(test.noLoadInfdication)
+        const punto = 'BX'
+        let fila10 = 5
+        Object.entries(test.pointsComposition).forEach(([key, value]) => {
+          sheetCalibración.cell(`${punto}${fila10}`).value(value)
+          fila10++
+        })
+      }
+    }
+
+    //repeatibility test
+    if (method.repeatability_test !== null) {
+      const repeatibilityTest = method.repeatability_test
+      sheetCalibración.cell('C37').value(repeatibilityTest.pointNumber)
+      let FilaR = 40
+      for (
+        let i = FilaR;
+        i <= repeatibilityTest.repeatability_test.length;
+        i++
+      ) {
+        const test = repeatibilityTest.repeatability_test[i]
+        sheetCalibración.cell(`E${FilaR}`).value(test.indicationIL)
+        sheetCalibración.cell(`F${FilaR}`).value(test.noLoadInfdication)
+        FilaR++
+      }
+    }
+
+    //eccentricity test
+    if (method.eccentricity_test !== null) {
+      const eccentricityTest = method.eccentricity_test
+      sheetCalibración.cell('C48').value(eccentricityTest.pointNumber)
+      let FilaE = 51
+      for (let i = FilaE; i <= eccentricityTest.eccentricity_test.length; i++) {
+        const test = eccentricityTest.eccentricity_test[i]
+        sheetCalibración.cell(`E${FilaE}`).value(test.indicationIL)
+        sheetCalibración.cell(`F${FilaE}`).value(test.noLoadInfdication)
+        FilaE++
+      }
+    }
+
+    sheetCalibración.cell('C15').value(method.unit_of_measurement.measure)
+    sheetCalibración.cell('C16').value(method.unit_of_measurement.resolution)
+
+    workbook.toFileAsync(method.certificate_url)
+    return this.getResultCertificateB01(methodID, activityID)
+
+    //fin de try
     } catch (error) {
       await this.methodService.killExcelProcess(method.certificate_url)
       return handleInternalServerError(error)
     }
   }
-  
+
   //resultados para generar PDF
   async getResultCertificateB01(methodID: number, activityID: number) {
     const method = await this.NI_MCIT_B_01Repository.findOne({
@@ -696,7 +692,7 @@ export class NI_MCIT_B_01Service {
         'unit_of_measurement',
       ],
     })
-    try { 
+   try {
       if (!method) {
         return handleInternalServerError('El metodo no existe')
       }
@@ -710,7 +706,7 @@ export class NI_MCIT_B_01Service {
         unit_of_measurement,
       } = method
 
-    if (
+      if (
         !equipment_information ||
         !environmental_conditions ||
         !eccentricity_test ||
@@ -721,7 +717,7 @@ export class NI_MCIT_B_01Service {
         return handleInternalServerError(
           'El método no tiene la información necesaria para generar el certificado',
         )
-      } 
+      }
 
       const dataActivity =
         await this.activitiesService.getActivitiesByID(activityID)
@@ -730,11 +726,10 @@ export class NI_MCIT_B_01Service {
         return handleInternalServerError('La actividad no existe')
       }
       const activity = dataActivity.data
-
       const respWorkBook = await XlsxPopulate.fromFileAsync(
         method.certificate_url,
       )
-    
+      
       let enviromentalCondition = []
       let temperatura1
       let temperatura2
@@ -752,54 +747,82 @@ export class NI_MCIT_B_01Service {
       let maximum_eccentricity1
       let expanded_uncertainty1
 
-
       const sheetResultONAlbkg = respWorkBook.sheet('+ONA_lb&kg')
       //resultados
       // Resultados
-     for (let i = 30; i <= 37; i++) {
-       let result = {
-         reference_mass: sheetResultONAlbkg.cell(`B${i}`).value().toString(),
-         equipment_indication: sheetResultONAlbkg.cell(`D${i}`).value().toString(),
-         error: sheetResultONAlbkg.cell(`F${i}`).value().toString(),
-         expanded_uncertainty: sheetResultONAlbkg.cell(`L${i}`).value().toString()
-       };
-     
-       // Solo agregar repeatability y maximum_eccentricity en las filas 30 y 31
-       if (i === 30 || i === 31) {
-         result['repeatability'] = sheetResultONAlbkg.cell(`H${i}`).value().toString();
-         result['maximum_eccentricity'] = sheetResultONAlbkg.cell(`J${i}`).value().toString();
-       }
-     
-       result_test.push(result);
-     }
-     //result data 
-     let result_tests_lb = []
-
-     if (method.unit_of_measurement.measure === 'lb') {
-      for (let i = 45; i <= 52; i++) {
-        let reference_mass = sheetResultONAlbkg.cell(`B${i}`).value();
-        let equipment_indication = sheetResultONAlbkg.cell(`D${i}`).value();
-        let error = sheetResultONAlbkg.cell(`F${i}`).value();
-        let expanded_uncertainty = sheetResultONAlbkg.cell(`L${i}`).value();
-        let repeatability = i === 45 || i === 46 ? sheetResultONAlbkg.cell(`H${i}`).value() : null;
-        let maximum_eccentricity = i === 45 || i === 46 ? sheetResultONAlbkg.cell(`J${i}`).value() : null;
-    
-        let result_lb = {
-          reference_mass: reference_mass !== undefined ? reference_mass.toString() : '',
-          equipment_indication: equipment_indication !== undefined ? equipment_indication.toString() : '',
-          error: error !== undefined ? error.toString() : '',
-          expanded_uncertainty: expanded_uncertainty !== undefined ? expanded_uncertainty.toString() : ''
-        };
-    
-        if (repeatability !== null && maximum_eccentricity !== null) {
-          result_lb['repeatability'] = repeatability !== undefined ? repeatability.toString() : '';
-          result_lb['maximum_eccentricity'] = maximum_eccentricity !== undefined ? maximum_eccentricity.toString() : '';
+      for (let i = 30; i <= 37; i++) {
+        let result = {
+          reference_mass: sheetResultONAlbkg.cell(`B${i}`).value().toString(),
+          equipment_indication: sheetResultONAlbkg
+            .cell(`D${i}`)
+            .value()
+            .toString(),
+          error: sheetResultONAlbkg.cell(`F${i}`).value().toString(),
+          expanded_uncertainty: sheetResultONAlbkg
+            .cell(`L${i}`)
+            .value()
+            .toString(),
         }
-    
-        result_tests_lb.push(result_lb);
+
+        // Solo agregar repeatability y maximum_eccentricity en las filas 30 y 31
+        if (i === 30 || i === 31) {
+          result['repeatability'] = sheetResultONAlbkg
+            .cell(`H${i}`)
+            .value()
+            .toString()
+          result['maximum_eccentricity'] = sheetResultONAlbkg
+            .cell(`J${i}`)
+            .value()
+            .toString()
+        }
+
+        result_test.push(result)
       }
-    }
-    
+      //result data
+      let result_tests_lb = []
+
+      if (method.unit_of_measurement.measure === 'lb') {
+        for (let i = 45; i <= 52; i++) {
+          let reference_mass = sheetResultONAlbkg.cell(`B${i}`).value()
+          let equipment_indication = sheetResultONAlbkg.cell(`D${i}`).value()
+          let error = sheetResultONAlbkg.cell(`F${i}`).value()
+          let expanded_uncertainty = sheetResultONAlbkg.cell(`L${i}`).value()
+          let repeatability =
+            i === 45 || i === 46
+              ? sheetResultONAlbkg.cell(`H${i}`).value()
+              : null
+          let maximum_eccentricity =
+            i === 45 || i === 46
+              ? sheetResultONAlbkg.cell(`J${i}`).value()
+              : null
+
+          let result_lb = {
+            reference_mass:
+              reference_mass !== undefined ? reference_mass.toString() : '',
+            equipment_indication:
+              equipment_indication !== undefined
+                ? equipment_indication.toString()
+                : '',
+            error: error !== undefined ? error.toString() : '',
+            expanded_uncertainty:
+              expanded_uncertainty !== undefined
+                ? expanded_uncertainty.toString()
+                : '',
+          }
+
+          if (repeatability !== null && maximum_eccentricity !== null) {
+            result_lb['repeatability'] =
+              repeatability !== undefined ? repeatability.toString() : ''
+            result_lb['maximum_eccentricity'] =
+              maximum_eccentricity !== undefined
+                ? maximum_eccentricity.toString()
+                : ''
+          }
+
+          result_tests_lb.push(result_lb)
+        }
+      }
+
       //condiciones ambientales
       enviromentalCondition.push(
         (temperatura1 = sheetResultONAlbkg.cell('D55').value().toString()),
@@ -826,10 +849,11 @@ export class NI_MCIT_B_01Service {
         pattern: 'NI_MCIT_B_01',
         email: activity.quote_request.client.email,
         equipment_information: {
-          certification_code: formatCertCode(
-            method.certificate_code,
-            method.modification_number,
-          ) || '---',
+          certification_code:
+            formatCertCode(
+              method.certificate_code,
+              method.modification_number,
+            ) || '---',
           service_code: generateServiceCodeToMethod(method.id),
           certificate_issue_date: formatDate(new Date().toString()),
           calibration_date: formatDate(method.equipment_information.date),
@@ -845,21 +869,25 @@ export class NI_MCIT_B_01Service {
             activity.quote_request.client.company_name,
           address:
             method?.applicant_address || activity.quote_request.client.address,
-          calibration_location: method.calibration_location,
+          calibration_location: method.calibration_location || '---',
         },
         calibration_results: {
           result_test,
           result_tests_lb,
         },
-        environmental_conditions:{
-         temperature1 : temperatura1,
-          temperature2 : temperatura2,
-          humidity1 : humedad1,
-          humidity2 : humedad2,
-          pressure1 : presion1,
-          pressure2 : presion2,
-          stabilzation : environmental_conditions.stabilization_site,
-          time : environmental_conditions.time.hours+' horas '+environmental_conditions.time.minute+' minutos',
+        environmental_conditions: {
+          temperature1: temperatura1,
+          temperature2: temperatura2,
+          humidity1: humedad1,
+          humidity2: humedad2,
+          pressure1: presion1,
+          pressure2: presion2,
+          stabilzation: environmental_conditions.stabilization_site,
+          time:
+            environmental_conditions.time.hours +
+            ' horas ' +
+            environmental_conditions.time.minute +
+            ' minutos',
         },
         description_pattern: descriptionPatron,
         creditable: method.equipment_information.acredited,
@@ -873,11 +901,11 @@ export class NI_MCIT_B_01Service {
           especificadas al momento de realizar el servicio.
           Este certificado de calibración no debe ser reproducido sin la aprobación del laboratorio, excepto cuando se
           reproduce en su totalidad.`,
-          withLb: method.unit_of_measurement.measure === 'lb' ? true : false,
+        withLb: method.unit_of_measurement.measure === 'lb' ? true : false,
       }
       return handleOK(certificate)
-    } catch (error) {
-      await this.methodService.killExcelProcess(method.certificate_url)
+ } catch (error) {
+  /*     await this.methodService.killExcelProcess(method.certificate_url) */
       return handleInternalServerError(error)
     } 
   }
@@ -892,10 +920,9 @@ export class NI_MCIT_B_01Service {
           'eccentricity_test',
           'repeatability_test',
           'linearity_test',
-          'unit_of_measurement'
+          'unit_of_measurement',
         ],
       })
-
       if (!method) {
         return handleInternalServerError('El metodo no existe')
       }
@@ -908,16 +935,15 @@ export class NI_MCIT_B_01Service {
         })
       } else {
         certificateData = await this.getResultCertificateB01(
-          activityID,
           methodID,
+          activityID,
         )
       }
 
       const PDF = await this.pdfService.generateCertificatePdf(
         '/certificates/NI_CMIT_B_01/b01.hbs',
-        certificateData,
+        certificateData.data,
       )
-
       if (!PDF) {
         return handleInternalServerError('Error al generar el PDF')
       }
