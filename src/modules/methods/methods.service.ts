@@ -41,6 +41,7 @@ import { NI_MCIT_V_01Service } from './ni-mcit-v-01.service'
 
 import { GENERIC_METHOD } from './entities/GENERIC METHOD/GENERIC_METHOD.entity'
 import { GENERIC_METHODService } from './generic-method.service'
+import { formatCertCode } from 'src/utils/generateCertCode'
 
 @Injectable()
 export class MethodsService {
@@ -171,11 +172,23 @@ export class MethodsService {
         (relation: any) => relation.propertyName,
       )
 
-      const methodsStack = await this[method.method_name].find({
+      let methodsStack = await this[method.method_name].find({
         where: {
           id: In(method.methodsID),
         },
         relations: relations,
+      })
+
+      methodsStack = methodsStack.map((method) => {
+        return {
+          ...method,
+          certificate_code: method.certificate_code
+            ? formatCertCode(
+                method.certificate_code,
+                method.modification_number,
+              )
+            : '',
+        }
       })
 
       return handleOK(methodsStack)
@@ -596,12 +609,12 @@ export class MethodsService {
       })
 
       return handleOK({ modification_number: method.modification_number })
-    }catch(e) {
+    } catch (e) {
       return handleInternalServerError(e.message)
     }
   }
 
-  async getCeritifationCodeFromLastMethod(method_name: string){
+  async getCeritifationCodeFromLastMethod(method_name: string) {
     try {
       const repository = `${method_name}Repository`
       const lastMethod = await this[repository].find({
@@ -613,14 +626,14 @@ export class MethodsService {
 
       const method = lastMethod[0]
 
-      if(!method){ 
+      if (!method) {
         return handleBadrequest(new Error('No se encontró el método'))
       }
 
       console.log(method)
 
       return handleOK({ code: method.certificate_code })
-    }catch(e) {
+    } catch (e) {
       console.log(e)
       return handleInternalServerError(e.message)
     }
