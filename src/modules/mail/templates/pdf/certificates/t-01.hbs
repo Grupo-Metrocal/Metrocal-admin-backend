@@ -106,6 +106,15 @@
     </div>
   {{/if}}
 
+  <div
+    class='id_certificate'
+    style='display: flex; justify-content: space-between;'
+  >
+    <strong><span>Identificación del certificado:</span></strong>
+    <strong style='margin-left: 10px'><span
+      >{{equipment_information.certification_code}}</span></strong>
+  </div>
+
   <div class='enviromental-conditions'>
     <div>
       <strong><span>Condiciones ambientales (Higrotermómetro
@@ -113,12 +122,6 @@
       <span>{{environmental_conditions.temperature}}</span>
       <span>{{environmental_conditions.humidity}}</span>
     </div>
-  </div>
-
-  <div class='id_certificate'>
-    <strong><span>Identificación del certificado:</span></strong>
-    <strong style='margin-left: 10px'><span
-      >{{equipment_information.certification_code}}</span></strong>
   </div>
 
   <div class='calibration-method'>
