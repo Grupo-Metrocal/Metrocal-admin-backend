@@ -63,6 +63,12 @@ export class QuoteRequest {
   @Column({ type: 'float', nullable: true, default: 0 })
   extras?: number
 
+  @Column({ type: 'varchar', nullable: true })
+  quote_modification_message: string
+
+  @Column({ type: 'varchar', nullable: true, default: 'none' })
+  quote_modification_status: 'none' | 'pending' | 'done'
+
   @Column({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP' })
   created_at: Date
 
