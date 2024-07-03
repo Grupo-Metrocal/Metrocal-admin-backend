@@ -38,6 +38,7 @@ import { MethodsService } from '../methods/methods.service'
 import { PaginationQueryDinamicDto } from './dto/pagination-dinamic.dto'
 import { ReviewEquipmentDto } from './dto/review-equipment.dto'
 import { formatDate } from 'src/utils/formatDate'
+import { ModificationRequestDto } from './dto/modification-request.dto'
 
 @Injectable()
 export class QuotesService {
@@ -1005,6 +1006,51 @@ export class QuotesService {
       })
 
       return handleOK(results)
+    } catch (error) {
+      return handleInternalServerError(error.message)
+    }
+  }
+
+  async quoteModificationRequest({ id, message }: ModificationRequestDto) {
+    try {
+      const quoteRequest = await this.quoteRequestRepository.findOne({
+        where: { id },
+      })
+
+      if (!quoteRequest) {
+        return handleBadrequest(new Error('La cotización no existe'))
+      }
+
+      if (quoteRequest.quote_modification_status === 'pending') {
+        return handleBadrequest(
+          new Error(
+            'Ya existe una solicitud de modificación pendiente, espere a que sea aprobada o rechazada',
+          ),
+        )
+      }
+
+      if (quoteRequest.status === 'done') {
+        return handleBadrequest(
+          new Error(
+            'La cotización ya ha sido aprobada anteriormente, no se puede solicitar una modificación',
+          ),
+        )
+      }
+
+      if (quoteRequest.status === 'rejected') {
+        return handleBadrequest(
+          new Error(
+            'La cotización ya ha sido rechazada anteriormente, no se puede solicitar una modificación',
+          ),
+        )
+      }
+
+      quoteRequest.quote_modification_message = message
+      quoteRequest.quote_modification_status = 'pending'
+
+      await this.quoteRequestRepository.save(quoteRequest)
+
+      return handleOK('Solicitud de modificación enviada')
     } catch (error) {
       return handleInternalServerError(error.message)
     }
