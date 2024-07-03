@@ -1,24 +1,24 @@
-import { ApiProperty } from '@nestjs/swagger';
-import { IsPositive, IsNumber, IsOptional, IsString } from 'class-validator';
+import { ApiProperty } from '@nestjs/swagger'
+import { IsPositive, IsNumber, IsOptional, IsString } from 'class-validator'
 
 export class PaginationQueryDinamicDto {
   @IsNumber()
   @ApiProperty()
   @IsOptional()
-  limit?: number;
+  limit?: number
 
   @IsNumber()
   @ApiProperty()
   @IsOptional()
-  offset?: number;
+  offset?: number
 
   @IsString({ each: true }) // Ensure each element of the array is a string
   @ApiProperty({ type: [String] })
   @IsOptional()
-  status?: string[];
+  status?: string[]
 
   @IsString()
   @ApiProperty()
   @IsOptional()
-  bussinesName?: string;
+  no_quote?: string
 }
