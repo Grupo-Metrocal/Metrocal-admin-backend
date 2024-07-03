@@ -453,7 +453,7 @@ export class QuotesService {
     limit,
     offset,
     status,
-    bussinesName,
+    no_quote,
   }: PaginationQueryDinamicDto) {
     const arrayStatus = status
       .toString()
@@ -517,7 +517,7 @@ export class QuotesService {
       se obtienen todas las solicitudes de cotización, se actualiza el estado según el tiempo transcurrido
       y se retorna el resultado paginado.
     */
-    if (status.length === 47 && bussinesName === '') {
+    if (status.length === 47 && no_quote === '') {
       const quote_registered = await this.quoteRequestRepository
         .createQueryBuilder('quote_request')
         .select([
@@ -525,6 +525,7 @@ export class QuotesService {
           'quote_request.status',
           'quote_request.price',
           'quote_request.created_at',
+          'quote_request.no',
           `COALESCE(approved_by.username, 'Sin asignar') AS approved_by`,
           'client.company_name',
           'client.phone',
@@ -546,7 +547,7 @@ export class QuotesService {
       se obtienen las solicitudes de cotización filtradas por el nombre de empresa,
       se actualiza el estado según el tiempo transcurrido y se retorna el resultado paginado.
     */
-    if (status.length === 47 && bussinesName !== '') {
+    if (status.length === 47 && no_quote !== '') {
       const quote_registered = await this.quoteRequestRepository
         .createQueryBuilder('quote_request')
         .select([
@@ -554,12 +555,13 @@ export class QuotesService {
           'quote_request.status',
           'quote_request.price',
           'quote_request.created_at',
+          'quote_request.no',
           `COALESCE(approved_by.username, 'Sin asignar') AS approved_by`,
           'client.company_name',
           'client.phone',
         ])
-        .where('client.company_name ILIKE :bussinesName', {
-          bussinesName: `%${bussinesName}%`,
+        .where('quote_request.no ILIKE :no', {
+          no: `%${no_quote}%`,
         })
         .andWhere('quote_request.status IN (:...status)', {
           status: statusMap,
@@ -578,13 +580,14 @@ export class QuotesService {
       se registran los estados, se obtienen las solicitudes de cotización según los estados,
       se actualiza el estado según el tiempo transcurrido y se retorna el resultado paginado.
     */
-    if (status.length !== 0 && bussinesName === '') {
+    if (status.length !== 0 && no_quote === '') {
       const quote_registered = await this.quoteRequestRepository
         .createQueryBuilder('quote_request')
         .select([
           'quote_request.id AS id',
           'quote_request.status',
           'quote_request.price',
+          'quote_request.no',
           'quote_request.created_at',
           `COALESCE(approved_by.username, 'Sin asignar') AS approved_by`,
           'client.company_name',
@@ -613,7 +616,7 @@ export class QuotesService {
       se registran los estados, se obtienen las solicitudes de cotización según los estados y el nombre de empresa,
       se actualiza el estado según el tiempo transcurrido y se retorna el resultado paginado.
     */
-    if (status.length !== 0 && bussinesName !== '') {
+    if (status.length !== 0 && no_quote !== '') {
       const quote_registered = await this.quoteRequestRepository
         .createQueryBuilder('quote_request')
         .select([
@@ -621,6 +624,7 @@ export class QuotesService {
           'quote_request.status',
           'quote_request.price',
           'quote_request.created_at',
+          'quote_request.no',
           `COALESCE(approved_by.username, 'Sin asignar') AS approved_by`,
           'client.company_name',
           'client.phone',
@@ -628,8 +632,8 @@ export class QuotesService {
         .where('quote_request.status IN (:...status)', {
           status: statusMap,
         })
-        .andWhere('client.company_name ILIKE :bussinesName', {
-          bussinesName: `%${bussinesName}%`,
+        .andWhere('quote_request.no ILIKE :no', {
+          no: `%${no_quote}%`,
         })
         .leftJoin('quote_request.approved_by', 'approved_by')
         .leftJoin('quote_request.client', 'client')
