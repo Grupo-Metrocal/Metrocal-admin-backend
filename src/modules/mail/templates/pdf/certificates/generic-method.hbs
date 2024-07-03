@@ -168,48 +168,46 @@
 <div class="content content-1">
 
     <div class="grid">
-        {{#if dataDA.acreedited}}
         <div class="grid-item"><b>Identificación del certificado:</b></div>
-        <div class="grid-item"><b>{{certificate.equipment_information.certification_code}}</b></div>
-        {{/if}}
+        <div class="grid-item"><b>{{equipment_information.certification_code}}</b></div>
         <div class="grid-item"><b>Código de servicio:</b></div>
-        <div class="grid-item"><b>{{certificate.equipment_information.service_code}}</b></div>
+        <div class="grid-item"><b>{{equipment_information.service_code}}</b></div>
 
         <div class="grid-item"><b>Fecha de calibración:</b></div>
-        <div class="grid-item">{{certificate.equipment-equipment_information.certificate_issue_date}}</div>
+        <div class="grid-item">{{equipment_information.certificate_issue_date}}</div>
 
         <div class="grid-item"><b>Fecha de emisión del certificado:</b></div>
-        <div class="grid-item">{{certificate.equipment_information.calibration_date}}</div>
+        <div class="grid-item">{{equipment_information.calibration_date}}</div>
 
         <div class="grid-item"><b>Objeto de calibración:</b></div>
-        <div class="grid-item">{{certificate.equipment_information.object_calibrated}}</div>
+        <div class="grid-item">{{equipment_information.object_calibrated}}</div>
 
         <div class="grid-item"><b>Fabricante/Marca:</b></div>
-        <div class="grid-item">{{certificate.equipment_information.maker}}</div>
+        <div class="grid-item">{{equipment_information.maker}}</div>
 
         <div class="grid-item"><b>Serie:</b></div>
-        <div class="grid-item">{{certificate.equipment_information.serial_number}}</div>
+        <div class="grid-item">{{equipment_information.serial_number}}</div>
 
         <div class="grid-item"><b>Modelo:</b></div>
-        <div class="grid-item">{{certificate.equipment_information.model}}</div>
+        <div class="grid-item">{{equipment_information.model}}</div>
 
         <div class="grid-item"><b>Rango de medida:</b></div>
-        <div class="grid-item">{{certificate.equipment_information.measurement_range}}</div>
+        <div class="grid-item">{{equipment_information.measurement_range}}</div>
 
         <div class="grid-item"><b>Intervalo de escala:</b></div>
-        <div class="grid-item">{{certificate.equipment_information.scale_interval}}</div>
+        <div class="grid-item">{{equipment_information.scale_interval}}</div>
 
         <div class="grid-item"><b>Código de identificación:</b></div>
-        <div class="grid-item">{{certificate.equipment_information.identification_code}}</div>
+        <div class="grid-item">{{equipment_information.identification_code}}</div>
 
         <div class="grid-item"><b>Solicitante:</b></div>
-        <div class="grid-item">{{certificate.equipment_information.applicant}}</div>
+        <div class="grid-item">{{equipment_information.applicant}}</div>
 
         <div class="grid-item"><b>Dirección del solicitante:</b></div>
-        <div class="grid-item">{{certificate.equipment_information.address}}</div>
+        <div class="grid-item">{{equipment_information.address}}</div>
 
         <div class="grid-item"><b>Lugar de calibración:</b></div>
-        <div class="grid-item">{{certificate.equipment_information.calibration_location}}</div>
+        <div class="grid-item">{{equipment_information.calibration_location}}</div>
 
         <div class="grid-item-table-header" id="tableDesc"><b>Resultados de la calibración</b></div>
 
@@ -228,7 +226,7 @@
             </tr> 
         </thead>
         <tbody>
-            {{#each certificate.calibration_results.results as |data|}}
+            {{#each calibration_results.results as |data|}}
             <tr>
                 <td>{{pattern_indication}}</td>
                 <td>{{instrument_indication}}</td>
@@ -248,16 +246,16 @@
     <div class="grid">
 
         <div class="grid-item"><b>Identificación del certificado:</b></div>
-        <div class="grid-item"><b>{{dataDA.datoscabecera.numeroCertificado}}</b></div>
+        <div class="grid-item"><b>{{equipment_information.certification_code}}</b></div>
 
     </div>
 
     <div class="ambient-conditions">
         <div class="grid-item" style="margin-bottom: 5px;"><b>Condiciones ambientales</b></div>
-        <div class="grid-item">Temperatura: ( {{certificate.environmental_conditions.temperature}} ±
-            {{certificate.calibratioResult.temperatura2}} ) °C</div>
-        <div class="grid-item">Hum R: ( {{certificate.environmental_conditions.humidity}} ±
-            {{certificate.environmental_conditions.humidity2}} ) % HR</div>
+        <div class="grid-item">Temperatura: ( {{environmental_conditions.temperature}} ±
+            {{environmental_conditions.temperatura2}} ) °C</div>
+        <div class="grid-item">Hum R: ( {{environmental_conditions.humidity}} ±
+            {{environmental_conditions.humidity2}} ) % HR</div>
     </div>
     <br>
     <div class="ambient-conditions">

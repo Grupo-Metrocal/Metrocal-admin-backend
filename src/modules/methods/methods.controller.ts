@@ -1321,7 +1321,7 @@ export class MethodsController {
     @Param('idActivity') activityId: number,
     @Param('idMethod') methodId: number,
   ) {
-    return await this.GenericMethodService.generatePDFCertificateGenericMethod(
+    return await this.GenericMethodService.generatePDFCertificate(
       activityId,
       methodId,
     )
