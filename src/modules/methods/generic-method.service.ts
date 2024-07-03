@@ -187,6 +187,7 @@ export class GENERIC_METHODService {
   async resultMeditionCreate(
     resultMedition: Result_MeditionGENERIC_METHODDto,
     methodId: number,
+    activityId: number,
   ) {
     try {
       const method = await this.GENERIC_METHODRepository.findOne({
@@ -213,6 +214,10 @@ export class GENERIC_METHODService {
         await manager.save(method.result_medition)
         await manager.save(method)
       })
+
+      await this.generateCertificateCodeToMethod(method.id)
+      await this.activitiesService.updateActivityProgress(activityId)
+
       return handleOK(method.result_medition)
     } catch (error) {
       return handleInternalServerError(error.message)

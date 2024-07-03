@@ -365,6 +365,7 @@ export class NI_MCIT_B_01Service {
   async unitOfMeasurementB01(
     unitOfMeasurement: UnitOfMeasurementNI_MCIT_B_01Dto,
     methodId: number,
+    activityId: number,
     increase?: boolean,
   ) {
     try {
@@ -373,6 +374,7 @@ export class NI_MCIT_B_01Service {
         relations: ['unit_of_measurement'],
       })
 
+      console.log(methodId,activityId)
       if (!method) {
         return handleInternalServerError('El metodo no existe')
       }
@@ -403,6 +405,10 @@ export class NI_MCIT_B_01Service {
 
           await manager.save(method)
         })
+        
+        await this.generateCertificateCodeToMethod(method.id)
+        await this.activitiesService.updateActivityProgress(activityId)
+
         return handleOK(method.unit_of_measurement)
       } catch (error) {
         return handleInternalServerError(error)
@@ -484,195 +490,199 @@ export class NI_MCIT_B_01Service {
       __dirname,
       `../mail/templates/excels/ni_mcit_b_01.xlsx`,
     )
-  
-    try { 
-    if (fs.existsSync(method.certificate_url)) {
-      fs.unlinkSync(method.certificate_url)
-    }
 
-    fs.copyFileSync(filePath, method.certificate_url)
-
-    const workbook = await XlsxPopulate.fromFileAsync(method.certificate_url)
-
-    if (!workbook) {
-      return handleInternalServerError('Error al abrir el archivo')
-    }
-
-    const sheetGeneral = workbook.sheet('General')
-    const sheetCalibración = workbook.sheet('Calibración')
-
-    //informacion de equipo
-    const equipment = method.equipment_information
-    sheetGeneral.cell('F7').value(equipment.device)
-    sheetGeneral.cell('F8').value(equipment.maker)
-    sheetGeneral.cell('F9').value(equipment.model)
-    sheetGeneral.cell('F10').value(equipment.serial_number)
-    sheetGeneral.cell('F12').value(equipment.measurement_range)
-    sheetGeneral.cell('F14').value(equipment.resolution)
-
-    //environmental conditions
-    const environmentalConditions = method.environmental_conditions
-    sheetGeneral.cell('I3').value(method.calibration_location)
-    sheetGeneral.cell('I4').value(environmentalConditions.equipment_used)
-    sheetGeneral.cell('I6').value(environmentalConditions.cycles.ta.initial)
-    sheetGeneral.cell('I7').value(environmentalConditions.cycles.ta.end)
-    sheetGeneral.cell('I11').value(environmentalConditions.cycles.hr.initial)
-    sheetGeneral.cell('I12').value(environmentalConditions.cycles.hr.end)
-    sheetGeneral.cell('I16').value(environmentalConditions.cycles.hPa.initial)
-    sheetGeneral.cell('I17').value(environmentalConditions.cycles.hPa.end)
-
-    //linearity test
-    const linearityTest = method.linearity_test
-    for (let i = 0; i < linearityTest.linearity_test.length; i++) {
-      const test = linearityTest.linearity_test[i]
-      if (test.point === 1) {
-        sheetCalibración.cell('D24').value(test.indicationIL)
-        sheetCalibración.cell('E24').value(test.noLoadInfdication)
-        const punto = 'M'
-        let fila1 = 5
-        Object.entries(test.pointsComposition).forEach(([key, value]) => {
-          sheetCalibración.cell(`${punto}${fila1}`).value(value)
-          fila1++
-        })
+    try {
+      if (fs.existsSync(method.certificate_url)) {
+        fs.unlinkSync(method.certificate_url)
       }
 
-      if (test.point === 2) {
-        sheetCalibración.cell('D25').value(test.indicationIL)
-        sheetCalibración.cell('E25').value(test.noLoadInfdication)
-        const punto = 'T'
-        let fila2 = 5
-        Object.entries(test.pointsComposition).forEach(([key, value]) => {
-          sheetCalibración.cell(`${punto}${fila2}`).value(value)
-          fila2++
-        })
+      fs.copyFileSync(filePath, method.certificate_url)
+
+      const workbook = await XlsxPopulate.fromFileAsync(method.certificate_url)
+
+      if (!workbook) {
+        return handleInternalServerError('Error al abrir el archivo')
       }
 
-      if (test.point === 3) {
-        sheetCalibración.cell('D26').value(test.indicationIL)
-        sheetCalibración.cell('E26').value(test.noLoadInfdication)
-        const punto = 'AA'
-        let fila3 = 5
-        Object.entries(test.pointsComposition).forEach(([key, value]) => {
-          sheetCalibración.cell(`${punto}${fila3}`).value(value)
-          fila3++
-        })
+      const sheetGeneral = workbook.sheet('General')
+      const sheetCalibración = workbook.sheet('Calibración')
+
+      //informacion de equipo
+      const equipment = method.equipment_information
+      sheetGeneral.cell('F7').value(equipment.device)
+      sheetGeneral.cell('F8').value(equipment.maker)
+      sheetGeneral.cell('F9').value(equipment.model)
+      sheetGeneral.cell('F10').value(equipment.serial_number)
+      sheetGeneral.cell('F12').value(equipment.measurement_range)
+      sheetGeneral.cell('F14').value(equipment.resolution)
+
+      //environmental conditions
+      const environmentalConditions = method.environmental_conditions
+      sheetGeneral.cell('I3').value(method.calibration_location)
+      sheetGeneral.cell('I4').value(environmentalConditions.equipment_used)
+      sheetGeneral.cell('I6').value(environmentalConditions.cycles.ta.initial)
+      sheetGeneral.cell('I7').value(environmentalConditions.cycles.ta.end)
+      sheetGeneral.cell('I11').value(environmentalConditions.cycles.hr.initial)
+      sheetGeneral.cell('I12').value(environmentalConditions.cycles.hr.end)
+      sheetGeneral.cell('I16').value(environmentalConditions.cycles.hPa.initial)
+      sheetGeneral.cell('I17').value(environmentalConditions.cycles.hPa.end)
+
+      //linearity test
+      const linearityTest = method.linearity_test
+      for (let i = 0; i < linearityTest.linearity_test.length; i++) {
+        const test = linearityTest.linearity_test[i]
+        if (test.point === 1) {
+          sheetCalibración.cell('D24').value(test.indicationIL)
+          sheetCalibración.cell('E24').value(test.noLoadInfdication)
+          const punto = 'M'
+          let fila1 = 5
+          Object.entries(test.pointsComposition).forEach(([key, value]) => {
+            sheetCalibración.cell(`${punto}${fila1}`).value(value)
+            fila1++
+          })
+        }
+
+        if (test.point === 2) {
+          sheetCalibración.cell('D25').value(test.indicationIL)
+          sheetCalibración.cell('E25').value(test.noLoadInfdication)
+          const punto = 'T'
+          let fila2 = 5
+          Object.entries(test.pointsComposition).forEach(([key, value]) => {
+            sheetCalibración.cell(`${punto}${fila2}`).value(value)
+            fila2++
+          })
+        }
+
+        if (test.point === 3) {
+          sheetCalibración.cell('D26').value(test.indicationIL)
+          sheetCalibración.cell('E26').value(test.noLoadInfdication)
+          const punto = 'AA'
+          let fila3 = 5
+          Object.entries(test.pointsComposition).forEach(([key, value]) => {
+            sheetCalibración.cell(`${punto}${fila3}`).value(value)
+            fila3++
+          })
+        }
+
+        if (test.point === 4) {
+          sheetCalibración.cell('D27').value(test.indicationIL)
+          sheetCalibración.cell('E27').value(test.noLoadInfdication)
+          const punto = 'AH'
+          let fila4 = 5
+          Object.entries(test.pointsComposition).forEach(([key, value]) => {
+            sheetCalibración.cell(`${punto}${fila4}`).value(value)
+            fila4++
+          })
+        }
+
+        if (test.point === 5) {
+          sheetCalibración.cell('D28').value(test.indicationIL)
+          sheetCalibración.cell('E28').value(test.noLoadInfdication)
+          const punto = 'AO'
+          let fila5 = 5
+          Object.entries(test.pointsComposition).forEach(([key, value]) => {
+            sheetCalibración.cell(`${punto}${fila5}`).value(value)
+            fila5++
+          })
+        }
+
+        if (test.point === 6) {
+          sheetCalibración.cell('D29').value(test.indicationIL)
+          sheetCalibración.cell('E29').value(test.noLoadInfdication)
+          const punto = 'AV'
+          let fila6 = 5
+          Object.entries(test.pointsComposition).forEach(([key, value]) => {
+            sheetCalibración.cell(`${punto}${fila6}`).value(value)
+            fila6++
+          })
+        }
+
+        if (test.point === 7) {
+          sheetCalibración.cell('D30').value(test.indicationIL)
+          sheetCalibración.cell('E30').value(test.noLoadInfdication)
+          const punto = 'BC'
+          let fila7 = 5
+          Object.entries(test.pointsComposition).forEach(([key, value]) => {
+            sheetCalibración.cell(`${punto}${fila7}`).value(value)
+            fila7++
+          })
+        }
+
+        if (test.point === 8) {
+          sheetCalibración.cell('D31').value(test.indicationIL)
+          sheetCalibración.cell('E31').value(test.noLoadInfdication)
+          const punto = 'BI'
+          let fila8 = 5
+          Object.entries(test.pointsComposition).forEach(([key, value]) => {
+            sheetCalibración.cell(`${punto}${fila8}`).value(value)
+            fila8++
+          })
+        }
+
+        if (test.point === 9) {
+          sheetCalibración.cell('D32').value(test.indicationIL)
+          sheetCalibración.cell('E32').value(test.noLoadInfdication)
+          const punto = 'BQ'
+          let fila9 = 5
+          Object.entries(test.pointsComposition).forEach(([key, value]) => {
+            sheetCalibración.cell(`${punto}${fila9}`).value(value)
+            fila9++
+          })
+        }
+
+        if (test.point === 10) {
+          sheetCalibración.cell('D33').value(test.indicationIL)
+          sheetCalibración.cell('E33').value(test.noLoadInfdication)
+          const punto = 'BX'
+          let fila10 = 5
+          Object.entries(test.pointsComposition).forEach(([key, value]) => {
+            sheetCalibración.cell(`${punto}${fila10}`).value(value)
+            fila10++
+          })
+        }
       }
 
-      if (test.point === 4) {
-        sheetCalibración.cell('D27').value(test.indicationIL)
-        sheetCalibración.cell('E27').value(test.noLoadInfdication)
-        const punto = 'AH'
-        let fila4 = 5
-        Object.entries(test.pointsComposition).forEach(([key, value]) => {
-          sheetCalibración.cell(`${punto}${fila4}`).value(value)
-          fila4++
-        })
+      //repeatibility test
+      if (method.repeatability_test !== null) {
+        const repeatibilityTest = method.repeatability_test
+        sheetCalibración.cell('C37').value(repeatibilityTest.pointNumber)
+        let FilaR = 40
+        for (
+          let i = FilaR;
+          i <= repeatibilityTest.repeatability_test.length;
+          i++
+        ) {
+          const test = repeatibilityTest.repeatability_test[i]
+          sheetCalibración.cell(`E${FilaR}`).value(test.indicationIL)
+          sheetCalibración.cell(`F${FilaR}`).value(test.noLoadInfdication)
+          FilaR++
+        }
       }
 
-      if (test.point === 5) {
-        sheetCalibración.cell('D28').value(test.indicationIL)
-        sheetCalibración.cell('E28').value(test.noLoadInfdication)
-        const punto = 'AO'
-        let fila5 = 5
-        Object.entries(test.pointsComposition).forEach(([key, value]) => {
-          sheetCalibración.cell(`${punto}${fila5}`).value(value)
-          fila5++
-        })
+      //eccentricity test
+      if (method.eccentricity_test !== null) {
+        const eccentricityTest = method.eccentricity_test
+        sheetCalibración.cell('C48').value(eccentricityTest.pointNumber)
+        let FilaE = 51
+        for (
+          let i = FilaE;
+          i <= eccentricityTest.eccentricity_test.length;
+          i++
+        ) {
+          const test = eccentricityTest.eccentricity_test[i]
+          sheetCalibración.cell(`E${FilaE}`).value(test.indicationIL)
+          sheetCalibración.cell(`F${FilaE}`).value(test.noLoadInfdication)
+          FilaE++
+        }
       }
 
-      if (test.point === 6) {
-        sheetCalibración.cell('D29').value(test.indicationIL)
-        sheetCalibración.cell('E29').value(test.noLoadInfdication)
-        const punto = 'AV'
-        let fila6 = 5
-        Object.entries(test.pointsComposition).forEach(([key, value]) => {
-          sheetCalibración.cell(`${punto}${fila6}`).value(value)
-          fila6++
-        })
-      }
+      sheetCalibración.cell('C15').value(method.unit_of_measurement.measure)
+      sheetCalibración.cell('C16').value(method.unit_of_measurement.resolution)
 
-      if (test.point === 7) {
-        sheetCalibración.cell('D30').value(test.indicationIL)
-        sheetCalibración.cell('E30').value(test.noLoadInfdication)
-        const punto = 'BC'
-        let fila7 = 5
-        Object.entries(test.pointsComposition).forEach(([key, value]) => {
-          sheetCalibración.cell(`${punto}${fila7}`).value(value)
-          fila7++
-        })
-      }
+      workbook.toFileAsync(method.certificate_url)
+      return this.getResultCertificateB01(methodID, activityID)
 
-      if (test.point === 8) {
-        sheetCalibración.cell('D31').value(test.indicationIL)
-        sheetCalibración.cell('E31').value(test.noLoadInfdication)
-        const punto = 'BI'
-        let fila8 = 5
-        Object.entries(test.pointsComposition).forEach(([key, value]) => {
-          sheetCalibración.cell(`${punto}${fila8}`).value(value)
-          fila8++
-        })
-      }
-
-      if (test.point === 9) {
-        sheetCalibración.cell('D32').value(test.indicationIL)
-        sheetCalibración.cell('E32').value(test.noLoadInfdication)
-        const punto = 'BQ'
-        let fila9 = 5
-        Object.entries(test.pointsComposition).forEach(([key, value]) => {
-          sheetCalibración.cell(`${punto}${fila9}`).value(value)
-          fila9++
-        })
-      }
-
-      if (test.point === 10) {
-        sheetCalibración.cell('D33').value(test.indicationIL)
-        sheetCalibración.cell('E33').value(test.noLoadInfdication)
-        const punto = 'BX'
-        let fila10 = 5
-        Object.entries(test.pointsComposition).forEach(([key, value]) => {
-          sheetCalibración.cell(`${punto}${fila10}`).value(value)
-          fila10++
-        })
-      }
-    }
-
-    //repeatibility test
-    if (method.repeatability_test !== null) {
-      const repeatibilityTest = method.repeatability_test
-      sheetCalibración.cell('C37').value(repeatibilityTest.pointNumber)
-      let FilaR = 40
-      for (
-        let i = FilaR;
-        i <= repeatibilityTest.repeatability_test.length;
-        i++
-      ) {
-        const test = repeatibilityTest.repeatability_test[i]
-        sheetCalibración.cell(`E${FilaR}`).value(test.indicationIL)
-        sheetCalibración.cell(`F${FilaR}`).value(test.noLoadInfdication)
-        FilaR++
-      }
-    }
-
-    //eccentricity test
-    if (method.eccentricity_test !== null) {
-      const eccentricityTest = method.eccentricity_test
-      sheetCalibración.cell('C48').value(eccentricityTest.pointNumber)
-      let FilaE = 51
-      for (let i = FilaE; i <= eccentricityTest.eccentricity_test.length; i++) {
-        const test = eccentricityTest.eccentricity_test[i]
-        sheetCalibración.cell(`E${FilaE}`).value(test.indicationIL)
-        sheetCalibración.cell(`F${FilaE}`).value(test.noLoadInfdication)
-        FilaE++
-      }
-    }
-
-    sheetCalibración.cell('C15').value(method.unit_of_measurement.measure)
-    sheetCalibración.cell('C16').value(method.unit_of_measurement.resolution)
-
-    workbook.toFileAsync(method.certificate_url)
-    return this.getResultCertificateB01(methodID, activityID)
-
-    //fin de try
+      //fin de try
     } catch (error) {
       await this.methodService.killExcelProcess(method.certificate_url)
       return handleInternalServerError(error)
@@ -692,7 +702,7 @@ export class NI_MCIT_B_01Service {
         'unit_of_measurement',
       ],
     })
-   try {
+    try {
       if (!method) {
         return handleInternalServerError('El metodo no existe')
       }
@@ -729,7 +739,7 @@ export class NI_MCIT_B_01Service {
       const respWorkBook = await XlsxPopulate.fromFileAsync(
         method.certificate_url,
       )
-      
+
       let enviromentalCondition = []
       let temperatura1
       let temperatura2
@@ -904,10 +914,10 @@ export class NI_MCIT_B_01Service {
         withLb: method.unit_of_measurement.measure === 'lb' ? true : false,
       }
       return handleOK(certificate)
- } catch (error) {
-  /*     await this.methodService.killExcelProcess(method.certificate_url) */
+    } catch (error) {
+      /*     await this.methodService.killExcelProcess(method.certificate_url) */
       return handleInternalServerError(error)
-    } 
+    }
   }
 
   async generatePDFCertificate(activityID: number, methodID: number) {

@@ -961,10 +961,11 @@ export class MethodsController {
   }
 
   @ApiQuery({ name: 'increase', required: false })
-  @Post('ni-mcit-b-01/unit-of-measurement/:methodId')
+  @Post('ni-mcit-b-01/unit-of-measurement/:methodId/:activityId')
   async createNI_MCIT_B_01UnitOfMeasurement(
     @Body() unitOfMeasurement: UnitOfMeasurementNI_MCIT_B_01Dto,
     @Param('methodId') methodId: number,
+    @Param('activityId') activityId: number,
     @Query('increase') increase?: string,
   ) {
     const valueIncrease = increase === 'true' ? true : false
@@ -972,6 +973,7 @@ export class MethodsController {
     return await this.ni_mcit_b_01Service.unitOfMeasurementB01(
       unitOfMeasurement,
       methodId,
+      activityId,
       valueIncrease,
     )
   }
@@ -1294,14 +1296,16 @@ export class MethodsController {
     )
   }
 
-  @Post('generic-method/results-medition/:methodId')
+  @Post('generic-method/results-medition/:methodId/:activityId')
   async createGenericMethodResultsMedition(
     @Body() resultsMedition: Result_MeditionGENERIC_METHODDto,
     @Param('methodId') methodId: number,
+    @Param('activityId') activityId: number,
   ) {
     return await this.GenericMethodService.resultMeditionCreate(
       resultsMedition,
       methodId,
+      activityId,
     )
   }
 
