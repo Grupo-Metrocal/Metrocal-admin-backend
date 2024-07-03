@@ -102,7 +102,10 @@ export class NI_MCIT_T_01Service {
       await this.dataSource.transaction(async (manager) => {
         await manager.save(method.equipment_information)
         if (increase) {
-          method.modification_number = method.modification_number === null ? 1 : method.modification_number + 1
+          method.modification_number =
+            method.modification_number === null
+              ? 1
+              : method.modification_number + 1
         }
         await manager.save(method)
       })
@@ -113,7 +116,10 @@ export class NI_MCIT_T_01Service {
     }
   }
 
-  async addCalibrationLocation(certificatonDetails: CertificationDetailsDto, methodId: number) {
+  async addCalibrationLocation(
+    certificatonDetails: CertificationDetailsDto,
+    methodId: number,
+  ) {
     const method = await this.NI_MCIT_T_01Repository.findOne({
       where: { id: methodId },
     })
@@ -166,7 +172,10 @@ export class NI_MCIT_T_01Service {
       await this.dataSource.transaction(async (manager) => {
         await manager.save(method.calibration_results)
         if (increase) {
-          method.modification_number = method.modification_number === null ? 1 : method.modification_number + 1
+          method.modification_number =
+            method.modification_number === null
+              ? 1
+              : method.modification_number + 1
         }
         await manager.save(method)
       })
@@ -209,7 +218,10 @@ export class NI_MCIT_T_01Service {
       await this.dataSource.transaction(async (manager) => {
         await manager.save(method.environmental_conditions)
         if (increase) {
-          method.modification_number = method.modification_number === null ? 1 : method.modification_number + 1
+          method.modification_number =
+            method.modification_number === null
+              ? 1
+              : method.modification_number + 1
         }
         await manager.save(method)
       })
@@ -257,7 +269,10 @@ export class NI_MCIT_T_01Service {
         method.status = 'done'
 
         if (increase) {
-          method.modification_number = method.modification_number === null ? 1 : method.modification_number + 1
+          method.modification_number =
+            method.modification_number === null
+              ? 1
+              : method.modification_number + 1
         }
 
         await manager.save(method)
@@ -590,7 +605,10 @@ export class NI_MCIT_T_01Service {
         show_table_international_system_units:
           description_pattern.show_table_international_system_units,
         equipment_information: {
-          certification_code: formatCertCode(method.certificate_code, method.modification_number),
+          certification_code: formatCertCode(
+            method.certificate_code,
+            method.modification_number,
+          ),
           service_code: generateServiceCodeToMethod(method.id),
           certificate_issue_date: formatDate(new Date().toString()),
           calibration_date: formatDate(activity.updated_at),
@@ -604,8 +622,11 @@ export class NI_MCIT_T_01Service {
             '---',
           code: equipment_information.code || '---',
           unit: equipment_information.unit || '---',
-          applicant: method?.applicant_name || activity.quote_request.client.company_name,
-          address: method?.applicant_address || activity.quote_request.client.address,
+          applicant:
+            method?.applicant_name ||
+            activity.quote_request.client.company_name,
+          address:
+            method?.applicant_address || activity.quote_request.client.address,
           calibration_location: method.calibration_location || '---',
         },
         calibration_results: calibration_results_certificate,
@@ -699,7 +720,11 @@ export class NI_MCIT_T_01Service {
     }
   }
 
-  async generatePDFCertificate(activityID: number, methodID: number) {
+  async generatePDFCertificate(
+    activityID: number,
+    methodID: number,
+    generatePDF = false,
+  ) {
     try {
       const method = await this.NI_MCIT_T_01Repository.findOne({
         where: { id: methodID },
@@ -717,7 +742,7 @@ export class NI_MCIT_T_01Service {
 
       let dataCertificate: any
 
-      if (!fs.existsSync(method.certificate_url)) {
+      if (!fs.existsSync(method.certificate_url) || generatePDF) {
         dataCertificate = await this.generateCertificate({
           activityID,
           methodID,
@@ -782,7 +807,7 @@ export class NI_MCIT_T_01Service {
 
   async sendCertificateToClient(activityID: number, methodID: number) {
     try {
-      const data = await this.generatePDFCertificate(activityID, methodID)
+      const data = await this.generatePDFCertificate(activityID, methodID, true)
 
       if (!data.success) {
         return data
