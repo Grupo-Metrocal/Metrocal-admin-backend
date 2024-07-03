@@ -74,11 +74,10 @@ export class PdfService {
     try {
       const page = await browser.newPage()
       data.metrocalLogo = await this.fetchImageAsBase64(
-        'https://app-grupometrocal.com/development/api/images/image/header-2024-certificados_metrocal.png',
+        data.creditable
+          ? 'https://app-grupometrocal.com/development/api/images/image/header-acreditado-2024-certificados_metrocal.png'
+          : 'https://app-grupometrocal.com/development/api/images/image/header-no_acreditado-2024-certificados_metrocal.png',
       )
-      // data.onaLogo = await this.fetchImageAsBase64(
-      //   'https://app-grupometrocal.com/development/api/images/image/ona.webp',
-      // )
 
       // Agregar encabezado y pie de página
       const headerTemplate = compile(
