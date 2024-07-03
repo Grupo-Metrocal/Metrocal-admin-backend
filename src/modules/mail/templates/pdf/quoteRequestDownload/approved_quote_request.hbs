@@ -180,6 +180,7 @@
               <th>Método</th>
               <th>Cantidad</th>
               <th>Observación adicional</th>
+              <th>Rango de medición</th>
               <th>Precio Unitario (USD)</th>
               <th>Precio Total (USD)</th>
             </tr>
@@ -197,18 +198,18 @@
                   white-space: pre-wrap;
                   word-wrap: break-word;
                   word-break: break-word;
-                  width: 100%;
                 "
               >
                 {{comment}}
               </td>
+              <td>{{measuring_range}}</td>
               <td>{{unitPrice}}</td>
               <td>{{subTotal}}</td>
             </tr>
             {{/each}}
 
             <tr>
-              <td colspan="7" style="text-align: left">
+              <td colspan="8" style="text-align: left">
                 <strong>IVA (%):</strong>
               </td>
               <td style="background-color: #b8cce4">
@@ -216,7 +217,7 @@
               </td>
             </tr>
             <tr>
-              <td colspan="7" style="text-align: left">
+              <td colspan="8" style="text-align: left">
                 <strong>Descuento general (%):</strong>
               </td>
               <td style="background-color: #b8cce4">
@@ -224,7 +225,7 @@
               </td>
             </tr>
             <tr>
-              <td colspan="7" style="text-align: left">
+              <td colspan="8" style="text-align: left">
                 <strong>Subtotal:</strong>
               </td>
               <td style="background-color: #b8cce4">
@@ -232,7 +233,7 @@
               </td>
             </tr>
             <tr>
-              <td colspan="7" style="text-align: left">
+              <td colspan="8" style="text-align: left">
                 <strong>TOTAL:</strong>
               </td>
               <td style="background-color: #b8cce4">
