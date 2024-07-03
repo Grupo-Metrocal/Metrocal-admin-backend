@@ -409,6 +409,14 @@ export class QuotesService {
       )
     }
 
+    if (quoteRequest.quote_modification_status === 'pending') {
+      return handleBadrequest(
+        new Error(
+          'La cotización tiene una solicitud de modificación pendiente',
+        ),
+      )
+    }
+
     quoteRequest.status = changeStatusQuoteRequest.status
     quoteRequest.rejected_comment = changeStatusQuoteRequest.comment
     quoteRequest.rejected_options = changeStatusQuoteRequest.options
