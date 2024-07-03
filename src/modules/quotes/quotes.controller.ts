@@ -21,6 +21,7 @@ import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard'
 import { PaginationQueryDto } from './dto/pagination-query.dto'
 import { PaginationQueryDinamicDto } from './dto/pagination-dinamic.dto'
 import { ReviewEquipmentDto } from './dto/review-equipment.dto'
+import { ModificationRequestDto } from './dto/modification-request.dto'
 
 @ApiTags('quotes')
 @Controller('quotes')
@@ -88,9 +89,7 @@ export class QuotesController {
 
   @Get('request/pdf/:id')
   async getQuoteRequestPdf(@Param('id') id: number, @Res() res: Response) {
-    const pdfBuffer = await this.quotesService.getQuoteRequestPdf(
-      id,
-    )
+    const pdfBuffer = await this.quotesService.getQuoteRequestPdf(id)
 
     if (!pdfBuffer) {
       return res.status(500).send('Error al generar el PDF')
@@ -182,5 +181,10 @@ export class QuotesController {
   @Get('get-fluctuation-statistic')
   async getFluctuationStatistic() {
     return await this.quotesService.getFluctuationStatistic()
+  }
+
+  @Post('request/modify')
+  async quoteModificationRequest(@Body() quoteRequest: ModificationRequestDto) {
+    return this.quotesService.quoteModificationRequest(quoteRequest)
   }
 }
