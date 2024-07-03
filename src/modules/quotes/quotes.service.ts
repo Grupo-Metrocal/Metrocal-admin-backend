@@ -369,6 +369,7 @@ export class QuotesService {
           unitPrice: formatPrice(equipment.price),
           subTotal: formatPrice(equipment.total),
           comment: equipment.additional_remarks || '',
+          measuring_range: equipment.measuring_range || '',
         }
       },
     )
