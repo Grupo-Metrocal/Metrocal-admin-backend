@@ -145,9 +145,6 @@ export class PdfService {
       data.metrocalLogo = await this.fetchImageAsBase64(
         'https://app-grupometrocal.com/development/api/images/image/metrocal.webp',
       )
-      data.onaLogo = await this.fetchImageAsBase64(
-        'https://app-grupometrocal.com/development/api/images/image/ona.webp',
-      )
 
       // Agregar encabezado y pie de página
       const headerTemplate = compile(
