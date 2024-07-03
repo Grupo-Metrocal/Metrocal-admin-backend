@@ -393,6 +393,11 @@ export class NI_MCIT_P_01Service {
         .value(method.equipment_information.unit)
 
       workbook
+        .sheet('NI-R01-MCIT-P-01')
+        .cell('D14')
+        .value(method.equipment_information.resolution)
+
+      workbook
         .sheet('General')
         .cell('F13')
         .value(method.equipment_information.range_min)
