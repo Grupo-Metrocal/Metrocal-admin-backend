@@ -318,6 +318,11 @@ export class QuotesService {
       }
 
       await this.dataSource.transaction(async (manager) => {
+        quoteRequest.quote_modification_status =
+          quoteRequest.quote_modification_status === 'pending'
+            ? 'done'
+            : quoteRequest.quote_modification_status
+
         await manager.save(quoteRequest)
         await manager.save(User, user)
       })
