@@ -833,7 +833,7 @@ export class MethodsController {
   //controladores del method B01
   @Post('ni-mcit-b-01/create')
   async createNI_MCIT_B_01() {
-    return await this.ni_mcit_b_01Service.createNI_MCIT_B_01()
+    return await this.ni_mcit_b_01Service.create()
   }
 
   @ApiQuery({ name: 'increase', required: false })
