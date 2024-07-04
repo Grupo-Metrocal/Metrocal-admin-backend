@@ -609,7 +609,7 @@ export class NI_MCIT_T_01Service {
             method.certificate_code,
             method.modification_number,
           ),
-          service_code: generateServiceCodeToMethod(method.id),
+          service_code: activity.quote_request.no,
           certificate_issue_date: formatDate(new Date().toString()),
           calibration_date: formatDate(activity.updated_at),
           object_calibrated: equipment_information.device || '---',

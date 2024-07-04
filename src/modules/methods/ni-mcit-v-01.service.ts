@@ -72,7 +72,10 @@ export class NI_MCIT_V_01Service {
     }
   }
 
-  async addCalibrationLocation(certificatonDetails: CertificationDetailsDto, methodId: number) {
+  async addCalibrationLocation(
+    certificatonDetails: CertificationDetailsDto,
+    methodId: number,
+  ) {
     const method = await this.NI_MCIT_V_01Repository.findOne({
       where: { id: methodId },
     })
@@ -84,7 +87,7 @@ export class NI_MCIT_V_01Service {
     method.calibration_location = certificatonDetails.location
     method.applicant_name = certificatonDetails.applicant_name
     method.applicant_address = certificatonDetails.applicant_address
- 
+
     try {
       await this.NI_MCIT_V_01Repository.save(method)
 
@@ -126,7 +129,10 @@ export class NI_MCIT_V_01Service {
         await manager.save(method.equipment_information)
 
         if (increase) {
-          method.modification_number = method.modification_number === null ? 1 : method.modification_number + 1
+          method.modification_number =
+            method.modification_number === null
+              ? 1
+              : method.modification_number + 1
         }
 
         await manager.save(method)
@@ -171,7 +177,10 @@ export class NI_MCIT_V_01Service {
       await this.dataSource.transaction(async (manager) => {
         await manager.save(method.environmental_conditions)
         if (increase) {
-          method.modification_number = method.modification_number === null ? 1 : method.modification_number + 1
+          method.modification_number =
+            method.modification_number === null
+              ? 1
+              : method.modification_number + 1
         }
         await manager.save(method)
       })
@@ -213,7 +222,10 @@ export class NI_MCIT_V_01Service {
       await this.dataSource.transaction(async (manager) => {
         await manager.save(method.calibration_results)
         if (increase) {
-          method.modification_number = method.modification_number === null ? 1 : method.modification_number + 1
+          method.modification_number =
+            method.modification_number === null
+              ? 1
+              : method.modification_number + 1
         }
         await manager.save(method)
       })
@@ -261,7 +273,10 @@ export class NI_MCIT_V_01Service {
         method.status = 'done'
 
         if (increase) {
-          method.modification_number = method.modification_number === null ? 1 : method.modification_number + 1
+          method.modification_number =
+            method.modification_number === null
+              ? 1
+              : method.modification_number + 1
         }
 
         await manager.save(method)
@@ -575,8 +590,11 @@ export class NI_MCIT_V_01Service {
         calibration_results: calibration_results_certificate,
         masas: masas.data,
         equipment_information: {
-          certification_code: formatCertCode(method.certificate_code, method.modification_number),
-          service_code: generateServiceCodeToMethod(method.id),
+          certification_code: formatCertCode(
+            method.certificate_code,
+            method.modification_number,
+          ),
+          service_code: activity.quote_request.no,
           certificate_issue_date: formatDate(new Date().toString()),
           calibration_date: formatDate(activity.updated_at as any),
           device: method.equipment_information.device || '---',
@@ -585,8 +603,11 @@ export class NI_MCIT_V_01Service {
           nominal_range: method.equipment_information.nominal_range || '---',
           scale_division: method.equipment_information.scale_division || '---',
           code: method.equipment_information.code || '---',
-          applicant: method?.applicant_name || activity.quote_request.client.company_name,
-          address: method?.applicant_address || activity.quote_request.client.address,
+          applicant:
+            method?.applicant_name ||
+            activity.quote_request.client.company_name,
+          address:
+            method?.applicant_address || activity.quote_request.client.address,
           calibration_location: method.calibration_location || '---',
         },
         environmental_conditions: {

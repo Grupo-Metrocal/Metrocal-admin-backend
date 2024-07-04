@@ -72,7 +72,10 @@ export class NI_MCIT_T_03Service {
     }
   }
 
-  async addCalibrationLocation(certificatonDetails: CertificationDetailsDto, methodId: number) {
+  async addCalibrationLocation(
+    certificatonDetails: CertificationDetailsDto,
+    methodId: number,
+  ) {
     const method = await this.NI_MCIT_T_03Repository.findOne({
       where: { id: methodId },
     })
@@ -126,7 +129,10 @@ export class NI_MCIT_T_03Service {
         await manager.save(method.equipment_information)
 
         if (increase) {
-          method.modification_number = method.modification_number === null ? 1 : method.modification_number + 1
+          method.modification_number =
+            method.modification_number === null
+              ? 1
+              : method.modification_number + 1
         }
 
         await manager.save(method)
@@ -170,7 +176,10 @@ export class NI_MCIT_T_03Service {
         await manager.save(method.calibration_results)
 
         if (increase) {
-          method.modification_number = method.modification_number === null ? 1 : method.modification_number + 1
+          method.modification_number =
+            method.modification_number === null
+              ? 1
+              : method.modification_number + 1
         }
 
         await manager.save(method)
@@ -216,7 +225,10 @@ export class NI_MCIT_T_03Service {
         await manager.save(method.environmental_conditions)
 
         if (increase) {
-          method.modification_number = method.modification_number === null ? 1 : method.modification_number + 1
+          method.modification_number =
+            method.modification_number === null
+              ? 1
+              : method.modification_number + 1
         }
 
         await manager.save(method)
@@ -265,7 +277,10 @@ export class NI_MCIT_T_03Service {
         method.status = 'done'
 
         if (increase) {
-          method.modification_number = method.modification_number === null ? 1 : method.modification_number + 1
+          method.modification_number =
+            method.modification_number === null
+              ? 1
+              : method.modification_number + 1
         }
 
         await manager.save(method)
@@ -574,8 +589,11 @@ export class NI_MCIT_T_03Service {
         process_calibrator_used: process_calibrator.data,
         hygrothermometer_used: hygrothermometer?.data || {},
         equipment_information: {
-          certification_code: formatCertCode(method.certificate_code, method.modification_number),
-          service_code: generateServiceCodeToMethod(method.id),
+          certification_code: formatCertCode(
+            method.certificate_code,
+            method.modification_number,
+          ),
+          service_code: activity.quote_request.no,
           certificate_issue_date: formatDate(new Date().toString()),
           calibration_date: formatDate(activity.updated_at as any),
           device: method.equipment_information.device || '---',
@@ -585,8 +603,11 @@ export class NI_MCIT_T_03Service {
           model: method.equipment_information.model || '---',
           code: method.equipment_information.code || '---',
           sensor: method.equipment_information.sensor || '---',
-          applicant: method?.applicant_name || activity.quote_request.client.company_name,
-          address: method?.applicant_address || activity.quote_request.client.address,
+          applicant:
+            method?.applicant_name ||
+            activity.quote_request.client.company_name,
+          address:
+            method?.applicant_address || activity.quote_request.client.address,
           calibration_location: method.calibration_location || '---',
         },
         environmental_conditions: {

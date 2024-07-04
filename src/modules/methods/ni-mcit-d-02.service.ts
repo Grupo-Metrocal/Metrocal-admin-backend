@@ -899,7 +899,7 @@ export class NI_MCIT_D_02Service {
         email: activity.quote_request.client.email,
         equipment_information: {
           certification_code: method.certificate_code || '---',
-          service_code: generateServiceCodeToMethod(method.id),
+          service_code: activity.quote_request.no,
           certificate_issue_date: formatDate(new Date().toString()),
           calibration_date: formatDate(activity.updated_at.toString()),
           object_calibrated: method.equipment_information.device || '---',
