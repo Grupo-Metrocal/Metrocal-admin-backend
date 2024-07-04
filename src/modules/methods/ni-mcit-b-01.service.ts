@@ -72,7 +72,7 @@ export class NI_MCIT_B_01Service {
     private readonly methodService: MethodsService,
   ) {}
 
-  async createNI_MCIT_B_01() {
+  async create() {
     try {
       const methodNI_MCIT_B_01 = this.NI_MCIT_B_01Repository.create()
       const method = await this.NI_MCIT_B_01Repository.save(methodNI_MCIT_B_01)
@@ -374,7 +374,7 @@ export class NI_MCIT_B_01Service {
         relations: ['unit_of_measurement'],
       })
 
-      console.log(methodId,activityId)
+      console.log(methodId, activityId)
       if (!method) {
         return handleInternalServerError('El metodo no existe')
       }
@@ -405,7 +405,7 @@ export class NI_MCIT_B_01Service {
 
           await manager.save(method)
         })
-        
+
         await this.generateCertificateCodeToMethod(method.id)
         await this.activitiesService.updateActivityProgress(activityId)
 
@@ -680,7 +680,7 @@ export class NI_MCIT_B_01Service {
       sheetCalibración.cell('C16').value(method.unit_of_measurement.resolution)
 
       workbook.toFileAsync(method.certificate_url)
-      return this.getResultCertificateB01(methodID, activityID)
+      return this.getCertificateResult(methodID, activityID)
 
       //fin de try
     } catch (error) {
@@ -690,7 +690,7 @@ export class NI_MCIT_B_01Service {
   }
 
   //resultados para generar PDF
-  async getResultCertificateB01(methodID: number, activityID: number) {
+  async getCertificateResult(methodID: number, activityID: number) {
     const method = await this.NI_MCIT_B_01Repository.findOne({
       where: { id: methodID },
       relations: [
@@ -864,7 +864,7 @@ export class NI_MCIT_B_01Service {
               method.certificate_code,
               method.modification_number,
             ) || '---',
-          service_code: generateServiceCodeToMethod(method.id),
+          service_code: activity.quote_request.no,
           certificate_issue_date: formatDate(new Date().toString()),
           calibration_date: formatDate(method.equipment_information.date),
           object_calibrated: equipment_information.device || '---',
@@ -944,10 +944,7 @@ export class NI_MCIT_B_01Service {
           methodID,
         })
       } else {
-        certificateData = await this.getResultCertificateB01(
-          methodID,
-          activityID,
-        )
+        certificateData = await this.getCertificateResult(methodID, activityID)
       }
 
       const PDF = await this.pdfService.generateCertificatePdf(
