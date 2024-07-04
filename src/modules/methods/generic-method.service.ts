@@ -405,7 +405,7 @@ export class GENERIC_METHODService {
       let result = []
       for (let i = 28; i <= 30; i++) {
         let results_test = {
-    /*       pattern_indication: sheetFA1pto.cell(`D${i}`).value().toString(),
+          /*       pattern_indication: sheetFA1pto.cell(`D${i}`).value().toString(),
           instrument_indication: sheetFA1pto.cell(`F${i}`).value().toString(),
           correction: sheetFA1pto.cell(`L${i}`).value().toString(),
           expanded_uncertainty: sheetFA1pto.cell(`R${i}`).value().toString(), */
@@ -413,7 +413,7 @@ export class GENERIC_METHODService {
         result.push(results_test)
       }
 
-  /*     let temperature = sheetFA1pto.cell('E33').value().toString()
+      /*     let temperature = sheetFA1pto.cell('E33').value().toString()
       let humidity = sheetFA1pto.cell('E33').value().toString()
       let temperature2 = sheetFA1pto.cell('G34').value().toString()
       let humidity2 = sheetFA1pto.cell('G34').value().toString()  */
@@ -427,7 +427,7 @@ export class GENERIC_METHODService {
               method.certificate_code,
               method.modification_number,
             ) || '---',
-          service_code: generateServiceCodeToMethod(method.id),
+          service_code: activity.quote_request.no,
           certificate_issue_date: formatDate(new Date().toString()),
           calibration_date: method.equipment_information.date,
           object_calibrated: method.equipment_information.device || '---',
@@ -447,7 +447,7 @@ export class GENERIC_METHODService {
           results: result,
         },
         environmental_conditions: {
-       /* temperature: temperature,
+          /* temperature: temperature,
           humidity: humidity,
           temperature2: temperature2,
           humidity2: humidity2, */
@@ -524,9 +524,6 @@ export class GENERIC_METHODService {
       } else {
         dataCertificate = await this.getCertificateResult(methodID, activityID)
       }
-
-
-      console.log(dataCertificate.data)
 
       const PDF = await this.pdfService.generateCertificatePdf(
         '/certificates/generic-method.hbs',
