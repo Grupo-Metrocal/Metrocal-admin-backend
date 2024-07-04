@@ -146,7 +146,10 @@ export class NI_MCIT_D_01Service {
           await manager.save(method.equipment_information)
 
           if (increase) {
-            method.modification_number = method.modification_number === null ? 1 : method.modification_number + 1
+            method.modification_number =
+              method.modification_number === null
+                ? 1
+                : method.modification_number + 1
           }
 
           await manager.save(method)
@@ -193,7 +196,10 @@ export class NI_MCIT_D_01Service {
         this.dataSource.transaction(async (manager) => {
           await manager.save(method.environmental_conditions)
           if (increase) {
-            method.modification_number = method.modification_number === null ? 1 : method.modification_number + 1
+            method.modification_number =
+              method.modification_number === null
+                ? 1
+                : method.modification_number + 1
           }
           await manager.save(method)
         })
@@ -239,7 +245,10 @@ export class NI_MCIT_D_01Service {
         this.dataSource.transaction(async (manager) => {
           await manager.save(method.description_pattern)
           if (increase) {
-            method.modification_number = method.modification_number === null ? 1 : method.modification_number + 1
+            method.modification_number =
+              method.modification_number === null
+                ? 1
+                : method.modification_number + 1
           }
           await manager.save(method)
         })
@@ -280,7 +289,10 @@ export class NI_MCIT_D_01Service {
         this.dataSource.transaction(async (manager) => {
           await manager.save(method.pre_installation_comment)
           if (increase) {
-            method.modification_number = method.modification_number === null ? 1 : method.modification_number + 1
+            method.modification_number =
+              method.modification_number === null
+                ? 1
+                : method.modification_number + 1
           }
           await manager.save(method)
         })
@@ -322,7 +334,10 @@ export class NI_MCIT_D_01Service {
         this.dataSource.transaction(async (manager) => {
           await manager.save(method.instrument_zero_check)
           if (increase) {
-            method.modification_number = method.modification_number === null ? 1 : method.modification_number + 1
+            method.modification_number =
+              method.modification_number === null
+                ? 1
+                : method.modification_number + 1
           }
           await manager.save(method)
         })
@@ -365,7 +380,10 @@ export class NI_MCIT_D_01Service {
         this.dataSource.transaction(async (manager) => {
           await manager.save(method.exterior_parallelism_measurement)
           if (increase) {
-            method.modification_number = method.modification_number === null ? 1 : method.modification_number + 1
+            method.modification_number =
+              method.modification_number === null
+                ? 1
+                : method.modification_number + 1
           }
           await manager.save(method)
         })
@@ -410,7 +428,10 @@ export class NI_MCIT_D_01Service {
         this.dataSource.transaction(async (manager) => {
           await manager.save(method.interior_parallelism_measurement)
           if (increase) {
-            method.modification_number = method.modification_number === null ? 1 : method.modification_number + 1
+            method.modification_number =
+              method.modification_number === null
+                ? 1
+                : method.modification_number + 1
           }
           await manager.save(method)
         })
@@ -457,7 +478,10 @@ export class NI_MCIT_D_01Service {
           method.status = 'done'
 
           if (increase) {
-            method.modification_number = method.modification_number === null ? 1 : method.modification_number + 1
+            method.modification_number =
+              method.modification_number === null
+                ? 1
+                : method.modification_number + 1
           }
 
           await manager.save(method)
@@ -1196,7 +1220,7 @@ export class NI_MCIT_D_01Service {
         email: activity.quote_request.client.email,
         equipment_information: {
           certification_code: method.certificate_code || '---',
-          service_code: generateServiceCodeToMethod(method.id),
+          service_code: activity.quote_request.no,
           certificate_issue_date: formatDate(new Date().toString()),
           calibration_date: formatDate(activity.updated_at.toString()),
           object_calibrated: method.equipment_information.device || '---',
@@ -1220,8 +1244,8 @@ export class NI_MCIT_D_01Service {
           interior_measurement_faces: dataCalibrationInterior,
         },
         environmental_conditions: {
-          temperature:temperatura,
-          humidity:humedad,
+          temperature: temperatura,
+          humidity: humedad,
           stabilization: estabilizacion,
           time: tiempo,
         },
