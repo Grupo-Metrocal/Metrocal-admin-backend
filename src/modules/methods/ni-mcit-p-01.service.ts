@@ -372,62 +372,43 @@ export class NI_MCIT_P_01Service {
       }
 
       // enter method selected
-      workbook
-        .sheet('Calibración')
-        .cell('I3')
-        .value(method.description_pattern.pattern)
+      const sheetCalibration = workbook.sheet('Calibración')
+      const sheetGeneral = workbook.sheet('General')
 
-      workbook
-        .sheet('Calibración')
+      sheetCalibration.cell('I3').value(method.description_pattern.pattern)
+
+      sheetCalibration
         .cell('E10')
         .value(method.calibration_results.results.length)
 
-      workbook
-        .sheet('General')
-        .cell('F16')
-        .value(method.equipment_information.unit)
+      sheetGeneral.cell('F13').value(method.equipment_information.range_min)
 
-      workbook
-        .sheet('NI-R01-MCIT-P-01')
-        .cell('I10')
-        .value(method.equipment_information.unit)
+      sheetGeneral.cell('F14').value(method.equipment_information.range_max)
 
-      workbook
-        .sheet('NI-R01-MCIT-P-01')
-        .cell('D14')
-        .value(method.equipment_information.resolution)
+      sheetGeneral.cell('F15').value(method.equipment_information.resolution)
 
-      workbook
-        .sheet('General')
-        .cell('F13')
-        .value(method.equipment_information.range_min)
-
-      workbook
-        .sheet('General')
-        .cell('F14')
-        .value(method.equipment_information.range_max)
+      sheetGeneral.cell('F16').value(method.equipment_information.unit)
 
       // enter environmental conditions
-      const sheetEC = workbook.sheet('NI-R01-MCIT-P-01')
 
       for (const result of method.environmental_conditions.cycles) {
         const rowOffset = (result.cycle_number - 1) * 2
 
-        sheetEC.cell(`C${20 + rowOffset}`).value(result.ta.tac.initial)
-        sheetEC.cell(`C${21 + rowOffset}`).value(result.ta.tac.final)
+        sheetGeneral.cell(`P${3 + rowOffset}`).value(result.ta.tac.initial)
+        sheetGeneral.cell(`P${4 + rowOffset}`).value(result.ta.tac.final)
 
-        sheetEC.cell(`D${20 + rowOffset}`).value(result.ta.hrp.initial)
-        sheetEC.cell(`D${21 + rowOffset}`).value(result.ta.hrp.final)
+        sheetGeneral.cell(`Q${3 + rowOffset}`).value(result.ta.hrp.initial)
+        sheetGeneral.cell(`Q${4 + rowOffset}`).value(result.ta.hrp.final)
 
-        sheetEC.cell(`I${20 + rowOffset}`).value(result.hPa.pa.initial)
-        sheetEC.cell(`I${21 + rowOffset}`).value(result.hPa.pa.final)
+        sheetGeneral.cell(`R${3 + rowOffset}`).value(result.hPa.pa.initial)
+        sheetGeneral.cell(`R${4 + rowOffset}`).value(result.hPa.pa.final)
       }
 
-      sheetEC
-        .cell('E21')
+      sheetGeneral
+        .cell('I4')
         .value(method.environmental_conditions.cycles[0].ta.equipement)
 
-      sheetEC
+      sheetGeneral
         .cell('J21')
         .value(method.environmental_conditions.cycles[0].hPa.equipement)
 
@@ -439,23 +420,19 @@ export class NI_MCIT_P_01Service {
             calibrationFactor,
           ] of result.calibration_factor.entries()) {
             if (result.cicle_number === 1) {
-              workbook
-                .sheet('Calibración')
+              sheetCalibration
                 .cell(`C${15 + index}`)
                 .value(Number(calibrationFactor.upward.pattern))
 
-              workbook
-                .sheet('Calibración')
+              sheetCalibration
                 .cell(`D${15 + index}`)
                 .value(Number(calibrationFactor.upward.equipment))
 
-              workbook
-                .sheet('Calibración')
+              sheetCalibration
                 .cell(`E${15 + index}`)
                 .value(Number(calibrationFactor.downward.pattern))
 
-              workbook
-                .sheet('Calibración')
+              sheetCalibration
                 .cell(`F${15 + index}`)
                 .value(Number(calibrationFactor.downward.equipment))
             }
@@ -468,23 +445,19 @@ export class NI_MCIT_P_01Service {
             calibrationFactor,
           ] of result.calibration_factor.entries()) {
             if (result.cicle_number === 2) {
-              workbook
-                .sheet('Calibración')
+              sheetCalibration
                 .cell(`G${15 + index}`)
                 .value(Number(calibrationFactor.upward.pattern))
 
-              workbook
-                .sheet('Calibración')
+              sheetCalibration
                 .cell(`H${15 + index}`)
                 .value(Number(calibrationFactor.upward.equipment))
 
-              workbook
-                .sheet('Calibración')
+              sheetCalibration
                 .cell(`I${15 + index}`)
                 .value(Number(calibrationFactor.downward.pattern))
 
-              workbook
-                .sheet('Calibración')
+              sheetCalibration
                 .cell(`J${15 + index}`)
                 .value(Number(calibrationFactor.downward.equipment))
             }
@@ -497,23 +470,19 @@ export class NI_MCIT_P_01Service {
             calibrationFactor,
           ] of result.calibration_factor.entries()) {
             if (result.cicle_number === 3) {
-              workbook
-                .sheet('Calibración')
+              sheetCalibration
                 .cell(`K${15 + index}`)
                 .value(Number(calibrationFactor.upward.pattern))
 
-              workbook
-                .sheet('Calibración')
+              sheetCalibration
                 .cell(`L${15 + index}`)
                 .value(Number(calibrationFactor.upward.equipment))
 
-              workbook
-                .sheet('Calibración')
+              sheetCalibration
                 .cell(`M${15 + index}`)
                 .value(Number(calibrationFactor.downward.pattern))
 
-              workbook
-                .sheet('Calibración')
+              sheetCalibration
                 .cell(`N${15 + index}`)
                 .value(Number(calibrationFactor.downward.equipment))
             }
@@ -526,7 +495,7 @@ export class NI_MCIT_P_01Service {
 
       return await this.getCertificateResult(methodID, activityID)
     } catch (error) {
-      await this.methodService.killExcelProcess(method.certificate_url)
+      console
       return handleInternalServerError(error.message)
     }
   }
@@ -712,7 +681,6 @@ export class NI_MCIT_P_01Service {
 
       return handleOK(certificate)
     } catch (error) {
-      await this.methodService.killExcelProcess(method.certificate_url)
       return handleInternalServerError(error.message)
     }
   }
