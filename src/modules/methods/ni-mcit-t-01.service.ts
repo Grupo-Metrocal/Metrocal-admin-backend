@@ -602,6 +602,7 @@ export class NI_MCIT_T_01Service {
       const certificate = {
         pattern: 'NI-MCIT-T-01',
         email: activity.quote_request.client.email,
+        optionsCMCOnCertificate: method.optionsCMCOnCertificate,
         show_table_international_system_units:
           description_pattern.show_table_international_system_units,
         equipment_information: {
@@ -635,10 +636,12 @@ export class NI_MCIT_T_01Service {
         creditable: description_pattern.creditable,
         description_pattern,
         environmental_conditions: {
-          temperature: `Temperatura: ${calibrationResultsSheet
-            .cell('E75')
-            .value()} °C ± ${calibrationResultsSheet.cell('G75').value()} °C`,
-          humidity: `Humedad: ${calibrationResultsSheet.cell('E76').value()} % ± ${calibrationResultsSheet.cell('G76').value()} %`,
+          temperature: `Temperatura: ${Number(
+            calibrationResultsSheet.cell('E75').value(),
+          ).toFixed(
+            1,
+          )} °C ± ${Number(calibrationResultsSheet.cell('G75').value()).toFixed(1)} °C`,
+          humidity: `Humedad: ${Number(calibrationResultsSheet.cell('E76').value()).toFixed(1)} % ± ${Number(calibrationResultsSheet.cell('G76').value()).toFixed(1)} %`,
         },
         observations: `
           ${description_pattern.observation || ''}

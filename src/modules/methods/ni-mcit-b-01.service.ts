@@ -858,6 +858,7 @@ export class NI_MCIT_B_01Service {
       const certificate = {
         pattern: 'NI_MCIT_B_01',
         email: activity.quote_request.client.email,
+        optionsCMCOnCertificate: method.optionsCMCOnCertificate,
         equipment_information: {
           certification_code:
             formatCertCode(

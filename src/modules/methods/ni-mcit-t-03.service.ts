@@ -588,6 +588,7 @@ export class NI_MCIT_T_03Service {
         calibration_results: calibration_results_certificate,
         process_calibrator_used: process_calibrator.data,
         hygrothermometer_used: hygrothermometer?.data || {},
+        optionsCMCOnCertificate: method.optionsCMCOnCertificate,
         equipment_information: {
           certification_code: formatCertCode(
             method.certificate_code,
