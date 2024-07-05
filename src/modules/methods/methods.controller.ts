@@ -80,6 +80,7 @@ import { EquipmentInformationM01Dto } from './dto/NI_MCIT_M_01/equipment_informa
 import { EnvironmentalConditionsM01Dto } from './dto/NI_MCIT_M_01/environmental_condition.dto'
 import { CalibrationResultsM01Dto } from './dto/NI_MCIT_M_01/calibraion_results.dto'
 import { DescriptionPatternM01Dto } from './dto/NI_MCIT_M_01/description_pattern.dto'
+import { OptionsCMCOnCertificateDto } from './dto/setSOptionsCMCOnCertificate.dto'
 
 @ApiTags('methods')
 @Controller('methods')
@@ -177,8 +178,19 @@ export class MethodsController {
   }
 
   @Get('send-certifications-to-client/:activityID')
-  sendAllCertificatesToClient(@Param('activityID') activityID: number) {
+  async sendAllCertificatesToClient(@Param('activityID') activityID: number) {
     return this.methodsService.sendAllCertificatesToClient(activityID)
+  }
+
+  @Post('options-cmc-on-certificate')
+  async setSOptionsCMCOnCertificate(
+    @Body() OptionsCMCOnCertificate: OptionsCMCOnCertificateDto,
+  ) {
+    console.log(OptionsCMCOnCertificate)
+
+    return this.methodsService.setSOptionsCMCOnCertificate(
+      OptionsCMCOnCertificate,
+    )
   }
 
   @Post('ni-mcit-p-01/calibration-location/:methodId')
