@@ -106,14 +106,16 @@
     </div>
   {{/if}}
 
-  <div
-    class='id_certificate'
-    style='display: flex; justify-content: space-between;'
-  >
-    <strong><span>Identificación del certificado:</span></strong>
-    <strong style='margin-left: 10px'><span
-      >{{equipment_information.certification_code}}</span></strong>
-  </div>
+  {{#if show_table_international_system_units}}
+    <div
+      class='id_certificate'
+      style='display: flex; justify-content: space-between'
+    >
+      <strong><span>Identificación del certificado:</span></strong>
+      <strong style='margin-left: 10px'><span
+        >{{equipment_information.certification_code}}</span></strong>
+    </div>
+  {{/if}}
 
   <div class='enviromental-conditions'>
     <div>
@@ -148,7 +150,14 @@
   </div>
 
   {{#unless show_table_international_system_units}}
-    <br /><br /><br />
+    <div
+      class='id_certificate'
+      style='display: flex; justify-content: space-between'
+    >
+      <strong><span>Identificación del certificado:</span></strong>
+      <strong style='margin-left: 10px'><span
+        >{{equipment_information.certification_code}}</span></strong>
+    </div>
   {{/unless}}
 
   <div class='used_pattern'>
@@ -191,9 +200,6 @@
   <div class='observations'>
     <strong><span>Observaciones</span></strong>
     <br />
-    <span>
-      {{observations}}
-    </span>
+    <span> {{observations}} </span>
   </div>
-
 </div>
