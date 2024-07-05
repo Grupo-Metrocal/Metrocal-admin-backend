@@ -1011,6 +1011,17 @@ export class MethodsController {
     )
   }
 
+  @Get('ni-mcit-b-01/generate-certificate/send/pdf/:idActivity/:idMethod')
+  async sendCertificateToClientB01(
+    @Param('idActivity') activityId: number,
+    @Param('idMethod') methodId: number,
+  ) {
+    return await this.ni_mcit_b_01Service.sendCertificateToClient(
+      activityId,
+      methodId,
+    )
+  }
+
   @ApiQuery({ name: 'increase', required: false })
   @Post('ni-mcit-t-03/calibration-results/:methodId')
   async createNI_MCIT_T_03CalibrationResults(
