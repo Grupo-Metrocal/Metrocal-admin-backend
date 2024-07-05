@@ -592,6 +592,55 @@ export class NI_MCIT_P_01Service {
         )
       }
 
+      let cmcPoint = []
+      let cmcPref = []
+      let uncertaintyCMC = []
+      let cmc = []
+      let mincmc = []
+
+      const sheetCMC = workbook.sheet('CMC Presión')
+
+      for (
+        let i = 0;
+        i < method.calibration_results.results[0].calibration_factor.length;
+        i++
+      ) {
+        const cmcPointValue = sheetCMC.cell(`I${16 + i}`).value()
+        cmcPoint.push(cmcPointValue)
+
+        const cmcPrefValue = sheetCMC.cell(`J${16 + i}`).value()
+        cmcPref.push(
+          typeof cmcPrefValue === 'number'
+            ? cmcPrefValue.toFixed(2)
+            : cmcPrefValue,
+        )
+
+        const uncertaintyCMCValue = sheetCMC.cell(`K${16 + i}`).value()
+        uncertaintyCMC.push(
+          typeof uncertaintyCMCValue === 'number'
+            ? uncertaintyCMCValue.toFixed(5)
+            : uncertaintyCMCValue,
+        )
+
+        const cmcValue = sheetCMC.cell(`L${16 + i}`).value()
+        cmc.push(typeof cmcValue === 'number' ? cmcValue.toFixed(5) : cmcValue)
+
+        const mincmcValue = sheetCMC.cell(`M${16 + i}`).value()
+        mincmc.push(
+          typeof mincmcValue === 'number'
+            ? mincmcValue.toFixed(5)
+            : mincmcValue,
+        )
+      }
+
+      const CMC = {
+        cmcPoint,
+        cmcPref,
+        uncertaintyCMC,
+        cmc,
+        mincmc,
+      }
+
       const calibration_results = {
         result: {
           reference_pressure,
@@ -621,6 +670,8 @@ export class NI_MCIT_P_01Service {
       const certificate = {
         pattern: 'NI-MCIT-P-01',
         email: activity.quote_request.client.email,
+        CMC,
+        optionsCMCOnCertificate: method.optionsCMCOnCertificate,
         equipment_information: {
           certification_code: formatCertCode(
             method.certificate_code,
