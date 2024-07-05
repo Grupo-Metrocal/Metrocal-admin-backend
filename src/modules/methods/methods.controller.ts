@@ -186,8 +186,6 @@ export class MethodsController {
   async setSOptionsCMCOnCertificate(
     @Body() OptionsCMCOnCertificate: OptionsCMCOnCertificateDto,
   ) {
-    console.log(OptionsCMCOnCertificate)
-
     return this.methodsService.setSOptionsCMCOnCertificate(
       OptionsCMCOnCertificate,
     )

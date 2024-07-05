@@ -655,9 +655,6 @@ export class MethodsService {
 
       await this.dataSource.transaction(async (manager) => {
         method.optionsCMCOnCertificate = optionsCMCOnCertificate
-        console.log(method_name, method_id, optionsCMCOnCertificate)
-        console.log(method.optionsCMCOnCertificate)
-
         await manager.save(method)
       })
 
