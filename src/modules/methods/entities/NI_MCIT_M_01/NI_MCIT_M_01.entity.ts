@@ -21,6 +21,9 @@ export class NI_MCIT_M_01 {
   @Column({ nullable: true })
   modification_number?: number
 
+  @Column({ nullable: true, default: 'asterisks' })
+  optionsCMCOnCertificate?: 'asterisks' | 'change_values'
+
   @Column({ nullable: true, default: false, type: 'boolean' })
   report_status?: boolean
 
@@ -66,7 +69,7 @@ export class NI_MCIT_M_01 {
     },
   )
   calibration_results: CalibrationResultsNI_MCIT_M_01
-  
+
   @ManyToOne(
     () => EnvironmentalConditionsNI_MCIT_M_01,
     (EnvironmentalConditionsNI_MCIT_M_01) =>

@@ -21,6 +21,9 @@ export class NI_MCIT_T_01 {
   @Column({ nullable: true })
   modification_number?: number
 
+  @Column({ nullable: true, default: 'asterisks' })
+  optionsCMCOnCertificate?: 'asterisks' | 'change_values'
+
   @Column({ nullable: true, default: false, type: 'boolean' })
   report_status?: boolean
 
