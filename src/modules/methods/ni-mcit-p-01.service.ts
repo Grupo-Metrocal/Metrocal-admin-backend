@@ -29,7 +29,7 @@ import { PatternsService } from '../patterns/patterns.service'
 import { MethodsService } from './methods.service'
 import { CertificationDetailsDto } from './dto/NI_MCIT_P_01/certification_details.dto'
 import { formatCertCode } from 'src/utils/generateCertCode'
-import { formatPrice } from 'src/utils/formatPrices'
+import { formatNumberCertification } from 'src/utils/formatNumberCertification'
 
 @Injectable()
 export class NI_MCIT_P_01Service {
@@ -538,56 +538,56 @@ export class NI_MCIT_P_01Service {
         const pressureValue = sheetCER.cell(`D${27 + i}`).value()
         reference_pressure.push(
           typeof pressureValue === 'number'
-            ? formatPrice(Number(pressureValue.toFixed(2)))
+            ? formatNumberCertification(Number(pressureValue.toFixed(2)), 2)
             : pressureValue,
         )
 
         const indicationValue = sheetCER.cell(`F${27 + i}`).value()
         equipment_indication.push(
           typeof indicationValue === 'number'
-            ? formatPrice(Number(indicationValue.toFixed(2)))
+            ? formatNumberCertification(Number(indicationValue.toFixed(2)), 2)
             : indicationValue,
         )
 
         const correctionValue = sheetCER.cell(`L${27 + i}`).value()
         correction.push(
           typeof correctionValue === 'number'
-            ? formatPrice(Number(correctionValue.toFixed(2)))
+            ? formatNumberCertification(Number(correctionValue.toFixed(2)), 2)
             : correctionValue,
         )
 
         const uncertaintyValue = sheetCER.cell(`R${27 + i}`).value()
         uncertainty.push(
           typeof uncertaintyValue === 'number'
-            ? formatPrice(Number(uncertaintyValue.toFixed(2)))
+            ? formatNumberCertification(Number(uncertaintyValue.toFixed(2)), 2)
             : uncertaintyValue,
         )
 
         const pressureSysValue = sheetCER.cell(`D${64 + i}`).value()
         reference_pressureSys.push(
           typeof pressureSysValue === 'number'
-            ? formatPrice(Number(pressureSysValue.toFixed(1)))
+            ? formatNumberCertification(Number(pressureSysValue.toFixed(1)))
             : pressureSysValue,
         )
 
         const indicationSysValue = sheetCER.cell(`F${64 + i}`).value()
         equipment_indicationSys.push(
           typeof indicationSysValue === 'number'
-            ? formatPrice(Number(indicationSysValue.toFixed(1)))
+            ? formatNumberCertification(Number(indicationSysValue.toFixed(1)))
             : indicationSysValue,
         )
 
         const correctionSysValue = sheetCER.cell(`L${64 + i}`).value()
         correctionSys.push(
           typeof correctionSysValue === 'number'
-            ? formatPrice(Number(correctionSysValue.toFixed(1)))
+            ? formatNumberCertification(Number(correctionSysValue.toFixed(1)))
             : correctionSysValue,
         )
 
         const uncertaintySysValue = sheetCER.cell(`R${64 + i}`).value()
         uncertaintySys.push(
           typeof uncertaintySysValue === 'number'
-            ? formatPrice(Number(uncertaintySysValue.toFixed(1)))
+            ? formatNumberCertification(Number(uncertaintySysValue.toFixed(1)))
             : uncertaintySysValue,
         )
       }
