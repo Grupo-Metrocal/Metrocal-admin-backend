@@ -8,7 +8,7 @@ import * as https from 'https'
 
 @Injectable()
 export class PdfService {
-  async generatePdf(template: string, data: any) {
+  async generatePdf(template: string, data: any, orientation = 'portrait') {
     const templatePath = join(__dirname, 'templates/pdf', template)
     const templateContent = readFileSync(templatePath, 'utf-8')
 
@@ -34,6 +34,7 @@ export class PdfService {
       await page.waitForTimeout(1000)
       // const pdfBuffer = await page.pdf({ format: 'A4' })
       return await page.pdf({
+        landscape: orientation === 'landscape',
         format: 'A4',
         printBackground: true,
         displayHeaderFooter: true,
@@ -41,6 +42,54 @@ export class PdfService {
           '<div style="text-align: right;width: 297mm;font-size: 8px;"><span style="margin-right: 1cm"><span class="pageNumber"></span> de <span class="totalPages"></span></span></div>',
       })
     } catch (e) {
+      return false
+    } finally {
+      await browser.close()
+    }
+  }
+
+  async generteServiceOrderPdf(data: any) {
+    const templatePath = join(__dirname, 'templates/pdf/service_order.hbs')
+    const templateContent = readFileSync(templatePath, 'utf-8')
+
+    const compiledTemplate = compile(templateContent)
+
+    const html = compiledTemplate(data)
+
+    const browser = await launch({
+      headless: 'new',
+      executablePath:
+        process.env.NODE_ENV === 'production'
+          ? process.env.PUPPETEER_EXEC_PATH
+          : executablePath(),
+    })
+
+    try {
+      const page = await browser.newPage()
+      data.metrocalLogo = await this.fetchImageAsBase64(
+        'https://app-grupometrocal.com/development/api/images/image/metrocal.webp',
+      )
+
+      await page.setContent(html)
+      await page.waitForTimeout(1000)
+
+      const pdfBuffer = await page.pdf({
+        format: 'A4',
+        printBackground: true,
+        landscape: true,
+        height: '8.5in',
+        width: '11in',
+        margin: {
+          top: '0.2in',
+          bottom: '0.2in',
+          left: '0.2in',
+          right: '0.2in',
+        },
+      })
+
+      return pdfBuffer
+    } catch (error) {
+      console.error(error.message)
       return false
     } finally {
       await browser.close()
