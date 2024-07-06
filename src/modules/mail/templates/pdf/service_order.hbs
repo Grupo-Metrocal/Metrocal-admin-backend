@@ -14,46 +14,45 @@
         margin: 0;
         padding: 0;
         box-sizing: border-box;
+        font-size: 12px;
+        color: #333;
       }
 
       body {
         font-family: "Montserrat", sans-serif;
-        font-size: 15px;
-        color: #333;
-        font-size: 1em;
       }
     </style>
   </head>
   <body>
-    <main style="width: 1100px; display: flex; flex-direction: column; margin-top: 4em;">
+    <main style="width: 100%; border: 2px solid #333;">
       <header
-        style="
-          display: flex;
-          justify-content: space-between;
-          align-items: center;
-          padding: 1rem;
-        "
+        style="width: 100%; display: flex; flex-direction: column; align-items: center; border-bottom: 2px solid #333;"
       >
+      <div style="
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      width: 100%;
+    ">
         <div
           style="
             display: flex;
             flex-direction: column;
-            width: 200px;
+            width: 220px;
             align-items: center;
             text-align: center;
-          "
-        >
+          ">
           <img
-            src="https://i.ibb.co/tMhsPbK/metrocal.jpg"
+            src="https://app-grupometrocal.com/development/api/images/image/metrocal.webp"
             alt="metrocal_logo"
-            style="width: 80px; height: 80px"
+            style="width: 50px; height: 50px"
           />
-          <p>Metrología Consultores de Nicaragua S.A.</p>
+          <p style="font-weight: 600;">Metrología Consultores de Nicaragua S.A.</p>
         </div>
-        <div style="display: flex; align-items: center; flex-direction: column; gap: 1em;">
-          <h2>METROLOGÍA CONSULTORES DE NICARAGUA, S.A.</h2>
+        <div style="display: flex; align-items: center; flex-direction: column; gap: 5px;">
+          <h2 style="font-size: 1.2em;">METROLOGÍA CONSULTORES DE NICARAGUA, S.A.</h2>
           <h4>No. RUC: J0310000169420</h4>
-          <p>
+          <p style="font-weight: 600;">
             Bello Horizonte, VI Etapa, Casa No. 135 - Iglesia Pío X, 350 m este
           </p>
 
@@ -62,6 +61,7 @@
               display: flex;
               flex-direction: row;
               align-items: center;
+              font-weight: 600;
               gap: 8px;
             "
           >
@@ -80,12 +80,18 @@
             text-align: center;
             display: flex;
             flex-direction: column;
-            width: 200px;
+            width: 220px;
           "
         >
           <h3>Código</h3>
-          <p>NI-R03-MCPR-02</p>
+          <p style="font-weight: 600;">NI-R03-MCPR-02</p>
         </div>
+      </div>
+
+      <h3
+        style=" font-size: 1.2em; text-align: center; width: 100%; border-bottom: 2px solid #333; margin-bottom: 5px; width: fit-content;"
+      >ORDEN DE SERVICIO</h3>
+      
       </header>
 
       <section
@@ -93,82 +99,78 @@
           display: flex;
           flex-direction: column;
           align-items: center;
-          gap: 2em;
-          margin-top: 1em;
-
         "
       >
-        <h3>ORDEN DE SERVICIO</h3>
 
         <div
           style="
             display: flex;
             justify-content: space-between;
-            width: 93%;
+            width: 100%;
           "
         >
           <div style="width: 80%; display: flex; flex-wrap: wrap;">
             
-            <h3 style=" text-align: center;width: 100%; border: 1px solid #333;">INFORMACIÓN GENERAL</h3>
+            <h3 style=" text-align: center;width: 100%;">INFORMACIÓN GENERAL</h3>
 
-            <div style="display: flex;
+            <div style="
+                        display: flex;
                         flex-direction: column;
-                        height: 70%;
-                        gap: 1rem;
+                        gap: 7px;
                         justify-content: center;
-                        border: 1px solid #333;
+                        border-bottom: 2px solid #333;
+                        border-top: 2px solid #333;
                         padding: 10px;
                         width: 100%;
-                        height: 100%;
                       "
             >
             
-              <p style="display: flex; gap: 1rem">
-                <strong>Fecha de emisión:</strong>
-                <span style="border-bottom: 1px solid #333; width: 40%;"
+              <p style="display: flex; gap: 5px;">
+                <strong style="width: 120px; text-align: end;">Fecha:</strong>
+                <span style="border-bottom: 2px solid #333; width: 40%;"
                   >{{endDate}}</span
                 >
               </p>
-              <p style="display: flex; gap: 1rem">
-                <strong>Empresa:</strong>
-                <span style="border-bottom: 1px solid #333; width: 100%"
+              <p style="display: flex; gap: 5px">
+                <strong style="width: 150px; text-align: end;">Empresa:</strong>
+                <span style="border-bottom: 2px solid #333; width: 100%"
                   >{{clientName}}</span
                 >
               </p>
-              <p style="display: flex; gap: 1rem">
-                <strong>Dirección:</strong>
-                <span style="border-bottom: 1px solid #333; width: 100%"
+              <p style="display: flex; gap: 5px">
+                <strong style="width: 150px; text-align: end;">Dirección:</strong>
+                <span style="border-bottom: 2px solid #333; width: 100%"
                   >{{address}}</span
                 >
               </p>
-              <p style="display: flex; gap: 1rem">
-                <strong>Solicitado por:</strong>
-                <span style="border-bottom: 1px solid #333; width: 60%"
+              <p style="display: flex; gap: 5px">
+                <strong style="width: 120px; text-align: end;">Solicitado por:</strong>
+                <span style="border-bottom: 2px solid #333; width: 60%"
                   >{{requestedBy}}</span
                 >
               </p>
-              <p style="display: flex; gap: 1rem">
-                <strong>Teléfono:</strong>
-                <span style="border-bottom: 1px solid #333; width: 40%"
+              <p style="display: flex; gap: 5px">
+                <strong style="width: 120px; text-align: end;">Teléfono:</strong>
+                <span style="border-bottom: 2px solid #333; width: 40%"
                   >{{phone}}</span
                 >
               </p>
             </div>
           </div>
           <div style="width: 40%; display: flex; flex-wrap: wrap; ">
-            <h3 style=" width: 100%; text-align: center; border: 1px solid #333;">TIPO DE SERVICIO</h3>
+            <h3 style=" width: 100%; text-align: center;">TIPO DE SERVICIO</h3>
               
             <div
               style="
                 display: flex;
                 flex-direction: column;
-                height: 70%;
-                gap: 1rem;
+                gap: 4px;
                 justify-content: center;
-                border: 1px solid #333;
+                border-bottom: 2px solid #333;
+                border-top: 2px solid #333;
+                border-left: 2px solid #333;
                 padding: 10px;
                 width: 90%;
-                height: 100%;
               "
             >
               <p><strong>CALIBRACIÓN</strong></p>
@@ -183,20 +185,19 @@
               style="
                 display: flex;
                 flex-direction: column;
-                height: 70%;
-                gap: 1rem;
                 justify-content: center;
-                border: 1px solid #333;
+                border-left: 2px solid #333;
+                border-top: 2px solid #333;
+                border-bottom: 2px solid #333;
                 width: 10%;
-                height: 100%;
               "
             >
-              <strong style="border-bottom: 1px solid #333; text-align: center; height: 22px;">X</strong>
-              <strong style="border-bottom: 1px solid #333; text-align: center; height: 22px;"></strong>
-              <strong style="border-bottom: 1px solid #333; text-align: center; height: 22px;"></strong>
-              <strong style="border-bottom: 1px solid #333; text-align: center; height: 22px;"></strong>
-              <strong style="border-bottom: 1px solid #333; text-align: center; height: 22px;"></strong>
-              <strong style="border-bottom: 1px solid #333; text-align: center; height: 22px;"></strong>
+              <strong style="border-bottom: 2px solid #333; text-align: center; height: 22px;">X</strong>
+              <strong style="border-bottom: 2px solid #333; text-align: center; height: 22px;"></strong>
+              <strong style="border-bottom: 2px solid #333; text-align: center; height: 22px;"></strong>
+              <strong style="border-bottom: 2px solid #333; text-align: center; height: 22px;"></strong>
+              <strong style="border-bottom: 2px solid #333; text-align: center; height: 22px;"></strong>
+              <strong style=" text-align: center; height: 22px;"></strong>
             </div>
               
           </div>
@@ -208,32 +209,29 @@
           display: flex;
           flex-direction: column;
           align-items: center;
-          gap: 1rem;
           text-align: center;
-          padding: 0 2rem;
-          margin-top: 4em;
+          
         "
       >
         <h3>DATOS DEL SERVICIO</h3>
 
-        <div style="align-self: flex-start; width: 100%; text-align: start;">
-          <p style="display: flex; gap: 1rem">
+        <div style="align-self: flex-start; width: 100%; text-align: start; border-top: 2px solid #333; border-bottom: 2px solid #333; padding: 5px;"">
+          <p style="display: flex;">
             <strong>Área de trabajo:</strong>
-            <span style="border-bottom: 1px solid #333; width: 70%;"
+            <span style="border-bottom: 2px solid #333; width: 70%;"
               >{{work_areas}}</span
             >
           </p>
         </div>
         
 
-        <table style="width: 100%;" border="1">
-          <h3 style=" margin-top: 1em;">DESCRIPCIÓN DEL TRABAJO
-          </h3>
+        <table style="width: 100%; border-bottom: 2px solid #333; border-top: 2px solid #333;">
+          <h3>DESCRIPCIÓN DEL TRABAJO</h3>
           <thead>
-            <tr >
+            <tr>
               <th>NO. COTIZACION</th>
               <th>ITEM</th>
-              <th style="padding: .7rem">EQUIPO</th>
+              <th>EQUIPO</th>
               <th>CANTIDAD</th>
               <th>OBSERVACIONES GENERALES</th>
             </tr>
@@ -242,63 +240,65 @@
           <tbody>
             
             {{#each equipments}}
-            <tr style="text-align: center">
-              <td>{{this.quoteNumber}}</td>
-              <td>{{this.index}}</td>
-              <td>{{this.name}}</td>
-              <td>{{this.count}}</td>
-              <td>{{this.review_comment}}</td>
+            <tr style="text-align: center;">
+              <td style="border: 2px solid #333;">{{this.quoteNumber}}</td>
+              <td style="border: 2px solid #333;">{{this.index}}</td>
+              <td style="border: 2px solid #333;">{{this.name}}</td>
+              <td style="border: 2px solid #333;">{{this.count}}</td>
+              <td style="border: 2px solid #333;">{{this.review_comment}}</td>
+            </tr>
           {{/each}}
         </table>
+        <br>
 
-        <div style="display: flex;">
+        <div style="display: flex; width: 100%;">
             <div style="width:75%;">
-              <h3 style="text-align: center; border: 1px solid #333; padding: 5px;">ENTREGA DE EQUIPOS AL CLIENTE DESPUES DE EJECUTADO EL SERVICIO: ( Aplica en
+              <h3 style="text-align: center; border-top: 2px solid #333;">ENTREGA DE EQUIPOS AL CLIENTE DESPUES DE EJECUTADO EL SERVICIO: ( Aplica en
                 Servicios In Situ).
               </h3>
 
               <div style="text-align: start;">
-                <p style="border: 1px solid #333;padding: 5px; height: 50px;">los equipos fueron entregados al cliente funcionando adecuadamente despues de realizada las calibraciones</p>
-                <p style="border: 1px solid #333;padding: 5px; height: 50px;">{{comments_insitu1}}</p>
-                <p style="border: 1px solid #333;padding: 5px; height: 50px;">{{comments_insitu2}}</p>
+                <p style="border-top: 2px solid #333;height: 30px;">los equipos fueron entregados al cliente funcionando adecuadamente despues de realizada las calibraciones</p>
+                <p style="border-top: 2px solid #333; height: 30px;">{{comments_insitu1}}</p>
+                <p style="border-top: 2px solid #333; border-bottom: 2px solid #333; height: 30px;">{{comments_insitu2}}</p>
               </div>
 
-              <p style="padding: 10px;">Hora Inicio: <span style="border: 1px solid #333; padding: 10px;">10:00 am</span></p>
+              <p style="padding: 10px; font-weight: 600;">Hora Inicio: <span style="border: 2px solid #333; padding: 10px 30px;">10:00 am</span></p>
 
-              <div style="margin-top: 50px; display: flex; flex-direction: column; align-items: center;">
+              <div style=" display: flex; flex-direction: column; align-items: center;">
                 <img src="{{client_signature}}"
                 style="width: 100px; height: 100px; object-fit: contain;"
                 >
-                <p style="border-top: 1px solid #333; text-align: center; width: 50%;">Trabajo recibido</p>
+                <p style="border-top: 2px solid #333; text-align: center; width: 50%; font-weight: 600;">Trabajo recibido</p>
                 <strong>POR EL CLIENTE</strong>
               </div>
             </div>
 
             <div>
-              <h3 style="text-align: center; border: 1px solid #333; padding: 5px;">OBSERVACIONES PARA SERVICIOS SIN PREVIA COTIZACION
+              <h3 style="text-align: center; border-top: 2px solid #333;">OBSERVACIONES PARA SERVICIOS SIN PREVIA COTIZACION
               </h3>
               
               <div style="display: flex;">
                 <div style="text-align: start; width: 90%;">
-                  <p style="border: 1px solid #333; padding: 5px;">Los requisitos están adecuadamente definidos y documentados. </p>
-                  <p style="border: 1px solid #333; padding: 5px;">Nuestro laboratorio tiene la capacidad y recursos para brindar el servicio solicitado.</p>
-                  <p style="border: 1px solid #333; padding: 5px;">El método de calibración es capaz de satisfacer los requisitos del cliente.</p>
+                  <p style="border-top: 2px solid #333;height: 30px; border-left: 2px solid #333;">Los requisitos están adecuadamente definidos y documentados. </p>
+                  <p style="border-top: 2px solid #333;height: 30px; border-left: 2px solid #333;">Nuestro laboratorio tiene la capacidad y recursos para brindar el servicio solicitado.</p>
+                  <p style="border-top: 2px solid #333;height: 30px; border-left: 2px solid #333; border-bottom: 2px solid #333;">El método de calibración es capaz de satisfacer los requisitos del cliente.</p>
                 </div>
 
                 <div style="display: flex; flex-direction: column; flex-wrap: nowrap; width: 10%;">
-                  <strong style="border: 1px solid #333; text-align: center; padding: 14.5px 0;">X</strong>
-                  <strong style="border: 1px solid #333; text-align: center; padding: 14.5px 0;">X</strong>
-                  <strong style="border: 1px solid #333; text-align: center; padding: 14.5px 0;">X</strong>
+                  <strong style="border-top: 2px solid #333; border-left: 2px solid #333; text-align: center; height: 30px;">X</strong>
+                  <strong style="border-top: 2px solid #333; border-left: 2px solid #333; text-align: center; height: 30px">X</strong>
+                  <strong style="border-top: 2px solid #333; border-left: 2px solid #333; text-align: center; height: 30px; border-bottom: 2px solid #333;">X</strong>
                 </div>
               </div>
 
-              <p style="padding: 10px;">Hora final: <span style="border: 1px solid #333; padding: 10px;">04:00 pm</span></p>
+              <p style="padding: 10px; font-weight: 600;">Hora final: <span style="border: 2px solid #333; padding: 10px 30px;">04:00 pm</span></p>
               
-              <div style="margin-top: 50px; display: flex; flex-direction: column; align-items: center;">
+              <div style=" display: flex; flex-direction: column; align-items: center;">
                 <img src="https://www.saumb.org.ar/assets/img/firmas/1154.png"
                 style="width: 100px; height: 100px; object-fit: contain;"
                 >
-                <p style="border-top: 1px solid #333; text-align: center; width: 50%;">Trabajo realizado</p>
+                <p style="border-top: 2px solid #333; text-align: center; width: 50%; font-weight: 600;">Trabajo realizado</p>
                 <strong>POR METROLOGÍA</strong>
               </div>
 
