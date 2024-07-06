@@ -492,7 +492,7 @@ export class ActivitiesService {
         ),
       }
 
-      const pdf = await this.pdfService.generatePdf('service_order.hbs', data)
+      const pdf = await this.pdfService.generteServiceOrderPdf(data)
 
       if (!pdf) {
         return handleBadrequest(new Error('No se pudo generar el pdf'))
