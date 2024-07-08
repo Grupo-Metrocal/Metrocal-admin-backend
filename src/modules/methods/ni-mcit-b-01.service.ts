@@ -837,7 +837,7 @@ export class NI_MCIT_B_01Service {
       //descripcion patron
       descriptionPatron = await this.patternsService.findByCodeAndMethod(
         method.environmental_conditions.equipment_used,
-        'NI_MCIT_B_01',
+        'NI-MCIT-B-01',
       )
       //datacliente
       dataClient.push(
@@ -938,7 +938,7 @@ export class NI_MCIT_B_01Service {
       }
 
       const PDF = await this.pdfService.generateCertificatePdf(
-        '/certificates/NI_CMIT_B_01/b01.hbs',
+        '/certificates/b-01.hbs',
         certificateData.data,
       )
       if (!PDF) {
