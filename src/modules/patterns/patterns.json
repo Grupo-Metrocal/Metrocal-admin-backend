@@ -1033,5 +1033,50 @@
     "traceability": "SCM",
     "pattern_range": "Depen. De la variable",
     "next_calibration": "2025-10-05"
+  },
+  {
+    "method": "NI-MCIT-B-01",
+    "equipment": "Higrotermómetro",
+    "code": "NI-MCPPT-05",
+    "certificate": "",
+    "traceability": "SCM Metrología y Laboratorios SCM-00039467",
+    "pattern_range": "",
+    "next_calibration": "2024-10-05"
+  },
+  {
+    "method": "NI-MCIT-B-01",
+    "equipment": "Pesa",
+    "code": "NI-MCPM-20-34 (20kg)",
+    "certificate": "",
+    "traceability": "Metrología CR, Certificado MC-P-2023-096",
+    "pattern_range": "",
+    "next_calibration": "2024-05-01"
+  },
+  {
+    "method": "NI-MCIT-B-01",
+    "equipment": "Pesa",
+    "code": "NI-MCPM-20-33 (20kg)",
+    "certificate": "",
+    "traceability": "Metrología CR, Certificado MC-P-2023-096",
+    "pattern_range": "",
+    "next_calibration": "2024-05-01"
+  },
+  {
+    "method": "NI-MCIT-B-01",
+    "equipment": "Pesa",
+    "code": "NI-MCPM-20-32 (20kg)",
+    "certificate": "",
+    "traceability": "Metrología CR, Certificado MC-P-2023-096",
+    "pattern_range": "",
+    "next_calibration": "2024-05-01"
+  },
+  {
+    "method": "NI-MCIT-B-01",
+    "equipment": "Pesa",
+    "code": "NI-MCPM-20-31 (20kg)",
+    "certificate": "",
+    "traceability": "Metrología CR, Certificado MC-P-2023-096",
+    "pattern_range": "",
+    "next_calibration": "2024-05-01"
   }
 ]
