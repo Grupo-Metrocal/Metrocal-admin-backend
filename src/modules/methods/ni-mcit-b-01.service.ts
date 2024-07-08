@@ -136,8 +136,6 @@ export class NI_MCIT_B_01Service {
         method.equipment_information = newEquipment
       }
 
-      await this.generateCertificateCodeToMethod(method.id)
-
       try {
         this.DataSource.transaction(async (manager) => {
           await manager.save(method.equipment_information)
@@ -374,7 +372,6 @@ export class NI_MCIT_B_01Service {
         relations: ['unit_of_measurement'],
       })
 
-      console.log(methodId, activityId)
       if (!method) {
         return handleInternalServerError('El metodo no existe')
       }
@@ -406,8 +403,10 @@ export class NI_MCIT_B_01Service {
           await manager.save(method)
         })
 
-        await this.generateCertificateCodeToMethod(method.id)
-        await this.activitiesService.updateActivityProgress(activityId)
+        Promise.all([
+          await this.generateCertificateCodeToMethod(method.id),
+          await this.activitiesService.updateActivityProgress(activityId),
+        ])
 
         return handleOK(method.unit_of_measurement)
       } catch (error) {
@@ -1015,9 +1014,7 @@ export class NI_MCIT_B_01Service {
       method.certificate_code = certificate.data.code
       method.certificate_id = certificate.data.id
 
-      await this.NI_MCIT_B_01Repository.save(method)
-
-      return handleOK(certificate)
+      return handleOK(await this.NI_MCIT_B_01Repository.save(method))
     } catch (error) {
       return handleInternalServerError(error.message)
     }

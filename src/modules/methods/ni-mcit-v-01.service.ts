@@ -303,7 +303,7 @@ export class NI_MCIT_V_01Service {
       }
 
       if (method.certificate_code) {
-        // return handleOK('El método ya tiene un código de certificado')
+        return handleOK('El método ya tiene un código de certificado')
       }
 
       const certificate = await this.certificateService.create('V', methodID)
