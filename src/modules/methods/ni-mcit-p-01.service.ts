@@ -15,7 +15,6 @@ import { EnvironmentalConditionsNI_MCIT_P_01 } from './entities/NI_MCIT_P_01/ste
 import { CalibrationResultsNI_MCIT_P_01 } from './entities/NI_MCIT_P_01/steps/calibration_results.entity'
 import { DescriptionPatternNI_MCIT_P_01 } from './entities/NI_MCIT_P_01/steps/description_pattern.entity'
 import { handleInternalServerError, handleOK } from 'src/common/handleHttp'
-import { generateServiceCodeToMethod } from 'src/utils/codeGenerator'
 import { formatDate } from 'src/utils/formatDate'
 import { CertificateService } from '../certificate/certificate.service'
 import { PdfService } from '../mail/pdf.service'
