@@ -683,7 +683,6 @@ export class NI_MCIT_B_01Service {
 
       //fin de try
     } catch (error) {
-      await this.methodService.killExcelProcess(method.certificate_url)
       return handleInternalServerError(error)
     }
   }
@@ -915,7 +914,6 @@ export class NI_MCIT_B_01Service {
       }
       return handleOK(certificate)
     } catch (error) {
-      /*     await this.methodService.killExcelProcess(method.certificate_url) */
       return handleInternalServerError(error)
     }
   }
