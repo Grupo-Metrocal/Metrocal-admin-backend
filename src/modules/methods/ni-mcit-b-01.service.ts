@@ -480,11 +480,6 @@ export class NI_MCIT_B_01Service {
       return handleInternalServerError('La actividad no existe')
     }
 
-    const { data: activity } = dataActivity as { data: Activity }
-
-    const dataClient = activity.quote_request.client
-    const dataQuote = activity.quote_request
-
     const filePath = path.join(
       __dirname,
       `../mail/templates/excels/ni_mcit_b_01.xlsx`,
@@ -833,7 +828,6 @@ export class NI_MCIT_B_01Service {
 
       //condiciones ambientales
       enviromentalCondition.push(
-        (temperatura1 = sheetResultONAlbkg.cell('D55').value().toString()),
         (temperatura2 = sheetResultONAlbkg.cell('F55').value().toString()),
         (humedad1 = sheetResultONAlbkg.cell('J55').value().toString()),
         (humedad2 = sheetResultONAlbkg.cell('L55').value().toString()),
@@ -879,18 +873,16 @@ export class NI_MCIT_B_01Service {
           address:
             method?.applicant_address || activity.quote_request.client.address,
           calibration_location: method.calibration_location || '---',
+          code: equipment_information?.code || '---',
         },
         calibration_results: {
           result_test,
           result_tests_lb,
         },
         environmental_conditions: {
-          temperature1: temperatura1,
-          temperature2: temperatura2,
-          humidity1: humedad1,
-          humidity2: humedad2,
-          pressure1: presion1,
-          pressure2: presion2,
+          temperature: `Temperatura ( ${Number(sheetResultONAlbkg.cell('D55').value()).toFixed(1)} ± ${Number(sheetResultONAlbkg.cell('E55').value()).toFixed(1)} ) °C`,
+          atmospheric_pressure: `Presión atmosférica ( ${Number(sheetResultONAlbkg.cell('D56').value()).toFixed(1)} ± ${Number(sheetResultONAlbkg.cell('F56').value()).toFixed(1)} ) hPa`,
+          humidity: `Humedad ( ${Number(sheetResultONAlbkg.cell('J55').value()).toFixed(1)} ± ${Number(sheetResultONAlbkg.cell('L55').value()).toFixed(1)} ) %`,
           stabilzation: environmental_conditions.stabilization_site,
           time:
             environmental_conditions.time.hours +
