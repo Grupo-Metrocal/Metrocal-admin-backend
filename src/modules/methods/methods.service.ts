@@ -480,24 +480,6 @@ export class MethodsService {
     }
   }
 
-  async killExcelProcess(excel_url: string) {
-    return new Promise((resolve, reject) => {
-      const command = `powershell.exe Get-Process Excel | Where-Object { $_.MainWindowTitle -like "*${excel_url.replace(/\\/g, '\\\\')}*" } | ForEach-Object { $_.Kill() }`
-
-      exec(command, { shell: 'powershell.exe' }, (error, stdout, stderr) => {
-        if (error) {
-          console.error(`Error al eliminar el proceso excel: ${error.message}`)
-          reject(error)
-        } else if (stderr) {
-          console.error(`Error en la salida estándar: ${stderr}`)
-          reject(new Error(stderr))
-        } else {
-          resolve(stdout)
-        }
-      })
-    })
-  }
-
   async reviewMethod(method_name: string, method_id: number, token: string) {
     try {
       const repository = `${method_name}Repository`
