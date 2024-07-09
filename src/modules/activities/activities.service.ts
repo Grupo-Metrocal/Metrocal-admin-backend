@@ -448,6 +448,8 @@ export class ActivitiesService {
       activity.progress = 100
       activity.work_areas = data.work_areas
       activity.comments_insitu = data.comments_insitu
+      activity.start_time = data.start_time
+      activity.end_time = data.end_time
 
       await this.activityRepository.save(activity)
 
@@ -472,6 +474,8 @@ export class ActivitiesService {
       const data = {
         clientName: activity.quote_request.client.company_name,
         endDate: formatDate(activity.updated_at + ''),
+        startTime: activity.start_time,
+        endTime: activity.end_time,
         address: activity.quote_request.client.address,
         requestedBy: activity.quote_request.client.requested_by,
         phone: activity.quote_request.client.phone,
