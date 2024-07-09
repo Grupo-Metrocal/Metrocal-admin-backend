@@ -53,4 +53,10 @@ export class Activity {
 
   @Column({ type: 'boolean', default: false, nullable: true })
   is_certificate: boolean
+
+  @Column({ type: 'varchar', nullable: true })
+  start_time?: string
+
+  @Column({ type: 'varchar', nullable: true })
+  end_time?: string
 }
