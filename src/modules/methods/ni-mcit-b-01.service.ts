@@ -733,50 +733,26 @@ export class NI_MCIT_B_01Service {
         method.certificate_url,
       )
 
-      let enviromentalCondition = []
-      let temperatura1
-      let temperatura2
-      let humedad1
-      let humedad2
-      let presion1
-      let presion2
-      let descriptionPatron
-      let dataClient = []
       let result_test = []
-      let reference_mass1
-      let equipment_indication1
-      let error1
-      let repeatability1
-      let maximum_eccentricity1
-      let expanded_uncertainty1
 
       const sheetResultONAlbkg = respWorkBook.sheet('+ONA_lb&kg')
       //resultados
       // Resultados
       for (let i = 30; i <= 37; i++) {
         let result = {
-          reference_mass: sheetResultONAlbkg.cell(`B${i}`).value().toString(),
-          equipment_indication: sheetResultONAlbkg
-            .cell(`D${i}`)
-            .value()
-            .toString(),
-          error: sheetResultONAlbkg.cell(`F${i}`).value().toString(),
-          expanded_uncertainty: sheetResultONAlbkg
-            .cell(`L${i}`)
-            .value()
-            .toString(),
+          reference_mass: sheetResultONAlbkg.cell(`B${i}`).value(),
+          equipment_indication: sheetResultONAlbkg.cell(`D${i}`).value(),
+          error: sheetResultONAlbkg.cell(`F${i}`).value(),
+          expanded_uncertainty: sheetResultONAlbkg.cell(`L${i}`).value(),
         }
 
         // Solo agregar repeatability y maximum_eccentricity en las filas 30 y 31
         if (i === 30 || i === 31) {
-          result['repeatability'] = sheetResultONAlbkg
-            .cell(`H${i}`)
-            .value()
-            .toString()
+          result['repeatability'] = sheetResultONAlbkg.cell(`H${i}`).value()
+
           result['maximum_eccentricity'] = sheetResultONAlbkg
             .cell(`J${i}`)
             .value()
-            .toString()
         }
 
         result_test.push(result)
@@ -825,26 +801,14 @@ export class NI_MCIT_B_01Service {
           result_tests_lb.push(result_lb)
         }
       }
-
-      //condiciones ambientales
-      enviromentalCondition.push(
-        (temperatura2 = sheetResultONAlbkg.cell('F55').value().toString()),
-        (humedad1 = sheetResultONAlbkg.cell('J55').value().toString()),
-        (humedad2 = sheetResultONAlbkg.cell('L55').value().toString()),
-        (presion1 = sheetResultONAlbkg.cell('D56').value().toString()),
-        (presion2 = sheetResultONAlbkg.cell('F56').value().toString()),
-      )
       //descripcion patron
-      descriptionPatron = await this.patternsService.findByCodeAndMethod(
+      const descriptionPatron = await this.patternsService.findByCodeAndMethod(
         method.environmental_conditions.equipment_used,
         'NI-MCIT-B-01',
       )
-      //datacliente
-      dataClient.push(
-        activity.quote_request.client.name,
-        activity.quote_request.client.address,
-        activity.quote_request.client.email,
-        activity.quote_request.client.phone,
+
+      console.log(
+        `Temperatura ( ${sheetResultONAlbkg.cell('D55').value()} ± ${sheetResultONAlbkg.cell('F55').value()} ) °C`,
       )
 
       const certificate = {
@@ -880,9 +844,9 @@ export class NI_MCIT_B_01Service {
           result_tests_lb,
         },
         environmental_conditions: {
-          temperature: `Temperatura ( ${Number(sheetResultONAlbkg.cell('D55').value()).toFixed(1)} ± ${Number(sheetResultONAlbkg.cell('E55').value()).toFixed(1)} ) °C`,
-          atmospheric_pressure: `Presión atmosférica ( ${Number(sheetResultONAlbkg.cell('D56').value()).toFixed(1)} ± ${Number(sheetResultONAlbkg.cell('F56').value()).toFixed(1)} ) hPa`,
-          humidity: `Humedad ( ${Number(sheetResultONAlbkg.cell('J55').value()).toFixed(1)} ± ${Number(sheetResultONAlbkg.cell('L55').value()).toFixed(1)} ) %`,
+          temperature: `Temperatura ( ${sheetResultONAlbkg.cell('D55').value()} ± ${sheetResultONAlbkg.cell('F55').value()} ) °C`,
+          atmospheric_pressure: `Presión atmosférica ( ${sheetResultONAlbkg.cell('J55').value()} ± ${sheetResultONAlbkg.cell('L55').value()} ) hPa`,
+          humidity: `Humedad ( ${sheetResultONAlbkg.cell('D56').value()} ± ${sheetResultONAlbkg.cell('F56').value()} ) %`,
           stabilzation: environmental_conditions.stabilization_site,
           time:
             environmental_conditions.time.hours +
@@ -890,7 +854,7 @@ export class NI_MCIT_B_01Service {
             environmental_conditions.time.minute +
             ' minutos',
         },
-        description_pattern: descriptionPatron,
+        description_pattern: [descriptionPatron.data],
         creditable: method.equipment_information.acredited,
         observations: `
           Es responsabilidad del encargado del instrumento establecer la frecuencia del servicio de calibración.
@@ -904,13 +868,18 @@ export class NI_MCIT_B_01Service {
           reproduce en su totalidad.`,
         withLb: method.unit_of_measurement.measure === 'lb' ? true : false,
       }
+
       return handleOK(certificate)
     } catch (error) {
       return handleInternalServerError(error)
     }
   }
 
-  async generatePDFCertificate(activityID: number, methodID: number) {
+  async generatePDFCertificate(
+    activityID: number,
+    methodID: number,
+    generatePDF = false,
+  ) {
     try {
       const method = await this.NI_MCIT_B_01Repository.findOne({
         where: { id: methodID },
@@ -928,7 +897,7 @@ export class NI_MCIT_B_01Service {
       }
 
       let certificateData: any
-      if (!fs.existsSync(method.certificate_url)) {
+      if (!fs.existsSync(method.certificate_url) || generatePDF) {
         certificateData = await this.generateCertificateData({
           activityID,
           methodID,
@@ -1012,7 +981,7 @@ export class NI_MCIT_B_01Service {
 
   async sendCertificateToClient(activityID: number, methodID: number) {
     try {
-      const data = await this.generatePDFCertificate(activityID, methodID)
+      const data = await this.generatePDFCertificate(activityID, methodID, true)
 
       if (!data.success) {
         return data
