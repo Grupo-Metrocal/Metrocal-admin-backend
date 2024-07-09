@@ -390,8 +390,10 @@ export class NI_MCIT_B_01Service {
       }
 
       try {
-        this.DataSource.transaction(async (manager) => {
+        await this.DataSource.transaction(async (manager) => {
           await manager.save(method.unit_of_measurement)
+
+          method.status = 'done'
 
           if (increase) {
             method.modification_number =
@@ -403,10 +405,8 @@ export class NI_MCIT_B_01Service {
           await manager.save(method)
         })
 
-        Promise.all([
-          await this.generateCertificateCodeToMethod(method.id),
-          await this.activitiesService.updateActivityProgress(activityId),
-        ])
+        await this.generateCertificateCodeToMethod(method.id)
+        await this.activitiesService.updateActivityProgress(activityId)
 
         return handleOK(method.unit_of_measurement)
       } catch (error) {
