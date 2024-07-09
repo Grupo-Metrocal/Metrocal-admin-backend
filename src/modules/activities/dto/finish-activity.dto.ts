@@ -6,4 +6,10 @@ export class FinishActivityDto {
 
   @ApiProperty()
   comments_insitu?: string[]
+
+  @ApiProperty()
+  start_time: string
+
+  @ApiProperty()
+  end_time: string
 }
