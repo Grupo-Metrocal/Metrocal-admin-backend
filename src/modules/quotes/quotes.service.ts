@@ -373,20 +373,27 @@ export class QuotesService {
         }
       },
     )
+
+    const subtotal =
+      quote?.equipment_quote_request
+        ?.map((equipment) =>
+          equipment.status === 'done' ? equipment.total : 0,
+        )
+        .reduce((a, b) => a + b, 0) + quote?.extras || 0
+
     data['tax'] = quote.tax
     data['discount'] =
       quote.general_discount > 0 ? quote.general_discount : 'N/A'
-    data['subtotal'] = formatPrice(
-      quote.equipment_quote_request.reduce(
-        (acc, equipment) => acc + equipment.total,
-        0,
-      ),
+    data['subtotal1'] = formatPrice(subtotal)
+    data['subtotal2'] = formatPrice(
+      subtotal - (subtotal * quote.general_discount) / 100,
     )
     data['total'] = formatPrice(quote.price)
     data['client'] = quote.client
     data['date'] = formatDate(quote.created_at)
     data['no'] = quote.no
     data['length'] = quote.equipment_quote_request.length
+    data['extras'] = formatPrice(quote.extras)
 
     return await this.pdfService.generateQuoteRequestPdf(data)
   }
