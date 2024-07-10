@@ -17,7 +17,6 @@ import { EccentricityTestNI_MCIT_B_01Dto } from './dto/NI_MCIT_B_01/b01eccentric
 import { RepeatabilityTestNI_MCIT_B_01Dto } from './dto/NI_MCIT_B_01/b01repeatability_test.dto'
 import { LinearityTestNI_MCIT_B_01Dto } from './dto/NI_MCIT_B_01/b01linearity_test.dto'
 import { ActivitiesService } from '../activities/activities.service'
-import { Activity } from '../activities/entities/activities.entity'
 import { PatternsService } from '../patterns/patterns.service'
 
 import * as path from 'path'
@@ -26,13 +25,10 @@ import * as XlsxPopulate from 'xlsx-populate'
 import { exec } from 'child_process'
 import { UnitOfMeasurementNI_MCIT_B_01 } from './entities/NI_MCIT_B_01/steps/b01unitOfMeasurement.entity'
 import { UnitOfMeasurementNI_MCIT_B_01Dto } from './dto/NI_MCIT_B_01/b01unitOfMeasurement.dto'
-import { generateServiceCodeToMethod } from 'src/utils/codeGenerator'
 import { formatDate } from 'src/utils/formatDate'
 import { MethodsService } from './methods.service'
-import { Methods } from './entities/method.entity'
 import { CertificationDetailsDto } from './dto/NI_MCIT_P_01/certification_details.dto'
 import { formatCertCode } from 'src/utils/generateCertCode'
-import { time } from 'console'
 
 @Injectable()
 export class NI_MCIT_B_01Service {
@@ -417,40 +413,6 @@ export class NI_MCIT_B_01Service {
     }
   }
 
-  async generateCertificateB01({
-    activityID,
-    methodID,
-  }: {
-    activityID: number
-    methodID: number
-  }) {
-    try {
-      const method = await this.NI_MCIT_B_01Repository.findOne({
-        where: { id: methodID },
-        relations: [
-          'equipment_information',
-          'environmental_conditions',
-          'eccentricity_test',
-          'repeatability_test',
-          'linearity_test',
-        ],
-      })
-
-      if (!method) {
-        return handleInternalServerError('El metodo no existe')
-      }
-
-      let respuesta = await this.generateCertificateData({
-        activityID,
-        methodID,
-      })
-
-      return handleOK('Certificado generado correctamente')
-    } catch (error) {
-      return handleInternalServerError(error)
-    }
-  }
-
   async generateCertificateData({
     activityID,
     methodID,
@@ -674,7 +636,9 @@ export class NI_MCIT_B_01Service {
       sheetCalibración.cell('C16').value(method.unit_of_measurement.resolution)
 
       workbook.toFileAsync(method.certificate_url)
-      return this.getCertificateResult(methodID, activityID)
+      await this.autoSaveExcel(method.certificate_url)
+
+      return await this.getCertificateResult(methodID, activityID)
 
       //fin de try
     } catch (error) {
@@ -807,10 +771,6 @@ export class NI_MCIT_B_01Service {
         'NI-MCIT-B-01',
       )
 
-      console.log(
-        `Temperatura ( ${sheetResultONAlbkg.cell('D55').value()} ± ${sheetResultONAlbkg.cell('F55').value()} ) °C`,
-      )
-
       const certificate = {
         pattern: 'NI_MCIT_B_01',
         email: activity.quote_request.client.email,
@@ -868,6 +828,8 @@ export class NI_MCIT_B_01Service {
           reproduce en su totalidad.`,
         withLb: method.unit_of_measurement.measure === 'lb' ? true : false,
       }
+
+      console.log(certificate)
 
       return handleOK(certificate)
     } catch (error) {
