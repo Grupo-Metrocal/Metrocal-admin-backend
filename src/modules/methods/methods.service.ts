@@ -645,4 +645,27 @@ export class MethodsService {
       return handleInternalServerError(e.message)
     }
   }
+
+  async downloadCertificatePDF(
+    activity_id: number,
+    method_name: string,
+    method_id: number,
+  ) {
+    try {
+      const repository = `${method_name}Services`
+      const dataMethod = await this[repository].generatePDFCertificate(
+        activity_id,
+        method_id,
+        true,
+      )
+
+      if (!dataMethod.success) {
+        return handleBadrequest(new Error('No se pudo generar el PDF'))
+      }
+
+      return handleOK(dataMethod.data.pdf)
+    } catch (error) {
+      return handleInternalServerError(error.message)
+    }
+  }
 }
