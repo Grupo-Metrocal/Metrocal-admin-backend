@@ -699,24 +699,40 @@ export class NI_MCIT_B_01Service {
 
       let result_test = []
 
-      const sheetResultONAlbkg = respWorkBook.sheet('+ONA_lb&kg')
+      const sheetByUnit = [
+        {
+          unit: 'kg',
+          sheetName: '+ONA_lb&kg',
+        },
+        {
+          unit: 'lb',
+          sheetName: '+ONA_kg&lb',
+        },
+        {
+          unit: 'g',
+          sheetName: '+ONA_kg',
+        },
+      ]
+
+      const sheetResultB01 = respWorkBook.sheet(
+        sheetByUnit.find((sheet) => sheet.unit === unit_of_measurement.measure)
+          .sheetName,
+      )
       //resultados
       // Resultados
       for (let i = 30; i <= 37; i++) {
         let result = {
-          reference_mass: sheetResultONAlbkg.cell(`B${i}`).value(),
-          equipment_indication: sheetResultONAlbkg.cell(`D${i}`).value(),
-          error: sheetResultONAlbkg.cell(`F${i}`).value(),
-          expanded_uncertainty: sheetResultONAlbkg.cell(`L${i}`).value(),
+          reference_mass: sheetResultB01.cell(`B${i}`).value(),
+          equipment_indication: sheetResultB01.cell(`D${i}`).value(),
+          error: sheetResultB01.cell(`F${i}`).value(),
+          expanded_uncertainty: sheetResultB01.cell(`L${i}`).value(),
         }
 
         // Solo agregar repeatability y maximum_eccentricity en las filas 30 y 31
         if (i === 30 || i === 31) {
-          result['repeatability'] = sheetResultONAlbkg.cell(`H${i}`).value()
+          result['repeatability'] = sheetResultB01.cell(`H${i}`).value()
 
-          result['maximum_eccentricity'] = sheetResultONAlbkg
-            .cell(`J${i}`)
-            .value()
+          result['maximum_eccentricity'] = sheetResultB01.cell(`J${i}`).value()
         }
 
         result_test.push(result)
@@ -726,18 +742,14 @@ export class NI_MCIT_B_01Service {
 
       if (method.unit_of_measurement.measure === 'lb') {
         for (let i = 45; i <= 52; i++) {
-          let reference_mass = sheetResultONAlbkg.cell(`B${i}`).value()
-          let equipment_indication = sheetResultONAlbkg.cell(`D${i}`).value()
-          let error = sheetResultONAlbkg.cell(`F${i}`).value()
-          let expanded_uncertainty = sheetResultONAlbkg.cell(`L${i}`).value()
+          let reference_mass = sheetResultB01.cell(`B${i}`).value()
+          let equipment_indication = sheetResultB01.cell(`D${i}`).value()
+          let error = sheetResultB01.cell(`F${i}`).value()
+          let expanded_uncertainty = sheetResultB01.cell(`L${i}`).value()
           let repeatability =
-            i === 45 || i === 46
-              ? sheetResultONAlbkg.cell(`H${i}`).value()
-              : null
+            i === 45 || i === 46 ? sheetResultB01.cell(`H${i}`).value() : null
           let maximum_eccentricity =
-            i === 45 || i === 46
-              ? sheetResultONAlbkg.cell(`J${i}`).value()
-              : null
+            i === 45 || i === 46 ? sheetResultB01.cell(`J${i}`).value() : null
 
           let result_lb = {
             reference_mass:
@@ -804,9 +816,9 @@ export class NI_MCIT_B_01Service {
           result_tests_lb,
         },
         environmental_conditions: {
-          temperature: `Temperatura ( ${sheetResultONAlbkg.cell('D55').value()} ± ${sheetResultONAlbkg.cell('F55').value()} ) °C`,
-          atmospheric_pressure: `Presión atmosférica ( ${sheetResultONAlbkg.cell('J55').value()} ± ${sheetResultONAlbkg.cell('L55').value()} ) hPa`,
-          humidity: `Humedad ( ${sheetResultONAlbkg.cell('D56').value()} ± ${sheetResultONAlbkg.cell('F56').value()} ) %`,
+          temperature: `Temperatura ( ${sheetResultB01.cell('D64').value()} ± ${sheetResultB01.cell('F64').value()} ) °C`,
+          atmospheric_pressure: `Presión atmosférica ( ${sheetResultB01.cell('J64').value()} ± ${sheetResultB01.cell('L64').value()} ) hPa`,
+          humidity: `Humedad ( ${sheetResultB01.cell('D65').value()} ± ${sheetResultB01.cell('F65').value()} ) %`,
           stabilzation: environmental_conditions.stabilization_site,
           time:
             environmental_conditions.time.hours +
