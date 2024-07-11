@@ -37,9 +37,6 @@ export class EquipmentInformationNI_MCIT_B_01 {
   @Column({ type: 'varchar', nullable: true })
   code?: string
 
-  @Column({ type: 'varchar', nullable: true })
-  length?: string
-
   //fecha
   @Column({ type: 'varchar', nullable: true })
   date?: string
