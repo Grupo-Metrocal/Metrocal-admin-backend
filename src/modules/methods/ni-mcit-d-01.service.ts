@@ -1280,7 +1280,11 @@ export class NI_MCIT_D_01Service {
     }
   }
 
-  async generatePDFCertificate(activityID: number, methodID: number) {
+  async generatePDFCertificate(
+    activityID: number,
+    methodID: number,
+    generatePDF = false,
+  ) {
     try {
       const method = await this.NI_MCIT_D_01Repository.findOne({
         where: { id: methodID },
@@ -1302,7 +1306,7 @@ export class NI_MCIT_D_01Service {
 
       let CertificateData: any
 
-      if (!fs.existsSync(method.certificate_url)) {
+      if (!fs.existsSync(method.certificate_url) || generatePDF) {
         CertificateData = await this.generateCertificateData({
           activityID,
           methodID,
