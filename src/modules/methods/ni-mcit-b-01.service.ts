@@ -841,8 +841,6 @@ export class NI_MCIT_B_01Service {
         withLb: method.unit_of_measurement.measure === 'lb' ? true : false,
       }
 
-      console.log(certificate)
-
       return handleOK(certificate)
     } catch (error) {
       return handleInternalServerError(error)
