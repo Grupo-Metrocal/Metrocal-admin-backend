@@ -6,6 +6,7 @@ import {
   Param,
   Delete,
   Query,
+  Res,
 } from '@nestjs/common'
 import { MethodsService } from './methods.service'
 import { ApiQuery, ApiTags } from '@nestjs/swagger'
@@ -81,6 +82,7 @@ import { EnvironmentalConditionsM01Dto } from './dto/NI_MCIT_M_01/environmental_
 import { CalibrationResultsM01Dto } from './dto/NI_MCIT_M_01/calibraion_results.dto'
 import { DescriptionPatternM01Dto } from './dto/NI_MCIT_M_01/description_pattern.dto'
 import { OptionsCMCOnCertificateDto } from './dto/setSOptionsCMCOnCertificate.dto'
+import { Response } from 'express'
 
 @ApiTags('methods')
 @Controller('methods')
@@ -189,6 +191,28 @@ export class MethodsController {
     return this.methodsService.setSOptionsCMCOnCertificate(
       OptionsCMCOnCertificate,
     )
+  }
+
+  @Get('download-certificate-pdf/:acitivty_id/:method_name/:methodID')
+  async downloadCertificatePDF(
+    @Param('method_name') method_name: string,
+    @Param('methodID') methodID: number,
+    @Param('acitivty_id') activityID: number,
+    @Res() res: Response,
+  ) {
+    const certificateBuffer = await this.methodsService.downloadCertificatePDF(
+      activityID,
+      method_name,
+      methodID,
+    )
+
+    if (!certificateBuffer.success) {
+      return handleBadrequest(new Error('No se encontró el certificado'))
+    }
+
+    res.setHeader('Content-Type', 'application/pdf')
+    res.setHeader('Content-Disposition', 'attachment; filename=certificate.pdf')
+    res.send(certificateBuffer.data)
   }
 
   @Post('ni-mcit-p-01/calibration-location/:methodId')
