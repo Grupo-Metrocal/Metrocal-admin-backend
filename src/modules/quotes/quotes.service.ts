@@ -381,12 +381,15 @@ export class QuotesService {
         )
         .reduce((a, b) => a + b, 0) + quote?.extras || 0
 
-    data['tax'] = quote.tax
-    data['discount'] =
-      quote.general_discount > 0 ? quote.general_discount : 'N/A'
+    data['discount'] = formatPrice((subtotal * quote.general_discount) / 100)
     data['subtotal1'] = formatPrice(subtotal)
     data['subtotal2'] = formatPrice(
       subtotal - (subtotal * quote.general_discount) / 100,
+    )
+    data['tax'] = formatPrice(
+      ((subtotal - (subtotal * quote.general_discount) / 100) *
+        (quote.tax || 0)) /
+        100,
     )
     data['total'] = formatPrice(quote.price)
     data['client'] = quote.client
