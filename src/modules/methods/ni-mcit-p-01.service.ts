@@ -562,28 +562,28 @@ export class NI_MCIT_P_01Service {
             : uncertaintyValue,
         )
 
-        const pressureSysValue = sheetCER.cell(`D${64 + i}`).value()
+        const pressureSysValue = sheetCER.cell(`D${63 + i}`).value()
         reference_pressureSys.push(
           typeof pressureSysValue === 'number'
             ? formatNumberCertification(Number(pressureSysValue.toFixed(1)))
             : pressureSysValue,
         )
 
-        const indicationSysValue = sheetCER.cell(`F${64 + i}`).value()
+        const indicationSysValue = sheetCER.cell(`F${63 + i}`).value()
         equipment_indicationSys.push(
           typeof indicationSysValue === 'number'
             ? formatNumberCertification(Number(indicationSysValue.toFixed(1)))
             : indicationSysValue,
         )
 
-        const correctionSysValue = sheetCER.cell(`L${64 + i}`).value()
+        const correctionSysValue = sheetCER.cell(`L${63 + i}`).value()
         correctionSys.push(
           typeof correctionSysValue === 'number'
             ? formatNumberCertification(Number(correctionSysValue.toFixed(1)))
             : correctionSysValue,
         )
 
-        const uncertaintySysValue = sheetCER.cell(`R${64 + i}`).value()
+        const uncertaintySysValue = sheetCER.cell(`R${63 + i}`).value()
         uncertaintySys.push(
           typeof uncertaintySysValue === 'number'
             ? formatNumberCertification(Number(uncertaintySysValue.toFixed(1)))
@@ -605,12 +605,16 @@ export class NI_MCIT_P_01Service {
         i++
       ) {
         const cmcPointValue = sheetCMC.cell(`I${16 + i}`).value()
-        cmcPoint.push(cmcPointValue)
+        cmcPoint.push(
+          typeof cmcPointValue === 'number'
+            ? cmcPointValue.toFixed(2)
+            : cmcPointValue,
+        )
 
         const cmcPrefValue = sheetCMC.cell(`J${16 + i}`).value()
         cmcPref.push(
           typeof cmcPrefValue === 'number'
-            ? cmcPrefValue.toFixed(2)
+            ? cmcPrefValue.toFixed(5)
             : cmcPrefValue,
         )
 
@@ -645,14 +649,17 @@ export class NI_MCIT_P_01Service {
           reference_pressure,
           equipment_indication,
           correction,
-          uncertainty,
+          uncertainty: (await this.formatUncertaintyWithCMC(uncertainty, CMC))
+            .data,
         },
 
         result_unid_system: {
           reference_pressure: reference_pressureSys,
           equipment_indication: equipment_indicationSys,
           correction: correctionSys,
-          uncertainty: uncertaintySys,
+          uncertainty: (
+            await this.formatUncertaintyWithCMC(uncertaintySys, CMC)
+          ).data,
         },
       }
 
@@ -736,6 +743,26 @@ export class NI_MCIT_P_01Service {
       return handleOK(certificate)
     } catch (error) {
       return handleInternalServerError(error.message)
+    }
+  }
+
+  async formatUncertaintyWithCMC(uncertainty: any, cmc: any) {
+    try {
+      // compare uncertainty with mincmc if < mincmc return cmc
+      const result = uncertainty.map((uncertainty, index) => {
+        if (
+          typeof uncertainty === 'number' &&
+          uncertainty < cmc.mincmc[index]
+        ) {
+          return cmc.cmc[index]
+        }
+
+        return uncertainty
+      })
+
+      return handleOK(result)
+    } catch {
+      return handleOK(uncertainty)
     }
   }
 
