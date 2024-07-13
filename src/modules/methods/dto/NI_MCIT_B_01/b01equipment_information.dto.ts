@@ -30,4 +30,7 @@ export class EquipmentInformationNI_MCIT_B_01Dto {
 
   @ApiProperty()
   acredited: boolean
+
+  @ApiProperty()
+  unit: string
 }
