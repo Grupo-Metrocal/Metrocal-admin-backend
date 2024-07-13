@@ -705,18 +705,18 @@ export class NI_MCIT_P_01Service {
         calibration_results,
         environmental_conditions: {
           atmospheric_pressure: `Presión (kPa): ${Number(
-            sheetCER.cell('T80').value(),
-          ).toFixed(1)} ± ${Number(sheetCER.cell('W80').value()).toFixed(1)}`,
+            sheetCER.cell('T79').value(),
+          ).toFixed(1)} ± ${Number(sheetCER.cell('W79').value()).toFixed(1)}`,
           temperature: `Temperatura: ${Number(
+            sheetCER.cell('E79').value(),
+          ).toFixed(
+            1,
+          )} °C ± ${Number(sheetCER.cell('G79').value()).toFixed(1)} °C`,
+          humidity: `Humedad relativa: ${Number(
             sheetCER.cell('E80').value(),
           ).toFixed(
             1,
-          )} °C ± ${Number(sheetCER.cell('G80').value()).toFixed(1)} °C`,
-          humidity: `Humedad relativa: ${Number(
-            sheetCER.cell('E81').value(),
-          ).toFixed(
-            1,
-          )} % ± ${Number(sheetCER.cell('G81').value()).toFixed(1)} %`,
+          )} % ± ${Number(sheetCER.cell('G80').value()).toFixed(1)} %`,
         },
         descriptionPattern: method.description_pattern,
         used_patterns: {
