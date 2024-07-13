@@ -4,7 +4,6 @@ import { EnvironmentalConditionsNI_MCIT_B_01 } from './steps/b01enviromental_con
 import { LinearityTestNI_MCIT_B_01 } from './steps/b01linearity_test.entity'
 import { RepeatabilityTestNI_MCIT_B_01 } from './steps/b01repeatability_test.entity'
 import { EccentricityTestNI_MCIT_B_01 } from './steps/b01eccentricity_test.entity'
-import { UnitOfMeasurementNI_MCIT_B_01 } from './steps/b01unitOfMeasurement.entity'
 
 @Entity('NI_MCIT_B_01')
 export class NI_MCIT_B_01 {
@@ -102,17 +101,6 @@ export class NI_MCIT_B_01 {
     },
   )
   eccentricity_test: EccentricityTestNI_MCIT_B_01
-
-  //unidad de medida
-  @ManyToOne(
-    () => UnitOfMeasurementNI_MCIT_B_01,
-    (unitOfMeasurement) => unitOfMeasurement.NI_MCIT_B_01,
-    {
-      onDelete: 'CASCADE',
-      onUpdate: 'CASCADE',
-    },
-  )
-  unit_of_measurement: UnitOfMeasurementNI_MCIT_B_01
 
   @Column({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP' })
   created_at: Date
