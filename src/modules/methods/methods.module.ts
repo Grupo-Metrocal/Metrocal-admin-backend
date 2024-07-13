@@ -59,7 +59,6 @@ import { EquipmentInformationNI_MCIT_B_01 } from './entities/NI_MCIT_B_01/steps/
 import { EccentricityTestNI_MCIT_B_01 } from './entities/NI_MCIT_B_01/steps/b01eccentricity_test.entity'
 import { RepeatabilityTestNI_MCIT_B_01 } from './entities/NI_MCIT_B_01/steps/b01repeatability_test.entity'
 import { LinearityTestNI_MCIT_B_01 } from './entities/NI_MCIT_B_01/steps/b01linearity_test.entity'
-import { UnitOfMeasurementNI_MCIT_B_01 } from './entities/NI_MCIT_B_01/steps/b01unitOfMeasurement.entity'
 
 import { NI_MCIT_T_03Service } from './ni-mcit-t-03.service'
 import { NI_MCIT_T_03 } from './entities/NI_MCIT_T_03/NI_MCIT_T_03.entity'
@@ -87,7 +86,6 @@ import { EnvironmentalConditionsGENERIC_METHOD } from './entities/GENERIC METHOD
 import { ResultMeditionGENERIC_METHOD } from './entities/GENERIC METHOD/steps/result_medition.entity'
 import { EquipmentInformationGENERIC_METHOD } from './entities/GENERIC METHOD/steps/equipment_information.entity'
 import { GENERIC_METHODService } from './generic-method.service'
-
 
 @Module({
   imports: [
@@ -136,7 +134,6 @@ import { GENERIC_METHODService } from './generic-method.service'
       EccentricityTestNI_MCIT_B_01,
       RepeatabilityTestNI_MCIT_B_01,
       LinearityTestNI_MCIT_B_01,
-      UnitOfMeasurementNI_MCIT_B_01,
 
       NI_MCIT_T_03,
       EquipmentInformationNI_MCIT_T_03,
@@ -160,8 +157,7 @@ import { GENERIC_METHODService } from './generic-method.service'
       ComputerDataGENERIC_METHOD,
       EnvironmentalConditionsGENERIC_METHOD,
       EquipmentInformationGENERIC_METHOD,
-      ResultMeditionGENERIC_METHOD
-
+      ResultMeditionGENERIC_METHOD,
     ]),
     forwardRef(() => ActivitiesModule),
     forwardRef(() => QuotesModule),
