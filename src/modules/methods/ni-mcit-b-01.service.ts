@@ -23,7 +23,6 @@ import * as path from 'path'
 import * as fs from 'fs'
 import * as XlsxPopulate from 'xlsx-populate'
 import { exec } from 'child_process'
-import { UnitOfMeasurementNI_MCIT_B_01 } from './entities/NI_MCIT_B_01/steps/b01unitOfMeasurement.entity'
 import { UnitOfMeasurementNI_MCIT_B_01Dto } from './dto/NI_MCIT_B_01/b01unitOfMeasurement.dto'
 import { formatDate } from 'src/utils/formatDate'
 import { MethodsService } from './methods.service'
@@ -46,8 +45,6 @@ export class NI_MCIT_B_01Service {
     private readonly RepeatabilityTestNI_MCIT_B_01Repository: Repository<RepeatabilityTestNI_MCIT_B_01>,
     @InjectRepository(LinearityTestNI_MCIT_B_01)
     private readonly LinearityTestNI_MCIT_B_01Repository: Repository<LinearityTestNI_MCIT_B_01>,
-    @InjectRepository(UnitOfMeasurementNI_MCIT_B_01)
-    private readonly UnitOfMeasurementNI_MCIT_B_01Repository: Repository<UnitOfMeasurementNI_MCIT_B_01>,
 
     @Inject(forwardRef(() => PdfService))
     private readonly pdfService: PdfService,
@@ -356,63 +353,6 @@ export class NI_MCIT_B_01Service {
     }
   }
 
-  async unitOfMeasurementB01(
-    unitOfMeasurement: UnitOfMeasurementNI_MCIT_B_01Dto,
-    methodId: number,
-    activityId: number,
-    increase?: boolean,
-  ) {
-    try {
-      const method = await this.NI_MCIT_B_01Repository.findOne({
-        where: { id: methodId },
-        relations: ['unit_of_measurement'],
-      })
-
-      if (!method) {
-        return handleInternalServerError('El metodo no existe')
-      }
-
-      const existingUnitOfMeasurement = method.unit_of_measurement
-
-      if (existingUnitOfMeasurement) {
-        this.UnitOfMeasurementNI_MCIT_B_01Repository.merge(
-          existingUnitOfMeasurement,
-          unitOfMeasurement,
-        )
-      } else {
-        const newUnitOfMeasurement =
-          this.UnitOfMeasurementNI_MCIT_B_01Repository.create(unitOfMeasurement)
-        method.unit_of_measurement = newUnitOfMeasurement
-      }
-
-      try {
-        await this.DataSource.transaction(async (manager) => {
-          await manager.save(method.unit_of_measurement)
-
-          method.status = 'done'
-
-          if (increase) {
-            method.modification_number =
-              method.modification_number === null
-                ? 1
-                : method.modification_number + 1
-          }
-
-          await manager.save(method)
-        })
-
-        await this.generateCertificateCodeToMethod(method.id)
-        await this.activitiesService.updateActivityProgress(activityId)
-
-        return handleOK(method.unit_of_measurement)
-      } catch (error) {
-        return handleInternalServerError(error)
-      }
-    } catch (error) {
-      return handleInternalServerError(error)
-    }
-  }
-
   async generateCertificateData({
     activityID,
     methodID,
@@ -428,7 +368,6 @@ export class NI_MCIT_B_01Service {
         'eccentricity_test',
         'repeatability_test',
         'linearity_test',
-        'unit_of_measurement',
       ],
     })
 
@@ -632,8 +571,10 @@ export class NI_MCIT_B_01Service {
         }
       }
 
-      sheetCalibración.cell('C15').value(method.unit_of_measurement.measure)
-      sheetCalibración.cell('C16').value(method.unit_of_measurement.resolution)
+      sheetCalibración.cell('C15').value(method.equipment_information.unit)
+      sheetCalibración
+        .cell('C16')
+        .value(method.equipment_information.resolution)
 
       workbook.toFileAsync(method.certificate_url)
       await this.autoSaveExcel(method.certificate_url)
@@ -656,7 +597,6 @@ export class NI_MCIT_B_01Service {
         'eccentricity_test',
         'repeatability_test',
         'linearity_test',
-        'unit_of_measurement',
       ],
     })
     try {
@@ -670,7 +610,6 @@ export class NI_MCIT_B_01Service {
         eccentricity_test,
         repeatability_test,
         linearity_test,
-        unit_of_measurement,
       } = method
 
       if (
@@ -678,8 +617,7 @@ export class NI_MCIT_B_01Service {
         !environmental_conditions ||
         !eccentricity_test ||
         !repeatability_test ||
-        !linearity_test ||
-        !unit_of_measurement
+        !linearity_test
       ) {
         return handleInternalServerError(
           'El método no tiene la información necesaria para generar el certificado',
@@ -715,7 +653,7 @@ export class NI_MCIT_B_01Service {
       ]
 
       const sheetResultB01 = respWorkBook.sheet(
-        sheetByUnit.find((sheet) => sheet.unit === unit_of_measurement.measure)
+        sheetByUnit.find((sheet) => sheet.unit === equipment_information.unit)
           .sheetName,
       )
       //resultados
@@ -740,7 +678,7 @@ export class NI_MCIT_B_01Service {
       //result data
       let result_tests_lb = []
 
-      if (method.unit_of_measurement.measure === 'lb') {
+      if (method.equipment_information.unit === 'lb') {
         for (let i = 45; i <= 52; i++) {
           let reference_mass = sheetResultB01.cell(`B${i}`).value()
           let equipment_indication = sheetResultB01.cell(`D${i}`).value()
@@ -838,7 +776,7 @@ export class NI_MCIT_B_01Service {
           especificadas al momento de realizar el servicio.
           Este certificado de calibración no debe ser reproducido sin la aprobación del laboratorio, excepto cuando se
           reproduce en su totalidad.`,
-        withLb: method.unit_of_measurement.measure === 'lb' ? true : false,
+        withLb: method.equipment_information.unit === 'lb' ? true : false,
       }
 
       return handleOK(certificate)
@@ -861,7 +799,6 @@ export class NI_MCIT_B_01Service {
           'eccentricity_test',
           'repeatability_test',
           'linearity_test',
-          'unit_of_measurement',
         ],
       })
       if (!method) {
@@ -982,7 +919,6 @@ export class NI_MCIT_B_01Service {
           'linearity_test',
           'repeatability_test',
           'eccentricity_test',
-          'unit_of_measurement',
         ],
       })
 
