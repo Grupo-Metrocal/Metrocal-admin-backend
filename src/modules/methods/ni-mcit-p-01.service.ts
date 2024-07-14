@@ -558,7 +558,7 @@ export class NI_MCIT_P_01Service {
         const uncertaintyValue = sheetCER.cell(`R${27 + i}`).value()
         uncertainty.push(
           typeof uncertaintyValue === 'number'
-            ? formatNumberCertification(Number(uncertaintyValue.toFixed(2)), 2)
+            ? Number(uncertaintyValue.toFixed(2))
             : uncertaintyValue,
         )
 
@@ -586,7 +586,7 @@ export class NI_MCIT_P_01Service {
         const uncertaintySysValue = sheetCER.cell(`R${63 + i}`).value()
         uncertaintySys.push(
           typeof uncertaintySysValue === 'number'
-            ? formatNumberCertification(Number(uncertaintySysValue.toFixed(1)))
+            ? Number(uncertaintySysValue.toFixed(1))
             : uncertaintySysValue,
         )
       }
@@ -754,7 +754,7 @@ export class NI_MCIT_P_01Service {
           typeof uncertainty === 'number' &&
           uncertainty < cmc.mincmc[index]
         ) {
-          return cmc.cmc[index]
+          return formatNumberCertification(cmc.cmc[index], 2)
         }
 
         return uncertainty
