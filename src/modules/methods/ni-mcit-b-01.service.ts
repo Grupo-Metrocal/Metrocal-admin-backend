@@ -102,6 +102,7 @@ export class NI_MCIT_B_01Service {
 
   async equipmentInfomationB01(
     equipment: EquipmentInformationNI_MCIT_B_01Dto,
+    activityId: number,
     methodId: number,
     increase?: boolean,
   ) {
@@ -130,7 +131,7 @@ export class NI_MCIT_B_01Service {
       }
 
       try {
-        this.DataSource.transaction(async (manager) => {
+        await this.DataSource.transaction(async (manager) => {
           await manager.save(method.equipment_information)
 
           if (increase) {
@@ -142,6 +143,10 @@ export class NI_MCIT_B_01Service {
 
           await manager.save(method)
         })
+
+        await this.generateCertificateCodeToMethod(method.id)
+
+        await this.activitiesService.updateActivityProgress(activityId)
         return handleOK(method.equipment_information)
       } catch (error) {
         return handleInternalServerError(error)
@@ -182,7 +187,7 @@ export class NI_MCIT_B_01Service {
       }
 
       try {
-        this.DataSource.transaction(async (manager) => {
+        await this.DataSource.transaction(async (manager) => {
           await manager.save(method.environmental_conditions)
 
           if (increase) {
@@ -232,7 +237,7 @@ export class NI_MCIT_B_01Service {
       }
 
       try {
-        this.DataSource.transaction(async (manager) => {
+        await this.DataSource.transaction(async (manager) => {
           await manager.save(method.eccentricity_test)
 
           if (increase) {
@@ -282,7 +287,7 @@ export class NI_MCIT_B_01Service {
       }
 
       try {
-        this.DataSource.transaction(async (manager) => {
+        await this.DataSource.transaction(async (manager) => {
           await manager.save(method.repeatability_test)
 
           if (increase) {
@@ -332,7 +337,7 @@ export class NI_MCIT_B_01Service {
       }
 
       try {
-        this.DataSource.transaction(async (manager) => {
+        await this.DataSource.transaction(async (manager) => {
           await manager.save(method.linearity_test)
 
           if (increase) {
