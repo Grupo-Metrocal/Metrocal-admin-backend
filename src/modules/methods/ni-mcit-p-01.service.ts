@@ -29,6 +29,7 @@ import { MethodsService } from './methods.service'
 import { CertificationDetailsDto } from './dto/NI_MCIT_P_01/certification_details.dto'
 import { formatCertCode } from 'src/utils/generateCertCode'
 import { formatNumberCertification } from 'src/utils/formatNumberCertification'
+import { conversionTableToPSI } from 'src/common/converionTable'
 
 @Injectable()
 export class NI_MCIT_P_01Service {
@@ -558,7 +559,9 @@ export class NI_MCIT_P_01Service {
         const uncertaintyValue = sheetCER.cell(`R${27 + i}`).value()
         uncertainty.push(
           typeof uncertaintyValue === 'number'
-            ? Number(uncertaintyValue.toFixed(2))
+            ? this.methodService.getSignificantFigure(
+                Number(uncertaintyValue.toFixed(7)),
+              )
             : uncertaintyValue,
         )
 
@@ -586,7 +589,9 @@ export class NI_MCIT_P_01Service {
         const uncertaintySysValue = sheetCER.cell(`R${63 + i}`).value()
         uncertaintySys.push(
           typeof uncertaintySysValue === 'number'
-            ? Number(uncertaintySysValue.toFixed(1))
+            ? this.methodService.getSignificantFigure(
+                Number(uncertaintySysValue.toFixed(7)),
+              )
             : uncertaintySysValue,
         )
       }
@@ -607,31 +612,33 @@ export class NI_MCIT_P_01Service {
         const cmcPointValue = sheetCMC.cell(`I${16 + i}`).value()
         cmcPoint.push(
           typeof cmcPointValue === 'number'
-            ? cmcPointValue.toFixed(2)
+            ? Number(cmcPointValue.toFixed(2))
             : cmcPointValue,
         )
 
         const cmcPrefValue = sheetCMC.cell(`J${16 + i}`).value()
         cmcPref.push(
           typeof cmcPrefValue === 'number'
-            ? cmcPrefValue.toFixed(5)
+            ? Number(cmcPrefValue.toFixed(5))
             : cmcPrefValue,
         )
 
         const uncertaintyCMCValue = sheetCMC.cell(`K${16 + i}`).value()
         uncertaintyCMC.push(
           typeof uncertaintyCMCValue === 'number'
-            ? uncertaintyCMCValue.toFixed(5)
+            ? Number(uncertaintyCMCValue.toFixed(5))
             : uncertaintyCMCValue,
         )
 
         const cmcValue = sheetCMC.cell(`L${16 + i}`).value()
-        cmc.push(typeof cmcValue === 'number' ? cmcValue.toFixed(5) : cmcValue)
+        cmc.push(
+          typeof cmcValue === 'number' ? Number(cmcValue.toFixed(5)) : cmcValue,
+        )
 
         const mincmcValue = sheetCMC.cell(`M${16 + i}`).value()
         mincmc.push(
           typeof mincmcValue === 'number'
-            ? mincmcValue.toFixed(5)
+            ? Number(mincmcValue.toFixed(5))
             : mincmcValue,
         )
       }
@@ -649,17 +656,18 @@ export class NI_MCIT_P_01Service {
           reference_pressure,
           equipment_indication,
           correction,
-          uncertainty: (await this.formatUncertaintyWithCMC(uncertainty, CMC))
-            .data,
+          uncertainty: this.methodService.formatUncertainty(
+            this.formatUncertaintyWithCMC(uncertainty, CMC, true),
+          ),
         },
 
         result_unid_system: {
           reference_pressure: reference_pressureSys,
           equipment_indication: equipment_indicationSys,
           correction: correctionSys,
-          uncertainty: (
-            await this.formatUncertaintyWithCMC(uncertaintySys, CMC)
-          ).data,
+          uncertainty: this.methodService.formatUncertainty(
+            this.formatUncertaintyWithCMC(uncertaintySys, CMC, false),
+          ),
         },
       }
 
@@ -746,26 +754,30 @@ export class NI_MCIT_P_01Service {
     }
   }
 
-  async formatUncertaintyWithCMC(uncertainty: any, cmc: any) {
-    try {
-      // compare uncertainty with mincmc if < mincmc return cmc
-      const result = uncertainty.map((uncertainty, index) => {
-        if (
-          typeof uncertainty === 'number' &&
-          uncertainty < cmc.mincmc[index]
-        ) {
-          return formatNumberCertification(cmc.cmc[index], 2)
+  formatUncertaintyWithCMC(
+    uncertainty: any,
+    cmc: any,
+    useConversionTable: boolean,
+  ) {
+    const uncertaintyWithCMC = uncertainty.map(
+      (uncertaintyValue: number, index: number) => {
+        if (typeof uncertaintyValue !== 'number') return uncertaintyValue
+
+        if (uncertaintyValue < cmc.mincmc[index - 1] && useConversionTable) {
+          return this.methodService.getSignificantFigure(
+            uncertaintyValue / conversionTableToPSI['kPa'],
+          )
         }
 
-        return typeof uncertainty === 'number'
-          ? formatNumberCertification(uncertainty, 2)
-          : uncertainty
-      })
+        if (uncertaintyValue < cmc.mincmc[index - 1]) {
+          return this.methodService.getSignificantFigure(cmc.cmc[index - 1])
+        }
 
-      return handleOK(result)
-    } catch {
-      return handleOK(uncertainty)
-    }
+        return uncertaintyValue
+      },
+    )
+
+    return uncertaintyWithCMC
   }
 
   async autoSaveExcel(filePath: string) {
