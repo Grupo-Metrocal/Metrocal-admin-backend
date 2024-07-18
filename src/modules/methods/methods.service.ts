@@ -43,6 +43,7 @@ import { GENERIC_METHOD } from './entities/GENERIC METHOD/GENERIC_METHOD.entity'
 import { GENERIC_METHODService } from './generic-method.service'
 import { formatCertCode } from 'src/utils/generateCertCode'
 import { OptionsCMCOnCertificateDto } from './dto/setSOptionsCMCOnCertificate.dto'
+import { formatNumberCertification } from 'src/utils/formatNumberCertification'
 
 @Injectable()
 export class MethodsService {
@@ -667,5 +668,67 @@ export class MethodsService {
     } catch (error) {
       return handleInternalServerError(error.message)
     }
+  }
+
+  getSignificantFigure(number: number) {
+    const [integer, decimal] = number.toString().split('.')
+
+    if (Number(integer) >= 10) {
+      let firstNumber: number = 0
+      for (let i = 0; i < decimal.length; i++) {
+        if (Number(decimal[i]) !== 0 && i < 2) {
+          firstNumber = Number(decimal[i])
+          break
+        }
+      }
+
+      return Math.round(Number(`${integer}.${firstNumber}`))
+    }
+
+    if (Number(integer) < 10 && Number(integer) >= 1) {
+      let firstNumber: number = 0
+      for (let i = 0; i < decimal.length; i++) {
+        if (Number(decimal[i]) !== 0 && i < 2) {
+          firstNumber = Number(Number(`0.${decimal}`).toFixed(1))
+          break
+        }
+      }
+
+      return parseFloat(
+        `${integer}.${firstNumber !== 0 ? firstNumber.toString().split('.')[1] : 0}`,
+      )
+    }
+
+    if (Number(integer) < 1) {
+      const newDecimal = Number(decimal)
+      const firstFigure = Number(newDecimal.toString().charAt(0))
+
+      const roundDecimal =
+        Math.round(Number(newDecimal.toString().substring(1, 3)) / 10) * 10
+
+      if (roundDecimal === 100) {
+        if (firstFigure === 9) {
+          return Number(`0.${firstFigure + 1}`)
+        }
+
+        return parseFloat(Number(`0.${firstFigure + 1}0`).toFixed(2))
+      } else {
+        return Number(`0.${firstFigure}${roundDecimal.toString().charAt(0)}`)
+      }
+    }
+
+    return number
+  }
+
+  formatUncertainty(uncertainty: number[]) {
+    return uncertainty.map((value) => {
+      return typeof value === 'number'
+        ? value >= 10
+          ? value
+          : value < 1
+            ? formatNumberCertification(value, 2)
+            : formatNumberCertification(value, 1)
+        : value
+    })
   }
 }
