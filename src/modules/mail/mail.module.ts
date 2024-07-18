@@ -9,8 +9,6 @@ import { google } from 'googleapis'
 import { HelperDeclareSpec } from 'handlebars'
 
 const helpers: HelperDeclareSpec = {
-  getLength: (a: any) => a.length,
-  sub: (a: any, b: any) => a - b,
   ifArrayEq: (array: any, compare: any, options: any) => {
     if (array.length === compare) {
       return options.fn(this)
@@ -18,8 +16,6 @@ const helpers: HelperDeclareSpec = {
       return options.inverse(this)
     }
   },
-  gt: (a: any, b: any) => a > b,
-  lt: (a: any, b: any) => a < b,
 }
 
 @Module({
