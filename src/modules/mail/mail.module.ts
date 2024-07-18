@@ -6,6 +6,21 @@ import { join } from 'path'
 import { HandlebarsAdapter } from '@nestjs-modules/mailer/dist/adapters/handlebars.adapter'
 import { PdfService } from './pdf.service'
 import { google } from 'googleapis'
+import { HelperDeclareSpec } from 'handlebars'
+
+const helpers: HelperDeclareSpec = {
+  getLength: (a: any) => a.length,
+  sub: (a: any, b: any) => a - b,
+  ifArrayEq: (array: any, compare: any, options: any) => {
+    if (array.length === compare) {
+      return options.fn(this)
+    } else {
+      return options.inverse(this)
+    }
+  },
+  gt: (a: any, b: any) => a > b,
+  lt: (a: any, b: any) => a < b,
+}
 
 @Module({
   imports: [
@@ -45,7 +60,7 @@ import { google } from 'googleapis'
           },
           template: {
             dir: join(__dirname, './templates'),
-            adapter: new HandlebarsAdapter(),
+            adapter: new HandlebarsAdapter(helpers),
             options: {
               strict: true,
             },
