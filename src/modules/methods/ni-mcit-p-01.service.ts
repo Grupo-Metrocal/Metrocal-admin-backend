@@ -29,7 +29,7 @@ import { MethodsService } from './methods.service'
 import { CertificationDetailsDto } from './dto/NI_MCIT_P_01/certification_details.dto'
 import { formatCertCode } from 'src/utils/generateCertCode'
 import { formatNumberCertification } from 'src/utils/formatNumberCertification'
-import { conversionTableToPSI } from 'src/common/converionTable'
+import { conversionTableToKPA } from 'src/common/converionTable'
 
 @Injectable()
 export class NI_MCIT_P_01Service {
@@ -657,7 +657,12 @@ export class NI_MCIT_P_01Service {
           equipment_indication,
           correction,
           uncertainty: this.methodService.formatUncertainty(
-            this.formatUncertaintyWithCMC(uncertainty, CMC, true),
+            this.formatUncertaintyWithCMC(
+              uncertainty,
+              CMC,
+              true,
+              method.equipment_information.unit,
+            ),
           ),
         },
 
@@ -758,6 +763,7 @@ export class NI_MCIT_P_01Service {
     uncertainty: any,
     cmc: any,
     useConversionTable: boolean,
+    unit?: string,
   ) {
     const uncertaintyWithCMC = uncertainty.map(
       (uncertaintyValue: number, index: number) => {
@@ -765,7 +771,7 @@ export class NI_MCIT_P_01Service {
 
         if (uncertaintyValue < cmc.mincmc[index - 1] && useConversionTable) {
           return this.methodService.getSignificantFigure(
-            uncertaintyValue / conversionTableToPSI['kPa'],
+            uncertaintyValue / conversionTableToKPA[unit],
           )
         }
 
