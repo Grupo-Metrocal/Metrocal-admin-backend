@@ -16,6 +16,9 @@ const helpers: HelperDeclareSpec = {
       return options.inverse(this)
     }
   },
+  eq: (a: any, b: any, options: any) => {
+    return a === b ? options.fn(this) : options.inverse(this)
+  },
 }
 
 @Module({
