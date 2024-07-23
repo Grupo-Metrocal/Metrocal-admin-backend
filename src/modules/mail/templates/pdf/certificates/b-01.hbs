@@ -1,22 +1,25 @@
 <style>
-  .content { display: flex; flex-direction: column; gap: 25px; }
-  .equipment-information { display: flex; justify-content: space-between;
-  margin-top: 20px; } .equipment-information div { width: 50%; display: flex;
-  flex-direction: column; gap: 5px; } .equipment-information .labels {
-  font-weight: bold; } .enviromental-conditions { display: flex;
-  justify-content: space-between; } .enviromental-conditions div { display:
-  flex; flex-direction: column; gap: 10px; } table { width: 100%;
-  border-collapse: collapse; } td { border: 1px solid #dddddd; padding: 1px;
-  text-align: center; } .additional-table { width: 100%; border-collapse:
-  collapse; } .additional-table > thead > tr > th { border: 1px solid #dddddd;
-  text-align: center; font-weight: bold; } .additional-table > tbody > tr > td {
-  border: 1px solid #dddddd; text-align: center; } .title-container { width:
-  100%; text-align: center; font-weight: bold; } .table-external > thead > tr >
-  th { border: 1px solid black; text-align: center; font-weight: bold; }
+  .content { display: flex; flex-direction: column; gap: 25px; } .id_certificate
+  { position: absolute; top: 8.6in; z-index: 100; } .equipment-information {
+  display: flex; justify-content: space-between; margin-top: 20px; }
+  .equipment-information div { width: 50%; display: flex; flex-direction:
+  column; gap: 5px; } .equipment-information .labels { font-weight: bold; }
+  .enviromental-conditions { display: flex; justify-content: space-between; }
+  .enviromental-conditions div { display: flex; flex-direction: column; gap:
+  10px; } table { width: 100%; border-collapse: collapse; } td { border: 1px
+  solid #dddddd; padding: 1px; text-align: center; } .additional-table { width:
+  100%; border-collapse: collapse; } .additional-table > thead > tr > th {
+  border: 1px solid #dddddd; text-align: center; font-weight: bold; }
+  .additional-table > tbody > tr > td { border: 1px solid #dddddd; text-align:
+  center; } .additional-table .stretch { height: 100%; } .additional-table
+  .stretch td { vertical-align: stretch; } .title-container { width: 100%;
+  text-align: center; font-weight: bold; } .table-external > thead > tr > th {
+  border: 1px solid black; text-align: center; font-weight: bold; }
   .head-nominal-name { padding: 5px; width: 21%; } .head-lecture-name { padding:
   5px; width: 25%; } .grid-item-phone-footer { grid-column: span 2; text-align:
   right; margin-right: 30px; font-size: 0.8em; } .full-width { grid-column: span
   2; }
+
 </style>
 
 <div class='content'>
@@ -70,9 +73,7 @@
           <th>Repetibilidad</th>
           <th>Excentricidad máxima</th>
           <th style='width: 20%'>
-            Incertidumbre expandida
-            <br />
-            k=2
+            Incertidumbre expandida k=2
           </th>
         </tr>
       </thead>
@@ -82,8 +83,25 @@
             <td>{{data.reference_mass}}</td>
             <td>{{data.equipment_indication}}</td>
             <td>{{data.error}}</td>
-            <td>{{data.repeatability}}</td>
-            <td>{{data.maximum_eccentricity}}</td>
+            {{#if data.repeatability}}
+              {{#eq @index 1}}
+                <td
+                  rowspan='7'
+                  style='vertical-align: middle;'
+                >{{data.repeatability}}</td>
+                <td
+                  rowspan='7'
+                  style='vertical-align: middle;'
+                >{{data.maximum_eccentricity}}</td>
+              {{else}}
+                <td>
+                  {{data.repeatability}}
+                </td>
+                <td>
+                  {{data.maximum_eccentricity}}
+                </td>
+              {{/eq}}
+            {{/if}}
             <td>{{data.expanded_uncertainty}}</td>
           </tr>
         {{/each}}
@@ -111,27 +129,39 @@
           {{#each calibration_results.result_tests_lb as |data|}}
             <tr>
               <td>{{data.reference_mass}}</td>
-              <td>{{equipment_indication}}</td>
-              <td>{{error}}</td>
-              <td>{{repeatability}}</td>
-              <td>{{maximum_eccentricity}}</td>
-              <td>{{expanded_uncertainty}}</td>
+              <td>{{data.equipment_indication}}</td>
+              <td>{{data.error}}</td>
+              {{#if data.repeatability}}
+                {{#eq @index 1}}
+                  <td
+                    rowspan='7'
+                    style='vertical-align: middle;'
+                  >{{data.repeatability}}</td>
+                  <td
+                    rowspan='7'
+                    style='vertical-align: middle;'
+                  >{{data.maximum_eccentricity}}</td>
+                {{else}}
+                  <td>
+                    {{data.repeatability}}
+                  </td>
+                  <td>
+                    {{data.maximum_eccentricity}}
+                  </td>
+                {{/eq}}
+              {{/if}}
+
+              <td>{{data.expanded_uncertainty}}</td>
             </tr>
           {{/each}}
         </tbody>
       </table>
     </div>
     <br />
+    <br />
+    <br />
+    <br />
   {{/if}}
-
-  <div
-    class='id_certificate'
-    style='display: flex; justify-content: space-between'
-  >
-    <strong><span>Identificación del certificado:</span></strong>
-    <strong style='margin-left: 10px'><span
-      >{{equipment_information.certification_code}}</span></strong>
-  </div>
 
   <div class='enviromental-conditions'>
     <div>
@@ -166,6 +196,10 @@
       equipo sujeto a calibración.
     </span>
   </div>
+
+  {{#unless withLb}}
+    <br /><br />
+  {{/unless}}
 
   <div class='used_pattern'>
     <strong><span>Descripción de patrones utilizados</span></strong>
@@ -209,4 +243,12 @@
       laboratorio, excepto cuando se reproduce en su totalidad.
     </span>
   </div>
+</div>
+
+<div
+  class='id_certificate'
+  style='display: flex; justify-content: space-between; width: 90%'
+>
+  <strong><span>Identificación del certificado:</span></strong>
+  <strong><span>{{equipment_information.certification_code}}</span></strong>
 </div>
