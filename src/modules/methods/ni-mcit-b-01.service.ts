@@ -28,6 +28,7 @@ import { formatDate } from 'src/utils/formatDate'
 import { MethodsService } from './methods.service'
 import { CertificationDetailsDto } from './dto/NI_MCIT_P_01/certification_details.dto'
 import { formatCertCode } from 'src/utils/generateCertCode'
+import { formatNumberCertification } from 'src/utils/formatNumberCertification'
 
 @Injectable()
 export class NI_MCIT_B_01Service {
@@ -414,7 +415,9 @@ export class NI_MCIT_B_01Service {
       sheetGeneral.cell('F9').value(equipment.model)
       sheetGeneral.cell('F10').value(equipment.serial_number)
       sheetGeneral.cell('F12').value(equipment.measurement_range)
-      sheetGeneral.cell('F14').value(equipment.resolution)
+      sheetGeneral
+        .cell('F14')
+        .value(`${equipment.resolution} ${equipment.unit}`)
 
       //environmental conditions
       const environmentalConditions = method.environmental_conditions
@@ -544,15 +547,17 @@ export class NI_MCIT_B_01Service {
 
       //repeatibility test
       if (method.repeatability_test !== null) {
-        const repeatibilityTest = method.repeatability_test
-        sheetCalibración.cell('C37').value(repeatibilityTest.pointNumber)
+        sheetCalibración
+          .cell('C37')
+          .value(method.repeatability_test.pointNumber)
         let FilaR = 40
+
         for (
-          let i = FilaR;
-          i <= repeatibilityTest.repeatability_test.length;
+          let i = 0;
+          i < method.repeatability_test.repeatability_test.length;
           i++
         ) {
-          const test = repeatibilityTest.repeatability_test[i]
+          const test = method.repeatability_test.repeatability_test[i]
           sheetCalibración.cell(`E${FilaR}`).value(test.indicationIL)
           sheetCalibración.cell(`F${FilaR}`).value(test.noLoadInfdication)
           FilaR++
@@ -561,15 +566,14 @@ export class NI_MCIT_B_01Service {
 
       //eccentricity test
       if (method.eccentricity_test !== null) {
-        const eccentricityTest = method.eccentricity_test
-        sheetCalibración.cell('C48').value(eccentricityTest.pointNumber)
+        sheetCalibración.cell('C48').value(method.eccentricity_test.pointNumber)
         let FilaE = 51
         for (
-          let i = FilaE;
-          i <= eccentricityTest.eccentricity_test.length;
+          let i = 0;
+          i < method.eccentricity_test.eccentricity_test.length;
           i++
         ) {
-          const test = eccentricityTest.eccentricity_test[i]
+          const test = method.eccentricity_test.eccentricity_test[i]
           sheetCalibración.cell(`E${FilaE}`).value(test.indicationIL)
           sheetCalibración.cell(`F${FilaE}`).value(test.noLoadInfdication)
           FilaE++
