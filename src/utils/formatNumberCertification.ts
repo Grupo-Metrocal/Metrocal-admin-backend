@@ -26,7 +26,11 @@ export const formatSameNumberCertification = (number = 0) => {
   )
 }
 
-export const convertToValidNumber = (value: string) => {
+export const convertToValidNumber = (value: any) => {
+  if (typeof value === 'number') {
+    return value
+  }
+
   let cleanedStr = value.replace(/,/g, '')
   const number = parseFloat(cleanedStr)
 
