@@ -8,10 +8,6 @@ export const formatNumberCertification = (
     return number
   }
 
-  if (fraction === 0) {
-    return number
-  }
-
   return new Intl.NumberFormat('fr-FR', {
     minimumFractionDigits: fraction,
     maximumFractionDigits: fraction,
