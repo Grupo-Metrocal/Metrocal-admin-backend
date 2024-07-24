@@ -30,6 +30,7 @@ import { CertificationDetailsDto } from './dto/NI_MCIT_P_01/certification_detail
 import { formatCertCode } from 'src/utils/generateCertCode'
 import { formatNumberCertification } from 'src/utils/formatNumberCertification'
 import { conversionTableToKPA } from 'src/common/converionTable'
+import { countDecimals } from 'src/utils/countDecimal'
 
 @Injectable()
 export class NI_MCIT_P_01Service {
@@ -538,21 +539,30 @@ export class NI_MCIT_P_01Service {
         const pressureValue = sheetCER.cell(`D${27 + i}`).value()
         reference_pressure.push(
           typeof pressureValue === 'number'
-            ? formatNumberCertification(Number(pressureValue.toFixed(2)), 2)
+            ? formatNumberCertification(
+                Number(pressureValue.toFixed(2)),
+                countDecimals(method.equipment_information.resolution),
+              )
             : pressureValue,
         )
 
         const indicationValue = sheetCER.cell(`F${27 + i}`).value()
         equipment_indication.push(
           typeof indicationValue === 'number'
-            ? formatNumberCertification(Number(indicationValue.toFixed(2)), 2)
+            ? formatNumberCertification(
+                Number(indicationValue.toFixed(2)),
+                countDecimals(method.equipment_information.resolution),
+              )
             : indicationValue,
         )
 
         const correctionValue = sheetCER.cell(`L${27 + i}`).value()
         correction.push(
           typeof correctionValue === 'number'
-            ? formatNumberCertification(Number(correctionValue.toFixed(2)), 2)
+            ? formatNumberCertification(
+                Number(correctionValue.toFixed(2)),
+                countDecimals(method.equipment_information.resolution),
+              )
             : correctionValue,
         )
 
@@ -568,21 +578,30 @@ export class NI_MCIT_P_01Service {
         const pressureSysValue = sheetCER.cell(`D${63 + i}`).value()
         reference_pressureSys.push(
           typeof pressureSysValue === 'number'
-            ? formatNumberCertification(Number(pressureSysValue.toFixed(1)))
+            ? formatNumberCertification(
+                Number(pressureSysValue.toFixed(1)),
+                countDecimals(method.equipment_information.resolution),
+              )
             : pressureSysValue,
         )
 
         const indicationSysValue = sheetCER.cell(`F${63 + i}`).value()
         equipment_indicationSys.push(
           typeof indicationSysValue === 'number'
-            ? formatNumberCertification(Number(indicationSysValue.toFixed(1)))
+            ? formatNumberCertification(
+                Number(indicationSysValue.toFixed(1)),
+                countDecimals(method.equipment_information.resolution),
+              )
             : indicationSysValue,
         )
 
         const correctionSysValue = sheetCER.cell(`L${63 + i}`).value()
         correctionSys.push(
           typeof correctionSysValue === 'number'
-            ? formatNumberCertification(Number(correctionSysValue.toFixed(1)))
+            ? formatNumberCertification(
+                Number(correctionSysValue.toFixed(1)),
+                countDecimals(method.equipment_information.resolution),
+              )
             : correctionSysValue,
         )
 
