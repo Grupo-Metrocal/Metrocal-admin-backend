@@ -28,7 +28,12 @@ import { formatDate } from 'src/utils/formatDate'
 import { MethodsService } from './methods.service'
 import { CertificationDetailsDto } from './dto/NI_MCIT_P_01/certification_details.dto'
 import { formatCertCode } from 'src/utils/generateCertCode'
-import { formatNumberCertification } from 'src/utils/formatNumberCertification'
+import {
+  convertToValidNumber,
+  formatNumberCertification,
+  formatSameNumberCertification,
+} from 'src/utils/formatNumberCertification'
+import { countDecimals } from 'src/utils/countDecimal'
 
 @Injectable()
 export class NI_MCIT_B_01Service {
@@ -668,18 +673,40 @@ export class NI_MCIT_B_01Service {
       //resultados
       // Resultados
       for (let i = 30; i <= 37; i++) {
+        let reference_mass = sheetResultB01.cell(`B${i}`).value()
+        let equipment_indication = sheetResultB01.cell(`D${i}`).value()
+        let error = sheetResultB01.cell(`F${i}`).value()
+        let expanded_uncertainty = sheetResultB01.cell(`L${i}`).value()
+
         let result = {
-          reference_mass: sheetResultB01.cell(`B${i}`).value(),
-          equipment_indication: sheetResultB01.cell(`D${i}`).value(),
-          error: sheetResultB01.cell(`F${i}`).value(),
-          expanded_uncertainty: sheetResultB01.cell(`L${i}`).value(),
+          reference_mass: formatNumberCertification(
+            convertToValidNumber(reference_mass),
+            countDecimals(equipment_information.resolution),
+          ),
+          equipment_indication: formatNumberCertification(
+            convertToValidNumber(equipment_indication),
+            countDecimals(equipment_information.resolution),
+          ),
+          error: formatNumberCertification(
+            error,
+            countDecimals(equipment_information.resolution),
+          ),
+          expanded_uncertainty:
+            this.methodService.getSignificantFigure(expanded_uncertainty),
         }
 
         // Solo agregar repeatability y maximum_eccentricity en las filas 30 y 31
+        let repeatability = sheetResultB01.cell(`H${i}`).value()
+        let maximum_eccentricity = sheetResultB01.cell(`J${i}`).value()
         if (i === 30 || i === 31) {
-          result['repeatability'] = sheetResultB01.cell(`H${i}`).value()
-
-          result['maximum_eccentricity'] = sheetResultB01.cell(`J${i}`).value()
+          result['repeatability'] = formatNumberCertification(
+            repeatability,
+            countDecimals(equipment_information.resolution),
+          )
+          result['maximum_eccentricity'] = formatNumberCertification(
+            maximum_eccentricity,
+            countDecimals(equipment_information.resolution),
+          )
         }
 
         result_test.push(result)
@@ -699,26 +726,33 @@ export class NI_MCIT_B_01Service {
             i === 45 || i === 46 ? sheetResultB01.cell(`J${i}`).value() : null
 
           let result_lb = {
-            reference_mass:
-              reference_mass !== undefined ? reference_mass.toString() : '',
-            equipment_indication:
-              equipment_indication !== undefined
-                ? equipment_indication.toString()
-                : '',
-            error: error !== undefined ? error.toString() : '',
+            reference_mass: formatNumberCertification(
+              reference_mass,
+              countDecimals(equipment_information.resolution),
+            ),
+            equipment_indication: formatNumberCertification(
+              equipment_indication,
+              countDecimals(equipment_information.resolution),
+            ),
+            error: formatNumberCertification(
+              error,
+              countDecimals(equipment_information.resolution),
+            ),
             expanded_uncertainty:
               expanded_uncertainty !== undefined
-                ? expanded_uncertainty.toString()
+                ? this.methodService.getSignificantFigure(expanded_uncertainty)
                 : '',
           }
 
           if (repeatability !== null && maximum_eccentricity !== null) {
-            result_lb['repeatability'] =
-              repeatability !== undefined ? repeatability.toString() : ''
-            result_lb['maximum_eccentricity'] =
-              maximum_eccentricity !== undefined
-                ? maximum_eccentricity.toString()
-                : ''
+            result_lb['repeatability'] = formatNumberCertification(
+              repeatability,
+              countDecimals(equipment_information.resolution),
+            )
+            result_lb['maximum_eccentricity'] = formatNumberCertification(
+              maximum_eccentricity,
+              countDecimals(equipment_information.resolution),
+            )
           }
 
           result_tests_lb.push(result_lb)
@@ -748,7 +782,9 @@ export class NI_MCIT_B_01Service {
           serial_number: equipment_information.serial_number || '---',
           model: equipment_information.model || '---',
           measurement_range: equipment_information.measurement_range || '---',
-          resolution: equipment_information.resolution || '---',
+          resolution:
+            `${formatSameNumberCertification(equipment_information.resolution)} ${equipment_information.unit}` ||
+            '---',
           identification_code: equipment_information.code || '---',
           applicant:
             method?.applicant_name ||
