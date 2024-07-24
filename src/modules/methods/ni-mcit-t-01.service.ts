@@ -365,6 +365,9 @@ export class NI_MCIT_T_01Service {
 
       // condiciones ambientales
       const sheetEnviromentalConditions = workbook.sheet('NI-R01-MCIT-T-01')
+      sheetEnviromentalConditions
+        .cell('C14')
+        .value(equipment_information.resolution)
 
       sheetEnviromentalConditions
         .cell('B18')
@@ -790,6 +793,38 @@ export class NI_MCIT_T_01Service {
             }),
           )
       }
+
+      dataCertificate.data.calibration_results.result
+        .push
+        // {
+        //   temperatureReference: 0,
+        //   thermometerIndication: 0,
+        //   correction: 0,
+        //   expandedUncertaintyK2: 0,
+        // },
+        // {
+        //   temperatureReference: 0,
+        //   thermometerIndication: 0,
+        //   correction: 0,
+        //   expandedUncertaintyK2: 0,
+        // },
+        ()
+
+      dataCertificate.data.calibration_results.result_unid_system
+        .push
+        // {
+        //   temperatureReference: 0,
+        //   thermometerIndication: 0,
+        //   correction: 0,
+        //   expandedUncertaintyK2: 0,
+        // },
+        // {
+        //   temperatureReference: 0,
+        //   thermometerIndication: 0,
+        //   correction: 0,
+        //   expandedUncertaintyK2: 0,
+        // },
+        ()
 
       const PDF = await this.pdfService.generateCertificatePdf(
         '/certificates/t-01.hbs',
