@@ -651,12 +651,10 @@ export class NI_MCIT_T_01Service {
         creditable: description_pattern.creditable,
         description_pattern,
         environmental_conditions: {
-          temperature: `Temperatura: ${formatSameNumberCertification(
-            Number(
-              Number(calibrationResultsSheet.cell('E75').value()).toFixed(1),
-            ),
-          )} °C ± ${formatSameNumberCertification(Number(Number(calibrationResultsSheet.cell('G75').value()).toFixed(1)))} °C`,
-          humidity: `Humedad: ${formatSameNumberCertification(Number(Number(calibrationResultsSheet.cell('E76').value()).toFixed(1)))} % ± ${formatSameNumberCertification(Number(Number(calibrationResultsSheet.cell('G76').value()).toFixed(1)))} %`,
+          temperature: `Temperatura: ${formatNumberCertification(
+            calibrationResultsSheet.cell('E75').value(),
+          )} °C ± ${formatNumberCertification(calibrationResultsSheet.cell('G75').value())} °C`,
+          humidity: `Humedad: ${formatNumberCertification(calibrationResultsSheet.cell('E76').value())} % ± ${formatNumberCertification(calibrationResultsSheet.cell('G76').value())} %`,
         },
         observations: `
           ${description_pattern.observation || ''}
