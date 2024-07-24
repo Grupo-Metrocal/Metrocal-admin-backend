@@ -28,8 +28,8 @@ export class EquipmentInformationNI_MCIT_B_01 {
   @Column({ type: 'varchar', nullable: true })
   measurement_range?: string
 
-  @Column({ type: 'varchar', nullable: true })
-  resolution?: string
+  @Column({ type: 'float', nullable: true })
+  resolution?: number
 
   @Column({ type: 'varchar', nullable: true })
   model?: string
