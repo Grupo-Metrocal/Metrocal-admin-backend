@@ -19,6 +19,9 @@ const helpers: HelperDeclareSpec = {
   eq: (a: any, b: any, options: any) => {
     return a === b ? options.fn(this) : options.inverse(this)
   },
+  ltArray: (array: any, b: any, options: any) => {
+    return array.length < b ? options.fn(this) : options.inverse(this)
+  },
 }
 
 @Module({
