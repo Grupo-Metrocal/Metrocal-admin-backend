@@ -688,11 +688,12 @@ export class NI_MCIT_B_01Service {
             countDecimals(equipment_information.resolution),
           ),
           error: formatNumberCertification(
-            error,
+            convertToValidNumber(error),
             countDecimals(equipment_information.resolution),
           ),
-          expanded_uncertainty:
+          expanded_uncertainty: formatSameNumberCertification(
             this.methodService.getSignificantFigure(expanded_uncertainty),
+          ),
         }
 
         // Solo agregar repeatability y maximum_eccentricity en las filas 30 y 31
@@ -740,7 +741,11 @@ export class NI_MCIT_B_01Service {
             ),
             expanded_uncertainty:
               expanded_uncertainty !== undefined
-                ? this.methodService.getSignificantFigure(expanded_uncertainty)
+                ? formatSameNumberCertification(
+                    this.methodService.getSignificantFigure(
+                      expanded_uncertainty,
+                    ),
+                  )
                 : '',
           }
 
