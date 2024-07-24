@@ -739,15 +739,15 @@ export class NI_MCIT_P_01Service {
         },
         calibration_results,
         environmental_conditions: {
-          atmospheric_pressure: `Presión (kPa): ${formatSameNumberCertification(
-            Number(Number(sheetCER.cell('T80').value()).toFixed(1)),
-          )} ± ${formatSameNumberCertification(Number(Number(sheetCER.cell('W80').value()).toFixed(1)))}`,
-          temperature: `Temperatura: ${formatSameNumberCertification(
-            Number(Number(sheetCER.cell('E80').value()).toFixed(1)),
-          )} °C ± ${formatSameNumberCertification(Number(Number(sheetCER.cell('G80').value()).toFixed(1)))} °C`,
-          humidity: `Humedad relativa: ${formatSameNumberCertification(
-            Number(Number(sheetCER.cell('E81').value()).toFixed(1)),
-          )} % ± ${formatSameNumberCertification(Number(Number(sheetCER.cell('G81').value()).toFixed(1)))} %`,
+          atmospheric_pressure: `Presión (kPa): ${formatNumberCertification(
+            sheetCER.cell('T80').value(),
+          )} ± ${formatNumberCertification(Number(sheetCER.cell('W80').value()))}`,
+          temperature: `Temperatura: ${formatNumberCertification(
+            sheetCER.cell('E80').value(),
+          )} °C ± ${formatNumberCertification(Number(Number(sheetCER.cell('G80').value()).toFixed(1)))} °C`,
+          humidity: `Humedad relativa: ${formatNumberCertification(
+            sheetCER.cell('E81').value(),
+          )} % ± ${formatNumberCertification(sheetCER.cell('G81').value())} %`,
         },
         descriptionPattern: method.description_pattern,
         used_patterns: {
