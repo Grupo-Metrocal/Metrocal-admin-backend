@@ -19,13 +19,17 @@ import { CertificateService } from '../certificate/certificate.service'
 import { CalibrationResultsT_01Dto } from './dto/NI_MCIT_T_01/calibraion_results.dto'
 import { CalibrationResultsNI_MCIT_T_01 } from './entities/NI_MCIT_T_01/steps/calibration_results.entity'
 import { PatternsService } from '../patterns/patterns.service'
-import { generateServiceCodeToMethod } from 'src/utils/codeGenerator'
 import { formatDate } from 'src/utils/formatDate'
 import { PdfService } from '../mail/pdf.service'
 import { MailService } from '../mail/mail.service'
 import { MethodsService } from './methods.service'
 import { CertificationDetailsDto } from './dto/NI_MCIT_P_01/certification_details.dto'
 import { formatCertCode } from 'src/utils/generateCertCode'
+import {
+  formatNumberCertification,
+  formatSameNumberCertification,
+} from 'src/utils/formatNumberCertification'
+import { countDecimals } from 'src/utils/countDecimal'
 
 @Injectable()
 export class NI_MCIT_T_01Service {
@@ -513,38 +517,42 @@ export class NI_MCIT_T_01Service {
       )
 
       for (let i = 0; i <= method.calibration_results.results.length; i++) {
-        // temperatura de referencia
+        const temperatureReferenceVal = calibrationResultsSheet
+          .cell(`D${28 + i}`)
+          .value()
         temperatureReference.push(
-          calibrationResultsSheet
-            .cell(`D${28 + i}`)
-            .value()
-            .toString(),
-        )
-        // indicacion del termometro
-        thermometerIndication.push(
-          calibrationResultsSheet
-            .cell(`F${28 + i}`)
-            .value()
-            .toString(),
-        )
-        // correcion
-        correction.push(
-          calibrationResultsSheet
-            .cell(`L${28 + i}`)
-            .value()
-            .toString(),
-        )
-        // incertidumbre expandida K = 2
-        expandedUncertaintyK2.push(
-          calibrationResultsSheet
-            .cell(`R${28 + i}`)
-            .value()
-            .toString(),
+          formatNumberCertification(
+            temperatureReferenceVal,
+            countDecimals(method.equipment_information.resolution),
+          ),
         )
 
-        // ** unidades internacionales **
+        const thermometerIndicationVal = calibrationResultsSheet
+          .cell(`F${28 + i}`)
+          .value()
+        thermometerIndication.push(
+          formatNumberCertification(
+            thermometerIndicationVal,
+            countDecimals(method.equipment_information.resolution),
+          ),
+        )
+        const correctionVal = calibrationResultsSheet.cell(`L${28 + i}`).value()
+        correction.push(
+          formatNumberCertification(
+            correctionVal,
+            countDecimals(method.equipment_information.resolution),
+          ),
+        )
+        const expandedUncertaintyK2Val = calibrationResultsSheet
+          .cell(`R${28 + i}`)
+          .value()
+        expandedUncertaintyK2.push(
+          formatSameNumberCertification(
+            this.methodService.getSignificantFigure(expandedUncertaintyK2Val),
+          ),
+        )
+
         if (description_pattern.show_table_international_system_units) {
-          // temperatura de referencia
           temperatureReferenceInternationalSystemUnits.push(
             i !== 0
               ? Math.trunc(
@@ -552,7 +560,6 @@ export class NI_MCIT_T_01Service {
                 )
               : calibrationResultsSheet.cell(`D${62 + i}`).value(),
           )
-          // indicacion del termometro
           thermometerIndicationInternationalSystemUnits.push(
             i !== 0
               ? Math.trunc(
@@ -560,7 +567,6 @@ export class NI_MCIT_T_01Service {
                 )
               : calibrationResultsSheet.cell(`F${62 + i}`).value(),
           )
-          // correcion
           correctionInternationalSystemUnits.push(
             i !== 0
               ? Math.trunc(
@@ -568,9 +574,15 @@ export class NI_MCIT_T_01Service {
                 )
               : calibrationResultsSheet.cell(`L${62 + i}`).value(),
           )
-          // incertidumbre expandida K = 2
+
+          const expandedUncertaintyK2ValInternationalSystemUnits =
+            calibrationResultsSheet.cell(`R${62 + i}`).value()
           expandedUncertaintyK2InternationalSystemUnits.push(
-            calibrationResultsSheet.cell(`R${62 + i}`).value(),
+            formatSameNumberCertification(
+              this.methodService.getSignificantFigure(
+                expandedUncertaintyK2ValInternationalSystemUnits,
+              ),
+            ),
           )
         }
       }
@@ -622,7 +634,7 @@ export class NI_MCIT_T_01Service {
           model: equipment_information.model || '---',
           measurement_range: `${equipment_information.range_min} ${equipment_information.unit} a ${equipment_information.range_max} ${equipment_information.unit}`,
           resolution:
-            `${equipment_information.resolution} ${equipment_information.unit}` ||
+            `${formatSameNumberCertification(equipment_information.resolution)} ${equipment_information.unit}` ||
             '---',
           code: equipment_information.code || '---',
           unit: equipment_information.unit || '---',
@@ -639,12 +651,12 @@ export class NI_MCIT_T_01Service {
         creditable: description_pattern.creditable,
         description_pattern,
         environmental_conditions: {
-          temperature: `Temperatura: ${Number(
-            calibrationResultsSheet.cell('E75').value(),
-          ).toFixed(
-            1,
-          )} °C ± ${Number(calibrationResultsSheet.cell('G75').value()).toFixed(1)} °C`,
-          humidity: `Humedad: ${Number(calibrationResultsSheet.cell('E76').value()).toFixed(1)} % ± ${Number(calibrationResultsSheet.cell('G76').value()).toFixed(1)} %`,
+          temperature: `Temperatura: ${formatSameNumberCertification(
+            Number(
+              Number(calibrationResultsSheet.cell('E75').value()).toFixed(1),
+            ),
+          )} °C ± ${formatSameNumberCertification(Number(Number(calibrationResultsSheet.cell('G75').value()).toFixed(1)))} °C`,
+          humidity: `Humedad: ${formatSameNumberCertification(Number(Number(calibrationResultsSheet.cell('E76').value()).toFixed(1)))} % ± ${formatSameNumberCertification(Number(Number(calibrationResultsSheet.cell('G76').value()).toFixed(1)))} %`,
         },
         observations: `
           ${description_pattern.observation || ''}
