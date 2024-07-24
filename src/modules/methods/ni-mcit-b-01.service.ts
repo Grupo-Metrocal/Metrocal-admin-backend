@@ -804,9 +804,9 @@ export class NI_MCIT_B_01Service {
           result_tests_lb,
         },
         environmental_conditions: {
-          temperature: `Temperatura ( ${sheetResultB01.cell('D64').value()} ± ${sheetResultB01.cell('F64').value()} ) °C`,
-          atmospheric_pressure: `Presión atmosférica ( ${sheetResultB01.cell('J64').value()} ± ${sheetResultB01.cell('L64').value()} ) hPa`,
-          humidity: `Humedad ( ${sheetResultB01.cell('D65').value()} ± ${sheetResultB01.cell('F65').value()} ) %`,
+          temperature: `Temperatura ( ${formatSameNumberCertification(sheetResultB01.cell('D64').value())} ± ${formatSameNumberCertification(sheetResultB01.cell('F64').value())} ) °C`,
+          atmospheric_pressure: `Presión atmosférica ( ${formatSameNumberCertification(Math.round(sheetResultB01.cell('J64').value()))} ± ${formatSameNumberCertification(Math.round(sheetResultB01.cell('L64').value()))} ) hPa`,
+          humidity: `Humedad ( ${formatSameNumberCertification(sheetResultB01.cell('D65').value())} ± ${formatSameNumberCertification(sheetResultB01.cell('F65').value())} ) %`,
           stabilzation: environmental_conditions.stabilization_site,
           time:
             environmental_conditions.time.hours +
