@@ -14,7 +14,7 @@ export class EquipmentInformationNI_MCIT_B_01Dto {
   measurement_range: string
 
   @ApiProperty()
-  resolution: string
+  resolution: number
 
   @ApiProperty()
   model: string
