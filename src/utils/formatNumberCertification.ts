@@ -15,6 +15,10 @@ export const formatNumberCertification = (
 }
 
 export const formatSameNumberCertification = (number = 0) => {
+  if (!number) {
+    return number
+  }
+
   const fractions = number.toString().split('.')
   return formatNumberCertification(
     number,
