@@ -671,7 +671,13 @@ export class MethodsService {
   }
 
   getSignificantFigure(number: number) {
-    const [integer, decimal] = number.toString().split('.')
+    const convertNumber = typeof number === 'string' ? Number(number) : number
+
+    if (isNaN(convertNumber)) {
+      return number
+    }
+
+    const [integer, decimal] = convertNumber.toString().split('.')
 
     if (Number(integer) >= 10) {
       let firstNumber: number = 0
