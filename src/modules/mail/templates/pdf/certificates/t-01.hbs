@@ -1,5 +1,6 @@
 <style>
   .ni-mcit-t-01 { display: flex; flex-direction: column; gap: 25px; }
+  .id_certificate { position: absolute; top: 8.6in; z-index: 100; }
   .equipment-information { display: flex; justify-content: space-between;
   margin-top: 20px; } .equipment-information div { width: 50%; display: flex;
   flex-direction: column; gap: 5px; } .equipment-information .labels {
@@ -48,7 +49,7 @@
     </div>
   </div>
 
-  <div class='calibration-result' style='height: 230px'>
+  <div class='calibration-result' style='min-height: 100px;'>
     <strong><span>Resultados de la calibración</span></strong>
     <br />
     <table>
@@ -77,7 +78,7 @@
   </div>
 
   {{#if show_table_international_system_units}}
-    <div class='result_unid_system' style='height: 230px'>
+    <div class='result_unid_system' style='min-height: 100px;'>
       <strong><span>Resultados en Unidad de Sistema Internacional de Unidades</span></strong>
       <br />
       <table>
@@ -106,17 +107,6 @@
     </div>
   {{/if}}
 
-  {{#if show_table_international_system_units}}
-    <div
-      class='id_certificate'
-      style='display: flex; justify-content: space-between'
-    >
-      <strong><span>Identificación del certificado:</span></strong>
-      <strong style='margin-left: 10px'><span
-        >{{equipment_information.certification_code}}</span></strong>
-    </div>
-  {{/if}}
-
   <div class='enviromental-conditions'>
     <div>
       <strong><span>Condiciones ambientales (Higrotermómetro
@@ -134,6 +124,19 @@
       Intrucción para calibración de instrumentos de presión.</span>
   </div>
 
+  {{#ifArrayEq calibration_results.result 6}}
+    <br />
+    <br />
+    <br />
+  {{/ifArrayEq}}
+
+  {{#ifArrayEq calibration_results.result 5}}
+    <br />
+    <br />
+    <br />
+    <span></span>
+  {{/ifArrayEq}}
+
   <div class='uncertainty'>
     <strong><span>Incertidumbre de los datos</span></strong>
     <br />
@@ -149,16 +152,9 @@
     </span>
   </div>
 
-  {{#unless show_table_international_system_units}}
-    <div
-      class='id_certificate'
-      style='display: flex; justify-content: space-between'
-    >
-      <strong><span>Identificación del certificado:</span></strong>
-      <strong style='margin-left: 10px'><span
-        >{{equipment_information.certification_code}}</span></strong>
-    </div>
-  {{/unless}}
+  {{#ltArray calibration_results.result 5}}
+    <span></span>
+  {{/ltArray}}
 
   <div class='used_pattern'>
     <strong><span>Descripción de patrones utilizados</span></strong>
@@ -202,4 +198,12 @@
     <br />
     <span> {{observations}} </span>
   </div>
+</div>
+
+<div
+  class='id_certificate'
+  style='display: flex; justify-content: space-between; width: 90%'
+>
+  <strong><span>Identificación del certificado:</span></strong>
+  <strong><span>{{equipment_information.certification_code}}</span></strong>
 </div>
