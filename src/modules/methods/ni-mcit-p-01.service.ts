@@ -28,7 +28,10 @@ import { PatternsService } from '../patterns/patterns.service'
 import { MethodsService } from './methods.service'
 import { CertificationDetailsDto } from './dto/NI_MCIT_P_01/certification_details.dto'
 import { formatCertCode } from 'src/utils/generateCertCode'
-import { formatNumberCertification } from 'src/utils/formatNumberCertification'
+import {
+  formatNumberCertification,
+  formatSameNumberCertification,
+} from 'src/utils/formatNumberCertification'
 import { conversionTableToKPA } from 'src/common/converionTable'
 import { countDecimals } from 'src/utils/countDecimal'
 
@@ -724,7 +727,7 @@ export class NI_MCIT_P_01Service {
           model: method.equipment_information.model || '---',
           measurement_range: `${method.equipment_information.range_min} ${method.equipment_information.unit} a ${method.equipment_information.range_max} ${method.equipment_information.unit}`,
           resolution:
-            `${method.equipment_information.resolution} ${method.equipment_information.unit}` ||
+            `${formatSameNumberCertification(method.equipment_information.resolution)} ${method.equipment_information.unit}` ||
             '---',
           code: method.equipment_information.code || '---',
           applicant:
@@ -736,19 +739,15 @@ export class NI_MCIT_P_01Service {
         },
         calibration_results,
         environmental_conditions: {
-          atmospheric_pressure: `Presión (kPa): ${Number(
-            sheetCER.cell('T80').value(),
-          ).toFixed(1)} ± ${Number(sheetCER.cell('W80').value()).toFixed(1)}`,
-          temperature: `Temperatura: ${Number(
-            sheetCER.cell('E80').value(),
-          ).toFixed(
-            1,
-          )} °C ± ${Number(sheetCER.cell('G80').value()).toFixed(1)} °C`,
-          humidity: `Humedad relativa: ${Number(
-            sheetCER.cell('E81').value(),
-          ).toFixed(
-            1,
-          )} % ± ${Number(sheetCER.cell('G81').value()).toFixed(1)} %`,
+          atmospheric_pressure: `Presión (kPa): ${formatSameNumberCertification(
+            Number(Number(sheetCER.cell('T80').value()).toFixed(1)),
+          )} ± ${formatSameNumberCertification(Number(Number(sheetCER.cell('W80').value()).toFixed(1)))}`,
+          temperature: `Temperatura: ${formatSameNumberCertification(
+            Number(Number(sheetCER.cell('E80').value()).toFixed(1)),
+          )} °C ± ${formatSameNumberCertification(Number(Number(sheetCER.cell('G80').value()).toFixed(1)))} °C`,
+          humidity: `Humedad relativa: ${formatSameNumberCertification(
+            Number(Number(sheetCER.cell('E81').value()).toFixed(1)),
+          )} % ± ${formatSameNumberCertification(Number(Number(sheetCER.cell('G81').value()).toFixed(1)))} %`,
         },
         descriptionPattern: method.description_pattern,
         used_patterns: {
