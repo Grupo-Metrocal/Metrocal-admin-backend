@@ -764,10 +764,34 @@ export class NI_MCIT_B_01Service {
         }
       }
       //descripcion patron
-      const descriptionPatron = await this.patternsService.findByCodeAndMethod(
-        method.environmental_conditions.equipment_used,
-        'NI-MCIT-B-01',
-      )
+
+      const description_pattern = []
+
+      for (let i = 0; i < method.linearity_test.linearity_test.length; i++) {
+        const test = method.linearity_test.linearity_test[i]
+
+        for (let j = 0; j < test.pointsComposition.length; j++) {
+          const point = test.pointsComposition[j]
+          const response = await this.patternsService.findByCodeAndMethod(
+            point.point,
+            'NI-MCIT-B-01',
+          )
+
+          if (response.success) {
+            description_pattern.push(response.data)
+          }
+        }
+      }
+
+      const equipment_environmental_conditions =
+        await this.patternsService.findByCodeAndMethod(
+          method.environmental_conditions.equipment_used,
+          'NI-MCIT-B-01',
+        )
+
+      if (equipment_environmental_conditions.success) {
+        description_pattern.push(equipment_environmental_conditions.data)
+      }
 
       const certificate = {
         pattern: 'NI-MCIT-B-01',
@@ -814,7 +838,7 @@ export class NI_MCIT_B_01Service {
             environmental_conditions.time.minute +
             ' minutos',
         },
-        description_pattern: [descriptionPatron.data],
+        description_pattern,
         creditable: method.equipment_information.acredited,
         observations: `
           Es responsabilidad del encargado del instrumento establecer la frecuencia del servicio de calibración.
