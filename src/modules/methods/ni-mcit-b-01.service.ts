@@ -767,6 +767,16 @@ export class NI_MCIT_B_01Service {
 
       const description_pattern = []
 
+      const equipment_environmental_conditions =
+        await this.patternsService.findByCodeAndMethod(
+          method.environmental_conditions.equipment_used,
+          'NI-MCIT-B-01',
+        )
+
+      if (equipment_environmental_conditions.success) {
+        description_pattern.push(equipment_environmental_conditions.data)
+      }
+
       for (let i = 0; i < method.linearity_test.linearity_test.length; i++) {
         const test = method.linearity_test.linearity_test[i]
 
@@ -781,16 +791,6 @@ export class NI_MCIT_B_01Service {
             description_pattern.push(response.data)
           }
         }
-      }
-
-      const equipment_environmental_conditions =
-        await this.patternsService.findByCodeAndMethod(
-          method.environmental_conditions.equipment_used,
-          'NI-MCIT-B-01',
-        )
-
-      if (equipment_environmental_conditions.success) {
-        description_pattern.push(equipment_environmental_conditions.data)
       }
 
       const certificate = {
