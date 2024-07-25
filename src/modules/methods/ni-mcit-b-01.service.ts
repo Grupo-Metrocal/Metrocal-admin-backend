@@ -691,8 +691,9 @@ export class NI_MCIT_B_01Service {
             convertToValidNumber(error),
             countDecimals(equipment_information.resolution),
           ),
-          expanded_uncertainty: formatSameNumberCertification(
+          expanded_uncertainty: formatNumberCertification(
             this.methodService.getSignificantFigure(expanded_uncertainty),
+            2,
           ),
         }
 
@@ -741,10 +742,11 @@ export class NI_MCIT_B_01Service {
             ),
             expanded_uncertainty:
               expanded_uncertainty !== undefined
-                ? formatSameNumberCertification(
+                ? formatNumberCertification(
                     this.methodService.getSignificantFigure(
                       expanded_uncertainty,
                     ),
+                    2,
                   )
                 : '',
           }
