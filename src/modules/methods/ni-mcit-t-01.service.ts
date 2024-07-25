@@ -806,51 +806,6 @@ export class NI_MCIT_T_01Service {
           )
       }
 
-      dataCertificate.data.calibration_results.result.push(
-        {
-          temperatureReference: 0,
-          thermometerIndication: 0,
-          correction: 0,
-          expandedUncertaintyK2: 0,
-        },
-        {
-          temperatureReference: 0,
-          thermometerIndication: 0,
-          correction: 0,
-          expandedUncertaintyK2: 0,
-        },
-        {
-          temperatureReference: 0,
-          thermometerIndication: 0,
-          correction: 0,
-          expandedUncertaintyK2: 0,
-        },
-        {
-          temperatureReference: 0,
-          thermometerIndication: 0,
-          correction: 0,
-          expandedUncertaintyK2: 0,
-        },
-        {
-          temperatureReference: 0,
-          thermometerIndication: 0,
-          correction: 0,
-          expandedUncertaintyK2: 0,
-        },
-        {
-          temperatureReference: 0,
-          thermometerIndication: 0,
-          correction: 0,
-          expandedUncertaintyK2: 0,
-        },
-        {
-          temperatureReference: 0,
-          thermometerIndication: 0,
-          correction: 0,
-          expandedUncertaintyK2: 0,
-        },
-      )
-
       const PDF = await this.pdfService.generateCertificatePdf(
         '/certificates/t-01.hbs',
         dataCertificate.data,
