@@ -22,6 +22,9 @@ const helpers: HelperDeclareSpec = {
   ltArray: (array: any, b: any, options: any) => {
     return array.length < b ? options.fn(this) : options.inverse(this)
   },
+  gtArray: (array: any, b: any, options: any) => {
+    return array.length > b ? options.fn(this) : options.inverse(this)
+  },
 }
 
 @Module({
