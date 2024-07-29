@@ -932,16 +932,9 @@ export class NI_MCIT_B_01Service {
   }
 
   formatUncertaintyWithCMC(uncertainty: any, cmc: any) {
-    console.log('uncertainty', uncertainty)
-    console.log('cmc', cmc.cmc)
-
     const uncertaintyWithCMC = uncertainty.map(
       (uncertaintyValue: number, index: number) => {
         if (typeof uncertaintyValue !== 'number') return uncertaintyValue
-
-        console.log('uncertaintyValue', uncertaintyValue)
-        console.log('cmc', cmc.cmc[index - 1])
-        console.log('-------------------------')
 
         if (Number(uncertaintyValue) < Number(cmc.mincmc[index - 1])) {
           return this.methodService.getSignificantFigure(cmc.cmc[index - 1])
