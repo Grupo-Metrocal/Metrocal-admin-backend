@@ -649,8 +649,6 @@ export class NI_MCIT_B_01Service {
         method.certificate_url,
       )
 
-      let result_test = []
-
       const sheetByUnit = [
         {
           unit: 'kg',
@@ -672,48 +670,64 @@ export class NI_MCIT_B_01Service {
       )
       //resultados
       // Resultados
-      for (let i = 30; i <= 37; i++) {
-        let reference_mass = sheetResultB01.cell(`B${i}`).value()
-        let equipment_indication = sheetResultB01.cell(`D${i}`).value()
-        let error = sheetResultB01.cell(`F${i}`).value()
-        let expanded_uncertainty = sheetResultB01.cell(`L${i}`).value()
 
-        let result = {
-          reference_mass: formatNumberCertification(
-            convertToValidNumber(reference_mass),
+      const reference_mass = []
+      const equipment_indication = []
+      const error = []
+      const repeatability = []
+      const maximum_eccentricity = []
+      const uncertainty = []
+
+      for (let i = 30; i <= 37; i++) {
+        let reference_massValue = sheetResultB01.cell(`B${i}`).value()
+        let equipment_indicationValue = sheetResultB01.cell(`D${i}`).value()
+        let errorValue = sheetResultB01.cell(`F${i}`).value()
+        let expanded_uncertaintyValue = sheetResultB01.cell(`L${i}`).value()
+
+        reference_mass.push(
+          formatNumberCertification(
+            convertToValidNumber(reference_massValue),
             countDecimals(equipment_information.resolution),
           ),
-          equipment_indication: formatNumberCertification(
-            convertToValidNumber(equipment_indication),
+        )
+
+        equipment_indication.push(
+          formatNumberCertification(
+            convertToValidNumber(equipment_indicationValue),
             countDecimals(equipment_information.resolution),
           ),
-          error: formatNumberCertification(
-            convertToValidNumber(error),
+        )
+
+        error.push(
+          formatNumberCertification(
+            convertToValidNumber(errorValue),
             countDecimals(equipment_information.resolution),
           ),
-          expanded_uncertainty: formatNumberCertification(
-            this.methodService.getSignificantFigure(expanded_uncertainty),
-            2,
-          ),
-        }
+        )
+
+        uncertainty.push(
+          this.methodService.getSignificantFigure(expanded_uncertaintyValue),
+        )
 
         // Solo agregar repeatability y maximum_eccentricity en las filas 30 y 31
-        let repeatability = sheetResultB01.cell(`H${i}`).value()
-        let maximum_eccentricity = sheetResultB01.cell(`J${i}`).value()
+        let repeatabilityValue = sheetResultB01.cell(`H${i}`).value()
+        let maximum_eccentricityValue = sheetResultB01.cell(`J${i}`).value()
         if (i === 30 || i === 31) {
-          result['repeatability'] = formatNumberCertification(
-            repeatability,
-            countDecimals(equipment_information.resolution),
+          repeatability.push(
+            formatNumberCertification(
+              repeatabilityValue,
+              countDecimals(equipment_information.resolution),
+            ),
           )
-          result['maximum_eccentricity'] = formatNumberCertification(
-            maximum_eccentricity,
-            countDecimals(equipment_information.resolution),
+          maximum_eccentricity.push(
+            formatNumberCertification(
+              maximum_eccentricityValue,
+              countDecimals(equipment_information.resolution),
+            ),
           )
         }
-
-        result_test.push(result)
       }
-      //result data
+
       let result_tests_lb = []
 
       if (method.equipment_information.unit === 'lb') {
@@ -742,13 +756,8 @@ export class NI_MCIT_B_01Service {
             ),
             expanded_uncertainty:
               expanded_uncertainty !== undefined
-                ? formatNumberCertification(
-                    this.methodService.getSignificantFigure(
-                      expanded_uncertainty,
-                    ),
-                    2,
-                  )
-                : '',
+                ? this.methodService.getSignificantFigure(expanded_uncertainty)
+                : 0,
           }
 
           if (repeatability !== null && maximum_eccentricity !== null) {
@@ -765,7 +774,57 @@ export class NI_MCIT_B_01Service {
           result_tests_lb.push(result_lb)
         }
       }
-      //descripcion patron
+
+      let cmcPoint = []
+      let cmcPref = []
+      let uncertaintyCMC = []
+      let cmc = []
+      let mincmc = []
+
+      const sheetCMC = respWorkBook.sheet('CMC')
+
+      for (let i = 0; i <= 12; i++) {
+        const cmcPointValue = sheetCMC.cell(`I${16 + i}`).value()
+        cmcPoint.push(
+          typeof cmcPointValue === 'number'
+            ? Number(cmcPointValue.toFixed(2))
+            : cmcPointValue,
+        )
+
+        const cmcPrefValue = sheetCMC.cell(`J${16 + i}`).value()
+        cmcPref.push(
+          typeof cmcPrefValue === 'number'
+            ? Number(cmcPrefValue.toFixed(5))
+            : cmcPrefValue,
+        )
+
+        const uncertaintyCMCValue = sheetCMC.cell(`K${16 + i}`).value()
+        uncertaintyCMC.push(
+          typeof uncertaintyCMCValue === 'number'
+            ? Number(uncertaintyCMCValue.toFixed(5))
+            : uncertaintyCMCValue,
+        )
+
+        const cmcValue = sheetCMC.cell(`L${16 + i}`).value()
+        cmc.push(
+          typeof cmcValue === 'number' ? Number(cmcValue.toFixed(5)) : cmcValue,
+        )
+
+        const mincmcValue = sheetCMC.cell(`M${16 + i}`).value()
+        mincmc.push(
+          typeof mincmcValue === 'number'
+            ? Number(mincmcValue.toFixed(5))
+            : mincmcValue,
+        )
+      }
+
+      const CMC = {
+        cmcPoint,
+        cmcPref,
+        uncertaintyCMC,
+        cmc,
+        mincmc,
+      }
 
       const description_pattern = []
 
@@ -793,6 +852,17 @@ export class NI_MCIT_B_01Service {
             description_pattern.push(response.data)
           }
         }
+      }
+
+      const result_test = {
+        reference_mass,
+        equipment_indication,
+        error,
+        uncertainty: this.methodService.formatUncertainty(
+          this.formatUncertaintyWithCMC(uncertainty, CMC),
+        ),
+        repeatability,
+        maximum_eccentricity,
       }
 
       const certificate = {
@@ -861,6 +931,29 @@ export class NI_MCIT_B_01Service {
     }
   }
 
+  formatUncertaintyWithCMC(uncertainty: any, cmc: any) {
+    console.log('uncertainty', uncertainty)
+    console.log('cmc', cmc.cmc)
+
+    const uncertaintyWithCMC = uncertainty.map(
+      (uncertaintyValue: number, index: number) => {
+        if (typeof uncertaintyValue !== 'number') return uncertaintyValue
+
+        console.log('uncertaintyValue', uncertaintyValue)
+        console.log('cmc', cmc.cmc[index - 1])
+        console.log('-------------------------')
+
+        if (Number(uncertaintyValue) < Number(cmc.mincmc[index - 1])) {
+          return this.methodService.getSignificantFigure(cmc.cmc[index - 1])
+        }
+
+        return uncertaintyValue
+      },
+    )
+
+    return uncertaintyWithCMC
+  }
+
   async generatePDFCertificate(
     activityID: number,
     methodID: number,
@@ -890,6 +983,31 @@ export class NI_MCIT_B_01Service {
       } else {
         certificateData = await this.getCertificateResult(methodID, activityID)
       }
+
+      certificateData.data.calibration_results.result_test =
+        certificateData.data.calibration_results.result_test.reference_mass.map(
+          (reference_mass, index) => {
+            return {
+              reference_mass,
+              equipment_indication:
+                certificateData.data.calibration_results.result_test
+                  .equipment_indication[index],
+              error:
+                certificateData.data.calibration_results.result_test.error[
+                  index
+                ],
+              uncertainty:
+                certificateData.data.calibration_results.result_test
+                  .uncertainty[index],
+              repeatability:
+                certificateData.data.calibration_results.result_test
+                  .repeatability[index],
+              maximum_eccentricity:
+                certificateData.data.calibration_results.result_test
+                  .maximum_eccentricity[index],
+            }
+          },
+        )
 
       const PDF = await this.pdfService.generateCertificatePdf(
         '/certificates/b-01.hbs',
