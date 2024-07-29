@@ -369,8 +369,10 @@ export class NI_MCIT_T_01Service {
 
       // condiciones ambientales
       const sheetEnviromentalConditions = workbook.sheet('NI-R01-MCIT-T-01')
-      sheetEnviromentalConditions
-        .cell('C14')
+
+      workbook
+        .sheet('Calibración')
+        .cell('F5')
         .value(equipment_information.resolution)
 
       sheetEnviromentalConditions
@@ -547,10 +549,11 @@ export class NI_MCIT_T_01Service {
           .cell(`R${28 + i}`)
           .value()
         expandedUncertaintyK2.push(
-          formatNumberCertification(
-            this.methodService.getSignificantFigure(expandedUncertaintyK2Val),
-            2,
-          ),
+          typeof expandedUncertaintyK2Val === 'number'
+            ? this.methodService.getSignificantFigure(
+                Number(expandedUncertaintyK2Val.toFixed(7)),
+              )
+            : expandedUncertaintyK2Val,
         )
 
         if (description_pattern.show_table_international_system_units) {
@@ -589,12 +592,67 @@ export class NI_MCIT_T_01Service {
         }
       }
 
+      console.log('expandedUncertaintyK2', expandedUncertaintyK2)
+
+      let cmcPoint = []
+      let cmcPref = []
+      let uncertaintyCMC = []
+      let cmc = []
+      let mincmc = []
+
+      const sheetCMC = reopnedWorkbook.sheet('CMC')
+
+      for (let i = 0; i <= method.calibration_results.results.length; i++) {
+        const cmcPointValue = sheetCMC.cell(`I${16 + i}`).value()
+        cmcPoint.push(
+          typeof cmcPointValue === 'number'
+            ? Number(cmcPointValue.toFixed(2))
+            : cmcPointValue,
+        )
+
+        const cmcPrefValue = sheetCMC.cell(`J${16 + i}`).value()
+        cmcPref.push(
+          typeof cmcPrefValue === 'number'
+            ? Number(cmcPrefValue.toFixed(5))
+            : cmcPrefValue,
+        )
+
+        const uncertaintyCMCValue = sheetCMC.cell(`K${16 + i}`).value()
+        uncertaintyCMC.push(
+          typeof uncertaintyCMCValue === 'number'
+            ? Number(uncertaintyCMCValue.toFixed(5))
+            : uncertaintyCMCValue,
+        )
+
+        const cmcValue = sheetCMC.cell(`L${16 + i}`).value()
+        cmc.push(
+          typeof cmcValue === 'number' ? Number(cmcValue.toFixed(5)) : cmcValue,
+        )
+
+        const mincmcValue = sheetCMC.cell(`M${16 + i}`).value()
+        mincmc.push(
+          typeof mincmcValue === 'number'
+            ? Number(mincmcValue.toFixed(5))
+            : mincmcValue,
+        )
+      }
+
+      const CMC = {
+        cmcPoint,
+        cmcPref,
+        uncertaintyCMC,
+        cmc,
+        mincmc,
+      }
+
       const calibration_results_certificate = {
         result: {
           temperatureReference,
           thermometerIndication,
           correction,
-          expandedUncertaintyK2,
+          expandedUncertaintyK2: this.methodService.formatUncertainty(
+            this.formatUncertaintyWithCMC(expandedUncertaintyK2, CMC),
+          ),
         },
         result_unid_system: {
           temperatureReference: temperatureReferenceInternationalSystemUnits,
@@ -676,6 +734,22 @@ export class NI_MCIT_T_01Service {
     } catch (error) {
       return handleInternalServerError(error.message)
     }
+  }
+
+  formatUncertaintyWithCMC(uncertainty: any, cmc: any) {
+    const uncertaintyWithCMC = uncertainty.map(
+      (uncertaintyValue: number, index: number) => {
+        if (typeof uncertaintyValue !== 'number') return uncertaintyValue
+
+        if (Number(uncertaintyValue) < Number(cmc.mincmc[index - 1])) {
+          return this.methodService.getSignificantFigure(cmc.cmc[index - 1])
+        }
+
+        return uncertaintyValue
+      },
+    )
+
+    return uncertaintyWithCMC
   }
 
   async autoSaveExcel(filePath: string) {
