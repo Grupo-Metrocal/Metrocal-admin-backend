@@ -789,7 +789,7 @@ export class NI_MCIT_P_01Service {
 
         if (uncertaintyValue < cmc.mincmc[index - 1] && useConversionTable) {
           return this.methodService.getSignificantFigure(
-            uncertaintyValue / conversionTableToKPA[unit],
+            cmc.cmc[index - 1] / conversionTableToKPA[unit],
           )
         }
 
