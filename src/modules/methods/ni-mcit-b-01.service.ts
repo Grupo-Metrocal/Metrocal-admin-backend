@@ -754,7 +754,7 @@ export class NI_MCIT_B_01Service {
               error,
               countDecimals(equipment_information.resolution),
             ),
-            expanded_uncertainty:
+            uncertainty:
               expanded_uncertainty !== undefined
                 ? this.methodService.getSignificantFigure(expanded_uncertainty)
                 : 0,
