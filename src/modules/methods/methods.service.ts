@@ -43,7 +43,10 @@ import { GENERIC_METHOD } from './entities/GENERIC METHOD/GENERIC_METHOD.entity'
 import { GENERIC_METHODService } from './generic-method.service'
 import { formatCertCode } from 'src/utils/generateCertCode'
 import { OptionsCMCOnCertificateDto } from './dto/setSOptionsCMCOnCertificate.dto'
-import { formatNumberCertification } from 'src/utils/formatNumberCertification'
+import {
+  formatNumberCertification,
+  formatSameNumberCertification,
+} from 'src/utils/formatNumberCertification'
 
 @Injectable()
 export class MethodsService {
@@ -692,22 +695,27 @@ export class MethodsService {
     }
 
     if (Number(integer) < 10 && Number(integer) >= 1) {
+      let complement = ''
       let firstNumber: number = 0
       for (let i = 0; i < decimal.length; i++) {
         if (Number(decimal[i]) !== 0 && i < 2) {
           firstNumber = Number(Number(`0.${decimal}`).toFixed(1))
           break
+        } else if (Number(decimal[i]) !== 0) {
+          complement += decimal[i]
         }
       }
 
       return parseFloat(
-        `${integer}.${firstNumber !== 0 ? firstNumber.toString().split('.')[1] : 0}`,
+        `${integer}.${complement && complement}${firstNumber !== 0 ? firstNumber.toString().split('.')[1] : 0}`,
       )
     }
 
     if (Number(integer) < 1) {
       const newDecimal = Number(decimal)
       const firstFigure = Number(newDecimal.toString().charAt(0))
+      let result = 0
+      const complement = decimal.split(firstFigure.toString())[0]
 
       const roundDecimal =
         Math.round(Number(newDecimal.toString().substring(1, 3)) / 10) * 10
@@ -717,10 +725,16 @@ export class MethodsService {
           return Number(`0.${firstFigure + 1}`)
         }
 
-        return parseFloat(Number(`0.${firstFigure + 1}0`).toFixed(2))
+        result = parseFloat(
+          Number(`0.${complement && complement}${firstFigure + 1}0`).toFixed(2),
+        )
       } else {
-        return Number(`0.${firstFigure}${roundDecimal.toString().charAt(0)}`)
+        result = Number(
+          `0.${complement && complement}${firstFigure}${roundDecimal.toString().charAt(0)}`,
+        )
       }
+
+      return result
     }
 
     return number
@@ -728,11 +742,14 @@ export class MethodsService {
 
   formatUncertainty(uncertainty: number[]) {
     return uncertainty.map((value) => {
+      const decimal = value.toString().split('.')[1]
       return typeof value === 'number'
         ? value >= 10
           ? value
           : value < 1
-            ? formatNumberCertification(value, 2)
+            ? decimal.length > 2
+              ? formatSameNumberCertification(value)
+              : formatNumberCertification(value, 2)
             : formatNumberCertification(value, 1)
         : value
     })
