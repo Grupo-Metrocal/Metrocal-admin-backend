@@ -42,4 +42,7 @@ export class EquipmentInformationNI_MCIT_T_01 {
 
   @Column({ type: 'float', nullable: true })
   resolution?: number
+
+  @Column({ type: 'varchar', nullable: true })
+  probe_type?: string
 }
