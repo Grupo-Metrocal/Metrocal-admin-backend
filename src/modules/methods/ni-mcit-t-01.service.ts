@@ -595,8 +595,6 @@ export class NI_MCIT_T_01Service {
         }
       }
 
-      console.log('expandedUncertaintyK2', expandedUncertaintyK2)
-
       let cmcPoint = []
       let cmcPref = []
       let uncertaintyCMC = []
