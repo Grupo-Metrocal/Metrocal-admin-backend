@@ -27,4 +27,7 @@ export class EquipmentInformationT_01Dto {
 
   @ApiProperty()
   resolution?: number
+
+  @ApiProperty()
+  probe_type?: string
 }
