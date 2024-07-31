@@ -456,7 +456,6 @@ export class NI_MCIT_T_01Service {
 
       return this.getCertificateResult(method.id, activityID)
     } catch (error) {
-      console.log('error', error)
       return handleInternalServerError(error.message)
     }
   }
@@ -544,7 +543,6 @@ export class NI_MCIT_T_01Service {
         )
         const correctionVal = calibrationResultsSheet.cell(`L${28 + i}`).value()
 
-        console.log('correctionVal', correctionVal)
         correction.push(
           formatNumberCertification(
             correctionVal,
