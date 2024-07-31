@@ -776,6 +776,15 @@
   {
     "method": "NI-MCIT-P-01",
     "equipment": "Higro Termómetro",
+    "code": "NI-MCPPT-01",
+    "certificate": "SCM-00055163",
+    "traceability": "SCM",
+    "pattern_range": "Depen. De la variable",
+    "next_calibration": "2024-02-06"
+  },
+  {
+    "method": "NI-MCIT-P-01",
+    "equipment": "Higro Termómetro",
     "code": "NI-MCPPT-02",
     "certificate": "SCM-00039468",
     "traceability": "SCM",
@@ -799,6 +808,24 @@
     "traceability": "SCM",
     "pattern_range": "Depen. De la variable",
     "next_calibration": "2025-10-05"
+  },
+  {
+    "method": "NI-MCIT-P-01",
+    "equipment": "Higro Termómetro",
+    "code": "NI-MCPPT-04",
+    "certificate": "SCM-00055162",
+    "traceability": "SCM",
+    "pattern_range": "Depen. De la variable",
+    "next_calibration": "2024-02-06"
+  },
+  {
+    "method": "NI-MCIT-P-01",
+    "equipment": "Calibrador de procesos documentador",
+    "code": "NI-MCPVE-17",
+    "certificate": "SCM-00056901",
+    "traceability": "SCM",
+    "pattern_range": "0 psi a 10 000 psi",
+    "next_calibration": "2024-03-26"
   },
   {
     "method": "NI-MCIT-P-01",
