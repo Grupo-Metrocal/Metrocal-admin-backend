@@ -27,6 +27,11 @@ import { generateServiceCodeToMethod } from 'src/utils/codeGenerator'
 import { formatDate } from 'src/utils/formatDate'
 import { CertificationDetailsDto } from './dto/NI_MCIT_P_01/certification_details.dto'
 import { formatCertCode } from 'src/utils/generateCertCode'
+import {
+  formatNumberCertification,
+  formatSameNumberCertification,
+} from 'src/utils/formatNumberCertification'
+import { countDecimals } from 'src/utils/countDecimal'
 
 @Injectable()
 export class NI_MCIT_T_03Service {
@@ -540,38 +545,83 @@ export class NI_MCIT_T_03Service {
       ) {
         const patternIndication = sheet.cell(`D${25 + i}`).value()
         pattern_indication.push(
-          typeof patternIndication === 'number'
-            ? patternIndication.toFixed(2)
-            : patternIndication,
+          formatNumberCertification(
+            patternIndication,
+            countDecimals(method.equipment_information.resolution),
+          ),
         )
 
         const instrumentIndication = sheet.cell(`F${25 + i}`).value()
         instrument_indication.push(
-          typeof instrumentIndication === 'number'
-            ? instrumentIndication.toFixed(2)
-            : instrumentIndication,
+          formatNumberCertification(
+            instrumentIndication,
+            countDecimals(method.equipment_information.resolution),
+          ),
         )
 
         const correctionValue = sheet.cell(`L${25 + i}`).value()
         correction.push(
-          typeof correctionValue === 'number'
-            ? correctionValue.toFixed(2)
-            : correctionValue,
+          formatNumberCertification(
+            correctionValue,
+            countDecimals(method.equipment_information.resolution),
+          ),
         )
 
         const uncertaintyValue = sheet.cell(`R${25 + i}`).value()
         uncertainty.push(
-          typeof uncertaintyValue === 'number'
-            ? uncertaintyValue.toFixed(2)
-            : uncertaintyValue,
+          this.methodService.getSignificantFigure(uncertaintyValue),
         )
       }
 
-      const calibration_results_certificate = {
-        pattern_indication,
-        instrument_indication,
-        correction,
-        uncertainty,
+      let cmcPoint = []
+      let cmcPref = []
+      let uncertaintyCMC = []
+      let cmc = []
+      let mincmc = []
+
+      const sheetCMC = workbook.sheet('CMC')
+
+      for (let i = 0; i <= method.calibration_results.results.length; i++) {
+        const cmcPointValue = sheetCMC.cell(`I${16 + i}`).value()
+        cmcPoint.push(
+          typeof cmcPointValue === 'number'
+            ? Number(cmcPointValue.toFixed(2))
+            : cmcPointValue,
+        )
+
+        const cmcPrefValue = sheetCMC.cell(`J${16 + i}`).value()
+        cmcPref.push(
+          typeof cmcPrefValue === 'number'
+            ? Number(cmcPrefValue.toFixed(5))
+            : cmcPrefValue,
+        )
+
+        const uncertaintyCMCValue = sheetCMC.cell(`K${16 + i}`).value()
+        uncertaintyCMC.push(
+          typeof uncertaintyCMCValue === 'number'
+            ? Number(uncertaintyCMCValue.toFixed(5))
+            : uncertaintyCMCValue,
+        )
+
+        const cmcValue = sheetCMC.cell(`L${16 + i}`).value()
+        cmc.push(
+          typeof cmcValue === 'number' ? Number(cmcValue.toFixed(5)) : cmcValue,
+        )
+
+        const mincmcValue = sheetCMC.cell(`M${16 + i}`).value()
+        mincmc.push(
+          typeof mincmcValue === 'number'
+            ? Number(mincmcValue.toFixed(5))
+            : mincmcValue,
+        )
+      }
+
+      const CMC = {
+        cmcPoint,
+        cmcPref,
+        uncertaintyCMC,
+        cmc,
+        mincmc,
       }
 
       const process_calibrator = await this.patternsService.findByCodeAndMethod(
@@ -583,6 +633,13 @@ export class NI_MCIT_T_03Service {
         method.environmental_conditions.pattern,
         'NI-MCIT-T-03',
       )
+
+      const calibration_results_certificate = {
+        pattern_indication,
+        instrument_indication,
+        correction,
+        uncertainty,
+      }
 
       return handleOK({
         calibration_results: calibration_results_certificate,
@@ -604,6 +661,9 @@ export class NI_MCIT_T_03Service {
           model: method.equipment_information.model || '---',
           code: method.equipment_information.code || '---',
           sensor: method.equipment_information.sensor || '---',
+          resolution:
+            `${formatSameNumberCertification(equipment_information.resolution)} ${equipment_information.unit}` ||
+            '---',
           applicant:
             method?.applicant_name ||
             activity.quote_request.client.company_name,
@@ -612,8 +672,8 @@ export class NI_MCIT_T_03Service {
           calibration_location: method.calibration_location || '---',
         },
         environmental_conditions: {
-          temperature: `Temperatura: ${sheet.cell('E39').value()} °C ± ${sheet.cell('G39').value()} °C`,
-          humidity: `Humedad: ${sheet.cell('E40').value()} % ± ${sheet.cell('G40').value()} %`,
+          temperature: `Temperatura: ${formatNumberCertification(sheet.cell('E39').value())} °C ± ${formatNumberCertification(sheet.cell('G39').value())} °C`,
+          humidity: `Humedad: ${formatNumberCertification(sheet.cell('E40').value())} % ± ${formatNumberCertification(sheet.cell('G40').value())} %`,
         },
         client_email: activity.quote_request.client.email,
         creditable: description_pattern.creditable,
