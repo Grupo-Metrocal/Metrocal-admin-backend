@@ -8,10 +8,12 @@ export const formatNumberCertification = (
     return number
   }
 
-  return new Intl.NumberFormat('fr-FR', {
+  const value = new Intl.NumberFormat('fr-FR', {
     minimumFractionDigits: fraction,
     maximumFractionDigits: fraction,
   }).format(convertNumber)
+
+  return value === '-0' ? 0 : value
 }
 
 export const formatSameNumberCertification = (number = 0) => {
