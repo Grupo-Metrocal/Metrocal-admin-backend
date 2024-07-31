@@ -115,17 +115,13 @@ export class ActivitiesController {
     return await this.activitiesService.reviewActivity(id, data.token)
   }
 
-  @Get('certified-activities/:page/:limit/:company_name?')
+  @Get('certified-activities/:page/:limit/:no?')
   async getCertifiedActivities(
     @Param('page') page: number,
     @Param('limit') limit: number,
-    @Param('company_name') company_name: string,
+    @Param('no') no: string,
   ) {
-    return await this.activitiesService.getCertifiedActivities(
-      page,
-      limit,
-      company_name,
-    )
+    return await this.activitiesService.getCertifiedActivities(page, limit, no)
   }
 
   @Get('certified-activities/statistics')
