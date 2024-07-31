@@ -382,31 +382,33 @@ export class NI_MCIT_T_01Service {
 
       sheetEnviromentalConditions
         .cell('B18')
-        .value(environmental_conditions.environment.ta.tac.initial)
+        .value(Number(environmental_conditions.environment.ta.tac.initial))
       sheetEnviromentalConditions
         .cell('B19')
-        .value(environmental_conditions.environment.ta.tac.final)
+        .value(Number(environmental_conditions.environment.ta.tac.final))
       sheetEnviromentalConditions
         .cell('C18')
-        .value(environmental_conditions.environment.ta.hrp.initial)
+        .value(Number(environmental_conditions.environment.ta.hrp.initial))
       sheetEnviromentalConditions
         .cell('C19')
-        .value(environmental_conditions.environment.ta.hrp.final)
+        .value(Number(environmental_conditions.environment.ta.hrp.final))
       sheetEnviromentalConditions
         .cell('D18')
         .value(environmental_conditions.environment.ta.equipment)
       sheetEnviromentalConditions
         .cell('F18')
-        .value(environmental_conditions.environment.hpa.pa.initial)
+        .value(Number(environmental_conditions.environment.hpa.pa.initial))
       sheetEnviromentalConditions
         .cell('F19')
-        .value(environmental_conditions.environment.hpa.pa.final)
+        .value(Number(environmental_conditions.environment.hpa.pa.final))
       sheetEnviromentalConditions
         .cell('G18')
         .value(environmental_conditions.environment.hpa.equipment)
       sheetEnviromentalConditions
         .cell('I18')
-        .value(environmental_conditions.environment.hpa.stabilization_time)
+        .value(
+          Number(environmental_conditions.environment.hpa.stabilization_time),
+        )
 
       // calibration results
       let initialRow = 23
@@ -417,27 +419,27 @@ export class NI_MCIT_T_01Service {
         workbook
           .sheet('NI-R01-MCIT-T-01')
           .cell(`B${initialRow}`)
-          .value(value?.indication_linear[0]?.patron || 0)
+          .value(Number(value?.indication_linear[0]?.patron) || 0)
         workbook
           .sheet('NI-R01-MCIT-T-01')
           .cell(`C${initialRow}`)
-          .value(value?.indication_linear[0]?.thermometer || 0)
+          .value(Number(value?.indication_linear[0]?.thermometer) || 0)
         workbook
           .sheet('NI-R01-MCIT-T-01')
           .cell(`D${initialRow}`)
-          .value(value?.indication_linear[1]?.patron || 0)
+          .value(Number(value?.indication_linear[1]?.patron) || 0)
         workbook
           .sheet('NI-R01-MCIT-T-01')
           .cell(`E${initialRow}`)
-          .value(value?.indication_linear[1]?.thermometer || 0)
+          .value(Number(value?.indication_linear[1]?.thermometer) || 0)
         workbook
           .sheet('NI-R01-MCIT-T-01')
           .cell(`F${initialRow}`)
-          .value(value?.indication_linear[2]?.patron || 0)
+          .value(Number(value?.indication_linear[2]?.patron) || 0)
         workbook
           .sheet('NI-R01-MCIT-T-01')
           .cell(`G${initialRow}`)
-          .value(value?.indication_linear[2]?.thermometer || 0)
+          .value(Number(value?.indication_linear[2]?.thermometer) || 0)
       }
 
       // descrition pattern
@@ -445,11 +447,7 @@ export class NI_MCIT_T_01Service {
         .sheet('Calibración')
         .cell('J5')
         .value(description_pattern.pattern)
-      // resolucion
-      workbook
-        .sheet('Calibración')
-        .cell('F5')
-        .value(equipment_information.resolution)
+
       // unidad de medida
       workbook.sheet('Calibración').cell('F7').value(equipment_information.unit)
 
@@ -458,6 +456,7 @@ export class NI_MCIT_T_01Service {
 
       return this.getCertificateResult(method.id, activityID)
     } catch (error) {
+      console.log('error', error)
       return handleInternalServerError(error.message)
     }
   }
@@ -544,6 +543,8 @@ export class NI_MCIT_T_01Service {
           ),
         )
         const correctionVal = calibrationResultsSheet.cell(`L${28 + i}`).value()
+
+        console.log('correctionVal', correctionVal)
         correction.push(
           formatNumberCertification(
             correctionVal,
@@ -553,12 +554,9 @@ export class NI_MCIT_T_01Service {
         const expandedUncertaintyK2Val = calibrationResultsSheet
           .cell(`R${28 + i}`)
           .value()
+
         expandedUncertaintyK2.push(
-          typeof expandedUncertaintyK2Val === 'number'
-            ? this.methodService.getSignificantFigure(
-                Number(expandedUncertaintyK2Val.toFixed(7)),
-              )
-            : expandedUncertaintyK2Val,
+          this.methodService.getSignificantFigure(expandedUncertaintyK2Val),
         )
 
         if (description_pattern.show_table_international_system_units) {
