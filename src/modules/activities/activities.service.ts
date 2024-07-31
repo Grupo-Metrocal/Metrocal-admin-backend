@@ -795,18 +795,14 @@ export class ActivitiesService {
     }
   }
 
-  async getCertifiedActivities(
-    page: number,
-    limit: number,
-    company_name?: string,
-  ) {
+  async getCertifiedActivities(page: number, limit: number, no?: string) {
     try {
       const response = await this.activityRepository.find({
-        where: company_name
+        where: no
           ? {
               is_certificate: true,
               quote_request: {
-                client: { company_name: ILike(`%${company_name}%`) },
+                no: ILike(`%${no}%`),
               },
             }
           : { is_certificate: true },
@@ -887,6 +883,7 @@ export class ActivitiesService {
           client_email,
           pending_certificates,
           quote_request_id,
+          no: activity.quote_request.no,
         })
       }
 
