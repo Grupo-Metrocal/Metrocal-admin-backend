@@ -638,7 +638,9 @@ export class NI_MCIT_T_03Service {
         pattern_indication,
         instrument_indication,
         correction,
-        uncertainty,
+        uncertainty: this.methodService.formatUncertainty(
+          this.formatUncertaintyWithCMC(uncertainty, CMC),
+        ),
       }
 
       return handleOK({
@@ -691,6 +693,22 @@ export class NI_MCIT_T_03Service {
     } catch (error) {
       return handleInternalServerError(error.message)
     }
+  }
+
+  formatUncertaintyWithCMC(uncertainty: any, cmc: any) {
+    const uncertaintyWithCMC = uncertainty.map(
+      (uncertaintyValue: number, index: number) => {
+        if (typeof uncertaintyValue !== 'number') return uncertaintyValue
+
+        if (Number(uncertaintyValue) < Number(cmc.mincmc[index - 1])) {
+          return this.methodService.getSignificantFigure(cmc.cmc[index - 1])
+        }
+
+        return uncertaintyValue
+      },
+    )
+
+    return uncertaintyWithCMC
   }
 
   async generatePDFCertificate(
