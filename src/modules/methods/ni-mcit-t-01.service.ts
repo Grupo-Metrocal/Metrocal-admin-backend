@@ -375,6 +375,11 @@ export class NI_MCIT_T_01Service {
         .cell('F5')
         .value(equipment_information.resolution)
 
+      workbook
+        .sheet('Calibración')
+        .cell('F8')
+        .value(equipment_information.probe_type)
+
       sheetEnviromentalConditions
         .cell('B18')
         .value(environmental_conditions.environment.ta.tac.initial)
