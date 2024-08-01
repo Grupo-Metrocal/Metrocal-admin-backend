@@ -24,6 +24,7 @@
       <span>Serie:</span>
       <span>Modelo:</span>
       <span>Rango de medida:</span>
+      <span>Resolución:</span>
       <span>Código de identificación:</span>
       <span>Solicitante:</span>
       <span>Dirección del solicitante:</span>
@@ -41,6 +42,7 @@
       <span>{{equipment_information.serial_number}}</span>
       <span>{{equipment_information.model}}</span>
       <span>{{equipment_information.measurement_range}}</span>
+      <span>{{equipment_information.resolution}}</span>
       <span>{{equipment_information.code}}</span>
       <span>{{equipment_information.applicant}}</span>
       <span>{{equipment_information.address}}</span>
@@ -48,7 +50,7 @@
     </div>
   </div>
 
-  <div class='calibration-result' style='height: 270px;'>
+  <div class='calibration-result' style='min-height: 130px;'>
     <strong><span>Resultados de la calibración</span></strong>
     <br />
     <br />
@@ -90,17 +92,13 @@
     <br />
     <br />
 
-    <span style='margin-left: 10px'>NI-MCIT-T-05 Instrucción para calibración de termómetros de líquido en vidrio</span>
+    <span>NI-MCIT-T-05 Instrucción para calibración de termómetros de líquido en vidrio</span>
   </div>
 
-    {{#ifArrayEq calibration_results 9}}
-      <br><br><br><br><br><br><br>
-    {{/ifArrayEq}}
-    {{#ifArrayEq calibration_results 10}}
-      <br><br><br><br><br><br>
-    {{/ifArrayEq}}
+    
+    
     {{#ifArrayEq calibration_results 11}}
-      <br><br><br><br><br>
+      <br><br><br><br><br><br>
     {{/ifArrayEq}}
 
   <div class='uncertainty'>
@@ -117,18 +115,26 @@
     {{/ltArray}}
 
     {{#ifArrayEq calibration_results 5}}
-      <br><br>
+      <br><br> <br>
     {{/ifArrayEq}}
 
     {{#ifArrayEq calibration_results 6}}
-      <br>
+      <br> <br> <br>
     {{/ifArrayEq}}
 
     {{#ifArrayEq calibration_results 7}}
-      <br>
+      <br> <br>
     {{/ifArrayEq}}
 
     {{#ifArrayEq calibration_results 8}}
+      <br>
+    {{/ifArrayEq}}
+
+    {{#ifArrayEq calibration_results 9}}
+      <br>
+    {{/ifArrayEq}}
+
+    {{#ifArrayEq calibration_results 10}}
       <span></span>
     {{/ifArrayEq}}
 
