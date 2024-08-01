@@ -13,7 +13,7 @@ export const formatCertCode = (code: string, modificationsNumber: number) => {
   }
 
   const parts = code.split('-')
-  const id = parts[3]
+  const id = parts[2]
   return code.replace(id, `${id}-${modificationsNumber}`)
 }
 
