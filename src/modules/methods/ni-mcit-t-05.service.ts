@@ -452,22 +452,22 @@ export class NI_MCIT_T_05Service {
         let row = 6 + (point.point_number - 1) * 2
 
         if (point.point_number === -1) {
-          sheet.cell('H40').value(point.temperature.initial)
-          sheet.cell('I40').value(point.temperature.final)
+          sheet.cell('H40').value(Number(point.temperature.initial))
+          sheet.cell('I40').value(Number(point.temperature.final))
 
-          sheet.cell('H41').value(point.humidity.initial)
-          sheet.cell('I41').value(point.humidity.final)
+          sheet.cell('H41').value(Number(point.humidity.initial))
+          sheet.cell('I41').value(Number(point.humidity.final))
 
           continue
         }
 
         point.point_number > 1 && (row += 2)
 
-        sheet.cell(40, row).value(point.temperature.initial)
-        sheet.cell(40, row + 1).value(point.temperature.final)
+        sheet.cell(40, row).value(Number(point.temperature.initial))
+        sheet.cell(40, row + 1).value(Number(point.temperature.final))
 
-        sheet.cell(41, row).value(point.humidity.initial)
-        sheet.cell(41, row + 1).value(point.humidity.final)
+        sheet.cell(41, row).value(Number(point.humidity.initial))
+        sheet.cell(41, row + 1).value(Number(point.humidity.final))
       }
 
       // define calibration results
@@ -480,8 +480,8 @@ export class NI_MCIT_T_05Service {
           const calibration = result.calibrations[j]
 
           if (calibration.point_number === -1) {
-            sheet.cell(`H${29 + i}`).value(calibration.initial)
-            sheet.cell(`I${29 + i}`).value(calibration.final)
+            sheet.cell(`H${29 + i}`).value(Number(calibration.initial))
+            sheet.cell(`I${29 + i}`).value(Number(calibration.final))
             continue
           }
 
@@ -490,8 +490,8 @@ export class NI_MCIT_T_05Service {
 
           calibration.point_number > 1 && (row += 2)
 
-          sheet.cell(col, row).value(calibration.initial)
-          sheet.cell(col, row + 1).value(calibration.final)
+          sheet.cell(col, row).value(Number(calibration.initial))
+          sheet.cell(col, row + 1).value(Number(calibration.final))
         }
       }
 
@@ -579,11 +579,7 @@ export class NI_MCIT_T_05Service {
       let correction = []
       let uncertainty = []
 
-      for (
-        let i = 0;
-        i <= method.calibration_results.results[0].calibrations.length;
-        i++
-      ) {
+      for (let i = 0; i <= equipment_information.no_points; i++) {
         const referenceTemperature = sheet.cell(`D${28 + i}`).value()
         reference_temperature.push(
           formatNumberCertification(
@@ -732,6 +728,13 @@ export class NI_MCIT_T_05Service {
               dataCertificate.data.calibration_results.uncertainty[index],
           }),
         )
+
+      // dataCertificate.data.calibration_results.push({
+      //   reference_temperature: 0,
+      //   thermometer_indication: 0,
+      //   correction: 0,
+      //   uncertainty: 0,
+      // })
       const PDF = await this.pdfService.generateCertificatePdf(
         '/certificates/t-05.hbs',
         dataCertificate.data,
