@@ -27,6 +27,8 @@ import { generateServiceCodeToMethod } from 'src/utils/codeGenerator'
 import { formatDate } from 'src/utils/formatDate'
 import { CertificationDetailsDto } from './dto/NI_MCIT_P_01/certification_details.dto'
 import { formatCertCode } from 'src/utils/generateCertCode'
+import { formatNumberCertification } from 'src/utils/formatNumberCertification'
+import { countDecimals } from 'src/utils/countDecimal'
 
 @Injectable()
 export class NI_MCIT_T_05Service {
@@ -584,30 +586,31 @@ export class NI_MCIT_T_05Service {
       ) {
         const referenceTemperature = sheet.cell(`D${28 + i}`).value()
         reference_temperature.push(
-          typeof referenceTemperature === 'number'
-            ? referenceTemperature.toFixed(2)
-            : referenceTemperature,
+          formatNumberCertification(
+            referenceTemperature,
+            countDecimals(method.equipment_information.resolution),
+          ),
         )
 
         const thermometerIndication = sheet.cell(`F${28 + i}`).value()
         thermometer_indication.push(
-          typeof thermometerIndication === 'number'
-            ? thermometerIndication.toFixed(2)
-            : thermometerIndication,
+          formatNumberCertification(
+            thermometerIndication,
+            countDecimals(method.equipment_information.resolution),
+          ),
         )
 
         const correctionValue = sheet.cell(`L${28 + i}`).value()
         correction.push(
-          typeof correctionValue === 'number'
-            ? correctionValue.toFixed(2)
-            : correctionValue,
+          formatNumberCertification(
+            correctionValue,
+            countDecimals(method.equipment_information.resolution),
+          ),
         )
 
         const uncertaintyValue = sheet.cell(`R${28 + i}`).value()
         uncertainty.push(
-          typeof uncertaintyValue === 'number'
-            ? uncertaintyValue.toFixed(2)
-            : uncertaintyValue,
+          this.methodService.getSignificantFigure(uncertaintyValue),
         )
       }
 
@@ -615,7 +618,7 @@ export class NI_MCIT_T_05Service {
         reference_temperature,
         thermometer_indication,
         correction,
-        uncertainty,
+        uncertainty: this.methodService.formatUncertainty(uncertainty),
       }
 
       const digitalThermometer = await this.patternsService.findByCodeAndMethod(
@@ -661,8 +664,8 @@ export class NI_MCIT_T_05Service {
           calibration_location: method.calibration_location || '---',
         },
         environmental_conditions: {
-          temperature: `Temperatura: ${sheet.cell('E46').value()} °C ± ${sheet.cell('G46').value()} °C`,
-          humidity: `Humedad: ${sheet.cell('E47').value()} % ± ${sheet.cell('G47').value()} %`,
+          temperature: `Temperatura: ${formatNumberCertification(sheet.cell('E46').value())} °C ± ${formatNumberCertification(sheet.cell('G46').value())} °C`,
+          humidity: `Humedad: ${formatNumberCertification(sheet.cell('E47').value())} % ± ${formatNumberCertification(sheet.cell('G47').value())} %`,
         },
         creditable: method.description_pattern.creditable,
         client_email: activity.quote_request.client.email,
