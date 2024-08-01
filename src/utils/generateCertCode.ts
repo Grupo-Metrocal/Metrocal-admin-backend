@@ -2,14 +2,9 @@ interface GenerateCertCodeProps {
   id: number
   prefix: string
 }
-export const generateCertCode = ({
-  id,
-  prefix,
-}: GenerateCertCodeProps) => {
+export const generateCertCode = ({ id, prefix }: GenerateCertCodeProps) => {
   const year = new Date().getFullYear()
-  return `NI-MC-${prefix}-${id
-    .toString()
-    .padStart(4, '0')}-${year}`
+  return `NI-MCI${prefix}-${id.toString().padStart(4, '0')}-${year}`
 }
 
 export const formatCertCode = (code: string, modificationsNumber: number) => {
