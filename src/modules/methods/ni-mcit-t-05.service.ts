@@ -23,7 +23,6 @@ import * as path from 'path'
 import { exec } from 'child_process'
 import * as fs from 'fs'
 import { Activity } from '../activities/entities/activities.entity'
-import { generateServiceCodeToMethod } from 'src/utils/codeGenerator'
 import { formatDate } from 'src/utils/formatDate'
 import { CertificationDetailsDto } from './dto/NI_MCIT_P_01/certification_details.dto'
 import { formatCertCode } from 'src/utils/generateCertCode'
@@ -735,12 +734,6 @@ export class NI_MCIT_T_05Service {
           }),
         )
 
-      // dataCertificate.data.calibration_results.push({
-      //   reference_temperature: 0,
-      //   thermometer_indication: 0,
-      //   correction: 0,
-      //   uncertainty: 0,
-      // })
       const PDF = await this.pdfService.generateCertificatePdf(
         '/certificates/t-05.hbs',
         dataCertificate.data,
