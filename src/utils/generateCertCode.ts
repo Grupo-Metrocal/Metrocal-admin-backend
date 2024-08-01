@@ -4,7 +4,7 @@ interface GenerateCertCodeProps {
 }
 export const generateCertCode = ({ id, prefix }: GenerateCertCodeProps) => {
   const year = new Date().getFullYear()
-  return `NI-MCI${prefix}-${id.toString().padStart(4, '0')}-${year}`
+  return `NI-MC-${prefix}-${id.toString().padStart(4, '0')}-${year}`
 }
 
 export const formatCertCode = (code: string, modificationsNumber: number) => {
@@ -13,7 +13,7 @@ export const formatCertCode = (code: string, modificationsNumber: number) => {
   }
 
   const parts = code.split('-')
-  const id = parts[2]
+  const id = parts[3]
   return code.replace(id, `${id}-${modificationsNumber}`)
 }
 
