@@ -1,5 +1,7 @@
 <style>
   .ni-mcit-t-03 { display: flex; flex-direction: column; gap: 25px; }
+  .id_certificate { position: absolute; top: 8.6in; z-index: 100; }
+
   .equipment-information { display: flex; justify-content: space-between;
   margin-top: 20px; } .equipment-information div { width: 50%; display: flex;
   flex-direction: column; gap: 5px; } .equipment-information .labels {
@@ -48,7 +50,7 @@
     </div>
   </div>
 
-  <div class='calibration-result' style='height: 270px;'>
+  <div class='calibration-result' style='min-height: 130px;'>
     <strong><span>Resultados de la calibración</span></strong>
     <br />
     <br />
@@ -90,13 +92,23 @@
     <br />
     <br />
 
-    <span style='margin-left: 10px'>Las pruebas se realizaron según NI-MCIT-T-03
+    <span>Las pruebas se realizaron según NI-MCIT-T-03
       Instrucción para calibración de controladores (indicadores) de
       temperatura, con sensor RTD, de dos, tres y cuatro hilos en el rango
       comprendido entre -180 ºC hasta 800 ºC, y termopares, tipo K en el rango
       comprendido entre -180 ºC hasta 1300 ºC
     </span>
   </div>
+
+    {{#ifArrayEq calibration_results 9}}
+      <br><br><br><br><br><br><br>
+    {{/ifArrayEq}}
+    {{#ifArrayEq calibration_results 10}}
+      <br><br><br><br><br><br>
+    {{/ifArrayEq}}
+    {{#ifArrayEq calibration_results 11}}
+      <br><br><br><br><br>
+    {{/ifArrayEq}}
 
   <div class='uncertainty'>
     <strong><span>Incertidumbre de los datos</span></strong>
@@ -114,11 +126,25 @@
     </span>
   </div>
 
-  <div class='id_certificate'>
-    <strong><span>Identificación del certificado:</span></strong>
-    <strong style='margin-left: 10px'><span
-      >{{equipment_information.certification_code}}</span></strong>
-  </div>
+    {{#ltArray calibration_results 5}}
+      <br><br><br>
+    {{/ltArray}}
+
+    {{#ifArrayEq calibration_results 5}}
+      <br><br>
+    {{/ifArrayEq}}
+
+    {{#ifArrayEq calibration_results 6}}
+      <br>
+    {{/ifArrayEq}}
+
+    {{#ifArrayEq calibration_results 7}}
+      <br>
+    {{/ifArrayEq}}
+
+    {{#ifArrayEq calibration_results 8}}
+      <span></span>
+    {{/ifArrayEq}}
 
   <div class="used_pattern">
     <strong><span>Descripción de patrones utilizados</span></strong>
@@ -164,4 +190,12 @@
       {{observations}}
     </span>
   </div>
+</div>
+
+<div
+  class='id_certificate'
+  style='display: flex; justify-content: space-between; width: 90%'
+>
+  <strong><span>Identificación del certificado:</span></strong>
+  <strong><span>{{equipment_information.certification_code}}</span></strong>
 </div>
