@@ -27,7 +27,10 @@ import { generateServiceCodeToMethod } from 'src/utils/codeGenerator'
 import { formatDate } from 'src/utils/formatDate'
 import { CertificationDetailsDto } from './dto/NI_MCIT_P_01/certification_details.dto'
 import { formatCertCode } from 'src/utils/generateCertCode'
-import { formatNumberCertification } from 'src/utils/formatNumberCertification'
+import {
+  formatNumberCertification,
+  formatSameNumberCertification,
+} from 'src/utils/formatNumberCertification'
 import { countDecimals } from 'src/utils/countDecimal'
 
 @Injectable()
@@ -652,6 +655,9 @@ export class NI_MCIT_T_05Service {
           measurement_range: `${method.equipment_information.temperature_min} ${method.equipment_information.unit} a ${method.equipment_information.temperature_max} ${method.equipment_information.unit}`,
           model: method.equipment_information.model || '---',
           code: method.equipment_information.code || '---',
+          resolution:
+            `${formatSameNumberCertification(equipment_information.resolution)} ${equipment_information.unit}` ||
+            '---',
           applicant:
             method?.applicant_name ||
             activity.quote_request.client.company_name,
