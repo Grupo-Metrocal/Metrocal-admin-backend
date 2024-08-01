@@ -531,10 +531,7 @@ export class MethodsService {
 
               if (dataMethod.success) {
                 collectionPDF.push({
-                  filename: `Certificado-${equipment.name}-${formatCertCode(
-                    method.certificate_code,
-                    method.modification_number,
-                  )}.pdf`,
+                  filename: `Certificado-${equipment.name}-${method.certificate_code}.pdf`,
                   content: dataMethod.data.pdf,
                 })
               }
