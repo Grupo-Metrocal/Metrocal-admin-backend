@@ -121,16 +121,24 @@ export class MailService {
     })
   }
 
-  async sendMailCertification({ user, pdf }: { user: string; pdf: Buffer }) {
+  async sendMailCertification({
+    user,
+    pdf,
+    fileName,
+  }: {
+    user: string
+    pdf: Buffer
+    fileName: string
+  }) {
     return await this.mailerService.sendMail({
       to: user,
       from: process.env.MAILER_FROM,
-      subject: 'Certificación de actividad',
+      subject: 'Certificación de calibración',
       template: 'certification',
       context: {},
       attachments: [
         {
-          filename: 'Certificado.pdf',
+          filename: fileName,
           content: pdf,
         },
       ],
