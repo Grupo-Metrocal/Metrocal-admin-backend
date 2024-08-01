@@ -1,15 +1,14 @@
 <style>
   .ni-mcit-t-03 { display: flex; flex-direction: column; gap: 25px; }
   .id_certificate { position: absolute; top: 8.6in; z-index: 100; }
-
   .equipment-information { display: flex; justify-content: space-between;
   margin-top: 20px; } .equipment-information div { width: 50%; display: flex;
   flex-direction: column; gap: 5px; } .equipment-information .labels {
   font-weight: bold; } table { border-collapse: collapse; width: 100%; } th, td
-  { border: 1px solid #dddddd; text-align: center; } .table-title
-  { border: 1px solid #dddddd; text-align: center; } .enviromental-conditions {
-  display: flex; justify-content: space-between; } .enviromental-conditions div
-  { display: flex; flex-direction: column; gap: 10px; }
+  { border: 1px solid #dddddd; text-align: center; } .table-title { border: 1px
+  solid #dddddd; text-align: center; } .enviromental-conditions { display: flex;
+  justify-content: space-between; } .enviromental-conditions div { display:
+  flex; flex-direction: column; gap: 10px; }
 </style>
 
 <div class='ni-mcit-t-03'>
@@ -92,23 +91,23 @@
     <br />
     <br />
 
-    <span>Las pruebas se realizaron según NI-MCIT-T-03
-      Instrucción para calibración de controladores (indicadores) de
-      temperatura, con sensor RTD, de dos, tres y cuatro hilos en el rango
-      comprendido entre -180 ºC hasta 800 ºC, y termopares, tipo K en el rango
-      comprendido entre -180 ºC hasta 1300 ºC
+    <span>Las pruebas se realizaron según NI-MCIT-T-03 Instrucción para
+      calibración de controladores (indicadores) de temperatura, con sensor RTD,
+      de dos, tres y cuatro hilos en el rango comprendido entre -180 ºC hasta
+      800 ºC, y termopares, tipo K en el rango comprendido entre -180 ºC hasta
+      1300 ºC
     </span>
   </div>
 
-    {{#ifArrayEq calibration_results 9}}
-      <br><br><br><br><br><br><br>
-    {{/ifArrayEq}}
-    {{#ifArrayEq calibration_results 10}}
-      <br><br><br><br><br><br>
-    {{/ifArrayEq}}
-    {{#ifArrayEq calibration_results 11}}
-      <br><br><br><br><br>
-    {{/ifArrayEq}}
+  {{#ifArrayEq calibration_results 9}}
+    <br /><br /><br /><br /><br /><br /><br />
+  {{/ifArrayEq}}
+  {{#ifArrayEq calibration_results 10}}
+    <br /><br /><br /><br /><br /><br />
+  {{/ifArrayEq}}
+  {{#ifArrayEq calibration_results 11}}
+    <br /><br /><br /><br /><br />
+  {{/ifArrayEq}}
 
   <div class='uncertainty'>
     <strong><span>Incertidumbre de los datos</span></strong>
@@ -126,39 +125,39 @@
     </span>
   </div>
 
-    {{#ltArray calibration_results 5}}
-      <br><br><br>
-    {{/ltArray}}
+  {{#ltArray calibration_results 5}}
+    <br /><br /><br />
+  {{/ltArray}}
 
-    {{#ifArrayEq calibration_results 5}}
-      <br><br>
-    {{/ifArrayEq}}
+  {{#ifArrayEq calibration_results 5}}
+    <br /><br />
+  {{/ifArrayEq}}
 
-    {{#ifArrayEq calibration_results 6}}
-      <br>
-    {{/ifArrayEq}}
+  {{#ifArrayEq calibration_results 6}}
+    <br />
+  {{/ifArrayEq}}
 
-    {{#ifArrayEq calibration_results 7}}
-      <br>
-    {{/ifArrayEq}}
+  {{#ifArrayEq calibration_results 7}}
+    <br />
+  {{/ifArrayEq}}
 
-    {{#ifArrayEq calibration_results 8}}
-      <span></span>
-    {{/ifArrayEq}}
+  {{#ifArrayEq calibration_results 8}}
+    <span></span>
+  {{/ifArrayEq}}
 
-  <div class="used_pattern">
+  <div class='used_pattern'>
     <strong><span>Descripción de patrones utilizados</span></strong>
-    <br>
+    <br />
 
     <!-- tabla -->
     <table>
       <thead>
         <tr>
-          <th style="background-color: #dddddd;">Equipo</th>
-          <th style="background-color: #dddddd;">Código</th>
-          <th style="background-color: #dddddd;">Certificado</th>
-          <th style="background-color: #dddddd;">Trazabilidad</th>
-          <th style="background-color: #dddddd;">Próxima calibración</th>
+          <th style='background-color: #dddddd;'>Equipo</th>
+          <th style='background-color: #dddddd;'>Código</th>
+          <th style='background-color: #dddddd;'>Certificado</th>
+          <th style='background-color: #dddddd;'>Trazabilidad</th>
+          <th style='background-color: #dddddd;'>Próxima calibración</th>
         </tr>
       </thead>
       <tbody>
@@ -177,8 +176,6 @@
           <td>{{hygrothermometer_used.traceability}}</td>
           <td>{{hygrothermometer_used.next_calibration}}</td>
         </tr>
-      <tbody>
-        
       </tbody>
     </table>
   </div>
