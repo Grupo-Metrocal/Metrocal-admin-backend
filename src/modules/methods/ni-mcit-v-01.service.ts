@@ -23,10 +23,11 @@ import * as path from 'path'
 import { exec } from 'child_process'
 import * as fs from 'fs'
 import { Activity } from '../activities/entities/activities.entity'
-import { generateServiceCodeToMethod } from 'src/utils/codeGenerator'
 import { formatDate } from 'src/utils/formatDate'
 import { CertificationDetailsDto } from './dto/NI_MCIT_P_01/certification_details.dto'
 import { formatCertCode } from 'src/utils/generateCertCode'
+import { formatNumberCertification } from 'src/utils/formatNumberCertification'
+import { countDecimals } from 'src/utils/countDecimal'
 
 @Injectable()
 export class NI_MCIT_V_01Service {
@@ -555,22 +556,31 @@ export class NI_MCIT_V_01Service {
       for (let i = 0; i <= 5; i++) {
         const nominalVolume = sheet.cell(`B${30 + i}`).value()
         nominal_volume.push(
-          typeof nominalVolume === 'number'
-            ? nominalVolume.toFixed(2)
-            : nominalVolume,
+          formatNumberCertification(
+            nominalVolume,
+            countDecimals(method.equipment_information.resolution),
+          ),
         )
 
         const conventionalVolume = sheet.cell(`D${30 + i}`).value()
-        conventional_volume.push(conventionalVolume)
+        conventional_volume.push(
+          formatNumberCertification(
+            conventionalVolume,
+            countDecimals(method.equipment_information.resolution),
+          ),
+        )
 
         const desviationValue = sheet.cell(`H${30 + i}`).value()
-        desviation.push(desviationValue)
+        desviation.push(
+          formatNumberCertification(
+            desviationValue,
+            countDecimals(method.equipment_information.resolution),
+          ),
+        )
 
         const uncertaintyValue = sheet.cell(`L${30 + i}`).value()
         uncertainty.push(
-          typeof uncertaintyValue === 'number'
-            ? uncertaintyValue.toFixed(2)
-            : uncertaintyValue,
+          this.methodService.getSignificantFigure(uncertaintyValue),
         )
       }
 
@@ -578,7 +588,7 @@ export class NI_MCIT_V_01Service {
         nominal_volume,
         conventional_volume,
         desviation,
-        uncertainty,
+        uncertainty: this.methodService.formatUncertainty(uncertainty),
       }
 
       const masas = await this.patternsService.findByCodeAndMethod(
