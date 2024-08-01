@@ -110,12 +110,10 @@
     </span>
   </div>
 
-    {{#ltArray calibration_results 5}}
-      <br><br><br>
-    {{/ltArray}}
+    
 
     {{#ifArrayEq calibration_results 5}}
-      <br><br> <br>
+      <br><br> <br> <br>
     {{/ifArrayEq}}
 
     {{#ifArrayEq calibration_results 6}}
@@ -174,6 +172,10 @@
       </tbody>
     </table>
   </div>
+
+    {{#ltArray calibration_results 5}}
+      <br>
+    {{/ltArray}}
 
   <div class='observations'>
     <strong><span>Observaciones</span></strong>
