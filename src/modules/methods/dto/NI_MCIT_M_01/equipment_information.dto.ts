@@ -13,4 +13,6 @@ export class EquipmentInformationM01Dto {
   @ApiProperty()
   model?: string
 
+  @ApiProperty()
+  maximum_capacity?: number
 }

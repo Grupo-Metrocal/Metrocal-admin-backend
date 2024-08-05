@@ -679,7 +679,7 @@ export class NI_MCIT_M_01Service {
           certificate_issue_date: formatDate(new Date().toString()),
           calibration_date: formatDate(activity.updated_at as any),
           device: method.equipment_information.calibration_object || '---',
-          maximum_capacity: `${formatSameNumberCertification(method.description_pattern.maximum_capacity)} ${conventional_units[0]}`,
+          maximum_capacity: `${formatSameNumberCertification(method.equipment_information.maximum_capacity)} ${conventional_units[0]}`,
           maker: method.equipment_information.maker || '---',
           model: method.equipment_information.model || 'N/A',
           serial_number: 'N/A',

@@ -27,4 +27,7 @@ export class EquipmentInformationNI_MCIT_M_01 {
 
   @Column({ type: 'varchar', nullable: true })
   code?: string
+
+  @Column({ nullable: true })
+  maximum_capacity?: number
 }
