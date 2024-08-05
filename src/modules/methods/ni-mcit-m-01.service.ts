@@ -542,40 +542,66 @@ export class NI_MCIT_M_01Service {
 
       const workbook = await XlsxPopulate.fromFileAsync(method.certificate_url)
 
-      const sheet = workbook.sheet('+ONA')
+      const sheet = workbook.sheet('DA Individual (g-mg)')
 
-      let nominal_volume = []
-      let conventional_volume = []
-      let desviation = []
-      let uncertainty = []
+      let items = []
+      let serieCode = []
+      let nominal_value = []
+      let nominal_units = []
+      let conventional_value = []
+      let conventional_units = []
+      let conventional_indication = []
+      let conventional_value_2 = []
+      let conventional_units_2 = []
+      let uncertainty_value = []
+      let uncertainty_units = []
 
-      for (let i = 0; i <= 5; i++) {
-        const nominalVolume = sheet.cell(`B${30 + i}`).value()
-        nominal_volume.push(
-          typeof nominalVolume === 'number'
-            ? nominalVolume.toFixed(2)
-            : nominalVolume,
+      for (let i = 0; i < calibration_results.results.length; i++) {
+        const itemValue = sheet.cell(`D${29 + i}`).value()
+        items.push(itemValue)
+
+        const serieCodeValue = sheet.cell(`E${29 + i}`).value()
+        serieCode.push(serieCodeValue)
+
+        const nominalValue = sheet.cell(`G${29 + i}`).value()
+        const nominalUnit = sheet.cell(`h${29 + i}`).value()
+
+        nominal_value.push(nominalValue)
+        nominal_units.push(nominalUnit)
+
+        const conventionalValue = sheet.cell(`I${29 + i}`).value()
+        const conventionalUnit = sheet.cell(`K${29 + i}`).value()
+        const conventionalIndicationValue = sheet.cell(`M${29 + i}`).value()
+        const conventional_value_2Value = sheet.cell(`N${29 + i}`).value()
+        const conventional_units_2Value = sheet.cell(`Q${29 + i}`).value()
+
+        conventional_value.push(conventionalValue)
+        conventional_units.push(conventionalUnit)
+        conventional_indication.push(conventionalIndicationValue)
+        conventional_value_2.push(conventional_value_2Value)
+        conventional_units_2.push(conventional_units_2Value)
+
+        const uncertaintyValue = sheet.cell(`S${29 + i}`).value()
+        const uncertaintyUnit = sheet.cell(`U${29 + i}`).value()
+
+        uncertainty_value.push(
+          this.methodService.getSignificantFigure(uncertaintyValue),
         )
-
-        const conventionalVolume = sheet.cell(`D${30 + i}`).value()
-        conventional_volume.push(conventionalVolume)
-
-        const desviationValue = sheet.cell(`H${30 + i}`).value()
-        desviation.push(desviationValue)
-
-        const uncertaintyValue = sheet.cell(`L${30 + i}`).value()
-        uncertainty.push(
-          typeof uncertaintyValue === 'number'
-            ? uncertaintyValue.toFixed(2)
-            : uncertaintyValue,
-        )
+        uncertainty_units.push(uncertaintyUnit)
       }
 
       const calibration_results_certificate = {
-        nominal_volume,
-        conventional_volume,
-        desviation,
-        uncertainty,
+        items,
+        serieCode,
+        nominal_value,
+        nominal_units,
+        conventional_value,
+        conventional_units,
+        conventional_indication,
+        conventional_value_2,
+        conventional_units_2,
+        uncertainty_value,
+        uncertainty_units,
       }
 
       const masas = await this.patternsService.findByCodeAndMethod(
