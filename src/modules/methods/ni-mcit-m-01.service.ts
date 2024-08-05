@@ -408,10 +408,62 @@ export class NI_MCIT_M_01Service {
 
       const workbook = await XlsxPopulate.fromFileAsync(method.certificate_url)
 
-      const sheet = workbook.sheet('Datos')
+      const sheet = workbook.sheet('datos')
 
-      // Equipment Information
-      // Environmental Conditions
+      let indexPoint = 0
+      for (let point of calibration_results.results) {
+        const pointSkeep = (point.point_number - 1) * 17
+        let indexPattern = 0
+
+        for (let pattern of point.patterns) {
+          sheet.cell(`C${14 + pointSkeep + indexPattern}`).value(pattern)
+          indexPattern++
+        }
+
+        sheet.cell(`D${21 + pointSkeep}`).value(point.mass)
+        sheet.cell(`E${22 + pointSkeep}`).value(point.nominal_mass)
+        sheet.cell(`G${22 + pointSkeep}`).value(point.calibrated_material)
+        sheet.cell(`H${22 + pointSkeep}`).value(point.balance)
+        sheet.cell(`I${22 + pointSkeep}`).value(point.thermometer)
+
+        for (let i = 0; i < point.calibrations.l1.length; i++) {
+          sheet.cell(`C${25 + pointSkeep + i}`).value(point.calibrations.l1[i])
+          sheet.cell(`D${25 + pointSkeep + i}`).value(point.calibrations.l2[i])
+          sheet.cell(`E${25 + pointSkeep + i}`).value(point.calibrations.l3[i])
+          sheet.cell(`F${25 + pointSkeep + i}`).value(point.calibrations.l4[i])
+        }
+
+        sheet
+          .cell(`H${26 + pointSkeep}`)
+          .value(
+            environmental_conditions.points[indexPoint].temperature.initial,
+          )
+        sheet
+          .cell(`I${26 + pointSkeep}`)
+          .value(
+            environmental_conditions.points[indexPoint].temperature.initial,
+          )
+
+        sheet
+          .cell(`H${27 + pointSkeep}`)
+          .value(environmental_conditions.points[indexPoint].humidity.initial)
+        sheet
+          .cell(`I${27 + pointSkeep}`)
+          .value(environmental_conditions.points[indexPoint].humidity.final)
+
+        sheet
+          .cell(`H${28 + pointSkeep}`)
+          .value(environmental_conditions.points[indexPoint].presion.initial)
+
+        sheet
+          .cell(`I${28 + pointSkeep}`)
+          .value(environmental_conditions.points[indexPoint].presion.final)
+
+        sheet.cell(`M${15 + pointSkeep}`).value(point.code)
+        sheet.cell(`M${16 + pointSkeep}`).value(point.accuracy_class)
+
+        indexPoint++
+      }
 
       workbook.toFileAsync(method.certificate_url)
       await this.autoSaveExcel(method.certificate_url)
