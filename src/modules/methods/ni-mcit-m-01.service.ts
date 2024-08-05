@@ -26,6 +26,10 @@ import { Activity } from '../activities/entities/activities.entity'
 import { formatDate } from 'src/utils/formatDate'
 import { CertificationDetailsDto } from './dto/NI_MCIT_P_01/certification_details.dto'
 import { formatCertCode } from 'src/utils/generateCertCode'
+import {
+  formatNumberCertification,
+  formatSameNumberCertification,
+} from 'src/utils/formatNumberCertification'
 
 @Injectable()
 export class NI_MCIT_M_01Service {
@@ -675,9 +679,11 @@ export class NI_MCIT_M_01Service {
           certificate_issue_date: formatDate(new Date().toString()),
           calibration_date: formatDate(activity.updated_at as any),
           device: method.equipment_information.calibration_object || '---',
+          maximum_capacity: `${formatSameNumberCertification(method.description_pattern.maximum_capacity)} ${conventional_units[0]}`,
           maker: method.equipment_information.maker || '---',
-          maximum_capacity:
-            method.description_pattern.maximum_capacity || '---',
+          model: method.equipment_information.model || 'N/A',
+          serial_number: 'N/A',
+          code: method.equipment_information.code || 'N/A',
           applicant:
             method?.applicant_name ||
             activity.quote_request.client.company_name,
@@ -686,9 +692,9 @@ export class NI_MCIT_M_01Service {
           calibration_location: method.calibration_location || '---',
         },
         environmental_conditions: {
-          temperature: `Temperatura: ${Number(sheet.cell('D38').value()).toFixed(2)} ± ${sheet.cell('F38').value()} °C`,
-          humidity: `Humedad Relativa: ${Number(sheet.cell('D39').value()).toFixed(2)} ± ${sheet.cell('F39').value()} % HR`,
-          presion: `Presión: ${sheet.cell('J38').value()} ± ${sheet.cell('L38').value()} Pa`,
+          temperature: `Temperatura: ${formatNumberCertification(Number(sheet.cell('E62').value()))} °C ± ${formatSameNumberCertification(Number(sheet.cell('G62').value()))} °C`,
+          humidity: `Humedad Relativa: ${formatNumberCertification(Number(sheet.cell('E63').value()))} % ± ${formatSameNumberCertification(Number(sheet.cell('G63').value()))} % RH`,
+          presion: `Presión: ${formatSameNumberCertification(Number(sheet.cell('R62').value()))} hPa ± ${formatSameNumberCertification(Number(sheet.cell('U62').value()))} hPa`,
         },
         creditable: description_pattern.creditable,
         client_email: activity.quote_request.client.email,
