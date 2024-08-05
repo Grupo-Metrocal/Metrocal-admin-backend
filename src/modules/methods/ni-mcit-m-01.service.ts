@@ -564,7 +564,7 @@ export class NI_MCIT_M_01Service {
         serieCode.push(serieCodeValue)
 
         const nominalValue = sheet.cell(`G${29 + i}`).value()
-        const nominalUnit = sheet.cell(`h${29 + i}`).value()
+        const nominalUnit = sheet.cell(`H${29 + i}`).value()
 
         nominal_value.push(nominalValue)
         nominal_units.push(nominalUnit)
@@ -590,6 +590,57 @@ export class NI_MCIT_M_01Service {
         uncertainty_units.push(uncertaintyUnit)
       }
 
+      let cmcPoint = []
+      let cmcPref = []
+      let uncertaintyCMC = []
+      let cmc = []
+      let mincmc = []
+
+      const sheetCMC = workbook.sheet("CMC's")
+
+      for (let i = 0; i < calibration_results.results.length; i++) {
+        const cmcPointValue = sheetCMC.cell(`I${19 + i}`).value()
+        cmcPoint.push(
+          typeof cmcPointValue === 'number'
+            ? Number(cmcPointValue.toFixed(2))
+            : cmcPointValue,
+        )
+
+        const cmcPrefValue = sheetCMC.cell(`J${19 + i}`).value()
+        cmcPref.push(
+          typeof cmcPrefValue === 'number'
+            ? Number(cmcPrefValue.toFixed(5))
+            : cmcPrefValue,
+        )
+
+        const uncertaintyCMCValue = sheetCMC.cell(`K${19 + i}`).value()
+        uncertaintyCMC.push(
+          typeof uncertaintyCMCValue === 'number'
+            ? Number(uncertaintyCMCValue.toFixed(5))
+            : uncertaintyCMCValue,
+        )
+
+        const cmcValue = sheetCMC.cell(`L${19 + i}`).value()
+        cmc.push(
+          typeof cmcValue === 'number' ? Number(cmcValue.toFixed(5)) : cmcValue,
+        )
+
+        const mincmcValue = sheetCMC.cell(`M${19 + i}`).value()
+        mincmc.push(
+          typeof mincmcValue === 'number'
+            ? Number(mincmcValue.toFixed(5))
+            : mincmcValue,
+        )
+      }
+
+      const CMC = {
+        cmcPoint,
+        cmcPref,
+        uncertaintyCMC,
+        cmc,
+        mincmc,
+      }
+
       const calibration_results_certificate = {
         items,
         serieCode,
@@ -600,7 +651,9 @@ export class NI_MCIT_M_01Service {
         conventional_indication,
         conventional_value_2,
         conventional_units_2,
-        uncertainty_value,
+        uncertainty_value: this.methodService.formatUncertainty(
+          this.formatUncertaintyWithCMC(uncertainty_value, CMC),
+        ),
         uncertainty_units,
       }
 
@@ -648,8 +701,25 @@ export class NI_MCIT_M_01Service {
         `,
       })
     } catch (error) {
+      console.error({ error })
       return handleInternalServerError(error.message)
     }
+  }
+
+  formatUncertaintyWithCMC(uncertainty: any, cmc: any) {
+    const uncertaintyWithCMC = uncertainty.map(
+      (uncertaintyValue: number, index: number) => {
+        if (typeof uncertaintyValue !== 'number') return uncertaintyValue
+
+        if (Number(uncertaintyValue) < Number(cmc.mincmc[index])) {
+          return this.methodService.getSignificantFigure(cmc.cmc[index])
+        }
+
+        return uncertaintyValue
+      },
+    )
+
+    return uncertaintyWithCMC
   }
 
   async generatePDFCertificate(
