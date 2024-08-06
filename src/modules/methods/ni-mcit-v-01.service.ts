@@ -421,11 +421,11 @@ export class NI_MCIT_V_01Service {
           `${method.equipment_information.scale_division} ${method.equipment_information.unit}`,
         )
 
-      sheet.cell('K4').value(Number(equipment_information.material))
-      sheet.cell('N4').value(Number(equipment_information.balance))
-      sheet.cell('P4').value(Number(equipment_information.neck_diameter))
-      sheet.cell('R4').value(Number(equipment_information.thermometer))
-      sheet.cell('U4').value(Number(equipment_information.volumetric_container))
+      sheet.cell('K4').value(equipment_information.material)
+      sheet.cell('N4').value(equipment_information.balance)
+      sheet.cell('P4').value(equipment_information.neck_diameter)
+      sheet.cell('R4').value(equipment_information.thermometer)
+      sheet.cell('U4').value(equipment_information.volumetric_container)
 
       // Environmental Conditions
 
@@ -550,7 +550,7 @@ export class NI_MCIT_V_01Service {
 
       const workbook = await XlsxPopulate.fromFileAsync(method.certificate_url)
 
-      const sheet = workbook.sheet('+ONA')
+      const sheet = workbook.sheet('+DA')
 
       let nominal_volume = []
       let conventional_volume = []
