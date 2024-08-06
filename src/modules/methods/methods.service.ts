@@ -47,6 +47,7 @@ import {
   formatNumberCertification,
   formatSameNumberCertification,
 } from 'src/utils/formatNumberCertification'
+import { NI_MCIT_M_01Service } from './ni-mcit-m-01.service'
 
 @Injectable()
 export class MethodsService {
@@ -94,6 +95,7 @@ export class MethodsService {
     private readonly NI_MCIT_B_01Services: NI_MCIT_B_01Service,
     private readonly NI_MCIT_T_05Services: NI_MCIT_T_05Service,
     private readonly NI_MCIT_V_01Services: NI_MCIT_V_01Service,
+    private readonly NI_MCIT_M_01Services: NI_MCIT_M_01Service,
     private readonly GENERIC_METHODServices: GENERIC_METHODService,
   ) {}
 
@@ -518,6 +520,7 @@ export class MethodsService {
       for (const equipment of equipment_quote_request) {
         if (equipment.method_id) {
           const method_name = `${equipment.calibration_method.split(' ')[0].replaceAll('-', '_')}Services`
+          console.log({ method_name })
           const { data: stackMethods } = await this.getMethodsID(
             equipment.method_id,
           )
