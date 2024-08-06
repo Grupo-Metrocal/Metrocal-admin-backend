@@ -421,10 +421,10 @@ export class NI_MCIT_V_01Service {
           `${method.equipment_information.scale_division} ${method.equipment_information.unit}`,
         )
 
-      sheet.cell('K5').value(Number(equipment_information.material))
-      sheet.cell('N5').value(Number(equipment_information.balance))
-      sheet.cell('P5').value(Number(equipment_information.neck_diameter))
-      sheet.cell('R5').value(Number(equipment_information.thermometer))
+      sheet.cell('K4').value(Number(equipment_information.material))
+      sheet.cell('N4').value(Number(equipment_information.balance))
+      sheet.cell('P4').value(Number(equipment_information.neck_diameter))
+      sheet.cell('R4').value(Number(equipment_information.thermometer))
       sheet.cell('U4').value(Number(equipment_information.volumetric_container))
 
       // Environmental Conditions
