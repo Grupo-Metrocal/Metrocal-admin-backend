@@ -45,7 +45,7 @@
     </div>
   </div>
 
-  <div class='calibration-result' style='min-height: 130px'>
+  <div class='calibration-result' style='min-height: 150px;'>
     <strong><span>Resultados de la calibración</span></strong>
     <br />
     <br />
@@ -95,6 +95,11 @@
     </div>
   </div>
 
+  {{#ifArrayEq calibration_results 20}}
+    <br /><br />
+    <br />
+  {{/ifArrayEq}}
+
   <div class='calibration-method'>
     <strong><span>Método de calibración:</span></strong>
     <br />
@@ -103,6 +108,63 @@
     <span>Las pruebas se realizaron según el NI-MCIT-M-01 Instrucción para
       calibración de masas.</span>
   </div>
+
+  {{#ifArrayEq calibration_results 19}}
+    <br />
+  {{/ifArrayEq}}
+
+  {{#ifArrayEq calibration_results 18}}
+    <br />
+    <br />
+  {{/ifArrayEq}}
+
+  {{#ifArrayEq calibration_results 17}}
+    <br />
+    <br />
+  {{/ifArrayEq}}
+
+  {{#ifArrayEq calibration_results 16}}
+    <br />
+    <br />
+    <br />
+  {{/ifArrayEq}}
+
+  {{#ifArrayEq calibration_results 15}}
+    <br />
+    <br />
+    <br />
+    <br />
+  {{/ifArrayEq}}
+
+  {{#ifArrayEq calibration_results 14}}
+    <br />
+    <br />
+    <br />
+    <br />
+    <br />
+    <br />
+    <br />
+  {{/ifArrayEq}}
+
+  {{#ifArrayEq calibration_results 13}}
+    <br />
+    <br />
+    <br />
+    <br />
+    <br />
+    <br />
+    <br />
+  {{/ifArrayEq}}
+
+  {{#ifArrayEq calibration_results 12}}
+    <br />
+    <br />
+    <br />
+    <br />
+    <br />
+    <br />
+    <br />
+  {{/ifArrayEq}}
 
   <div class='uncertainty'>
     <strong><span>Incertidumbre de los datos</span></strong>
@@ -119,6 +181,52 @@
       equipo sujeto a calibración.
     </span>
   </div>
+
+  {{#ifArrayEq calibration_results 11}}
+    <br />
+  {{/ifArrayEq}}
+
+  {{#ifArrayEq calibration_results 10}}
+    <br />
+    <br />
+  {{/ifArrayEq}}
+
+  {{#ifArrayEq calibration_results 9}}
+    <br />
+    <br />
+    <br />
+  {{/ifArrayEq}}
+
+  {{#ifArrayEq calibration_results 8}}
+    <br />
+    <br />
+    <br />
+    <br />
+  {{/ifArrayEq}}
+
+  {{#ifArrayEq calibration_results 7}}
+    <br />
+    <br />
+    <br />
+    <br />
+  {{/ifArrayEq}}
+
+  {{#ifArrayEq calibration_results 6}}
+    <br />
+    <br />
+    <br />
+    <br />
+    <br />
+  {{/ifArrayEq}}
+
+  {{#ifArrayEq calibration_results 5}}
+    <br />
+    <br />
+    <br />
+    <br />
+    <br />
+    <br />
+  {{/ifArrayEq}}
 
   <div class='used_pattern'>
     <strong><span>Descripción de patrones utilizados</span></strong>
