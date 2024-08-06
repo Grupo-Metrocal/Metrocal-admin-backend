@@ -764,21 +764,36 @@ export class NI_MCIT_M_01Service {
       }
 
       dataCertificate.data.calibration_results =
-        dataCertificate.data.calibration_results.nominal_volume.map(
-          (indication, index) => ({
-            nominal_volume: indication,
-            conventional_volume:
-              dataCertificate.data.calibration_results.conventional_volume[
-                index
-              ],
-            desviation:
-              dataCertificate.data.calibration_results.desviation[index],
-            uncertainty:
-              dataCertificate.data.calibration_results.uncertainty[index],
-          }),
-        )
+        dataCertificate.data.calibration_results.items.map((item, index) => ({
+          items: item,
+          serieCode: dataCertificate.data.calibration_results.serieCode[index],
+          nominal_value:
+            dataCertificate.data.calibration_results.nominal_value[index],
+          nominal_units:
+            dataCertificate.data.calibration_results.nominal_units[index],
+          conventional_value:
+            dataCertificate.data.calibration_results.conventional_value[index],
+          conventional_units:
+            dataCertificate.data.calibration_results.conventional_units[index],
+          conventional_indication:
+            dataCertificate.data.calibration_results.conventional_indication[
+              index
+            ],
+          conventional_value_2:
+            dataCertificate.data.calibration_results.conventional_value_2[
+              index
+            ],
+          conventional_units_2:
+            dataCertificate.data.calibration_results.conventional_units_2[
+              index
+            ],
+          uncertainty_value:
+            dataCertificate.data.calibration_results.uncertainty_value[index],
+          uncertainty_units:
+            dataCertificate.data.calibration_results.uncertainty_units[index],
+        }))
       const PDF = await this.pdfService.generateCertificatePdf(
-        '/certificates/v-01.hbs',
+        '/certificates/m-01.hbs',
         dataCertificate.data,
       )
 
