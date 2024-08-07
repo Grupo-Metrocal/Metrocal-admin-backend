@@ -679,8 +679,8 @@ export class NI_MCIT_V_01Service {
           calibration_location: method.calibration_location || '---',
         },
         environmental_conditions: {
-          temperature: `Temperatura: ${formatNumberCertification(Number(sheet.cell('D38').value()).toFixed(2))} ± ${formatNumberCertification(sheet.cell('F38').value())} °C`,
-          humidity: `Humedad Relativa: ${formatNumberCertification(Number(sheet.cell('D39').value()).toFixed(2))} ± ${formatNumberCertification(sheet.cell('F39').value())} % HR`,
+          temperature: `Temperatura: ${formatNumberCertification(sheet.cell('D38').value())} ± ${formatNumberCertification(sheet.cell('F38').value())} °C`,
+          humidity: `Humedad Relativa: ${formatNumberCertification(sheet.cell('D39').value())} ± ${formatNumberCertification(sheet.cell('F39').value())} % HR`,
           presion: `Presión: ${formatNumberCertification(sheet.cell('J38').value())} ± ${formatNumberCertification(sheet.cell('L38').value())} Pa`,
         },
         creditable: description_pattern.creditable,
