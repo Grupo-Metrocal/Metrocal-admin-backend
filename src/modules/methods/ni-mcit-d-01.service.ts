@@ -1064,26 +1064,34 @@ export class NI_MCIT_D_01Service {
       const deviation_outside = []
 
       for (let i = 0; i <= 12; i++) {
-        const skip = i == 0 ? 0 : i == 1 ? 0 : 1
+        const skip = i == 0 ? 0 : i === 1 ? 0 : 1
+        let altSkip =
+          41 + i + skip === 52 ? 54 : 41 + i + skip === 53 ? 55 : 41 + i + skip
 
-        const nominal_valueValue = sheet.cell(`T${41 + i + skip}`).value()
-        nominal_value_outside.push(nominal_valueValue)
+        const altSkip2 = 41 + i === 52 ? 54 : 41 + i === 53 ? 55 : 41 + i
 
-        const current_readingValue = sheet.cell(`H${41 + i}`).value()
+        if (altSkip % 2 === 0 || altSkip === 41) {
+          const nominal_valueValue = sheet.cell(`E${altSkip}`).value()
+          nominal_value_outside.push(nominal_valueValue)
+        }
+
+        const current_readingValue = sheet.cell(`H${altSkip2}`).value()
+
         current_reading_outside.push(
           formatNumberCertification(
             current_readingValue,
             countDecimals(method.equipment_information.resolution),
           ),
         )
-
-        const deviationValue = sheet.cell(`Z${41 + i + skip}`).value()
-        deviation_outside.push(
-          formatNumberCertification(
-            deviationValue,
-            countDecimals(method.equipment_information.resolution),
-          ),
-        )
+        if (altSkip % 2 === 0 || altSkip === 41) {
+          const deviationValue = sheet.cell(`L${altSkip}`).value()
+          deviation_outside.push(
+            formatNumberCertification(
+              deviationValue,
+              countDecimals(method.equipment_information.resolution),
+            ),
+          )
+        }
       }
 
       const calibration_result = {
@@ -1109,7 +1117,7 @@ export class NI_MCIT_D_01Service {
 
       const calibration_method_used =
         await this.patternsService.findByCodeAndMethod(
-          method.description_pattern[0],
+          method.description_pattern.descriptionPatterns[0],
           'NI-MCIT-D-01',
         )
 
@@ -1262,48 +1270,6 @@ export class NI_MCIT_D_01Service {
         },
       )
     })
-  }
-
-  async generateCertificateD_01({
-    activityID,
-    methodID,
-  }: {
-    activityID: number
-    methodID: number
-  }) {
-    try {
-      const method = await this.NI_MCIT_D_01Repository.findOne({
-        where: { id: methodID },
-        relations: [
-          'equipment_information',
-          'environmental_conditions',
-          'description_pattern',
-          'pre_installation_comment',
-          'instrument_zero_check',
-          'exterior_parallelism_measurement',
-          'interior_parallelism_measurement',
-          'exterior_measurement_accuracy',
-        ],
-      })
-
-      if (!method) {
-        return handleInternalServerError('El método no existe')
-      }
-      let respuesta
-      if (method) {
-        respuesta = await this.generateCertificateData({
-          activityID,
-          methodID,
-        })
-      }
-      if (respuesta.status === 200) {
-        return handleOK('Archivo generado correctamente')
-      } else {
-        return handleInternalServerError('Error al generar el certificado')
-      }
-    } catch (error) {
-      return handleInternalServerError('Error al generar el certificado')
-    }
   }
 
   async generateCertificateCodeToMethod(methodID: number) {
