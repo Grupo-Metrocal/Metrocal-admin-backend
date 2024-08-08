@@ -1,6 +1,4 @@
-import { DescriptionPatternDto } from './dto/NI_MCIT_P_01/description_pattern.dto'
-import { Pattern } from './../patterns/entities/pattern.entity'
-import { Inject, Injectable, forwardRef, Get, Res } from '@nestjs/common'
+import { Inject, Injectable, forwardRef } from '@nestjs/common'
 import { NI_MCIT_D_01 } from './entities/NI_MCIT_D_01/NI_MCIT_D_01.entity'
 import { InjectRepository } from '@nestjs/typeorm'
 import { DataSource, Repository } from 'typeorm'
@@ -24,7 +22,6 @@ import { ExteriorMeasurementAccuracyNI_MCIT_D_01 } from './entities/NI_MCIT_D_01
 import { ActivitiesService } from '../activities/activities.service'
 
 import { Activity } from '../activities/entities/activities.entity'
-import { generateServiceCodeToMethod } from 'src/utils/codeGenerator'
 import * as XlsxPopulate from 'xlsx-populate'
 import * as path from 'path'
 import { exec } from 'child_process'
@@ -1151,8 +1148,8 @@ export class NI_MCIT_D_01Service {
         },
         calibrations: {
           calibration_result,
-          calibration_result_inside,
           calibration_result_outside,
+          calibration_result_inside,
         },
         environmental_conditions: {
           temperature: `Temperatura: ${formatNumberCertification(
@@ -1219,6 +1216,55 @@ export class NI_MCIT_D_01Service {
         dataCertificate = await this.getCertificateResult(methodID, activityID)
       }
 
+      dataCertificate.data.calibrations.calibration_result.calibration_point =
+        dataCertificate.data.calibrations.calibration_result.calibration_point.map(
+          (item, index) => ({
+            calibration_point: item,
+            nominal_value:
+              dataCertificate.data.calibrations.calibration_result
+                .nominal_value[index],
+            value:
+              dataCertificate.data.calibrations.calibration_result.value[index],
+            current_reading:
+              dataCertificate.data.calibrations.calibration_result
+                .current_reading[index],
+            deviation:
+              dataCertificate.data.calibrations.calibration_result.deviation[
+                index
+              ],
+            uncertainty:
+              dataCertificate.data.calibrations.calibration_result.uncertainty[
+                index
+              ],
+          }),
+        )
+
+      dataCertificate.data.calibrations.calibration_result_inside.nominal_value_inside =
+        dataCertificate.data.calibrations.calibration_result_inside.nominal_value_inside.map(
+          (item, index) => ({
+            nominal_value: item,
+            current_reading:
+              dataCertificate.data.calibrations.calibration_result_inside
+                .current_reading_inside[index],
+            deviation:
+              dataCertificate.data.calibrations.calibration_result_inside
+                .deviation_inside[index],
+          }),
+        )
+
+      dataCertificate.data.calibrations.calibration_result_outside.nominal_value_outside =
+        dataCertificate.data.calibrations.calibration_result_outside.nominal_value_outside.map(
+          (item, index) => ({
+            nominal_value: item,
+            current_reading:
+              dataCertificate.data.calibrations.calibration_result_outside
+                .current_reading_outside[index],
+            deviation:
+              dataCertificate.data.calibrations.calibration_result_outside
+                .deviation_outside[index],
+          }),
+        )
+
       const PDF = await this.pdfService.generateCertificatePdf(
         '/certificates/d-01.hbs',
         dataCertificate.data,
@@ -1230,14 +1276,35 @@ export class NI_MCIT_D_01Service {
 
       return handleOK({
         pdf: PDF,
-        client_email: dataCertificate,
+        client_email: dataCertificate.data.email,
+        fileName: `Certificado-${dataCertificate.data.equipment_information.object_calibrated}-${dataCertificate.data.equipment_information.certification_code}.pdf`,
       })
     } catch (error) {
       return handleInternalServerError(error.message)
     }
   }
 
-  async sendCertificateToClient() {}
+  async sendCertificateToClient(activityID: number, methodID: number) {
+    try {
+      const data = await this.generatePDFCertificate(activityID, methodID, true)
+
+      if (!data.success) {
+        return data
+      }
+
+      const { pdf, client_email, fileName } = data.data
+
+      await this.mailService.sendMailCertification({
+        user: client_email,
+        pdf,
+        fileName,
+      })
+
+      return handleOK('Certificado enviado con exito')
+    } catch (error) {
+      return handleInternalServerError(error.message)
+    }
+  }
 
   async autoSaveExcel(filePath: string) {
     return new Promise((resolve, reject) => {
