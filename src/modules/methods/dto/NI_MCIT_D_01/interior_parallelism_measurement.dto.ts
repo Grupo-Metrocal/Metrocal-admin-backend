@@ -19,10 +19,10 @@ class IMeditions {
 
 class IPlaces {
   @ApiProperty()
-  Exteriors: IMeditions
+  Exterior: IMeditions
 
   @ApiProperty()
-  Interiors: IMeditions
+  Interior: IMeditions
 }
 
 class IMeasurementsD01 {
