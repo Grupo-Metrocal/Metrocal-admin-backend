@@ -26,8 +26,8 @@ interface IMeasurements {
 }
 
 interface IPlaces {
-  Exteriors: IMeditions
-  Interiors: IMeditions
+  Exterior: IMeditions
+  Interior: IMeditions
 }
 
 interface IMeditions {
