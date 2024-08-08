@@ -25,6 +25,9 @@ const helpers: HelperDeclareSpec = {
   gtArray: (array: any, b: any, options: any) => {
     return array.length > b ? options.fn(this) : options.inverse(this)
   },
+  isEven: (n: any, options: any) => {
+    return n % 2 === 0 ? options.fn(this) : options.inverse(this)
+  },
 }
 
 @Module({
