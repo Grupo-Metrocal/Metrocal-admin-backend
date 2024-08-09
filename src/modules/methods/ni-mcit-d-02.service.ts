@@ -129,7 +129,7 @@ export class NI_MCIT_D_02Service {
         method.equipment_information = newEquipment
       }
       try {
-        this.dataSource.transaction(async (manager) => {
+        await this.dataSource.transaction(async (manager) => {
           await manager.save(method.equipment_information)
 
           if (increase) {
@@ -178,7 +178,7 @@ export class NI_MCIT_D_02Service {
       }
 
       try {
-        this.dataSource.transaction(async (manager) => {
+        await this.dataSource.transaction(async (manager) => {
           await manager.save(method.environmental_conditions)
 
           if (increase) {
@@ -229,7 +229,7 @@ export class NI_MCIT_D_02Service {
       }
 
       try {
-        this.dataSource.transaction(async (manager) => {
+        await this.dataSource.transaction(async (manager) => {
           await manager.save(method.description_pattern)
 
           if (increase) {
@@ -280,7 +280,7 @@ export class NI_MCIT_D_02Service {
       }
 
       try {
-        this.dataSource.transaction(async (manager) => {
+        await this.dataSource.transaction(async (manager) => {
           await manager.save(method.pre_installation_comment)
 
           if (increase) {
@@ -331,7 +331,7 @@ export class NI_MCIT_D_02Service {
       }
 
       try {
-        this.dataSource.transaction(async (manager) => {
+        await this.dataSource.transaction(async (manager) => {
           await manager.save(method.instrument_zero_check)
 
           if (increase) {
@@ -379,7 +379,7 @@ export class NI_MCIT_D_02Service {
       }
 
       try {
-        this.dataSource.transaction(async (manager) => {
+        await this.dataSource.transaction(async (manager) => {
           await manager.save(method.accuracy_test)
           method.status = 'done'
 
