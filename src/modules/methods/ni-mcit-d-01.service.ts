@@ -1216,7 +1216,7 @@ export class NI_MCIT_D_01Service {
         dataCertificate = await this.getCertificateResult(methodID, activityID)
       }
 
-      dataCertificate.data.calibrations.calibration_result.calibration_point =
+      dataCertificate.data.calibrations.calibration_result =
         dataCertificate.data.calibrations.calibration_result.calibration_point.map(
           (item, index) => ({
             calibration_point: item,
@@ -1239,26 +1239,29 @@ export class NI_MCIT_D_01Service {
           }),
         )
 
-      dataCertificate.data.calibrations.calibration_result_inside.nominal_value_inside =
-        dataCertificate.data.calibrations.calibration_result_inside.nominal_value_inside.map(
+      dataCertificate.data.calibrations.calibration_result_inside =
+        dataCertificate.data.calibrations.calibration_result_inside.current_reading_inside.map(
           (item, index) => ({
-            nominal_value: item,
-            current_reading:
+            point: index === 0 ? '' : index % 2 === 0 ? 'Superior' : 'Inferior',
+            nominal_value:
               dataCertificate.data.calibrations.calibration_result_inside
-                .current_reading_inside[index],
+                .nominal_value_inside[index],
+            current_reading: item,
+
             deviation:
               dataCertificate.data.calibrations.calibration_result_inside
                 .deviation_inside[index],
           }),
         )
 
-      dataCertificate.data.calibrations.calibration_result_outside.nominal_value_outside =
-        dataCertificate.data.calibrations.calibration_result_outside.nominal_value_outside.map(
+      dataCertificate.data.calibrations.calibration_result_outside =
+        dataCertificate.data.calibrations.calibration_result_outside.current_reading_outside.map(
           (item, index) => ({
-            nominal_value: item,
-            current_reading:
+            point: index === 0 ? '' : index % 2 === 0 ? 'Superior' : 'Inferior',
+            nominal_value:
               dataCertificate.data.calibrations.calibration_result_outside
-                .current_reading_outside[index],
+                .nominal_value_outside[index],
+            current_reading: item,
             deviation:
               dataCertificate.data.calibrations.calibration_result_outside
                 .deviation_outside[index],
