@@ -1028,12 +1028,16 @@ export class NI_MCIT_D_01Service {
       const current_reading_inside = []
       const deviation_inside = []
 
+      nominal_value_inside.push(sheet.cell('T41').value())
+
       nominal_value_inside.push(
         formatNumberCertification(
           sheet.cell('T42').value(),
           countDecimals(method.equipment_information.resolution),
         ),
       )
+
+      current_reading_inside.push(sheet.cell('W41').value())
 
       current_reading_inside.push(
         formatNumberCertification(
@@ -1048,6 +1052,8 @@ export class NI_MCIT_D_01Service {
           countDecimals(method.equipment_information.resolution),
         ),
       )
+
+      deviation_inside.push(sheet.cell('Z41').value())
 
       deviation_inside.push(
         formatNumberCertification(
@@ -1239,10 +1245,42 @@ export class NI_MCIT_D_01Service {
           }),
         )
 
+      // formateo de datos para el PDF es necesario este cambio
+
+      const tempInside =
+        dataCertificate.data.calibrations.calibration_result_inside
+          .nominal_value_inside
+      const tempInside2 =
+        dataCertificate.data.calibrations.calibration_result_inside
+          .deviation_inside
+
+      dataCertificate.data.calibrations.calibration_result_inside.nominal_value_inside =
+        []
+      dataCertificate.data.calibrations.calibration_result_inside.deviation_inside =
+        []
+
+      for (let i = 0; i < tempInside.length; i++) {
+        dataCertificate.data.calibrations.calibration_result_inside.nominal_value_inside.push(
+          tempInside[i],
+        )
+        dataCertificate.data.calibrations.calibration_result_inside.deviation_inside.push(
+          tempInside2[i],
+        )
+
+        if (i !== 0) {
+          dataCertificate.data.calibrations.calibration_result_inside.nominal_value_inside.push(
+            '',
+          )
+          dataCertificate.data.calibrations.calibration_result_inside.deviation_inside.push(
+            '',
+          )
+        }
+      }
+
       dataCertificate.data.calibrations.calibration_result_inside =
         dataCertificate.data.calibrations.calibration_result_inside.current_reading_inside.map(
           (item, index) => ({
-            point: index === 0 ? '' : index % 2 === 0 ? 'Superior' : 'Inferior',
+            point: index % 2 === 1 ? 'Superior' : 'Inferior',
             nominal_value:
               dataCertificate.data.calibrations.calibration_result_inside
                 .nominal_value_inside[index],
@@ -1254,10 +1292,41 @@ export class NI_MCIT_D_01Service {
           }),
         )
 
+      // formateo de datos para el PDF es necesario este cambio
+      const tempOutside =
+        dataCertificate.data.calibrations.calibration_result_outside
+          .nominal_value_outside
+      const tempOutside2 =
+        dataCertificate.data.calibrations.calibration_result_outside
+          .deviation_outside
+
+      dataCertificate.data.calibrations.calibration_result_outside.nominal_value_outside =
+        []
+      dataCertificate.data.calibrations.calibration_result_outside.deviation_outside =
+        []
+
+      for (let i = 0; i < tempOutside.length; i++) {
+        dataCertificate.data.calibrations.calibration_result_outside.nominal_value_outside.push(
+          tempOutside[i],
+        )
+        dataCertificate.data.calibrations.calibration_result_outside.deviation_outside.push(
+          tempOutside2[i],
+        )
+
+        if (i !== 0) {
+          dataCertificate.data.calibrations.calibration_result_outside.nominal_value_outside.push(
+            '',
+          )
+          dataCertificate.data.calibrations.calibration_result_outside.deviation_outside.push(
+            '',
+          )
+        }
+      }
+
       dataCertificate.data.calibrations.calibration_result_outside =
         dataCertificate.data.calibrations.calibration_result_outside.current_reading_outside.map(
           (item, index) => ({
-            point: index === 0 ? '' : index % 2 === 0 ? 'Superior' : 'Inferior',
+            point: index % 2 === 1 ? 'Superior' : 'Inferior',
             nominal_value:
               dataCertificate.data.calibrations.calibration_result_outside
                 .nominal_value_outside[index],
