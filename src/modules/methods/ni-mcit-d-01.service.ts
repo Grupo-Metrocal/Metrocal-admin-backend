@@ -149,7 +149,7 @@ export class NI_MCIT_D_01Service {
       }
 
       try {
-        this.dataSource.transaction(async (manager) => {
+        await this.dataSource.transaction(async (manager) => {
           await manager.save(method.equipment_information)
 
           if (increase) {
@@ -200,7 +200,7 @@ export class NI_MCIT_D_01Service {
       }
 
       try {
-        this.dataSource.transaction(async (manager) => {
+        await this.dataSource.transaction(async (manager) => {
           await manager.save(method.environmental_conditions)
           if (increase) {
             method.modification_number =
@@ -249,7 +249,7 @@ export class NI_MCIT_D_01Service {
       }
 
       try {
-        this.dataSource.transaction(async (manager) => {
+        await this.dataSource.transaction(async (manager) => {
           await manager.save(method.description_pattern)
           if (increase) {
             method.modification_number =
@@ -293,7 +293,7 @@ export class NI_MCIT_D_01Service {
       }
 
       try {
-        this.dataSource.transaction(async (manager) => {
+        await this.dataSource.transaction(async (manager) => {
           await manager.save(method.pre_installation_comment)
           if (increase) {
             method.modification_number =
@@ -338,7 +338,7 @@ export class NI_MCIT_D_01Service {
       }
 
       try {
-        this.dataSource.transaction(async (manager) => {
+        await this.dataSource.transaction(async (manager) => {
           await manager.save(method.instrument_zero_check)
           if (increase) {
             method.modification_number =
@@ -384,7 +384,7 @@ export class NI_MCIT_D_01Service {
         method.exterior_parallelism_measurement = newExteriorParaelismo
       }
       try {
-        this.dataSource.transaction(async (manager) => {
+        await this.dataSource.transaction(async (manager) => {
           await manager.save(method.exterior_parallelism_measurement)
           if (increase) {
             method.modification_number =
@@ -432,7 +432,7 @@ export class NI_MCIT_D_01Service {
       }
 
       try {
-        this.dataSource.transaction(async (manager) => {
+        await this.dataSource.transaction(async (manager) => {
           await manager.save(method.interior_parallelism_measurement)
           if (increase) {
             method.modification_number =
@@ -480,7 +480,7 @@ export class NI_MCIT_D_01Service {
         method.exterior_measurement_accuracy = newexteriorMeasurementAccuracy
       }
       try {
-        this.dataSource.transaction(async (manager) => {
+        await this.dataSource.transaction(async (manager) => {
           await manager.save(method.exterior_measurement_accuracy)
           method.status = 'done'
 
