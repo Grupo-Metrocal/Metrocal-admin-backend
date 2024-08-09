@@ -1,55 +1,19 @@
 <style>
-  .ni-mcit-t-01 {
-    display: flex;
-    flex-direction: column;
-    gap: 25px;
-  }
-  .id_certificate {
-    position: absolute;
-    top: 8.6in;
-    z-index: 100;
-  }
-  .equipment-information {
-    display: flex;
-    justify-content: space-between;
-    margin-top: 20px;
-  }
-  .equipment-information div {
-    width: 50%;
-    display: flex;
-    flex-direction: column;
-    gap: 5px;
-  }
-  .equipment-information .labels {
-    font-weight: bold;
-  }
-  table {
-    border-collapse: collapse;
-    width: 100%;
-  }
-  th,
-  td {
-    border: 1px solid #dddddd;
-    text-align: center;
-  }
-  .table-title {
-    border: 1px solid #dddddd;
-    text-align: center;
-  }
-  .enviromental-conditions {
-    display: flex;
-    justify-content: space-between;
-  }
-  .enviromental-conditions div {
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
-  }
+  .ni-mcit-t-01 { display: flex; flex-direction: column; gap: 25px; }
+  .id_certificate { position: absolute; top: 8.6in; z-index: 100; }
+  .equipment-information { display: flex; justify-content: space-between;
+  margin-top: 20px; } .equipment-information div { width: 50%; display: flex;
+  flex-direction: column; gap: 5px; } .equipment-information .labels {
+  font-weight: bold; } table { border-collapse: collapse; width: 100%; } th, td
+  { border: 1px solid #dddddd; text-align: center; } .table-title { border: 1px
+  solid #dddddd; text-align: center; } .enviromental-conditions { display: flex;
+  justify-content: space-between; } .enviromental-conditions div { display:
+  flex; flex-direction: column; gap: 10px; }
 </style>
 
-<div class="ni-mcit-t-01">
-  <div class="equipment-information">
-    <div class="labels">
+<div class='ni-mcit-t-01'>
+  <div class='equipment-information'>
+    <div class='labels'>
       <span>Identificación del certificado:</span>
       <span>Código de servicio:</span>
       <span>Fecha de calibración:</span>
@@ -65,10 +29,10 @@
       <span>Dirección del solicitante:</span>
       <span>Lugar de calibración:</span>
     </div>
-    <div class="values">
-      <span style="font-weight: bold"
-        >{{equipment_information.certification_code}}</span
-      >
+    <div class='values'>
+      <span
+        style='font-weight: bold'
+      >{{equipment_information.certification_code}}</span>
       <span>{{equipment_information.service_code}}</span>
       <span>{{equipment_information.calibration_date}}</span>
       <span>{{equipment_information.certificate_issue_date}}</span>
@@ -85,12 +49,12 @@
     </div>
   </div>
 
-  <div class="calibration-result" style="min-height: 130px">
+  <div class='calibration-result' style='min-height: 130px'>
     <strong><span>Resultados de la calibración</span></strong>
     <br />
     <table>
       <thead>
-        <caption class="table-title" colspan="5">
+        <caption class='table-title' colspan='5'>
           Tabla de resultados de calibración
         </caption>
         <tr>
@@ -104,70 +68,103 @@
       </thead>
       <tbody>
         {{#each calibrations.calibration_result as |data|}}
-        <tr>
-          <td>{{data.calibration_point}}</td>
-          <td>{{data.nominal_value}}</td>
-          <td>{{data.value}}</td>
-          <td>{{data.current_reading}}</td>
-          <td>{{data.deviation}}</td>
-          <td>{{data.uncertainty}}</td>
-        </tr>
+          <tr>
+            <td>{{data.calibration_point}}</td>
+            <td>{{data.nominal_value}}</td>
+            <td>{{data.value}}</td>
+            <td>{{data.current_reading}}</td>
+            <td>{{data.deviation}}</td>
+            <td>{{data.uncertainty}}</td>
+          </tr>
         {{/each}}
       </tbody>
     </table>
   </div>
 
-  <div class="result_unid_system" style="min-height: 130px">
+  <div class='result_unid_system' style='min-height: 130px'>
     <strong><span>Caras de medición de exteriores</span></strong>
     <br />
     <table>
       <thead>
         <tr>
-          <th rowspan="2">Puntos</th>
+          <th rowspan='2'>Puntos</th>
           <th>Valor nominal</th>
           <th>Lectura actual</th>
           <th>Desviación</th>
         </tr>
+        <tr>
+          {{#each calibrations.calibration_result_outside as |data|}}
+            {{#eq @index 0}}
+              <td>{{data.nominal_value}}</td>
+              <td>{{data.current_reading}}</td>
+              <td>{{data.deviation}}</td>
+            {{/eq}}
+          {{/each}}
+        </tr>
       </thead>
       <tbody>
         {{#each calibrations.calibration_result_outside as |data|}}
-        <tr>
-          <td>{{data.point}}</td>
-          <td>{{data.nominal_value}}</td>
-          <td>{{data.current_reading}}</td>
-          <td>{{data.deviation}}</td>
-        </tr>
+          {{#ne @index 0}}
+            <tr>
+              <td>{{data.point}}</td>
+              {{#isNotEven @index}}
+                <td rowspan='2'>{{data.nominal_value}}</td>
+              {{/isNotEven}}
+              <td>{{data.current_reading}}</td>
+              {{#isNotEven @index}}
+                <td rowspan='2'>{{data.deviation}}</td>
+              {{/isNotEven}}
+            </tr>
+          {{/ne}}
         {{/each}}
       </tbody>
     </table>
   </div>
 
-  <div class="result_unid_system" style="min-height: 130px">
+  <br /><br /><br />
+  <br />
+
+  <div class='result_unid_system' style='min-height: 130px'>
     <strong><span>Caras de medición de interiores</span></strong>
     <br />
     <table>
       <thead>
         <tr>
-          <th>Puntos</th>
+          <th rowspan='2'>Puntos</th>
           <th>Valor nominal</th>
           <th>Lectura actual</th>
           <th>Desviación</th>
         </tr>
+        <tr>
+          {{#each calibrations.calibration_result_inside as |data|}}
+            {{#eq @index 0}}
+              <td>{{data.nominal_value}}</td>
+              <td>{{data.current_reading}}</td>
+              <td>{{data.deviation}}</td>
+            {{/eq}}
+          {{/each}}
+        </tr>
       </thead>
       <tbody>
         {{#each calibrations.calibration_result_inside as |data|}}
-        <tr>
-          <td>{{data.point}}</td>
-          <td>{{data.nominal_value}}</td>
-          <td>{{data.current_reading}}</td>
-          <td>{{data.deviation}}</td>
-        </tr>
+          {{#ne @index 0}}
+            <tr>
+              <td>{{data.point}}</td>
+              {{#isNotEven @index}}
+                <td rowspan='2'>{{data.nominal_value}}</td>
+              {{/isNotEven}}
+              <td>{{data.current_reading}}</td>
+              {{#isNotEven @index}}
+                <td rowspan='2'>{{data.deviation}}</td>
+              {{/isNotEven}}
+            </tr>
+          {{/ne}}
         {{/each}}
       </tbody>
     </table>
   </div>
 
-  <div class="enviromental-conditions">
+  <div class='enviromental-conditions'>
     <div>
       <strong><span>Condiciones ambientales</span></strong>
       <span>{{environmental_conditions.temperature}}</span>
@@ -175,16 +172,14 @@
     </div>
   </div>
 
-  <div class="calibration-method">
+  <div class='calibration-method'>
     <strong><span>Método de calibración</span></strong>
     <br />
-    <span
-      >Las pruebas se realizaron según NI-MCIT-D-01 Instrucción para calibración
-      de calibradores universales.</span
-    >
+    <span>Las pruebas se realizaron según NI-MCIT-D-01 Instrucción para
+      calibración de calibradores universales.</span>
   </div>
 
-  <div class="uncertainty">
+  <div class='uncertainty'>
     <strong><span>Incertidumbre de los datos</span></strong>
     <br />
     <span>
@@ -199,18 +194,18 @@
     </span>
   </div>
 
-  <div class="used_pattern">
+  <div class='used_pattern'>
     <strong><span>Descripción de patrones utilizados</span></strong>
     <br />
 
     <table>
       <thead>
         <tr>
-          <th style="background-color: #dddddd">Equipo</th>
-          <th style="background-color: #dddddd">Código</th>
-          <th style="background-color: #dddddd">Certificado</th>
-          <th style="background-color: #dddddd">Trazabilidad</th>
-          <th style="background-color: #dddddd">Próxima calibración</th>
+          <th style='background-color: #dddddd'>Equipo</th>
+          <th style='background-color: #dddddd'>Código</th>
+          <th style='background-color: #dddddd'>Certificado</th>
+          <th style='background-color: #dddddd'>Trazabilidad</th>
+          <th style='background-color: #dddddd'>Próxima calibración</th>
         </tr>
       </thead>
       <tbody>
@@ -229,7 +224,7 @@
     </table>
   </div>
 
-  <div class="observations">
+  <div class='observations'>
     <strong><span>Observaciones</span></strong>
     <br />
     <span> {{observations}} </span>
@@ -237,8 +232,8 @@
 </div>
 
 <div
-  class="id_certificate"
-  style="display: flex; justify-content: space-between; width: 90%"
+  class='id_certificate'
+  style='display: flex; justify-content: space-between; width: 90%'
 >
   <strong><span>Identificación del certificado:</span></strong>
   <strong><span>{{equipment_information.certification_code}}</span></strong>
