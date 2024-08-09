@@ -19,6 +19,9 @@ const helpers: HelperDeclareSpec = {
   eq: (a: any, b: any, options: any) => {
     return a === b ? options.fn(this) : options.inverse(this)
   },
+  ne: (a: any, b: any, options: any) => {
+    return a !== b ? options.fn(this) : options.inverse(this)
+  },
   ltArray: (array: any, b: any, options: any) => {
     return array.length < b ? options.fn(this) : options.inverse(this)
   },
@@ -27,6 +30,9 @@ const helpers: HelperDeclareSpec = {
   },
   isEven: (n: any, options: any) => {
     return n % 2 === 0 ? options.fn(this) : options.inverse(this)
+  },
+  isNotEven: (n: any, options: any) => {
+    return n % 2 !== 0 ? options.fn(this) : options.inverse(this)
   },
 }
 
