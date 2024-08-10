@@ -797,7 +797,7 @@ export class NI_MCIT_D_02Service {
           ),
         )
 
-        const uncertaintyValue = sheet.cell(`Q${30 + i}`).value()
+        const uncertaintyValue = sheet.cell(`W${30 + i}`).value()
         uncertainty.push(
           this.methodService.getSignificantFigure(uncertaintyValue),
         )
@@ -819,7 +819,6 @@ export class NI_MCIT_D_02Service {
         i++
       ) {
         const code = method.description_pattern.descriptionPattern[i]
-
         const patternService = await this.patternsService.findByCodeAndMethod(
           code,
           'NI-MCIT-D-02',
@@ -883,6 +882,7 @@ export class NI_MCIT_D_02Service {
 
       return handleOK(certificate)
     } catch (error) {
+      console.log(error)
       return handleInternalServerError('Error al generar el archivo')
     }
   }
