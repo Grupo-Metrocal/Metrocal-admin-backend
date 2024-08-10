@@ -63,7 +63,25 @@
     "next_calibration": "2024-04-15"
   },
   {
+    "method": "NI-MCIT-D-02",
+    "equipment": "Micrómetro",
+    "code": "NI-MCPD-01",
+    "certificate": "SCM-00039459",
+    "traceability": "SCM",
+    "pattern_range": "0 mm a 25 mm",
+    "next_calibration": "2024-04-15"
+  },
+  {
     "method": "NI-MCIT-D-01",
+    "equipment": "Pie de Rey",
+    "code": "NI-MCPD-02",
+    "certificate": "SCM-00039460",
+    "traceability": "SCM",
+    "pattern_range": "0 mm a 200 mm",
+    "next_calibration": "27/9/2024"
+  },
+  {
+    "method": "NI-MCIT-D-02",
     "equipment": "Pie de Rey",
     "code": "NI-MCPD-02",
     "certificate": "SCM-00039460",
