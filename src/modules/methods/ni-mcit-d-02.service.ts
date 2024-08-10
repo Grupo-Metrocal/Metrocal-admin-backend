@@ -34,6 +34,13 @@ import { CertificateService } from '../certificate/certificate.service'
 import { formatDate } from 'src/utils/formatDate'
 import { MailService } from '../mail/mail.service'
 import { CertificationDetailsDto } from './dto/NI_MCIT_P_01/certification_details.dto'
+import {
+  formatNumberCertification,
+  formatSameNumberCertification,
+} from 'src/utils/formatNumberCertification'
+import { countDecimals } from 'src/utils/countDecimal'
+import { MethodsService } from './methods.service'
+import { formatCertCode } from 'src/utils/generateCertCode'
 
 @Injectable()
 export class NI_MCIT_D_02Service {
@@ -65,6 +72,9 @@ export class NI_MCIT_D_02Service {
     private readonly pdfService: PdfService,
     @Inject(forwardRef(() => MailService))
     private readonly mailService: MailService,
+
+    @Inject(forwardRef(() => MethodsService))
+    private readonly methodService: MethodsService,
   ) {}
 
   async create() {
@@ -738,214 +748,121 @@ export class NI_MCIT_D_02Service {
       const dataActivity =
         await this.activitiesService.getActivityById(activityID)
 
-      const { data: activity } = dataActivity as { data: Activity }
-
-      const dataClient = activity.quote_request.client
-      const dataQuote = activity.quote_request
-
-      const workbook2 = await XlsxPopulate.fromFileAsync(method.certificate_url)
-      const sheetDA3 = workbook2.sheet('DA (mm)')
-      const sheetFA4 = workbook2.sheet('FA (mm)')
-
-      //recoleccion de daotos de DA (mm)
-      const dataResultCalibrationDAmm = []
-      //temperatura
-      let temperatura1DA = sheetDA3.cell('G45').value()
-      let temperatura2DA = sheetDA3.cell('J45').value()
-      let humedad1DA = sheetDA3.cell('G46').value()
-      let humedad2DA = sheetDA3.cell('J46').value()
-      if (method.pre_installation_comment.accredited) {
-        //Prueba de exactitud
-        let filaDAmm = 31
-        let filaStopDAmm = 42
-        const columna_resultados_calibacion = ['C', 'F', 'K', 'Q', 'W']
-        for (let i = filaDAmm; i <= filaStopDAmm; i++) {
-          let data = {}
-          columna_resultados_calibacion.forEach((column) => {
-            let value = sheetDA3.cell(`${column}${i}`).value()
-            if (!isNaN(value)) {
-              if (column == 'C') {
-                value = parseFloat(value).toFixed(1)
-              }
-              if (column == 'F') {
-                value = parseFloat(value).toFixed(5)
-              }
-              if (column == 'K') {
-                value = parseFloat(value).toFixed(3)
-              }
-              if (column == 'Q') {
-                value = parseFloat(value).toFixed(1)
-              }
-              if (column == 'W') {
-                value = parseFloat(value).toFixed(1)
-              }
-            }
-            data[column] = value
-          })
-          dataResultCalibrationDAmm.push(data)
-        }
+      if (!dataActivity.success) {
+        return handleInternalServerError('La actividad no existe')
       }
 
-      const dataResultCalibrationFAmm = []
-      let temperatura1FA = sheetDA3.cell('G45').value()
-      let temperatura2FA = sheetDA3.cell('J45').value()
-      let humedad1FA = sheetDA3.cell('G46').value()
-      let humedad2FA = sheetDA3.cell('J46').value()
-      if (!method.pre_installation_comment.accredited) {
-        //Prueba de exactitud
-        let filaFAmm = 30
-        let filaStopFAmm = 36
-        const columna_resultados_calibacion = ['C', 'F', 'K', 'Q', 'W']
-        for (let i = filaFAmm; i <= filaStopFAmm; i++) {
-          let data = {}
-          columna_resultados_calibacion.forEach((column) => {
-            let value = sheetFA4.cell(`${column}${i}`).value()
-            if (!isNaN(value)) {
-              if (column == 'C') {
-                value = parseFloat(value).toFixed(1)
-              }
-              if (column == 'F') {
-                value = parseFloat(value).toFixed(5)
-              }
-              if (column == 'K') {
-                value = parseFloat(value).toFixed(3)
-              }
-              if (column == 'Q') {
-                value = parseFloat(value).toFixed(1)
-              }
-              if (column == 'W') {
-                value = parseFloat(value).toFixed(1)
-              }
-            }
-            data[column] = value
-          })
-          dataResultCalibrationFAmm.push(data)
-        }
+      const activity = dataActivity.data
+
+      const workbook = await XlsxPopulate.fromFileAsync(method.certificate_url)
+
+      const sheet = workbook.sheet('DA (mm)')
+
+      const nominal_value = []
+      const current_length = []
+      const current_reading = []
+      const deviation = []
+      const uncertainty = []
+
+      for (let i = 0; i <= method.accuracy_test.measureD02.length; i++) {
+        const nominal_valueValue = sheet.cell(`C${30 + i}`).value()
+        nominal_value.push(
+          formatNumberCertification(
+            nominal_valueValue,
+            countDecimals(method.equipment_information.resolution),
+          ),
+        )
+
+        const current_lengthValue = sheet.cell(`F${30 + i}`).value()
+        current_length.push(
+          formatNumberCertification(
+            current_lengthValue,
+            countDecimals(method.equipment_information.resolution),
+          ),
+        )
+
+        const current_readingValue = sheet.cell(`K${30 + i}`).value()
+        current_reading.push(
+          formatNumberCertification(
+            current_readingValue,
+            countDecimals(method.equipment_information.resolution),
+          ),
+        )
+
+        const deviationValue = sheet.cell(`Q${30 + i}`).value()
+        deviation.push(
+          formatNumberCertification(
+            deviationValue,
+            countDecimals(method.equipment_information.resolution),
+          ),
+        )
+
+        const uncertaintyValue = sheet.cell(`Q${30 + i}`).value()
+        uncertainty.push(
+          this.methodService.getSignificantFigure(uncertaintyValue),
+        )
       }
 
-      const patronsUtilizados = []
-
-      //Datos de la certificacion
-      const serviceCode = generateServiceCodeToMethod(method.id)
-      const dataNI_MCIT_D_02 = {
-        client: {
-          Empresa: dataClient.company_name,
-          fechaCalibracion: formatDate(method.equipment_information.date),
-          LugarCalibracion: dataClient.address,
-          Codigo: dataQuote.no,
-          fechaCertificado: formatDate(Date.now().toString()),
-        },
-        patronsUtilizados,
-      }
-
-      const methodAcredited = await this.NI_MCIT_D_02Repository.findOne({
-        where: { id: methodID },
-      })
-
-      let dataDA
-      if (method.pre_installation_comment.accredited) {
-        dataDA = {
-          datosCabecera: {
-            identificacionServicio: methodAcredited.certificate_code,
-            codigoServicio: serviceCode,
-            fechaCalibracion: formatDate(method.equipment_information.date),
-            fechaEmision: formatDate(new Date().toString()),
-            objetocalibracion: method.equipment_information.device || '---',
-            marca: method.equipment_information.maker || '---',
-            serie: method.equipment_information.serial_number || '---',
-            modelo: method.equipment_information.model || '---',
-            rango: method.equipment_information.measurement_range || '---',
-            resolucion: method.equipment_information.resolution || '---',
-            codigoIdentificacion: method.equipment_information.code,
-            solicitante: method?.applicant_name || dataClient.company_name,
-            direccion: method?.applicant_address || dataClient.address,
-            lugarCalibracion: method.calibration_location,
-          },
-          temperatura1DA,
-          temperatura2DA,
-          humedad1DA,
-          humedad2DA,
-          dataResultCalibrationDAmm,
-          acreedited: method.pre_installation_comment.accredited,
-        }
-      } else {
-        dataDA = {
-          datosCabecera: {
-            codigoServicio: serviceCode,
-            fechaCalibracion: formatDate(method.equipment_information.date),
-            fechaEmision: formatDate(new Date().toString()),
-            objetocalibracion: method.equipment_information.device || '---',
-            marca: method.equipment_information.maker || '---',
-            serie: method.equipment_information.serial_number || '---',
-            modelo: method.equipment_information.model || '---',
-            rango: method.equipment_information.measurement_range || '---',
-            resolucion: method.equipment_information.resolution || '---',
-            codigoIdentificacion: method.equipment_information.code,
-            solicitante: method?.applicant_name || dataClient.company_name,
-            direccion: method?.applicant_address || dataClient.address,
-            lugarCalibracion: method.calibration_location,
-          },
-          temperatura1FA,
-          temperatura2FA,
-          humedad1FA,
-          humedad2FA,
-          dataResultCalibrationFAmm,
-          acreedited: method.pre_installation_comment.accredited,
-        }
+      const calibration_result = {
+        nominal_value,
+        current_length,
+        current_reading,
+        deviation,
+        uncertainty: this.methodService.formatUncertainty(uncertainty),
       }
 
       const certificate = {
         pattern: 'NI-MCIT-D-02',
         email: activity.quote_request.client.email,
         equipment_information: {
-          certification_code: method.certificate_code || '---',
+          certification_code: formatCertCode(
+            method.certificate_code,
+            method.modification_number,
+          ),
           service_code: activity.quote_request.no,
           certificate_issue_date: formatDate(new Date().toString()),
           calibration_date: formatDate(activity.updated_at.toString()),
-          object_calibrated: method.equipment_information.device || '---',
-          maker: method.equipment_information.maker || '---',
-          serial_number: method.equipment_information.serial_number || '---',
-          model: method.equipment_information.model || '---',
+          object_calibrated: method.equipment_information.device || 'N/A',
+          maker: method.equipment_information.maker || 'N/A',
+          serial_number: method.equipment_information.serial_number || 'N/A',
+          model: method.equipment_information.model || 'N/A',
           measurement_range:
-            method.equipment_information.measurement_range || '---',
-          resolution: method.equipment_information.resolution || '---',
-          identification_code: method.equipment_information.code || '---',
+            method.equipment_information.measurement_range || 'N/A',
+          resolution:
+            `${formatSameNumberCertification(method.equipment_information.resolution)} ${sheet.cell('Q17').value()}` ||
+            'N/A',
+          code: method.equipment_information.code || 'N/A',
           applicant:
-            method?.applicant_address ||
+            method?.applicant_name ||
             activity.quote_request.client.company_name,
           address:
             method?.applicant_address || activity.quote_request.client.address,
           calibration_location: method.calibration_location || '---',
         },
+        calibration_result,
         environmental_conditions: {
-          temperature: temperatura1DA,
-          humidity: humedad1DA,
-          temperature2: temperatura2DA,
-          humidity2: humedad2DA,
-        },
-        calibration_results: {
-          calibration_accuracy_tests: dataResultCalibrationDAmm,
+          temperature: `Temperatura: ${formatNumberCertification(
+            sheet.cell('G45').value(),
+            1,
+          )} ± ${formatNumberCertification(Number(Number(sheet.cell('J45').value()).toFixed(1)))} °C`,
+          humidity: `Humedad relativa: ${formatNumberCertification(
+            sheet.cell('G46').value(),
+            1,
+          )} ± ${formatNumberCertification(sheet.cell('J46').value(), 1)} % HR`,
         },
         creditable: method.pre_installation_comment.accredited,
-        description_pattern: method.description_pattern.descriptionPattern,
+        descriptionPattern: {},
         observations: `
-          ${method.pre_installation_comment.comment || ''}
-          Es responsabilidad del encargado del instrumento establecer la frecuencia del servicio de calibración.
-          La corrección corresponde al valor del patrón menos las indicación del equipo.																														
-          La indicación del equipo corresponde al promedio de 3 mediciones en cada punto de calibración.																														
-          Los resultados emitidos en este certificado corresponden únicamente al objeto calibrado y a las magnitudes especificadas al momento de realizar el servicio.																														
-          Este certificado de calibración no debe ser reproducido sin la aprobación del laboratorio, excepto cuando se reproduce en su totalidad.
+        ${method.pre_installation_comment.comment}
+        Es responsabilidad del encargado del instrumento establecer la frecuencia del servicio de calibración.
+        La corrección corresponde al valor del patrón menos las indicación del equipo.
+        La indicación del equipo corresponde al promedio de 3 mediciones en cada punto de calibración.
+        Los resultados emitidos en este certificado corresponden únicamente al objeto calibrado y a las magnitudes especificadas al momento de realizar el servicio.
+        Este certificado de calibración no debe ser reproducido sin la aprobación del laboratorio, excepto cuando se reproduce en su totalidad.
         `,
       }
 
-      const CertificateData = {
-        dataNI_MCIT_D_02,
-        dataDA,
-        creditable: method.pre_installation_comment.accredited,
-        certificate: certificate,
-      }
-
-      return handleOK(CertificateData)
+      return handleOK(certificate)
     } catch (error) {
       return handleInternalServerError('Error al generar el archivo')
     }
