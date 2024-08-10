@@ -679,7 +679,7 @@ export class MethodsService {
   getSignificantFigure(number: number) {
     const convertNumber = typeof number === 'string' ? Number(number) : number
 
-    if (isNaN(convertNumber)) {
+    if (isNaN(convertNumber) || convertNumber === 0) {
       return number
     }
 
@@ -745,6 +745,10 @@ export class MethodsService {
 
   formatUncertainty(uncertainty: number[]) {
     return uncertainty.map((value) => {
+      if (value === 0) {
+        return value
+      }
+
       const decimal = value.toString().split('.')[1]
       return typeof value === 'number'
         ? value >= 10
