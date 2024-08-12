@@ -15,7 +15,6 @@ import { InstrumentZeroCheckNI_MCIT_D_02Dto } from './dto/NI_MCIT_D_02/d02instru
 import { InstrumentZeroCheckNI_MCIT_D_02 } from './entities/NI_MCIT_D_02/steps/d02instrument_zero_check.entity'
 import { AccuracyTestNI_MCIT_D_02Dto } from './dto/NI_MCIT_D_02/d02accuracy_test.dto'
 import { AccuracyTestNI_MCIT_D_02 } from './entities/NI_MCIT_D_02/steps/d02accuracy_test.entity'
-import { executeTransaction } from 'src/utils/executeTransaction'
 import { ActivitiesService } from '../activities/activities.service'
 import { Activity } from '../activities/entities/activities.entity'
 import { PatternsService } from '../patterns/patterns.service'
@@ -29,7 +28,6 @@ import {
   getPositionNominal,
 } from './dto/NI_MCIT_D_02/d02PositionBPDto'
 import { exec } from 'child_process'
-import { generateServiceCodeToMethod } from 'src/utils/codeGenerator'
 import { CertificateService } from '../certificate/certificate.service'
 import { formatDate } from 'src/utils/formatDate'
 import { MailService } from '../mail/mail.service'
@@ -909,32 +907,38 @@ export class NI_MCIT_D_02Service {
         return handleInternalServerError('El método no existe')
       }
 
-      let CertificateData: any
+      let dataCertificate: any
 
       if (!fs.existsSync(method.certificate_url) || generatePDF) {
-        CertificateData = await this.generateCertificateData({
+        dataCertificate = await this.generateCertificateData({
           activityID,
           methodID,
         })
       } else {
-        CertificateData = await this.getCertificateResult(methodID, activityID)
+        dataCertificate = await this.getCertificateResult(methodID, activityID)
       }
 
-      let PDF: any
+      dataCertificate.data.calibration_result =
+        dataCertificate.data.calibration_result.nominal_value.map(
+          (item, index) => {
+            return {
+              nominal_value: item,
+              current_length:
+                dataCertificate.data.calibration_result.current_length[index],
+              current_reading:
+                dataCertificate.data.calibration_result.current_reading[index],
+              deviation:
+                dataCertificate.data.calibration_result.deviation[index],
+              uncertainty:
+                dataCertificate.data.calibration_result.uncertainty[index],
+            }
+          },
+        )
 
-      if (method.pre_installation_comment.accredited) {
-        PDF = await this.pdfService.generateCertificatePdf(
-          '/certificates/NI_CMIT_D_02/certificadoD02_1.hbs',
-          // method.pre_installation_comment.accredited,
-          CertificateData.data,
-        )
-      } else {
-        PDF = await this.pdfService.generateCertificatePdf(
-          '/certificates/NI_CMIT_D_02/certificadoD02_2.hbs',
-          // method.pre_installation_comment.accredited,
-          CertificateData.data,
-        )
-      }
+      const PDF = await this.pdfService.generateCertificatePdf(
+        '/certificates/d-02.hbs',
+        dataCertificate.data,
+      )
 
       if (!PDF) {
         return handleInternalServerError('Error al generar el PDF')
@@ -942,7 +946,8 @@ export class NI_MCIT_D_02Service {
 
       return handleOK({
         pdf: PDF,
-        client_email: CertificateData,
+        client_email: dataCertificate.data.email,
+        fileName: `Certificado-${dataCertificate.data.equipment_information.object_calibrated}-${dataCertificate.data.equipment_information.certification_code}.pdf`,
       })
     } catch (error) {
       return handleInternalServerError('Error al generar el PDF')
