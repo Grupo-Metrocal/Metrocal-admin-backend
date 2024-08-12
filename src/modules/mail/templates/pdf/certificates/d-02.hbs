@@ -1,0 +1,155 @@
+<style>
+  .ni-mcit-d-02 { display: flex; flex-direction: column; gap: 25px; }
+  .id_certificate { position: absolute; top: 8.6in; z-index: 100; }
+  .equipment-information { display: flex; justify-content: space-between;
+  margin-top: 20px; } .equipment-information div { width: 50%; display: flex;
+  flex-direction: column; gap: 5px; } .equipment-information .labels {
+  font-weight: bold; } table { border-collapse: collapse; width: 100%; } th, td
+  { border: 1px solid #dddddd; text-align: center; } .table-title { border: 1px
+  solid #dddddd; text-align: center; } .enviromental-conditions { display: flex;
+  justify-content: space-between; } .enviromental-conditions div { display:
+  flex; flex-direction: column; gap: 10px; }
+</style>
+
+<div class='ni-mcit-d-02'>
+  <div class='equipment-information'>
+    <div class='labels'>
+      <span>Identificación del certificado:</span>
+      <span>Código de servicio:</span>
+      <span>Fecha de calibración:</span>
+      <span>Fecha de emisión de certificado:</span>
+      <span>Objeto de calibración:</span>
+      <span>Fabricante/Marca:</span>
+      <span>Serie:</span>
+      <span>Modelo:</span>
+      <span>Rango de medida:</span>
+      <span>Resolución</span>
+      <span>Código de identificación:</span>
+      <span>Solicitante:</span>
+      <span>Dirección del solicitante:</span>
+      <span>Lugar de calibración:</span>
+    </div>
+    <div class='values'>
+      <span
+        style='font-weight: bold'
+      >{{equipment_information.certification_code}}</span>
+      <span>{{equipment_information.service_code}}</span>
+      <span>{{equipment_information.calibration_date}}</span>
+      <span>{{equipment_information.certificate_issue_date}}</span>
+      <span>{{equipment_information.object_calibrated}}</span>
+      <span>{{equipment_information.maker}}</span>
+      <span>{{equipment_information.serial_number}}</span>
+      <span>{{equipment_information.model}}</span>
+      <span>{{equipment_information.measurement_range}}</span>
+      <span>{{equipment_information.resolution}}</span>
+      <span>{{equipment_information.code}}</span>
+      <span>{{equipment_information.applicant}}</span>
+      <span>{{equipment_information.address}}</span>
+      <span>{{equipment_information.calibration_location}}</span>
+    </div>
+  </div>
+
+  <div class='calibration-result' style='min-height: 130px'>
+    <strong><span>Resultados de la calibración</span></strong>
+    <br />
+    <table>
+      <thead>
+        <caption class='table-title' colspan='5'>
+          Prueba de Exactitud
+        </caption>
+        <tr>
+          <th>Valor Nominal</th>
+          <th>Longitud Real</th>
+          <th>Lectura Actual</th>
+          <th>Desviación</th>
+          <th>Incertidumbre Expandida k=2</th>
+        </tr>
+      </thead>
+      <tbody>
+        {{#each calibration_result as |data|}}
+          <tr>
+            <td>{{data.nominal_value}}</td>
+            <td>{{data.current_length}}</td>
+            <td>{{data.current_reading}}</td>
+            <td>{{data.deviation}}</td>
+            <td>{{data.uncertainty}}</td>
+          </tr>
+        {{/each}}
+      </tbody>
+    </table>
+  </div>
+
+  <div class='enviromental-conditions'>
+    <div>
+      <strong><span>Condiciones ambientales</span></strong>
+      <span>{{environmental_conditions.temperature}}</span>
+      <span>{{environmental_conditions.humidity}}</span>
+    </div>
+  </div>
+
+  <div class='calibration-method'>
+    <strong><span>Método de calibración</span></strong>
+    <br />
+    <span>Las pruebas se realizaron según NI-MCIT-D-02 Instrucción para
+      calibración de micrómetros para medición de exteriores.</span>
+  </div>
+
+  <div class='uncertainty'>
+    <strong><span>Incertidumbre de los datos</span></strong>
+    <br />
+    <span>
+      La incertidumbre de las medición se obtuvo multiplicando la incertidumbre
+      estándar combinada por un factor de cobertura k = 2, con el que se alcanza
+      un nivel de confianza de aproximadamente el 95 %. La incertidumbre
+      estándar de la medición se determinó conforme a Guía para la Expresión de
+      la Incertidumbre de la Medida, BIPM-IEC-IFCC-ISO-IUPAC-IUPAP-OIML, en la
+      cual se toma en cuenta la incertidumbre de los patrones, del método de
+      calibración, de los factores de influencia durante la calibración y del
+      equipo sujeto a calibración.
+    </span>
+  </div>
+
+  <div class='used_pattern'>
+    <strong><span>Descripción de patrones utilizados</span></strong>
+    <br />
+
+    <table>
+      <thead>
+        <tr>
+          <th style='background-color: #dddddd'>Equipo</th>
+          <th style='background-color: #dddddd'>Código</th>
+          <th style='background-color: #dddddd'>Certificado</th>
+          <th style='background-color: #dddddd'>Trazabilidad</th>
+          <th style='background-color: #dddddd'>Próxima calibración</th>
+        </tr>
+      </thead>
+      <tbody>
+        {{#each descriptionPattern as |data|}}
+          <tr>
+            <td>{{data.equipment}}</td>
+            <td>{{data.code}}</td>
+            <td>{{data.certificate}}</td>
+            <td>{{data.traceability}}</td>
+            <td>{{data.next_calibration}}</td>
+          </tr>
+        {{/each}}
+      </tbody>
+
+      <tbody></tbody>
+    </table>
+  </div>
+
+  <div class='observations'>
+    <strong><span>Observaciones</span></strong>
+    <br />
+    <span> {{observations}} </span>
+  </div>
+</div>
+
+<div
+  class='id_certificate'
+  style='display: flex; justify-content: space-between; width: 90%'
+>
+  <strong><span>Identificación del certificado:</span></strong>
+  <strong><span>{{equipment_information.certification_code}}</span></strong>
+</div>
