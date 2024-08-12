@@ -49,7 +49,7 @@
     </div>
   </div>
 
-  <div class='calibration-result' style='min-height: 130px'>
+  <div class='calibration-result' style='min-height: 160px;'>
     <strong><span>Resultados de la calibración</span></strong>
     <br />
     <table>
@@ -108,6 +108,54 @@
       equipo sujeto a calibración.
     </span>
   </div>
+
+  {{#ltArray calibration_result 6}}
+    <br />
+    <br />
+    <br />
+    <br />
+    <br />
+    <br />
+  {{/ltArray}}
+
+  {{#ifArrayEq calibration_result 6}}
+    <br />
+    <br />
+    <br />
+    <br />
+    <br />
+    <br />
+  {{/ifArrayEq}}
+
+  {{#ifArrayEq calibration_result 7}}
+    <br />
+    <br />
+    <br />
+    <br />
+    <br />
+  {{/ifArrayEq}}
+
+  {{#ifArrayEq calibration_result 8}}
+    <br />
+    <br />
+    <br />
+    <br />
+  {{/ifArrayEq}}
+
+  {{#ifArrayEq calibration_result 9}}
+    <br />
+    <br />
+    <br />
+  {{/ifArrayEq}}
+
+  {{#ifArrayEq calibration_result 10}}
+    <br />
+    <br />
+  {{/ifArrayEq}}
+
+  {{#ifArrayEq calibration_result 11}}
+    <br />
+  {{/ifArrayEq}}
 
   <div class='used_pattern'>
     <strong><span>Descripción de patrones utilizados</span></strong>
