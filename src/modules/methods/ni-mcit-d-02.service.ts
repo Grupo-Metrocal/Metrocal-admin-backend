@@ -1081,4 +1081,26 @@ export class NI_MCIT_D_02Service {
       return handleInternalServerError(error.message)
     }
   }
+
+  async sendCertificateToClient(activityID: number, methodID: number) {
+    try {
+      const data = await this.generatePDFCertificate(activityID, methodID, true)
+
+      if (!data.success) {
+        return data
+      }
+
+      const { pdf, client_email, fileName } = data.data as any
+
+      await this.mailService.sendMailCertification({
+        user: client_email,
+        pdf,
+        fileName,
+      })
+
+      return handleOK('Certificado enviado con exito')
+    } catch (error) {
+      return handleInternalServerError(error.message)
+    }
+  }
 }
