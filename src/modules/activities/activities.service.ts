@@ -932,8 +932,12 @@ export class ActivitiesService {
       let previousMonthIncome = 0
 
       for (const activity of response) {
+        if (!activity.quote_request) {
+          continue
+        }
+
         if (activity.created_at.getMonth() === new Date().getMonth()) {
-          currentMonthIncome += activity.quote_request.price
+          currentMonthIncome += activity.quote_request?.price || 0
         }
 
         if (
@@ -994,6 +998,7 @@ export class ActivitiesService {
 
       return handleOK(dataCertificates)
     } catch (error) {
+      console.error({ error })
       return handleInternalServerError(error.message)
     }
   }
