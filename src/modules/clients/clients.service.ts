@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common'
+import { forwardRef, Inject, Injectable } from '@nestjs/common'
 import { InjectRepository } from '@nestjs/typeorm'
 import { ILike, Repository } from 'typeorm'
 import { Client } from './entities/client.entity'
@@ -11,6 +11,7 @@ import {
   handleOK,
   handlePaginate,
 } from 'src/common/handleHttp'
+import { QuotesService } from '../quotes/quotes.service'
 
 @Injectable()
 export class ClientsService {
@@ -19,6 +20,9 @@ export class ClientsService {
     private readonly clientRepository: Repository<Client>,
     @InjectRepository(QuoteRequest)
     private readonly quoteRequestRepository: Repository<QuoteRequest>,
+
+    @Inject(forwardRef(() => QuotesService))
+    private readonly quoteRequestService: QuotesService,
     private readonly dataSource: DataSource,
   ) {}
 
@@ -83,7 +87,10 @@ export class ClientsService {
 
       try {
         await this.dataSource.transaction(async (manager) => {
-          await manager.remove(equipmentQuoteRequest)
+          for (const quoteRequest of equipmentQuoteRequest) {
+            await this.quoteRequestService.deleteQuoteRequest(quoteRequest.id)
+          }
+
           await manager.remove(client)
         })
       } catch (error) {
