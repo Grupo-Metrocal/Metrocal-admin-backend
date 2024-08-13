@@ -86,21 +86,23 @@ export class ActivitiesService {
         ],
       })
 
-      const data = response.map((activity) => {
-        const teamMembers = activity.team_members.map((member) => {
+      const data = response
+        .filter((activity) => activity.quote_request)
+        .map((activity) => {
+          const teamMembers = activity.team_members.map((member) => {
+            return {
+              id: member.id,
+              username: member.username,
+              email: member.email,
+              imageURL: member.imageURL,
+            }
+          })
+
           return {
-            id: member.id,
-            username: member.username,
-            email: member.email,
-            imageURL: member.imageURL,
+            ...activity,
+            team_members: teamMembers,
           }
         })
-
-        return {
-          ...activity,
-          team_members: teamMembers,
-        }
-      })
 
       return handleOK(data)
     } catch (error) {
