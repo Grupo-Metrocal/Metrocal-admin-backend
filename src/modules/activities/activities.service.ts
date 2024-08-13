@@ -654,50 +654,57 @@ export class ActivitiesService {
         ],
       })
 
-      const data = response.map((activity) => {
-        return {
-          id: activity.id,
-          created_at: activity.created_at,
-          updated_at: activity.updated_at,
-          responsable: activity.responsable,
-          progress: activity.progress,
-          quoteRequest: {
-            id: activity.quote_request.id,
-            no: activity.quote_request.no,
-            price: activity.quote_request.price,
-            client: {
-              id: activity.quote_request.client.id,
-              company_name: activity.quote_request.client.company_name,
-              email: activity.quote_request.client.email,
+      console.error({ response })
+
+      const data = response
+        .filter((activity) => activity.quote_request)
+        .map((activity) => {
+          return {
+            id: activity.id,
+            created_at: activity.created_at,
+            updated_at: activity.updated_at,
+            responsable: activity.responsable,
+            progress: activity.progress,
+            quoteRequest: {
+              id: activity.quote_request.id,
+              no: activity.quote_request.no,
+              price: activity.quote_request.price,
+              client: {
+                id: activity.quote_request.client.id,
+                company_name: activity.quote_request.client.company_name,
+                email: activity.quote_request.client.email,
+              },
+              equipment_quote_request:
+                activity.quote_request.equipment_quote_request.map(
+                  (service) => {
+                    return {
+                      id: service.id,
+                      name: service.name,
+                      count: service.count,
+                      type_service: service.type_service,
+                      calibration_method: service.calibration_method,
+                      total: service.total,
+                      price: service.price,
+                      method_id: service.method_id,
+                    }
+                  },
+                ),
             },
-            equipment_quote_request:
-              activity.quote_request.equipment_quote_request.map((service) => {
-                return {
-                  id: service.id,
-                  name: service.name,
-                  count: service.count,
-                  type_service: service.type_service,
-                  calibration_method: service.calibration_method,
-                  total: service.total,
-                  price: service.price,
-                  method_id: service.method_id,
-                }
-              }),
-          },
-          team_members: activity.team_members.map((member) => {
-            return {
-              id: member.id,
-              username: member.username,
-              imageURL: member.imageURL,
-            }
-          }),
-        }
-      })
+            team_members: activity.team_members.map((member) => {
+              return {
+                id: member.id,
+                username: member.username,
+                imageURL: member.imageURL,
+              }
+            }),
+          }
+        })
 
       return handleOK({
         activities: data,
       })
     } catch (error) {
+      console.error({ error })
       return handleInternalServerError(error.message)
     }
   }
