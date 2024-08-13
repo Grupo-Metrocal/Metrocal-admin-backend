@@ -836,6 +836,10 @@ export class ActivitiesService {
       let data = []
 
       for (const activity of response) {
+        if (!activity.quote_request) {
+          continue
+        }
+
         let issued_certificates = 0
         let pending_certificates = 0
         let calibrated_equipment = 0
