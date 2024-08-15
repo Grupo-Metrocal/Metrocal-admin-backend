@@ -14,50 +14,70 @@
       #333; }
     </style>
   </head>
-  <body>
+  <body
+    style='
+      font-family: "Montserrat", sans-serif;
+      background-color: #f4f4f4;
+      color: #333;
+      margin: 0;
+      padding: 20px 0;
+    '
+  >
+    <div
+      style='
+        max-width: 600px;
+        margin: 20px auto;
+        background-color: #fff;
+        padding: 20px;
+        border-radius: 5px;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+      '
+    >
+      <p>
+        Estimados compañeros de
+        {{clientName}}, reciba saludos cordiales de nuestra parte y los mejores
+        deseos de éxito en sus labores y actividades.
+      </p>
+      <p>Agradecemos de antemano la confianza depositada en nosotros, para
+        formar parte de su cadena de calidad en sus procesos y actividades,
+        realizando los servicios que usted requiere. Resultado de las
+        actividades realizadas le adjuntamos una copia del NI-R03-MCPR-02 Orden
+        de Servicio, el cual es generado como resultado de la ejecución del
+        servicio aprobado y está debidamente firmado por el cliente y por el
+        personal de Metrocal, dejando evidencia de que ya el servicio fue
+        realizado y se cumplió con lo que estaba incluido en la cotización, así
+        mismo si se realizaron modificaciones estas están incluidas en este
+        registro y de ser necesario se actualizara la información que se
+        requiera.
+      </p>
 
-    <p>
-      Estimados compañeros de
-      {{clientName}}, reciba saludos cordiales de nuestra parte y los mejores
-      deseos de éxito en sus labores y actividades.
-    </p>
-    <p>Agradecemos de antemano la confianza depositada en nosotros, para formar
-      parte de su cadena de calidad en sus procesos y actividades, realizando
-      los servicios que usted requiere. Resultado de las actividades realizadas
-      le adjuntamos una copia del NI-R03-MCPR-02 Orden de Servicio, el cual es
-      generado como resultado de la ejecución del servicio aprobado y está
-      debidamente firmado por el cliente y por el personal de Metrocal, dejando
-      evidencia de que ya el servicio fue realizado y se cumplió con lo que
-      estaba incluido en la cotización, así mismo si se realizaron
-      modificaciones estas están incluidas en este registro y de ser necesario
-      se actualizara la información que se requiera.
-    </p>
+      <h4>Detalles de la orden de servicio:</h4>
+      <ul>
+        <li>Número de cotización: {{quoteNumber}}</li>
+        <li>Fecha de inicio: {{startDate}}</li>
+        <li>Fecha de finalización: {{endDate}}</li>
+        <li>Técnicos asignados:
+          <ul>
+            {{#each technicians}}
+              <li>{{this}}</li>
+            {{/each}}
+          </ul>
+        </li>
+      </ul>
 
-    <h3>Detalles de la orden de servicio:</h3>
-    <ul>
-      <li>Número de cotización: {{quoteNumber}}</li>
-      <li>Fecha de inicio: {{startDate}}</li>
-      <li>Fecha de finalización: {{endDate}}</li>
-      <li>Técnicos asignados:
-        <ul>
-          {{#each technicians}}
-            <li>{{this}}</li>
-          {{/each}}
-        </ul>
-      </li>
-    </ul>
+      <p>Si tiene dudas o comentarios, quedamos atentos a cualquier consulta y/o
+        modificación de ser necesario, con gusto le atendemos, recuerde que
+        nuestro objetivo es brindarle un servicio de calidad a como usted se
+        merece.
+      </p>
 
-    <p>Si tiene dudas o comentarios, quedamos atentos a cualquier consulta y/o
-      modificación de ser necesario, con gusto le atendemos, recuerde que
-      nuestro objetivo es brindarle un servicio de calidad a como usted se
-      merece.
-    </p>
+      <p>Sin más a que hacer referencia y quedando atento a sus comentarios, me
+        despido cordialmente de usted.
+      </p>
 
-    <p>Sin más a que hacer referencia y quedando atento a sus comentarios, me
-      despido cordialmente de usted.
-    </p>
+      <p>Saludos.</p>
 
-    <p>Saludos.</p>
+    </div>
     <p
       style='
         font-size: 12px;
