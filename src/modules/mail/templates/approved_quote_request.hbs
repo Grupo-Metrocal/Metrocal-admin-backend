@@ -9,120 +9,138 @@
       type='text/css'
     />
   </head>
-  <body>
-    <h1>Confirmación de Aprobación de Cotización</h1>
-    <p>
-      Estimados compañeros de
-      {{clientName}}, reciba saludos cordiales de nuestra parte y los mejores
-      deseos de éxito en sus labores y actividades.
-    </p>
-    <p>Agradecemos de antemano la aprobación del servicio y la confianza
-      depositada en nosotros, para formar parte de su cadena de calidad en sus
-      procesos y actividades. Estaremos programando la ejecución del servicio de
-      acuerdo a nuestra planificación de servicios, debido a que tenemos agenda,
-      generalmente de 10 días hábiles, por compromisos que ya tenemos agendados
-      con otros clientes, por lo que esperamos su comprensión.</p>
+  <body
+    style='
+      font-family: "Montserrat", sans-serif;
+      background-color: #f4f4f4;
+      color: #333;
+      margin: 0;
+      padding: 20px 0;
+    '
+  >
+    <div
+      style='
+        max-width: 600px;
+        margin: 20px auto;
+        background-color: #fff;
+        padding: 20px;
+        border-radius: 5px;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+      '
+    >
+      <h1>Confirmación de Aprobación de Cotización</h1>
+      <p>
+        Estimados compañeros de
+        {{clientName}}, reciba saludos cordiales de nuestra parte y los mejores
+        deseos de éxito en sus labores y actividades.
+      </p>
+      <p>Agradecemos de antemano la aprobación del servicio y la confianza
+        depositada en nosotros, para formar parte de su cadena de calidad en sus
+        procesos y actividades. Estaremos programando la ejecución del servicio
+        de acuerdo a nuestra planificación de servicios, debido a que tenemos
+        agenda, generalmente de 10 días hábiles, por compromisos que ya tenemos
+        agendados con otros clientes, por lo que esperamos su comprensión.</p>
 
-    <h3>Servicios y equipos solicitados:</h3>
-    <table style='border-collapse: collapse; width: 100%;'>
-      <thead>
-        <tr style='background-color: #f2f2f2;'>
-          <th
-            style='border: 1px solid #dddddd; text-align: left; padding: 8px;'
-          >SERVICIO</th>
-          <th
-            style='border: 1px solid #dddddd; text-align: left; padding: 8px;'
-          >EQUIPO</th>
-          <th
-            style='border: 1px solid #dddddd; text-align: left; padding: 8px;'
-          >CANTIDAD</th>
-          <th
-            style='border: 1px solid #dddddd; text-align: left; padding: 8px;'
-          >DESCUENTO</th>
-          <th
-            style='border: 1px solid #dddddd; text-align: left; padding: 8px;'
-          >PRECIO UNITARIO</th>
-          <th
-            style='border: 1px solid #dddddd; text-align: left; padding: 8px;'
-          >SUBTOTAL</th>
-        </tr>
-      </thead>
-      <tbody>
-        {{#each servicesAndEquipments}}
-          <tr style='border: 1px solid #dddddd;'>
-            <td
+      <h3>Servicios y equipos solicitados:</h3>
+      <table style='border-collapse: collapse; width: 100%;'>
+        <thead>
+          <tr style='background-color: #f2f2f2;'>
+            <th
               style='border: 1px solid #dddddd; text-align: left; padding: 8px;'
-            >{{service}}</td>
-            <td
+            >SERVICIO</th>
+            <th
               style='border: 1px solid #dddddd; text-align: left; padding: 8px;'
-            >{{equipment}}</td>
-            <td
+            >EQUIPO</th>
+            <th
               style='border: 1px solid #dddddd; text-align: left; padding: 8px;'
-            >{{count}}</td>
-            <td
+            >CANTIDAD</th>
+            <th
               style='border: 1px solid #dddddd; text-align: left; padding: 8px;'
-            >{{discount}}</td>
-            <td
+            >DESCUENTO</th>
+            <th
               style='border: 1px solid #dddddd; text-align: left; padding: 8px;'
-            >{{unitPrice}}</td>
-            <td
+            >PRECIO UNITARIO</th>
+            <th
               style='border: 1px solid #dddddd; text-align: left; padding: 8px;'
-            >{{subTotal}}</td>
+            >SUBTOTAL</th>
           </tr>
-        {{/each}}
+        </thead>
+        <tbody>
+          {{#each servicesAndEquipments}}
+            <tr style='border: 1px solid #dddddd;'>
+              <td
+                style='border: 1px solid #dddddd; text-align: left; padding: 8px;'
+              >{{service}}</td>
+              <td
+                style='border: 1px solid #dddddd; text-align: left; padding: 8px;'
+              >{{equipment}}</td>
+              <td
+                style='border: 1px solid #dddddd; text-align: left; padding: 8px;'
+              >{{count}}</td>
+              <td
+                style='border: 1px solid #dddddd; text-align: left; padding: 8px;'
+              >{{discount}}</td>
+              <td
+                style='border: 1px solid #dddddd; text-align: left; padding: 8px;'
+              >{{unitPrice}}</td>
+              <td
+                style='border: 1px solid #dddddd; text-align: left; padding: 8px;'
+              >{{subTotal}}</td>
+            </tr>
+          {{/each}}
 
-        <tr style='background-color: #f2f2f2;'>
-          <td
-            colspan='5'
-            style='border: none; text-align: right; padding: 8px;'
-          ><strong>IVA:</strong></td>
-          <td
-            style='border: 1px solid #dddddd; text-align: left; padding: 8px;'
-          ><strong>{{tax}}%</strong></td>
-        </tr>
-        <tr>
-          <td
-            colspan='5'
-            style='border: none; text-align: right; padding: 8px;'
-          ><strong>Descuento:</strong></td>
-          <td
-            style='border: 1px solid #dddddd; text-align: left; padding: 8px;'
-          ><strong>{{discount}}%</strong></td>
-        </tr>
-        <tr>
-          <td
-            colspan='5'
-            style='border: none; text-align: right; padding: 8px;'
-          ><strong>Traslado técnico:</strong></td>
-          <td
-            style='border: 1px solid #dddddd; text-align: left; padding: 8px;'
-          ><strong>{{extras}}</strong></td>
-        </tr>
-        <tr>
-          <td
-            colspan='5'
-            style='border: none; text-align: right; padding: 8px;'
-          ><strong>Subtotal:</strong></td>
-          <td
-            style='border: 1px solid #dddddd; text-align: left; padding: 8px;'
-          ><strong>{{subtotal}}</strong></td>
-        </tr>
-        <tr>
-          <td
-            colspan='5'
-            style='border: none; text-align: right; padding: 8px;'
-          ><strong>Monto Total:</strong></td>
-          <td
-            style='border: 1px solid #dddddd; text-align: left; padding: 8px;'
-          ><strong>{{total}}</strong></td>
-        </tr>
-      </tbody>
-    </table>
+          <tr style='background-color: #f2f2f2;'>
+            <td
+              colspan='5'
+              style='border: none; text-align: right; padding: 8px;'
+            ><strong>IVA:</strong></td>
+            <td
+              style='border: 1px solid #dddddd; text-align: left; padding: 8px;'
+            ><strong>{{tax}}%</strong></td>
+          </tr>
+          <tr>
+            <td
+              colspan='5'
+              style='border: none; text-align: right; padding: 8px;'
+            ><strong>Descuento:</strong></td>
+            <td
+              style='border: 1px solid #dddddd; text-align: left; padding: 8px;'
+            ><strong>{{discount}}%</strong></td>
+          </tr>
+          <tr>
+            <td
+              colspan='5'
+              style='border: none; text-align: right; padding: 8px;'
+            ><strong>Traslado técnico:</strong></td>
+            <td
+              style='border: 1px solid #dddddd; text-align: left; padding: 8px;'
+            ><strong>{{extras}}</strong></td>
+          </tr>
+          <tr>
+            <td
+              colspan='5'
+              style='border: none; text-align: right; padding: 8px;'
+            ><strong>Subtotal:</strong></td>
+            <td
+              style='border: 1px solid #dddddd; text-align: left; padding: 8px;'
+            ><strong>{{subtotal}}</strong></td>
+          </tr>
+          <tr>
+            <td
+              colspan='5'
+              style='border: none; text-align: right; padding: 8px;'
+            ><strong>Monto Total:</strong></td>
+            <td
+              style='border: 1px solid #dddddd; text-align: left; padding: 8px;'
+            ><strong>{{total}}</strong></td>
+          </tr>
+        </tbody>
+      </table>
 
-    <h3>Detalles completo de la cotización:</h3>
-    <a
-      href='{{linkDetailQuote}}'
-      style="
+      <h3>Detalles completo de la cotización:</h3>
+      <a
+        href='{{linkDetailQuote}}'
+        style="
         background-color: #09f;
         border: none;
         color: white;
@@ -131,21 +149,24 @@
         text-decoration: none;
         display: inline-block;
         border-radius: 5px;
+        font-weight: bold;
         font-family: 'Montserrat', sans-serif;
       "
-    >Ir a la cotización</a>
+      >Ir a la cotización</a>
 
-    <p>Si tiene dudas o comentarios, quedamos atentos a cualquier consulta y/o
-      modificación de ser necesario, con gusto le atendemos, recuerde que
-      nuestro objetivo es brindarle un servicio de calidad a como usted se
-      merece.
-    </p>
+      <p>Si tiene dudas o comentarios, quedamos atentos a cualquier consulta y/o
+        modificación de ser necesario, con gusto le atendemos, recuerde que
+        nuestro objetivo es brindarle un servicio de calidad a como usted se
+        merece.
+      </p>
 
-    <p>Sin más a que hacer referencia y quedando atento a sus comentarios, me
-      despido cordialmente de usted.
-    </p>
+      <p>Sin más a que hacer referencia y quedando atento a sus comentarios, me
+        despido cordialmente de usted.
+      </p>
 
-    <p>Saludos.</p>
+      <p>Saludos.</p>
+    </div>
+
     <p
       style='
         font-size: 12px;
