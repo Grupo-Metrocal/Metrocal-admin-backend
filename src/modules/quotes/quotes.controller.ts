@@ -81,7 +81,7 @@ export class QuotesController {
   @Get('request/token/:token')
   async getQuoteRequestByToken(@Param('token') token: string) {
     if (!token) {
-      return false
+      return handleBadrequest(new Error('Token is required'))
     }
 
     return await this.quotesService.getQuoteRequestByToken(token)
