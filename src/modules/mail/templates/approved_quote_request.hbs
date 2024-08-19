@@ -56,9 +56,6 @@
             >CANTIDAD</th>
             <th
               style='border: 1px solid #dddddd; text-align: left; padding: 8px;'
-            >DESCUENTO</th>
-            <th
-              style='border: 1px solid #dddddd; text-align: left; padding: 8px;'
             >PRECIO UNITARIO</th>
             <th
               style='border: 1px solid #dddddd; text-align: left; padding: 8px;'
@@ -79,9 +76,6 @@
               >{{count}}</td>
               <td
                 style='border: 1px solid #dddddd; text-align: left; padding: 8px;'
-              >{{discount}}</td>
-              <td
-                style='border: 1px solid #dddddd; text-align: left; padding: 8px;'
               >{{unitPrice}}</td>
               <td
                 style='border: 1px solid #dddddd; text-align: left; padding: 8px;'
@@ -91,45 +85,45 @@
 
           <tr style='background-color: #f2f2f2;'>
             <td
-              colspan='5'
+              colspan='4'
               style='border: none; text-align: right; padding: 8px;'
-            ><strong>IVA:</strong></td>
+            ><strong>SUB-TOTAL ($):</strong></td>
             <td
               style='border: 1px solid #dddddd; text-align: left; padding: 8px;'
-            ><strong>{{tax}}%</strong></td>
+            ><strong>{{subtotal1}}</strong></td>
           </tr>
           <tr>
             <td
-              colspan='5'
+              colspan='4'
               style='border: none; text-align: right; padding: 8px;'
-            ><strong>Descuento:</strong></td>
+            ><strong>DESCUENTO ($):</strong></td>
             <td
               style='border: 1px solid #dddddd; text-align: left; padding: 8px;'
-            ><strong>{{discount}}%</strong></td>
+            ><strong>{{discount}}</strong></td>
           </tr>
           <tr>
             <td
-              colspan='5'
+              colspan='4'
               style='border: none; text-align: right; padding: 8px;'
-            ><strong>Traslado técnico:</strong></td>
+            ><strong>SUB-TOTAL ($):</strong></td>
             <td
               style='border: 1px solid #dddddd; text-align: left; padding: 8px;'
-            ><strong>{{extras}}</strong></td>
+            ><strong>{{subtotal2}}</strong></td>
           </tr>
           <tr>
             <td
-              colspan='5'
+              colspan='4'
               style='border: none; text-align: right; padding: 8px;'
-            ><strong>Subtotal:</strong></td>
+            ><strong>I.V.A ($):</strong></td>
             <td
               style='border: 1px solid #dddddd; text-align: left; padding: 8px;'
-            ><strong>{{subtotal}}</strong></td>
+            ><strong>{{tax}}</strong></td>
           </tr>
           <tr>
             <td
-              colspan='5'
+              colspan='4'
               style='border: none; text-align: right; padding: 8px;'
-            ><strong>Monto Total:</strong></td>
+            ><strong>TOTAL ($):</strong></td>
             <td
               style='border: 1px solid #dddddd; text-align: left; padding: 8px;'
             ><strong>{{total}}</strong></td>
