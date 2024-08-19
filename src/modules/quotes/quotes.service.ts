@@ -453,7 +453,10 @@ export class QuotesService {
         )
         .reduce((a, b) => a + b, 0) + quote?.extras || 0
 
-    data['discount'] = formatPrice((subtotal * quote.general_discount) / 100)
+    data['discount'] =
+      quote.general_discount > 0
+        ? formatPrice((subtotal * quote.general_discount) / 100)
+        : 'N/A'
     data['subtotal1'] = formatPrice(subtotal)
     data['subtotal2'] = formatPrice(
       subtotal - (subtotal * quote.general_discount) / 100,
