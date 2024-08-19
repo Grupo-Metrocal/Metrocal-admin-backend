@@ -345,7 +345,6 @@ export class QuotesService {
     if (!id) {
       return false
     }
-
     return await this.getQuoteRequestById(id)
   }
 
@@ -374,6 +373,19 @@ export class QuotesService {
       },
     )
 
+    if (quote.extras > 0)
+      data['servicesAndEquipments'].push({
+        index: quote.equipment_quote_request.length + 1,
+        service: 'Traslado técnico',
+        equipment: '---',
+        method: '---',
+        count: '---',
+        unitPrice: formatPrice(quote.extras),
+        subTotal: formatPrice(quote.extras),
+        comment: '---',
+        measuring_range: '---',
+      })
+
     const subtotal =
       quote?.equipment_quote_request
         ?.map((equipment) =>
@@ -396,7 +408,6 @@ export class QuotesService {
     data['date'] = formatDate(quote.created_at)
     data['no'] = quote.no
     data['length'] = quote.equipment_quote_request.length
-    data['extras'] = formatPrice(quote.extras)
 
     return await this.pdfService.generateQuoteRequestPdf(data)
   }
