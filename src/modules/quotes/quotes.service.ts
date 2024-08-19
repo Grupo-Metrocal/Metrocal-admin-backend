@@ -254,7 +254,7 @@ export class QuotesService {
         '30d',
       )
 
-      let approvedQuoteRequestDto: ApprovedQuoteRequestDto | undefined
+      let approvedQuoteRequestDto: ApprovedQuoteRequestDto | undefined | any
 
       if (quoteRequest.status === 'waiting') {
         const { data: quote } = await this.getQuoteRequestById(
@@ -262,6 +262,63 @@ export class QuotesService {
         )
         approvedQuoteRequestDto = new ApprovedQuoteRequestDto()
         approvedQuoteRequestDto.clientName = quote.client.company_name
+        // ---------------------------------------
+
+        approvedQuoteRequestDto.servicesAndEquipments =
+          quote.equipment_quote_request.map((equipment, index) => {
+            return {
+              index: index + 1,
+              service: equipment.type_service,
+              equipment: equipment.name,
+              method: equipment.calibration_method || 'Sin asignar',
+              count: equipment.count,
+              unitPrice: formatPrice(equipment.price),
+              subTotal: formatPrice(equipment.total),
+              comment: equipment.additional_remarks || '',
+              measuring_range: equipment.measuring_range || '',
+            }
+          })
+
+        if (quote.extras > 0)
+          approvedQuoteRequestDto.servicesAndEquipments.push({
+            index: quote.equipment_quote_request.length + 1,
+            service: 'Traslado técnico',
+            equipment: '---',
+            method: '---',
+            count: '---' as any,
+            unitPrice: formatPrice(quote.extras) as any,
+            subTotal: formatPrice(quote.extras) as any,
+            comment: '---',
+            measuring_range: '---',
+          })
+
+        const subtotal =
+          quote?.equipment_quote_request
+            ?.map((equipment) =>
+              equipment.status === 'done' ? equipment.total : 0,
+            )
+            .reduce((a, b) => a + b, 0) + quote?.extras || 0
+
+        approvedQuoteRequestDto['discount'] = formatPrice(
+          (subtotal * quote.general_discount) / 100,
+        )
+        approvedQuoteRequestDto['subtotal1'] = formatPrice(subtotal)
+        approvedQuoteRequestDto['subtotal2'] = formatPrice(
+          subtotal - (subtotal * quote.general_discount) / 100,
+        )
+        approvedQuoteRequestDto['tax'] = formatPrice(
+          ((subtotal - (subtotal * quote.general_discount) / 100) *
+            (quote.tax || 0)) /
+            100,
+        )
+        approvedQuoteRequestDto['total'] = formatPrice(quote.price)
+        approvedQuoteRequestDto['client'] = quote.client
+        approvedQuoteRequestDto['no'] = quote.no
+        approvedQuoteRequestDto.linkDetailQuote = `${process.env.DOMAIN}/quote/${token}`
+        approvedQuoteRequestDto.token = token
+        approvedQuoteRequestDto.email = quote.client.email
+
+        /*
         approvedQuoteRequestDto.servicesAndEquipments =
           quote.equipment_quote_request.map((equipment) => {
             return {
@@ -281,6 +338,8 @@ export class QuotesService {
             }
           })
 
+        
+
         approvedQuoteRequestDto.total = formatPrice(quoteRequestDto.price)
         approvedQuoteRequestDto.token = token
         approvedQuoteRequestDto.email = quote.client.email
@@ -295,6 +354,7 @@ export class QuotesService {
           (approvedQuoteRequestDto.tax = quoteRequestDto.tax)
         approvedQuoteRequestDto.discount = quoteRequestDto.general_discount
         approvedQuoteRequestDto.extras = formatPrice(quoteRequestDto.extras)
+        */
       }
 
       let rejectedquoterequest: RejectedQuoteRequest | undefined
