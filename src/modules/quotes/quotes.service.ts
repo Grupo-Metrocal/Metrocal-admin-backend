@@ -427,8 +427,8 @@ export class QuotesService {
           count: equipment.count,
           unitPrice: formatPrice(equipment.price),
           subTotal: formatPrice(equipment.total),
-          comment: equipment.additional_remarks || '',
-          measuring_range: equipment.measuring_range || '',
+          comment: equipment.additional_remarks || 'N/A',
+          measuring_range: equipment.measuring_range || 'N/A',
         }
       },
     )
