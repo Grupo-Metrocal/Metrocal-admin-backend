@@ -69,6 +69,9 @@ export class QuoteRequest {
   @Column({ type: 'varchar', nullable: true, default: 'none' })
   quote_modification_status: 'none' | 'pending' | 'done'
 
+  @Column({ type: 'boolean', nullable: false, default: false })
+  isResolved: boolean
+
   @Column({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP' })
   created_at: Date
 
