@@ -125,17 +125,21 @@ export class MailService {
     user,
     pdf,
     fileName,
+    clientName,
   }: {
     user: string
     pdf: Buffer
     fileName: string
+    clientName: string
   }) {
     return await this.mailerService.sendMail({
       to: user,
       from: process.env.MAILER_FROM,
       subject: 'Certificación de calibración',
       template: 'certification',
-      context: {},
+      context: {
+        clientName,
+      },
       attachments: [
         {
           filename: fileName,

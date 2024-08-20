@@ -948,53 +948,10 @@ export class NI_MCIT_D_02Service {
         pdf: PDF,
         client_email: dataCertificate.data.email,
         fileName: `Certificado-${dataCertificate.data.equipment_information.object_calibrated}-${dataCertificate.data.equipment_information.certification_code}.pdf`,
+        clientName: dataCertificate.data.equipment_information.applicant,
       })
     } catch (error) {
       return handleInternalServerError('Error al generar el PDF')
-    }
-  }
-
-  async getNI_MCIT_D_02Certificate({
-    activityID,
-    methodID,
-  }: {
-    activityID: number
-    methodID: number
-  }) {
-    try {
-      const method = await this.NI_MCIT_D_02Repository.findOne({
-        where: { id: methodID },
-        relations: [
-          'equipment_information',
-          'environmental_conditions',
-          'description_pattern',
-          'pre_installation_comment',
-          'instrument_zero_check',
-          'accuracy_test',
-        ],
-      })
-
-      if (!method) {
-        return handleInternalServerError('El método no existe')
-      }
-
-      let respuesta
-      if (method) {
-        respuesta = await this.generateCertificateData({
-          activityID,
-          methodID,
-        })
-      }
-
-      if (respuesta.status === 500) {
-        return handleInternalServerError('Error al generar el certificado')
-      }
-
-      if (respuesta.status === 200) {
-        return handleOK('Certificado generado correctamente')
-      }
-    } catch (error) {
-      return handleInternalServerError('Error al generar el certificado')
     }
   }
 
@@ -1090,12 +1047,13 @@ export class NI_MCIT_D_02Service {
         return data
       }
 
-      const { pdf, client_email, fileName } = data.data as any
+      const { pdf, client_email, fileName, clientName } = data.data as any
 
       await this.mailService.sendMailCertification({
         user: client_email,
         pdf,
         fileName,
+        clientName,
       })
 
       return handleOK('Certificado enviado con exito')

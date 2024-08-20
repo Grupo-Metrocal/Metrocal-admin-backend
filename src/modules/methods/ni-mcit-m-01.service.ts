@@ -805,6 +805,7 @@ export class NI_MCIT_M_01Service {
         pdf: PDF,
         client_email: dataCertificate.data.client_email,
         fileName: `Certificado-${dataCertificate.data.equipment_information.device}-${dataCertificate.data.equipment_information.certification_code}.pdf`,
+        clientName: dataCertificate.data.equipment_information.applicant,
       })
     } catch (error) {
       return handleInternalServerError(error.message)
@@ -819,12 +820,13 @@ export class NI_MCIT_M_01Service {
         return data
       }
 
-      const { pdf, client_email, fileName } = data.data
+      const { pdf, client_email, fileName, clientName } = data.data
 
       await this.mailService.sendMailCertification({
         user: client_email,
         pdf,
         fileName,
+        clientName,
       })
 
       return handleOK('Certificado enviado con exito')
