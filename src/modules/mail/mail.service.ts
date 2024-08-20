@@ -57,7 +57,7 @@ export class MailService {
   async sendMailApprovedQuoteRequest(
     approvedQuoteRequestDto: ApprovedQuoteRequestDto,
   ) {
-    await this.sendMail({
+    return await this.sendMail({
       user: approvedQuoteRequestDto.email,
       subject: 'Cotización aprobada',
       template: 'approved_quote_request',
@@ -68,7 +68,7 @@ export class MailService {
   }
 
   async sendMailrejectedQuoteRequest(rejected: RejectedQuoteRequest) {
-    await this.mailerService.sendMail({
+    return await this.mailerService.sendMail({
       to: rejected.email,
       from: process.env.MAILER_FROM,
       subject: 'Cotizacion rechazada',
@@ -80,7 +80,7 @@ export class MailService {
   }
 
   async sendInvitationMail(inv: InvitationMail) {
-    await this.mailerService.sendMail({
+    return await this.mailerService.sendMail({
       to: inv.email,
       from: process.env.MAILER_FROM,
       subject: 'Cotización de servicios',
