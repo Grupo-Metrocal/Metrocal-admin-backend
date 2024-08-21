@@ -72,6 +72,9 @@ export class QuoteRequest {
   @Column({ type: 'boolean', nullable: false, default: false })
   isResolved: boolean
 
+  @Column({ nullable: true })
+  modification_number?: number
+
   @Column({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP' })
   created_at: Date
 
