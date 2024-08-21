@@ -1,5 +1,5 @@
 import { QuotesService } from './quotes.service'
-import { ApiBody, ApiProperty, ApiTags } from '@nestjs/swagger'
+import { ApiBody, ApiProperty, ApiQuery, ApiTags } from '@nestjs/swagger'
 import {
   Controller,
   Post,
@@ -73,9 +73,18 @@ export class QuotesController {
     )
   }
 
+  @ApiQuery({ name: 'increase', required: false })
   @Post('request/update/')
-  async updateStatusQuoteRequest(@Body() quoteRequest: UpdateQuoteRequestDto) {
-    return await this.quotesService.updateStatusQuoteRequest(quoteRequest)
+  async updateStatusQuoteRequest(
+    @Body() quoteRequest: UpdateQuoteRequestDto,
+    @Query('increase') increase?: string,
+  ) {
+    const valueIncrease = increase === 'true' ? true : false
+
+    return await this.quotesService.updateStatusQuoteRequest(
+      quoteRequest,
+      valueIncrease,
+    )
   }
 
   @Get('request/token/:token')
