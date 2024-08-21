@@ -423,7 +423,10 @@ export class QuotesService {
           index: index + 1,
           service: equipment.type_service,
           equipment: equipment.name,
-          method: equipment.calibration_method || 'Sin asignar',
+          method:
+            equipment.calibration_method === 'GENERIC_METHOD'
+              ? 'Comp. Directa Trazable'
+              : equipment.calibration_method,
           count: equipment.count,
           unitPrice: formatPrice(equipment.price),
           subTotal: formatPrice(equipment.total),
