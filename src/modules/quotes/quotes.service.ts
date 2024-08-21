@@ -39,6 +39,7 @@ import { PaginationQueryDinamicDto } from './dto/pagination-dinamic.dto'
 import { ReviewEquipmentDto } from './dto/review-equipment.dto'
 import { formatDate } from 'src/utils/formatDate'
 import { ModificationRequestDto } from './dto/modification-request.dto'
+import { formatQuoteCode } from 'src/utils/generateCertCode'
 
 @Injectable()
 export class QuotesService {
@@ -208,7 +209,10 @@ export class QuotesService {
     return handleOK(response.id)
   }
 
-  async updateStatusQuoteRequest(quoteRequestDto: UpdateQuoteRequestDto) {
+  async updateStatusQuoteRequest(
+    quoteRequestDto: UpdateQuoteRequestDto,
+    increase?: boolean,
+  ) {
     try {
       const quoteRequest = await this.quoteRequestRepository.findOne({
         where: { id: quoteRequestDto.id },
@@ -317,44 +321,6 @@ export class QuotesService {
         approvedQuoteRequestDto.linkDetailQuote = `${process.env.DOMAIN}/quote/${token}`
         approvedQuoteRequestDto.token = token
         approvedQuoteRequestDto.email = quote.client.email
-
-        /*
-        approvedQuoteRequestDto.servicesAndEquipments =
-          quote.equipment_quote_request.map((equipment) => {
-            return {
-              service: equipment.type_service,
-              equipment: equipment.name,
-              count: equipment.count,
-              unitPrice:
-                equipment.status === 'done'
-                  ? formatPrice(equipment.price)
-                  : '---',
-              subTotal:
-                equipment.status === 'done'
-                  ? formatPrice(equipment.total)
-                  : 'No aprobado',
-              discount:
-                equipment.status === 'done' ? equipment.discount + '%' : '---',
-            }
-          })
-
-        
-
-        approvedQuoteRequestDto.total = formatPrice(quoteRequestDto.price)
-        approvedQuoteRequestDto.token = token
-        approvedQuoteRequestDto.email = quote.client.email
-        approvedQuoteRequestDto.linkDetailQuote = `${process.env.DOMAIN}/quote/${token}`
-        ;(approvedQuoteRequestDto.subtotal = formatPrice(
-          quote?.equipment_quote_request
-            ?.map((equipment: any) =>
-              equipment.status === 'done' ? equipment.total : 0,
-            )
-            .reduce((a, b) => a + b, 0),
-        )),
-          (approvedQuoteRequestDto.tax = quoteRequestDto.tax)
-        approvedQuoteRequestDto.discount = quoteRequestDto.general_discount
-        approvedQuoteRequestDto.extras = formatPrice(quoteRequestDto.extras)
-        */
       }
 
       let rejectedquoterequest: RejectedQuoteRequest | undefined
@@ -371,11 +337,6 @@ export class QuotesService {
 
         quoteRequest.rejected_comment = quoteRequestDto.rejected_comment
       }
-      if (quoteRequest.status === 'rejected' && rejectedquoterequest) {
-        await this.mailService.sendMailrejectedQuoteRequest(
-          rejectedquoterequest,
-        )
-      }
 
       await this.dataSource.transaction(async (manager) => {
         quoteRequest.quote_modification_status =
@@ -383,13 +344,31 @@ export class QuotesService {
             ? 'done'
             : quoteRequest.quote_modification_status
 
+        if (increase) {
+          quoteRequest.modification_number =
+            quoteRequest.modification_number === null
+              ? 1
+              : quoteRequest.modification_number + 1
+        }
+
+        approvedQuoteRequestDto.no = formatQuoteCode(
+          quoteRequest.no,
+          quoteRequest.modification_number,
+        )
+
         await manager.save(quoteRequest)
         await manager.save(User, user)
       })
 
-      if (quoteRequest.status === 'waiting' && approvedQuoteRequestDto) {
+      if (quoteRequestDto.status === 'waiting' && approvedQuoteRequestDto) {
         await this.mailService.sendMailApprovedQuoteRequest(
           approvedQuoteRequestDto,
+        )
+      }
+
+      if (quoteRequestDto.status === 'rejected' && rejectedquoterequest) {
+        await this.mailService.sendMailrejectedQuoteRequest(
+          rejectedquoterequest,
         )
       }
 
@@ -472,7 +451,7 @@ export class QuotesService {
     data['total'] = formatPrice(quote.price)
     data['client'] = quote.client
     data['date'] = formatDate(quote.created_at)
-    data['no'] = quote.no
+    data['no'] = formatQuoteCode(quote.no, quote.modification_number)
     data['length'] = quote.equipment_quote_request.length
 
     return await this.pdfService.generateQuoteRequestPdf(data)
