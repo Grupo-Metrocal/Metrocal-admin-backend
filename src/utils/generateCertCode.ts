@@ -17,6 +17,16 @@ export const formatCertCode = (code: string, modificationsNumber: number) => {
   return code.replace(id, `${id}-${modificationsNumber}`)
 }
 
+export const formatQuoteCode = (code: string, modificationsNumber: number) => {
+  if (modificationsNumber === 0 || modificationsNumber === null) {
+    return code
+  }
+
+  const parts = code.split('-')
+  const id = parts[2]
+  return code.replace(id, `${id}-${modificationsNumber}`)
+}
+
 export const getCertCodeId = (code: string) => {
   if (!code) {
     return '0'
