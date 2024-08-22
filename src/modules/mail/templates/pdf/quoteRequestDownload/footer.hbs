@@ -4,8 +4,9 @@
   font-weight: bold; } .creditable { display: flex; justify-content:
   space-between; align-items: center; padding: 0.5em; border-bottom: 1px dashed
   #1f3c88; font-size: 9px; } .layout-footer { display: flex; flex-direction:
-  column; justify-content: center; align-items: center; position: relative; padding: 0.5em; margin-top: 0.5em; } .layout-footer div { display:
-  flex; gap: 2em; }
+  column; justify-content: center; align-items: center; position: relative;
+  padding: 0.5em; margin-top: 0.5em; } .layout-footer div { display: flex; gap:
+  2em; }
 </style>
 
 <footer>
@@ -21,8 +22,11 @@
     <p>Teléfono: <a href='tel:+50522490758'>(505) 2249 0758</a></p>
   </div>
 
-  <div style="display: flex; flex-direction: column; align-items: flex-end; gap: 10px; margin-right: 2em; margin-top: -2em;">
-    <div style="text-align: right;">Pág. <span><span class="pageNumber"></span> de <span class="totalPages"></span></span></div>
+  <div
+    style='display: flex; flex-direction: column; align-items: flex-end; gap: 10px; margin-right: 2em; margin-top: -2em;'
+  >
+    {{! <div style="text-align: right;">Pág. <span><span class="pageNumber"></span> de <span class="totalPages"></span></span></div> }}
+    <div></div>
     <span>versión 4 Aprobado en NI-MCPR-02 v7 fecha 2019-10-18</span>
   </div>
 </footer>
