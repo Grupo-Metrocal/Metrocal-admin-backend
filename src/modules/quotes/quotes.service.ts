@@ -121,7 +121,12 @@ export class QuotesService {
         },
       })
 
-      return handleOK(quotes)
+      return handleOK(
+        quotes.map((quote) => {
+          quote.no = formatQuoteCode(quote.no, quote.modification_number)
+          return quote
+        }),
+      )
     } catch (error) {
       return handleInternalServerError(error.message)
     }
@@ -186,7 +191,10 @@ export class QuotesService {
         ],
       })
 
-      return handleOK(response)
+      return handleOK({
+        ...response,
+        no: formatQuoteCode(response.no, response.modification_number),
+      })
     } catch (error) {
       return handleInternalServerError(error.message)
     }
