@@ -610,6 +610,7 @@ export class QuotesService {
         })
         .leftJoin('quote_request.approved_by', 'approved_by')
         .leftJoin('quote_request.client', 'client')
+        .orderBy('quote_request.id', 'DESC')
         .getRawMany()
 
       updateQuoteStatus(quote_registered)
@@ -656,6 +657,7 @@ export class QuotesService {
         })
         .leftJoin('quote_request.approved_by', 'approved_by')
         .leftJoin('quote_request.client', 'client')
+        .orderBy('quote_request.id', 'DESC')
         .getRawMany()
 
       updateQuoteStatus(quote_registered)
@@ -697,6 +699,7 @@ export class QuotesService {
         })
         .leftJoin('quote_request.approved_by', 'approved_by')
         .leftJoin('quote_request.client', 'client')
+        .orderBy('quote_request.id', 'DESC')
         .getRawMany()
 
       updateQuoteStatus(quote_registered)
@@ -743,6 +746,7 @@ export class QuotesService {
         })
         .leftJoin('quote_request.approved_by', 'approved_by')
         .leftJoin('quote_request.client', 'client')
+        .orderBy('quote_request.id', 'DESC')
         .getRawMany()
 
       updateQuoteStatus(quote_registered)
