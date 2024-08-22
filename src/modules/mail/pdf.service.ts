@@ -5,6 +5,7 @@ import { readFileSync } from 'fs'
 import { join } from 'path'
 import axios from 'axios'
 import * as https from 'https'
+import { PDFDocument } from 'pdf-lib'
 
 @Injectable()
 export class PdfService {
@@ -213,7 +214,7 @@ export class PdfService {
       await page.setContent(html)
       await page.waitForTimeout(1000)
 
-      const pdfBuffer = await page.pdf({
+      const quotePdfBuffer = await page.pdf({
         format: 'A4',
         printBackground: true,
         displayHeaderFooter: true,
@@ -223,6 +224,105 @@ export class PdfService {
         height: '11in',
         margin: {
           top: '1.1in',
+          bottom: '1in',
+          left: '0.4in',
+          right: '0.4in',
+        },
+      })
+
+      const conditionsAndServicePdfBuffer =
+        await this.generateConditionsAndServicePDF()
+
+      const mergedBuffer = await this.mergePdfBuffers(
+        quotePdfBuffer,
+        conditionsAndServicePdfBuffer as any,
+      )
+
+      return mergedBuffer
+    } catch (error) {
+      console.error(error.message)
+      return false
+    } finally {
+      await browser.close()
+    }
+  }
+
+  async mergePdfBuffers(pdfBuffer1: Buffer, pdfBuffer2: Buffer) {
+    // Crear un nuevo documento PDF
+    const mergedPdf = await PDFDocument.create()
+
+    // Cargar los documentos PDF desde los buffers
+    const pdf1 = await PDFDocument.load(pdfBuffer1)
+    const pdf2 = await PDFDocument.load(pdfBuffer2)
+
+    // Copiar las páginas del primer PDF al nuevo documento
+    const copiedPages1 = await mergedPdf.copyPages(pdf1, pdf1.getPageIndices())
+    copiedPages1.forEach((page) => mergedPdf.addPage(page))
+
+    // Copiar las páginas del segundo PDF al nuevo documento
+    const copiedPages2 = await mergedPdf.copyPages(pdf2, pdf2.getPageIndices())
+    copiedPages2.forEach((page) => mergedPdf.addPage(page))
+
+    // Guardar el nuevo documento combinado como un buffer
+    const mergedPdfBytes = await mergedPdf.save()
+
+    // return buffer of the merged pdf
+    return Buffer.from(mergedPdfBytes)
+  }
+
+  async generateConditionsAndServicePDF() {
+    const templatePath = join(
+      __dirname,
+      'templates/pdf/conditions_and_service.hbs',
+    )
+
+    const templateContent = readFileSync(templatePath, 'utf-8')
+
+    const compiledTemplate = compile(templateContent)
+
+    const html = compiledTemplate({})
+
+    const browser = await launch({
+      headless: 'new',
+      executablePath:
+        process.env.NODE_ENV === 'production'
+          ? process.env.PUPPETEER_EXEC_PATH
+          : executablePath(),
+    })
+
+    try {
+      const page = await browser.newPage()
+      const metrocalLogo = await this.fetchImageAsBase64(
+        'https://app-grupometrocal.com/development/api/images/image/metrocal.webp',
+      )
+
+      const headerTemplate = compile(
+        readFileSync(
+          join(__dirname, 'templates/pdf/quoteRequestDownload/header.hbs'),
+          'utf-8',
+        ),
+      )({ metrocalLogo })
+
+      const footerTemplate = compile(
+        readFileSync(
+          join(__dirname, 'templates/pdf/quoteRequestDownload/footer.hbs'),
+          'utf-8',
+        ),
+      )({ metrocalLogo })
+
+      await page.setContent(html)
+      await page.waitForTimeout(1000)
+
+      const pdfBuffer = await page.pdf({
+        format: 'A4',
+        printBackground: true,
+        displayHeaderFooter: true,
+        headerTemplate,
+        footerTemplate,
+        width: '8.5in',
+        height: '11in',
+        margin: {
+          top: '1in',
           bottom: '1in',
           left: '0.4in',
           right: '0.4in',
