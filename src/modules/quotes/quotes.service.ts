@@ -591,6 +591,7 @@ export class QuotesService {
           'quote_request.status',
           'quote_request.price',
           'quote_request.created_at',
+          'quote_request.modification_number',
           'quote_request.no',
           `COALESCE(approved_by.username, 'Sin asignar') AS approved_by`,
           'client.company_name',
@@ -605,7 +606,19 @@ export class QuotesService {
 
       updateQuoteStatus(quote_registered)
 
-      return handlePaginateByPageNumber(quote_registered, limit, offset)
+      return handlePaginateByPageNumber(
+        quote_registered.map((quote) => {
+          quote.quote_request_no = formatQuoteCode(
+            quote.quote_request_no,
+            quote.quote_request_modification_number,
+          )
+
+          return quote
+        }),
+
+        limit,
+        offset,
+      )
     }
 
     /* 
@@ -621,6 +634,7 @@ export class QuotesService {
           'quote_request.status',
           'quote_request.price',
           'quote_request.created_at',
+          'quote_request.modification_number',
           'quote_request.no',
           `COALESCE(approved_by.username, 'Sin asignar') AS approved_by`,
           'client.company_name',
@@ -638,7 +652,17 @@ export class QuotesService {
 
       updateQuoteStatus(quote_registered)
 
-      return handlePaginateByPageNumber(quote_registered, limit, offset)
+      return handlePaginateByPageNumber(
+        quote_registered.map((quote) => {
+          quote.quote_request_no = formatQuoteCode(
+            quote.quote_request_no,
+            quote.quote_request_modification_number,
+          )
+          return quote
+        }),
+        limit,
+        offset,
+      )
     }
 
     /*
@@ -654,6 +678,7 @@ export class QuotesService {
           'quote_request.status',
           'quote_request.price',
           'quote_request.no',
+          'quote_request.modification_number',
           'quote_request.created_at',
           `COALESCE(approved_by.username, 'Sin asignar') AS approved_by`,
           'client.company_name',
@@ -669,9 +694,15 @@ export class QuotesService {
       updateQuoteStatus(quote_registered)
 
       return handlePaginateByPageNumber(
-        quote_registered.filter((quote) =>
-          arrayStatus.includes(quote.quote_request_status),
-        ),
+        quote_registered
+          .map((quote) => {
+            quote.quote_request_no = formatQuoteCode(
+              quote.quote_request_no,
+              quote.quote_request_modification_number,
+            )
+            return quote
+          })
+          .filter((quote) => arrayStatus.includes(quote.quote_request_status)),
         limit,
         offset,
       )
@@ -690,6 +721,7 @@ export class QuotesService {
           'quote_request.status',
           'quote_request.price',
           'quote_request.created_at',
+          'quote_request.modification_number',
           'quote_request.no',
           `COALESCE(approved_by.username, 'Sin asignar') AS approved_by`,
           'client.company_name',
@@ -708,9 +740,16 @@ export class QuotesService {
       updateQuoteStatus(quote_registered)
 
       return handlePaginateByPageNumber(
-        quote_registered.filter((quote) =>
-          arrayStatus.includes(quote.quote_request_status),
-        ),
+        // retonar los registros modificando el NO de la cotización
+        quote_registered
+          .map((quote) => {
+            quote.quote_request_no = formatQuoteCode(
+              quote.quote_request_no,
+              quote.quote_request_modification_number,
+            )
+            return quote
+          })
+          .filter((quote) => arrayStatus.includes(quote.quote_request_status)),
         limit,
         offset,
       )
