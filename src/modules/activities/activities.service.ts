@@ -656,8 +656,6 @@ export class ActivitiesService {
         ],
       })
 
-      console.error({ response })
-
       const data = response
         .filter((activity) => activity.quote_request)
         .map((activity) => {
