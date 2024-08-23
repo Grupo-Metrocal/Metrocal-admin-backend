@@ -510,12 +510,12 @@ export class ActivitiesService {
           .filter((service) => service !== undefined)
           .map((service) => {
             if (
-              service === 'Diagnostico' ||
+              service === 'Diagnóstico' ||
               service === 'Otros' ||
               service === 'Verificacion de Cal' ||
               service === 'Suministro' ||
               service === 'Proyecto' ||
-              service === 'Informe Tecnico'
+              service === 'Informe Técnico'
             ) {
               return 'Otro'
             }
