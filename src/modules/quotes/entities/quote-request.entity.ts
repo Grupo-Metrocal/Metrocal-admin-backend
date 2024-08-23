@@ -69,9 +69,6 @@ export class QuoteRequest {
   @Column({ type: 'varchar', nullable: true, default: 'none' })
   quote_modification_status: 'none' | 'pending' | 'done'
 
-  @Column({ type: 'boolean', nullable: false, default: false })
-  isResolved: boolean
-
   @Column({ nullable: true })
   modification_number?: number
 
