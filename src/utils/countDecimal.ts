@@ -1,11 +1,17 @@
 export const countDecimals = (number) => {
-  if (!number) {
+  const convertNumber = typeof number === 'string' ? Number(number) : number
+
+  if (isNaN(convertNumber)) {
+    return number
+  }
+
+  if (!convertNumber) {
     return 0
   }
 
-  if (Math.floor(number) === number) {
+  if (Math.floor(convertNumber) === convertNumber) {
     return 0
   }
 
-  return number.toString().split('.')[1].length || 0
+  return convertNumber.toString().split('.')[1].length || 0
 }
