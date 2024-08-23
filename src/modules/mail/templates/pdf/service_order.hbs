@@ -192,12 +192,24 @@
                 width: 10%;
               "
             >
-              <strong style="border-bottom: 2px solid #333; text-align: center; height: 22px;"></strong>
-              <strong style="border-bottom: 2px solid #333; text-align: center; height: 22px;"></strong>
-              <strong style="border-bottom: 2px solid #333; text-align: center; height: 22px;"></strong>
-              <strong style="border-bottom: 2px solid #333; text-align: center; height: 22px;"></strong>
-              <strong style="border-bottom: 2px solid #333; text-align: center; height: 22px;"></strong>
-              <strong style=" text-align: center; height: 22px;"></strong>
+              <strong style="border-bottom: 2px solid #333; text-align: center; height: 22px;">
+                {{#compareArrayString resolved_services "Calibracion"}}X{{/compareArrayString}}
+              </strong>
+              <strong style="border-bottom: 2px solid #333; text-align: center; height: 22px;">
+                {{#compareArrayString resolved_services "Caracterizacion"}}X{{/compareArrayString}}
+              </strong>
+              <strong style="border-bottom: 2px solid #333; text-align: center; height: 22px;">
+                {{#compareArrayString resolved_services "Calificacion"}}X{{/compareArrayString}}
+              </strong>
+              <strong style="border-bottom: 2px solid #333; text-align: center; height: 22px;">
+                {{#compareArrayString resolved_services "Mant. Preventivo"}}X{{/compareArrayString}}
+              </strong>
+              <strong style="border-bottom: 2px solid #333; text-align: center; height: 22px;">
+                {{#compareArrayString resolved_services "Mant. Correctivo"}}X{{/compareArrayString}}
+              </strong>
+              <strong style=" text-align: center; height: 22px;">
+                {{#compareArrayString resolved_services "Otro"}}X{{/compareArrayString}}
+              </strong>
             </div>
               
           </div>
