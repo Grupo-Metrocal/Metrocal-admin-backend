@@ -1190,4 +1190,26 @@ export class QuotesService {
       return handleInternalServerError(error.message)
     }
   }
+
+  async markAsResolvedEquipment(id: number) {
+    try {
+      const equipment = await this.equipmentQuoteRequestRepository.findOne({
+        where: { id },
+      })
+
+      if (!equipment) {
+        return handleBadrequest(new Error('El equipo no existe'))
+      }
+
+      equipment.isResolved =
+        equipment.isResolved === null ? true : !equipment.isResolved
+
+      const response =
+        await this.equipmentQuoteRequestRepository.save(equipment)
+
+      return handleOK(response)
+    } catch (error) {
+      return handleInternalServerError(error.message)
+    }
+  }
 }
