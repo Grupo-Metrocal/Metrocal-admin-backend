@@ -512,7 +512,7 @@ export class ActivitiesService {
             if (
               service === 'Diagnóstico' ||
               service === 'Otros' ||
-              service === 'Verificacion de Cal' ||
+              service === 'Verificación de Cal' ||
               service === 'Suministro' ||
               service === 'Proyecto' ||
               service === 'Informe Técnico'
