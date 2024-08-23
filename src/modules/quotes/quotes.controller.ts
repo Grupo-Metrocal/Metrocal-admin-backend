@@ -196,4 +196,9 @@ export class QuotesController {
   async quoteModificationRequest(@Body() quoteRequest: ModificationRequestDto) {
     return this.quotesService.quoteModificationRequest(quoteRequest)
   }
+
+  @Get('equipment/resolved/:id')
+  async markAsResolvedEquipment(@Param('id') id: number) {
+    return await this.quotesService.markAsResolvedEquipment(id)
+  }
 }
