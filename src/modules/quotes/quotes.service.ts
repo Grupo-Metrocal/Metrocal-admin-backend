@@ -459,7 +459,8 @@ export class QuotesService {
     data['total'] = formatPrice(quote.price)
     data['client'] = quote.client
     data['date'] = formatDate(quote.created_at)
-    data['no'] = formatQuoteCode(quote.no, quote.modification_number)
+
+    data['no'] = quote.no
     data['length'] = quote.equipment_quote_request.length
 
     return await this.pdfService.generateQuoteRequestPdf(data)
