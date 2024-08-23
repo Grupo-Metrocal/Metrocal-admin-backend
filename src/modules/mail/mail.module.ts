@@ -34,6 +34,9 @@ const helpers: HelperDeclareSpec = {
   isNotEven: (n: any, options: any) => {
     return n % 2 !== 0 ? options.fn(this) : options.inverse(this)
   },
+  compareArrayString: (array: string[], compare: any, options: any) => {
+    return array.includes(compare) ? options.fn(this) : options.inverse(this)
+  },
 }
 
 @Module({
