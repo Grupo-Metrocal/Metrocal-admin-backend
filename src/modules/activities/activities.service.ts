@@ -485,17 +485,42 @@ export class ActivitiesService {
         work_areas: activity.work_areas.join(', ') || '',
         comments_insitu1: activity?.comments_insitu?.[0] || '',
         comments_insitu2: activity?.comments_insitu?.[1] || '',
-        equipments: activity.quote_request.equipment_quote_request.map(
-          (equipment, index) => {
+        equipments: activity.quote_request.equipment_quote_request
+          .map((equipment, index) => {
             return {
               name: equipment.name,
               count: equipment.count,
               review_comment: equipment.review_comment,
               index: index + 1,
               quoteNumber: activity.quote_request.no,
+              status: equipment.status,
             }
-          },
-        ),
+          })
+          .filter((equipment) => equipment.status === 'done'),
+        resolved_services: activity.quote_request.equipment_quote_request
+          .map((service) => {
+            if (service.isResolved && service.calibration_method === '(N/A)') {
+              return service.type_service
+            }
+
+            if (service.calibration_method !== '(N/A)' && !service.isResolved) {
+              return service.type_service
+            }
+          })
+          .filter((service) => service !== undefined)
+          .map((service) => {
+            if (
+              service === 'Diagnostico' ||
+              service === 'Otros' ||
+              service === 'Verificacion de Cal' ||
+              service === 'Suministro' ||
+              service === 'Proyecto' ||
+              service === 'Informe Tecnico'
+            ) {
+              return 'Otro'
+            }
+            return service
+          }),
       }
 
       const pdf = await this.pdfService.generteServiceOrderPdf(data)
