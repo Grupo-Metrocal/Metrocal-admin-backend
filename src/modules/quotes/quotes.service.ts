@@ -200,6 +200,24 @@ export class QuotesService {
     }
   }
 
+  async getQuoteRequestByIdWithoutModify(id: number) {
+    try {
+      const response = await this.quoteRequestRepository.findOne({
+        where: { id },
+        relations: [
+          'equipment_quote_request',
+          'client',
+          'approved_by',
+          'activity',
+        ],
+      })
+
+      return handleOK(response)
+    } catch (error) {
+      return handleInternalServerError(error.message)
+    }
+  }
+
   async updateEquipmentQuoteRequest(
     equipmentQuoteRequest: updateEquipmentQuoteRequestDto,
   ) {
