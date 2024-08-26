@@ -43,9 +43,8 @@ export class ActivitiesService {
   ) {}
 
   async createActivity(activity: Activity) {
-    const { data: quoteRequest } = await this.quotesService.getQuoteRequestById(
-      activity.id,
-    )
+    const { data: quoteRequest } =
+      await this.quotesService.getQuoteRequestByIdWithoutModify(activity.id)
 
     const newActivity = this.activityRepository.create({
       quote_request: quoteRequest,
@@ -62,6 +61,8 @@ export class ActivitiesService {
 
       return handleOK(newActivity)
     } catch (error) {
+      console.error({ error })
+
       return handleInternalServerError(error.message)
     }
   }
