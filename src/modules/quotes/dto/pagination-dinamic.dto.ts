@@ -10,15 +10,10 @@ export class PaginationQueryDinamicDto {
   @IsNumber()
   @ApiProperty()
   @IsOptional()
-  offset?: number
-
-  @IsString({ each: true }) // Ensure each element of the array is a string
-  @ApiProperty({ type: [String] })
-  @IsOptional()
-  status?: string[]
+  page?: number
 
   @IsString()
   @ApiProperty()
   @IsOptional()
-  no_quote?: string
+  no?: string
 }
