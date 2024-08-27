@@ -122,15 +122,28 @@ export class QuotesController {
     )
   }
 
-  //Pagintaion and filters for registered quotes
-  @Get('registered/all')
+  @Get('registered/all/:page/:limit/:no?')
+  @ApiQuery({ name: 'quoteRequestType', required: false, type: 'string' })
   async getQuoteRequestRegister(
-    @Query() pagination?: PaginationQueryDinamicDto,
+    @Param('page') page: number,
+    @Param('limit') limit: number,
+    @Param('no') no: string,
+    @Query('quoteRequestType') quoteRequestType?: string,
   ) {
-    if (isNaN(pagination.limit) || isNaN(pagination.offset)) {
-      return handleBadrequest(new Error('Limit y offset deben ser numeros'))
+    if (no === 'undefined' || no === undefined) {
+      no = ''
     }
-    return await this.quotesService.getQuoteRequestRegister(pagination)
+
+    if (quoteRequestType === 'undefined' || quoteRequestType === undefined) {
+      quoteRequestType = ''
+    }
+
+    return await this.quotesService.getQuoteRequestRegister({
+      page,
+      limit,
+      quoteRequestType,
+      no,
+    })
   }
 
   @Delete(':id')
