@@ -34,6 +34,8 @@ import {
   formatSameNumberCertification,
 } from 'src/utils/formatNumberCertification'
 import { countDecimals } from 'src/utils/countDecimal'
+import { DescriptionPatternNI_MCIT_B_01 } from './entities/NI_MCIT_B_01/steps/description_pattern.entity'
+import { DescriptionPatternB01Dto } from './dto/NI_MCIT_B_01/description_pattern.dto'
 
 @Injectable()
 export class NI_MCIT_B_01Service {
@@ -51,6 +53,8 @@ export class NI_MCIT_B_01Service {
     private readonly RepeatabilityTestNI_MCIT_B_01Repository: Repository<RepeatabilityTestNI_MCIT_B_01>,
     @InjectRepository(LinearityTestNI_MCIT_B_01)
     private readonly LinearityTestNI_MCIT_B_01Repository: Repository<LinearityTestNI_MCIT_B_01>,
+    @InjectRepository(DescriptionPatternNI_MCIT_B_01)
+    private readonly descriptionPatternNI_MCIT_B_01Repository: Repository<DescriptionPatternNI_MCIT_B_01>,
 
     @Inject(forwardRef(() => PdfService))
     private readonly pdfService: PdfService,
@@ -361,6 +365,62 @@ export class NI_MCIT_B_01Service {
       }
     } catch (error) {
       return handleInternalServerError(error)
+    }
+  }
+
+  async descriptionPattern(
+    descriptionPattern: DescriptionPatternB01Dto,
+    methodId: number,
+    activityId: number,
+    increase?: boolean,
+  ) {
+    try {
+      const method = await this.NI_MCIT_B_01Repository.findOne({
+        where: { id: methodId },
+        relations: ['description_pattern'],
+      })
+
+      if (!method) {
+        return handleInternalServerError('El método no existe')
+      }
+
+      const existingDescriptionPattern = method.description_pattern
+
+      if (existingDescriptionPattern) {
+        this.descriptionPatternNI_MCIT_B_01Repository.merge(
+          existingDescriptionPattern,
+          descriptionPattern,
+        )
+      } else {
+        const newDescriptionPattern =
+          this.descriptionPatternNI_MCIT_B_01Repository.create(
+            descriptionPattern,
+          )
+        method.description_pattern = newDescriptionPattern
+      }
+
+      await this.DataSource.transaction(async (manager) => {
+        await manager.save(method.description_pattern)
+
+        method.status = 'done'
+
+        if (increase) {
+          method.modification_number =
+            method.modification_number === null
+              ? 1
+              : method.modification_number + 1
+        }
+
+        await manager.save(method)
+      })
+
+      await this.generateCertificateCodeToMethod(method.id)
+
+      await this.activitiesService.updateActivityProgress(activityId)
+
+      return handleOK(method)
+    } catch (error) {
+      return handleInternalServerError(error.message)
     }
   }
 
@@ -911,8 +971,9 @@ export class NI_MCIT_B_01Service {
             ' minutos',
         },
         description_pattern,
-        creditable: method.equipment_information.acredited,
+        creditable: method.description_pattern.creditable,
         observations: `
+          ${method.description_pattern.observation || ''}
           Es responsabilidad del encargado del instrumento establecer la frecuencia del servicio de calibración.
           La corrección corresponde al valor del patrón menos las indicación del equipo.
           La indicación de temperatura de referencia y del equipo, corresponden al promedio de 3 mediciones.
