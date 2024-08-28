@@ -42,8 +42,6 @@ export class EquipmentInformationNI_MCIT_B_01 {
   date?: string
 
   //acredited boolean
-  @Column({ type: 'boolean', nullable: true })
-  acredited?: boolean
 
   @Column({ nullable: true })
   unit?: string
