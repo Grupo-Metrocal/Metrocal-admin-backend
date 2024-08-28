@@ -4,6 +4,7 @@ import { EnvironmentalConditionsNI_MCIT_B_01 } from './steps/b01enviromental_con
 import { LinearityTestNI_MCIT_B_01 } from './steps/b01linearity_test.entity'
 import { RepeatabilityTestNI_MCIT_B_01 } from './steps/b01repeatability_test.entity'
 import { EccentricityTestNI_MCIT_B_01 } from './steps/b01eccentricity_test.entity'
+import { DescriptionPatternNI_MCIT_B_01 } from './steps/description_pattern.entity'
 
 @Entity('NI_MCIT_B_01')
 export class NI_MCIT_B_01 {
@@ -101,6 +102,17 @@ export class NI_MCIT_B_01 {
     },
   )
   eccentricity_test: EccentricityTestNI_MCIT_B_01
+
+  @ManyToOne(
+    () => DescriptionPatternNI_MCIT_B_01,
+    (descriptionPatternNI_MCIT_B_01) =>
+      descriptionPatternNI_MCIT_B_01.NI_MCIT_B_01,
+    {
+      onDelete: 'CASCADE',
+      onUpdate: 'CASCADE',
+    },
+  )
+  description_pattern: DescriptionPatternNI_MCIT_B_01
 
   @Column({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP' })
   created_at: Date
