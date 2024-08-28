@@ -154,9 +154,6 @@ export class NI_MCIT_B_01Service {
           await manager.save(method)
         })
 
-        await this.generateCertificateCodeToMethod(method.id)
-
-        await this.activitiesService.updateActivityProgress(activityId)
         return handleOK(method.equipment_information)
       } catch (error) {
         return handleInternalServerError(error)
@@ -671,6 +668,7 @@ export class NI_MCIT_B_01Service {
         'eccentricity_test',
         'repeatability_test',
         'linearity_test',
+        'description_pattern',
       ],
     })
     try {
@@ -1022,6 +1020,7 @@ export class NI_MCIT_B_01Service {
           'eccentricity_test',
           'repeatability_test',
           'linearity_test',
+          'description_pattern',
         ],
       })
       if (!method) {
@@ -1171,6 +1170,7 @@ export class NI_MCIT_B_01Service {
           'linearity_test',
           'repeatability_test',
           'eccentricity_test',
+          'description_pattern',
         ],
       })
 
