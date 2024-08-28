@@ -112,7 +112,6 @@ export class NI_MCIT_B_01Service {
 
   async equipmentInfomationB01(
     equipment: EquipmentInformationNI_MCIT_B_01Dto,
-    activityId: number,
     methodId: number,
     increase?: boolean,
   ) {

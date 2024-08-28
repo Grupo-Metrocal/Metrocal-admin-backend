@@ -894,18 +894,16 @@ export class MethodsController {
   }
 
   @ApiQuery({ name: 'increase', required: false })
-  @Post('ni-mcit-b-01/equipment-information/:methodId/:activityId')
+  @Post('ni-mcit-b-01/equipment-information/:methodId')
   async createNI_MCIT_B_01EquipmentInformation(
     @Body() equipment: EquipmentInformationNI_MCIT_B_01Dto,
     @Param('methodId') methodId: number,
-    @Param('activityId') activityId: number,
     @Query('increase') increase?: string,
   ) {
     const valueIncrease = increase === 'true' ? true : false
 
     return await this.ni_mcit_b_01Service.equipmentInfomationB01(
       equipment,
-      activityId,
       methodId,
       valueIncrease,
     )
