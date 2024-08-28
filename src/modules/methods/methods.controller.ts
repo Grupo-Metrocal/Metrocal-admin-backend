@@ -83,6 +83,7 @@ import { CalibrationResultsM01Dto } from './dto/NI_MCIT_M_01/calibraion_results.
 import { DescriptionPatternM01Dto } from './dto/NI_MCIT_M_01/description_pattern.dto'
 import { OptionsCMCOnCertificateDto } from './dto/setSOptionsCMCOnCertificate.dto'
 import { Response } from 'express'
+import { DescriptionPatternB01Dto } from './dto/NI_MCIT_B_01/description_pattern.dto'
 
 @ApiTags('methods')
 @Controller('methods')
@@ -1014,6 +1015,24 @@ export class MethodsController {
     return await this.ni_mcit_b_01Service.linearityTestB01(
       linearityTest,
       methodId,
+      valueIncrease,
+    )
+  }
+
+  @ApiQuery({ name: 'increase', required: false })
+  @Post('ni-mcit-b-01/description-pattern/:methodId/:activityId')
+  async createNI_MCIT_B_01DescriptionPattern(
+    @Body() descriptionPattern: DescriptionPatternB01Dto,
+    @Param('methodId') methodId: number,
+    @Param('activityId') activityId: number,
+    @Query('increase') increase?: string,
+  ) {
+    const valueIncrease = increase === 'true' ? true : false
+
+    return await this.ni_mcit_b_01Service.descriptionPattern(
+      descriptionPattern,
+      methodId,
+      activityId,
       valueIncrease,
     )
   }
