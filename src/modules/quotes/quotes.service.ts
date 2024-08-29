@@ -25,7 +25,6 @@ import {
   handleInternalServerError,
   handleOK,
   handlePaginate,
-  handlePaginateByPageNumber,
 } from 'src/common/handleHttp'
 import { generateQuoteRequestCode } from 'src/utils/codeGenerator'
 import { User } from '../users/entities/user.entity'
@@ -35,11 +34,11 @@ import { ActivitiesService } from '../activities/activities.service'
 import { PaginationQueryDto } from './dto/pagination-query.dto'
 import { formatPrice } from 'src/utils/formatPrices'
 import { MethodsService } from '../methods/methods.service'
-import { PaginationQueryDinamicDto } from './dto/pagination-dinamic.dto'
 import { ReviewEquipmentDto } from './dto/review-equipment.dto'
 import { formatDate } from 'src/utils/formatDate'
 import { ModificationRequestDto } from './dto/modification-request.dto'
 import { formatQuoteCode } from 'src/utils/generateCertCode'
+import { EquipmentQuoteRequestDto } from './dto/equipment-quote-request.dto'
 
 @Injectable()
 export class QuotesService {
@@ -1037,6 +1036,40 @@ export class QuotesService {
         await this.equipmentQuoteRequestRepository.save(equipment)
 
       return handleOK(response)
+    } catch (error) {
+      return handleInternalServerError(error.message)
+    }
+  }
+
+  async addEquipmentToQuoteRequest(
+    quoteRequestID: number,
+    equipmentQuoteRequest: EquipmentQuoteRequestDto,
+  ) {
+    try {
+      const quoteRequest = await this.quoteRequestRepository.findOne({
+        where: { id: quoteRequestID },
+        relations: ['equipment_quote_request'],
+      })
+
+      if (!quoteRequest) {
+        return handleBadrequest(new Error('La cotización no existe'))
+      }
+
+      const equipment = this.equipmentQuoteRequestRepository.create(
+        equipmentQuoteRequest,
+      )
+
+      equipment.quote_request = quoteRequest
+
+      await this.dataSource.transaction(async (manager) => {
+        await manager.save(equipment)
+      })
+
+      await this.dataSource.transaction(async (manager) => {
+        quoteRequest.equipment_quote_request.push(equipment)
+        await manager.save(quoteRequest)
+      })
+      return handleOK(equipment)
     } catch (error) {
       return handleInternalServerError(error.message)
     }
