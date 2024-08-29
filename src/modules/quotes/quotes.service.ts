@@ -1064,11 +1064,6 @@ export class QuotesService {
       await this.dataSource.transaction(async (manager) => {
         await manager.save(equipment)
       })
-
-      await this.dataSource.transaction(async (manager) => {
-        quoteRequest.equipment_quote_request.push(equipment)
-        await manager.save(quoteRequest)
-      })
       return handleOK(equipment)
     } catch (error) {
       return handleInternalServerError(error.message)
