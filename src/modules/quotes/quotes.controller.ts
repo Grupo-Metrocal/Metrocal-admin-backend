@@ -19,9 +19,9 @@ import { Response } from 'express'
 import { handleBadrequest } from 'src/common/handleHttp'
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard'
 import { PaginationQueryDto } from './dto/pagination-query.dto'
-import { PaginationQueryDinamicDto } from './dto/pagination-dinamic.dto'
 import { ReviewEquipmentDto } from './dto/review-equipment.dto'
 import { ModificationRequestDto } from './dto/modification-request.dto'
+import { EquipmentQuoteRequestDto } from './dto/equipment-quote-request.dto'
 
 @ApiTags('quotes')
 @Controller('quotes')
@@ -213,5 +213,13 @@ export class QuotesController {
   @Get('equipment/resolved/:id')
   async markAsResolvedEquipment(@Param('id') id: number) {
     return await this.quotesService.markAsResolvedEquipment(id)
+  }
+
+  @Post('add-equipment/:id')
+  async addEquipmentToQuoteRequest(
+    @Param('id') id: number,
+    @Body() equipment: EquipmentQuoteRequestDto,
+  ) {
+    return await this.quotesService.addEquipmentToQuoteRequest(id, equipment)
   }
 }
