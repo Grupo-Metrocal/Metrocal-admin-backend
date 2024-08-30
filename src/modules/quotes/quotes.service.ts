@@ -118,6 +118,7 @@ export class QuotesService {
           status: In(['pending', 'waiting', 'done']),
           activity: filterActive ? IsNull() : Not(IsNull()), // Si filterActive es true, buscamos activity null, de lo contrario, activity no es null
         },
+        order: { id: 'DESC' },
       })
 
       return handleOK(
