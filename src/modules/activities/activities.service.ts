@@ -85,6 +85,11 @@ export class ActivitiesService {
           'quote_request.approved_by',
           'team_members',
         ],
+        order: {
+          quote_request: {
+            id: 'DESC',
+          },
+        },
       })
 
       const data = response
