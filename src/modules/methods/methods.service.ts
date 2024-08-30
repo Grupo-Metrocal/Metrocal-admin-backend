@@ -520,7 +520,7 @@ export class MethodsService {
       for (const equipment of equipment_quote_request) {
         if (equipment.method_id) {
           const method_name = `${equipment.calibration_method.split(' ')[0].replaceAll('-', '_')}Services`
-          console.log({ method_name })
+
           const { data: stackMethods } = await this.getMethodsID(
             equipment.method_id,
           )
@@ -550,12 +550,14 @@ export class MethodsService {
       await this.mailService.sendMailCollectionCertificate({
         user: activity.data.quote_request.client.email,
         collection: collectionPDF as any,
+        clientName: activity.data.quote_request.client.company_name,
       })
 
       await this.activitiesService.changeIsCertificateActivity(activityID)
 
       return handleOK('Email enviado')
     } catch (error) {
+      console.log({ error })
       return handleInternalServerError(error.message)
     }
   }

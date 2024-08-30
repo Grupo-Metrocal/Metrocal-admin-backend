@@ -152,16 +152,20 @@ export class MailService {
   async sendMailCollectionCertificate({
     user,
     collection,
+    clientName,
   }: {
     user: string
     collection: []
+    clientName: string
   }) {
     return await this.mailerService.sendMail({
       to: user,
       from: process.env.MAILER_FROM,
       subject: 'Certificación de actividad',
       template: 'certification',
-      context: {},
+      context: {
+        clientName,
+      },
       attachments: collection,
     })
   }
