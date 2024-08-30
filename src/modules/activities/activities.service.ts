@@ -850,7 +850,11 @@ export class ActivitiesService {
           'quote_request.equipment_quote_request',
           'team_members',
         ],
-        order: { created_at: 'DESC' },
+        order: {
+          quote_request: {
+            id: 'DESC',
+          },
+        },
         skip: (page - 1) * limit,
         take: limit,
       })
