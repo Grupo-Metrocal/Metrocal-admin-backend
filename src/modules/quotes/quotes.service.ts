@@ -530,6 +530,7 @@ export class QuotesService {
 
     data['no'] = quote.no
     data['length'] = quote.equipment_quote_request.length
+    data['service_request_code'] = quote.service_request_code
 
     return await this.pdfService.generateQuoteRequestPdf(data)
   }

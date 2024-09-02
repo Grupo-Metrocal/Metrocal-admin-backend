@@ -47,7 +47,10 @@
         <p>
           No. de Cotización: <strong style="margin-left: 20px">{{no}}</strong>
         </p>
-        <p>Fecha: <strong>{{date}}</strong></p>
+        <div style="display: flex; justify-content: space-between; gap: 4em">
+          <span>{{service_request_code}}</span>
+          <p>Fecha: <strong>{{date}}</strong></p>
+        </div>
       </div>
 
       <div
@@ -116,12 +119,7 @@
       </div>
 
       <div
-        style="
-          margin-top: 1em;
-          display: flex;
-          flex-direction: column;
-          gap: 1em;
-        "
+        style="margin-top: 1em; display: flex; flex-direction: column; gap: 1em"
       >
         <table style="margin-top: 2em">
           <thead>
