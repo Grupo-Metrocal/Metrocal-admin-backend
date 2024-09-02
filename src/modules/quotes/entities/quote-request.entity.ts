@@ -48,6 +48,9 @@ export class QuoteRequest {
   @Column({ type: 'varchar', nullable: true })
   no?: string
 
+  @Column({ default: null })
+  service_request_code: string
+
   @OneToOne(() => Activity, (activity) => activity.quote_request, {
     cascade: true,
   })
