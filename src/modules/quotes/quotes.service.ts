@@ -26,7 +26,10 @@ import {
   handleOK,
   handlePaginate,
 } from 'src/common/handleHttp'
-import { generateQuoteRequestCode } from 'src/utils/codeGenerator'
+import {
+  generateQuoteRequestCode,
+  generateQuoteServiceRequestCode,
+} from 'src/utils/codeGenerator'
 import { User } from '../users/entities/user.entity'
 import { UsersService } from '../users/users.service'
 import { RejectedQuoteRequest } from '../mail/dto/rejected-quote-request.dto'
@@ -111,8 +114,10 @@ export class QuotesService {
             ? 1
             : lastQuote.record_index + 1
 
-        const no = generateQuoteRequestCode(quoteRequest.record_index)
-        quoteRequest.no = no
+        quoteRequest.no = generateQuoteRequestCode(quoteRequest.record_index)
+        quoteRequest.service_request_code = generateQuoteServiceRequestCode(
+          quoteRequest.record_index,
+        )
         await manager.save(quoteRequest)
       })
 

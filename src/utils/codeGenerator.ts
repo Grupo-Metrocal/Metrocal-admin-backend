@@ -21,6 +21,11 @@ export const generateQuoteRequestCode = (id: number) => {
   return `NI-CS-${id.toString().padStart(4, '0')}-${year.toString().slice(-2)}`
 }
 
+export const generateQuoteServiceRequestCode = (id: number) => {
+  const year = new Date().getFullYear()
+  return `NI-SS-${id.toString().padStart(4, '0')}-${year.toString().slice(-2)}`
+}
+
 export const generateServiceCodeToMethod = (id: number) => {
   const year = new Date().getFullYear()
   return `NI-CS-${id.toString().padStart(4, '0')}-${year.toString().slice(-2)}`
