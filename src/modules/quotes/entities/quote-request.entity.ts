@@ -72,6 +72,9 @@ export class QuoteRequest {
   @Column({ nullable: true })
   modification_number?: number
 
+  @Column({ default: 0 })
+  record_index: number
+
   @Column({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP' })
   created_at: Date
 
