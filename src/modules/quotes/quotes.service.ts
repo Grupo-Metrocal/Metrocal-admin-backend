@@ -360,21 +360,6 @@ export class QuotesService {
       approvedQuoteRequestDto.token = token
       approvedQuoteRequestDto.email = quote.client.email
 
-      let rejectedquoterequest: RejectedQuoteRequest | undefined
-      if (quoteRequest.status === 'rejected') {
-        const { data: quote } = await this.getQuoteRequestById(
-          quoteRequestDto.id,
-        )
-
-        rejectedquoterequest = new RejectedQuoteRequest()
-        rejectedquoterequest.clientName = quote.client.company_name
-        rejectedquoterequest.email = quote.client.email
-        rejectedquoterequest.comment = quoteRequestDto.rejected_comment
-        rejectedquoterequest.linkToNewQuote = `${process.env.DOMAIN}`
-
-        quoteRequest.rejected_comment = quoteRequestDto.rejected_comment
-      }
-
       await this.dataSource.transaction(async (manager) => {
         quoteRequest.quote_modification_status =
           quoteRequest.quote_modification_status === 'pending'
@@ -397,19 +382,66 @@ export class QuotesService {
         await manager.save(User, user)
       })
 
-      if (quoteRequestDto.status === 'waiting' && approvedQuoteRequestDto) {
-        await this.mailService.sendMailApprovedQuoteRequest(
-          approvedQuoteRequestDto,
-        )
+      await this.mailService.sendMailApprovedQuoteRequest(
+        approvedQuoteRequestDto,
+      )
+
+      return handleOK(quoteRequest)
+    } catch (error) {
+      return handleInternalServerError(error.message)
+    }
+  }
+
+  async rejectQuoteUnderReview(quoteRequestDto: UpdateQuoteRequestDto) {
+    try {
+      const quoteRequest = await this.quoteRequestRepository.findOne({
+        where: { id: quoteRequestDto.id },
+        relations: ['approved_by'],
+      })
+
+      if (!quoteRequest) {
+        return handleBadrequest(new Error('La cotización no existe'))
       }
 
-      if (quoteRequestDto.status === 'rejected' && rejectedquoterequest) {
+      const decodeToken = this.tokenService.decodeToken(
+        quoteRequestDto.authorized_token,
+      )
+      const userResponse = await this.usersService.findById(
+        Number(decodeToken.sub),
+      )
+
+      if (!userResponse.success) {
+        return handleBadrequest(new Error('El usuario no existe'))
+      }
+
+      const user = userResponse.data as User
+
+      let rejectedquoterequest: RejectedQuoteRequest | undefined
+      const { data: quote } = await this.getQuoteRequestById(quoteRequestDto.id)
+
+      rejectedquoterequest = new RejectedQuoteRequest()
+      rejectedquoterequest.clientName = quote.client.company_name
+      rejectedquoterequest.email = quote.client.email
+      rejectedquoterequest.comment = quoteRequestDto.rejected_comment
+      rejectedquoterequest.linkToNewQuote = `${process.env.DOMAIN}`
+
+      quoteRequest.rejected_comment = quoteRequestDto.rejected_comment
+
+      await this.dataSource.transaction(async (manager) => {
+        Object.assign(quoteRequest, quoteRequestDto)
+        quoteRequest.approved_by = user
+
+        manager.save(quoteRequest)
+      })
+
+      const response =
         await this.mailService.sendMailrejectedQuoteRequest(
           rejectedquoterequest,
         )
-      }
 
-      return handleOK(quoteRequest)
+      console.log({ response })
+
+      return handleOK(response)
     } catch (error) {
       return handleInternalServerError(error.message)
     }
