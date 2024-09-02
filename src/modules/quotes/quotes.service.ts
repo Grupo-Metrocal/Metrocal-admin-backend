@@ -88,13 +88,29 @@ export class QuotesService {
 
     quoteRequest.equipment_quote_request = equipmentQuoteRequest
 
+    const lastQuote = await this.quoteRequestRepository
+      .createQueryBuilder('quote_requests')
+      .orderBy('quote_requests.id', 'DESC')
+      .getOne()
+
     try {
+      // create quote request
       const response = await this.dataSource.transaction(async (manager) => {
         await manager.save(quoteRequest)
         await manager.save(client.data)
         await manager.save(equipmentQuoteRequest)
+      })
 
-        const no = generateQuoteRequestCode(quoteRequest.id)
+      // generate record index to ""no"" quote
+      await this.dataSource.transaction(async (manager) => {
+        quoteRequest.record_index =
+          !lastQuote ||
+          lastQuote.created_at.getFullYear() !==
+            quoteRequest.created_at.getFullYear()
+            ? 1
+            : lastQuote.record_index + 1
+
+        const no = generateQuoteRequestCode(quoteRequest.record_index)
         quoteRequest.no = no
         await manager.save(quoteRequest)
       })
