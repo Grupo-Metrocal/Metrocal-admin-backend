@@ -22,6 +22,7 @@ import { PaginationQueryDto } from './dto/pagination-query.dto'
 import { ReviewEquipmentDto } from './dto/review-equipment.dto'
 import { ModificationRequestDto } from './dto/modification-request.dto'
 import { EquipmentQuoteRequestDto } from './dto/equipment-quote-request.dto'
+import { DeleteEquipmentFromQuoteDto } from './dto/delete-equipment-from-quote.dto'
 
 @ApiTags('quotes')
 @Controller('quotes')
@@ -226,5 +227,12 @@ export class QuotesController {
     @Body() equipment: EquipmentQuoteRequestDto,
   ) {
     return await this.quotesService.addEquipmentToQuoteRequest(id, equipment)
+  }
+
+  @Post('equipment/delete-from-quote')
+  async deleteEquipmentFromQuote(
+    @Body() { equipmentID, quoteID }: DeleteEquipmentFromQuoteDto,
+  ) {
+    return this.quotesService.deleteEquipmentFromQuote({ quoteID, equipmentID })
   }
 }
