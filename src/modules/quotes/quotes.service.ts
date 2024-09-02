@@ -39,6 +39,7 @@ import { formatDate } from 'src/utils/formatDate'
 import { ModificationRequestDto } from './dto/modification-request.dto'
 import { formatQuoteCode } from 'src/utils/generateCertCode'
 import { EquipmentQuoteRequestDto } from './dto/equipment-quote-request.dto'
+import { DeleteEquipmentFromQuoteDto } from './dto/delete-equipment-from-quote.dto'
 
 @Injectable()
 export class QuotesService {
@@ -1114,6 +1115,44 @@ export class QuotesService {
         await manager.save(equipment)
       })
       return handleOK(equipment)
+    } catch (error) {
+      return handleInternalServerError(error.message)
+    }
+  }
+
+  async deleteEquipmentFromQuote({
+    equipmentID,
+    quoteID,
+  }: DeleteEquipmentFromQuoteDto) {
+    try {
+      const quote = await this.quoteRequestRepository.findOne({
+        where: { id: quoteID },
+        relations: ['equipment_quote_request'],
+      })
+
+      if (!quote) {
+        return handleBadrequest(new Error('La cotizacion no existe'))
+      }
+
+      if (quote.equipment_quote_request.length === 1) {
+        return handleBadrequest(
+          new Error('La cotización necesita un servicio vigente'),
+        )
+      }
+
+      quote.equipment_quote_request = quote.equipment_quote_request.filter(
+        (equipment) => equipment.id !== equipmentID,
+      )
+
+      await this.dataSource.transaction(async (manager) => {
+        await manager.save(quote)
+        await manager.delete(
+          this.equipmentQuoteRequestRepository.target,
+          equipmentID,
+        )
+      })
+
+      return handleOK('Equipo eliminado')
     } catch (error) {
       return handleInternalServerError(error.message)
     }
