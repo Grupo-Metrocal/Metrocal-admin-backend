@@ -431,6 +431,7 @@ export class QuotesService {
       await this.dataSource.transaction(async (manager) => {
         Object.assign(quoteRequest, quoteRequestDto)
         quoteRequest.approved_by = user
+        quoteRequest.rejected_by = 'staff'
 
         manager.save(quoteRequest)
       })
@@ -563,19 +564,18 @@ export class QuotesService {
     quoteRequest.status = changeStatusQuoteRequest.status
     quoteRequest.rejected_comment = changeStatusQuoteRequest.comment
     quoteRequest.rejected_options = changeStatusQuoteRequest.options
+    quoteRequest.rejected_by === 'client'
 
     try {
-      await this.quoteRequestRepository.save(quoteRequest)
+      await this.dataSource.transaction(async (manager) => {
+        if (quoteRequest.status === 'rejected') {
+          quoteRequest.rejected_by = 'client'
+        }
+
+        await manager.save(quoteRequest)
+      })
 
       if (quoteRequest.status === 'done') {
-        // const activity = await this.activitiesService.createActivity(
-        //   changeStatusQuoteRequest as any,
-        // )
-
-        // const response = await this.methodsService.createMethod({
-        //   activity_id: activity.data.id,
-        // })
-
         return handleOK('Cotización aprobada')
       }
 

@@ -60,6 +60,9 @@ export class QuoteRequest {
   @Column({ type: 'varchar', nullable: true })
   rejected_options?: string[]
 
+  @Column({ default: null })
+  rejected_by: 'client' | 'staff'
+
   @Column({ type: 'float', nullable: true, default: 0 })
   extras?: number
 
