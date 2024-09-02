@@ -87,6 +87,11 @@ export class QuotesController {
     )
   }
 
+  @Post('request/rejected-review')
+  async rejectQuoteUnderReview(@Body() quoteRequest: UpdateQuoteRequestDto) {
+    return await this.quotesService.rejectQuoteUnderReview(quoteRequest)
+  }
+
   @Get('request/token/:token')
   async getQuoteRequestByToken(@Param('token') token: string) {
     if (!token) {
