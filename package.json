@@ -37,6 +37,7 @@
     "child_process": "^1.0.2",
     "class-transformer": "^0.5.1",
     "class-validator": "^0.14.0",
+    "date-fns": "^3.6.0",
     "firebase-admin": "^11.11.0",
     "googleapis": "^129.0.0",
     "handlebars": "^4.7.8",
