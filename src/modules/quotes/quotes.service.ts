@@ -43,6 +43,7 @@ import { ModificationRequestDto } from './dto/modification-request.dto'
 import { formatQuoteCode } from 'src/utils/generateCertCode'
 import { EquipmentQuoteRequestDto } from './dto/equipment-quote-request.dto'
 import { DeleteEquipmentFromQuoteDto } from './dto/delete-equipment-from-quote.dto'
+import { subDays } from 'date-fns'
 
 @Injectable()
 export class QuotesService {
@@ -139,6 +140,7 @@ export class QuotesService {
         where: {
           status: In(['pending', 'waiting', 'done']),
           activity: filterActive ? IsNull() : Not(IsNull()), // Si filterActive es true, buscamos activity null, de lo contrario, activity no es null
+          created_at: MoreThanOrEqual(subDays(new Date(), 30)),
         },
         order: { id: 'DESC' },
       })
