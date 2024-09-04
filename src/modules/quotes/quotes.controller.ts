@@ -235,4 +235,10 @@ export class QuotesController {
   ) {
     return this.quotesService.deleteEquipmentFromQuote({ quoteID, equipmentID })
   }
+
+  @UseGuards(JwtAuthGuard)
+  @Get('generate/by-quote-id/:id')
+  async generateQuoteByQuoteId(@Param('id') id: number) {
+    return await this.quotesService.generateQuoteByQuoteId(id)
+  }
 }
