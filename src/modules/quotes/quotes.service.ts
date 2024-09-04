@@ -1165,4 +1165,65 @@ export class QuotesService {
       return handleInternalServerError(error.message)
     }
   }
+
+  async generateQuoteByQuoteId(id: number) {
+    try {
+      const response = await this.getQuoteRequestByIdWithoutModify(id)
+
+      if (!response.success) {
+        return handleBadrequest(
+          new Error('La cotización que intenta copiar no existe'),
+        )
+      }
+
+      const quote = response.data as QuoteRequest
+      delete quote.id
+      delete quote.created_at
+      quote.status = 'pending'
+
+      // clear id property from equipments
+      quote.equipment_quote_request = quote.equipment_quote_request.map(
+        (equipment) => {
+          delete equipment.id
+          equipment.status = 'pending'
+          return equipment
+        },
+      )
+
+      const lastQuote = await this.quoteRequestRepository
+        .createQueryBuilder('quote_requests')
+        .orderBy('quote_requests.id', 'DESC')
+        .getOne()
+
+      const newQuote = this.quoteRequestRepository.create(quote)
+
+      await this.dataSource.transaction(async (manager) => {
+        await manager.save(newQuote)
+        await manager.save(newQuote.equipment_quote_request)
+        await manager.save(newQuote.client)
+      })
+
+      await this.dataSource.transaction(async (manager) => {
+        newQuote.record_index =
+          !lastQuote ||
+          lastQuote.created_at.getFullYear() !==
+            newQuote.created_at.getFullYear()
+            ? 1
+            : lastQuote.record_index + 1
+
+        newQuote.no = generateQuoteRequestCode(newQuote.record_index)
+        newQuote.service_request_code = generateQuoteServiceRequestCode(
+          newQuote.record_index,
+        )
+        await manager.save(newQuote)
+      })
+
+      return handleOK({
+        id: newQuote.id,
+      })
+    } catch (error) {
+      console.error({ error })
+      return handleInternalServerError(error.message)
+    }
+  }
 }
