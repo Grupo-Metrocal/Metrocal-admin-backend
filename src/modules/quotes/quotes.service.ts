@@ -1234,4 +1234,85 @@ export class QuotesService {
       return handleInternalServerError(error.message)
     }
   }
+
+  async generatePDFromModifiedQuoteList(quoteId: number, indexList: number) {
+    let { data: response } = (await this.getQuoteRequestById(quoteId)) as {
+      data: QuoteRequest
+    }
+
+    if (!response) {
+      return handleBadrequest(new Error('Esta cotización no existe'))
+    }
+
+    if (indexList > response.modifications_list_json.length) {
+      return handleBadrequest(
+        new Error('El indice de descarga esta fuera de rango'),
+      )
+    }
+
+    const quote = response.modifications_list_json[indexList]
+    const data = {}
+
+    data['servicesAndEquipments'] = quote.equipment_quote_request.map(
+      (equipment, index) => {
+        return {
+          index: index + 1,
+          service: equipment.type_service,
+          equipment: equipment.name,
+          method:
+            equipment.calibration_method === 'GENERIC_METHOD'
+              ? 'Comp. Directa Trazable'
+              : equipment.calibration_method,
+          count: equipment.count,
+          unitPrice: formatPrice(equipment.price),
+          subTotal: formatPrice(equipment.total),
+          comment: equipment.additional_remarks || 'N/A',
+          measuring_range: equipment.measuring_range || 'N/A',
+        }
+      },
+    )
+
+    if (quote.extras > 0)
+      data['servicesAndEquipments'].push({
+        index: quote.equipment_quote_request.length + 1,
+        service: 'Traslado técnico',
+        equipment: '---',
+        method: '---',
+        count: '---',
+        unitPrice: formatPrice(quote.extras),
+        subTotal: formatPrice(quote.extras),
+        comment: '---',
+        measuring_range: '---',
+      })
+
+    const subtotal =
+      quote?.equipment_quote_request
+        ?.map((equipment) =>
+          equipment.status === 'done' ? equipment.total : 0,
+        )
+        .reduce((a, b) => a + b, 0) + quote?.extras || 0
+
+    data['discount'] =
+      quote.general_discount > 0
+        ? formatPrice((subtotal * quote.general_discount) / 100)
+        : 'N/A'
+    data['subtotal1'] = formatPrice(subtotal)
+    data['subtotal2'] = formatPrice(
+      subtotal - (subtotal * quote.general_discount) / 100,
+    )
+    data['tax'] = formatPrice(
+      ((subtotal - (subtotal * quote.general_discount) / 100) *
+        (quote.tax || 0)) /
+        100,
+    )
+    data['total'] = formatPrice(quote.price)
+    data['client'] = quote.client
+    data['date'] = formatDate(quote.created_at.toString())
+
+    data['no'] = quote.no
+    data['length'] = quote.equipment_quote_request.length
+    data['service_request_code'] = quote.service_request_code
+
+    return await this.pdfService.generateQuoteRequestPdf(data)
+  }
 }

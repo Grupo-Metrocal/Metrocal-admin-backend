@@ -23,6 +23,7 @@ import { ReviewEquipmentDto } from './dto/review-equipment.dto'
 import { ModificationRequestDto } from './dto/modification-request.dto'
 import { EquipmentQuoteRequestDto } from './dto/equipment-quote-request.dto'
 import { DeleteEquipmentFromQuoteDto } from './dto/delete-equipment-from-quote.dto'
+import { buffer } from 'stream/consumers'
 
 @ApiTags('quotes')
 @Controller('quotes')
@@ -240,5 +241,25 @@ export class QuotesController {
   @Get('generate/by-quote-id/:id')
   async generateQuoteByQuoteId(@Param('id') id: number) {
     return await this.quotesService.generateQuoteByQuoteId(id)
+  }
+
+  @Get('request/pdf/:id/:index')
+  async generatePDFFromModifiedQuoteList(
+    @Param('id') id: number,
+    @Param('index') index: number,
+    @Res() res: Response,
+  ) {
+    const pdfBuffer = await this.quotesService.generatePDFromModifiedQuoteList(
+      id,
+      Number(index),
+    )
+
+    if (!pdfBuffer) {
+      return res.status(500).send('Error al generar el PDF')
+    }
+
+    res.setHeader('Content-Type', 'application/pdf')
+    res.setHeader('Content-Disposition', 'attachment; filename=Cotizacion.pdf')
+    res.send(pdfBuffer)
   }
 }
