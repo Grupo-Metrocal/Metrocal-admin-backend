@@ -1,5 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger'
 import { IsNotEmpty, IsNumber, IsDate } from 'class-validator'
+import { QuoteRequest } from '../entities/quote-request.entity'
 
 export class UpdateQuoteRequestDto {
   @ApiProperty()
@@ -37,4 +38,7 @@ export class UpdateQuoteRequestDto {
 
   @ApiProperty()
   rejected_options?: string[]
+
+  @ApiProperty()
+  modifiedQuote: QuoteRequest
 }

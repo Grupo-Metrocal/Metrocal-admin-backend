@@ -301,6 +301,7 @@ export class QuotesService {
       parsedQuoteRequest.approved_by = user
       user.quote_requests.push(parsedQuoteRequest)
 
+      const { modifiedQuote } = quoteRequestDto
       Object.assign(quoteRequest, quoteRequestDto)
 
       const token = this.tokenService.generateTemporaryLink(
@@ -379,6 +380,12 @@ export class QuotesService {
             quoteRequest.modification_number === null
               ? 1
               : quoteRequest.modification_number + 1
+
+          if (!quoteRequest.modifications_list_json) {
+            quoteRequest.modifications_list_json = []
+          }
+          delete modifiedQuote.modifications_list_json
+          quoteRequest.modifications_list_json.push(modifiedQuote)
         }
 
         approvedQuoteRequestDto.no = formatQuoteCode(
