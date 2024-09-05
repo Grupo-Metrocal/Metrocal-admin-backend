@@ -81,6 +81,9 @@ export class QuoteRequest {
   @Column({ default: 0 })
   record_index: number
 
+  @Column('jsonb', { nullable: true })
+  modifications_list_json?: QuoteRequest[]
+
   @Column({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP' })
   created_at: Date
 
