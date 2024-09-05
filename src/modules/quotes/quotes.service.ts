@@ -385,6 +385,7 @@ export class QuotesService {
             quoteRequest.modifications_list_json = []
           }
           delete modifiedQuote.modifications_list_json
+          modifiedQuote.updated_at = new Date()
           quoteRequest.modifications_list_json.push(modifiedQuote)
         }
 
