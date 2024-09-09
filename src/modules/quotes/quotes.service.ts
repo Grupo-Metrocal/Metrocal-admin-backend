@@ -482,8 +482,8 @@ export class QuotesService {
 
     const data = {}
 
-    data['servicesAndEquipments'] = quote.equipment_quote_request.map(
-      (equipment, index) => {
+    data['servicesAndEquipments'] = quote.equipment_quote_request
+      .map((equipment, index) => {
         return {
           index: index + 1,
           service: equipment.type_service,
@@ -497,9 +497,10 @@ export class QuotesService {
           subTotal: formatPrice(equipment.total),
           comment: equipment.additional_remarks || 'N/A',
           measuring_range: equipment.measuring_range || 'N/A',
+          status: equipment.status,
         }
-      },
-    )
+      })
+      .filter((item) => item.status === 'done')
 
     if (quote.extras > 0)
       data['servicesAndEquipments'].push({
@@ -802,9 +803,14 @@ export class QuotesService {
         relations: ['equipment_quote_request', 'client', 'activity'],
       })
 
-      const quotesWithoutActivity = quotes.filter(
-        (quote) => quote.activity === null,
-      )
+      const quotesWithoutActivity = quotes
+        .map((item) => {
+          return {
+            ...item,
+            no: formatQuoteCode(item.no, item.modification_number),
+          }
+        })
+        .filter((quote) => quote.activity === null)
 
       return handleOK(quotesWithoutActivity)
     } catch (error) {
@@ -1256,8 +1262,8 @@ export class QuotesService {
     const quote = response.modifications_list_json[indexList]
     const data = {}
 
-    data['servicesAndEquipments'] = quote.equipment_quote_request.map(
-      (equipment, index) => {
+    data['servicesAndEquipments'] = quote.equipment_quote_request
+      .map((equipment, index) => {
         return {
           index: index + 1,
           service: equipment.type_service,
@@ -1271,9 +1277,10 @@ export class QuotesService {
           subTotal: formatPrice(equipment.total),
           comment: equipment.additional_remarks || 'N/A',
           measuring_range: equipment.measuring_range || 'N/A',
+          status: equipment.status,
         }
-      },
-    )
+      })
+      .filter((item) => item.status === 'done')
 
     if (quote.extras > 0)
       data['servicesAndEquipments'].push({
