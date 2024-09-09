@@ -540,7 +540,10 @@ export class QuotesService {
 
     data['no'] = quote.no
     data['length'] = quote.equipment_quote_request.length
-    data['service_request_code'] = quote.service_request_code
+    data['service_request_code'] = formatQuoteCode(
+      quote.service_request_code,
+      quote.modification_number,
+    )
 
     return await this.pdfService.generateQuoteRequestPdf(data)
   }
@@ -1311,7 +1314,10 @@ export class QuotesService {
 
     data['no'] = quote.no
     data['length'] = quote.equipment_quote_request.length
-    data['service_request_code'] = quote.service_request_code
+    data['service_request_code'] = formatQuoteCode(
+      quote.service_request_code,
+      quote.modification_number,
+    )
 
     return await this.pdfService.generateQuoteRequestPdf(data)
   }

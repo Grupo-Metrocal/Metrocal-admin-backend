@@ -18,6 +18,10 @@ export const formatCertCode = (code: string, modificationsNumber: number) => {
 }
 
 export const formatQuoteCode = (code: string, modificationsNumber: number) => {
+  if (!code) {
+    return code
+  }
+
   if (modificationsNumber === 0 || modificationsNumber === null) {
     return code
   }
