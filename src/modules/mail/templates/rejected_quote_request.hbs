@@ -2,15 +2,14 @@
   <head>
     <meta charset='UTF-8' />
     <meta name='viewport' content='width=device-width, initial-scale=1.0' />
+
     <title>Cotización Rechazada</title>
-    <style>
-      body { font-family: Arial, sans-serif; background-color: #f4f4f4;
-      margin:0; padding: 0; display: flex; align-items: center; justify-content:
-      center; height: 100vh; } .container { background-color: #fff;
-      padding:20px; border-radius: 8px; box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-      width: 100%; text-align: center; } h1 { color: #e74c3c; } p { color: #333;
-      } .reason { margin-top: 20px; }
-    </style>
+
+    <link
+      href='https://fonts.googleapis.com/css?family=Montserrat:400,700'
+      rel='stylesheet'
+      type='text/css'
+    />
   </head>
   <body
     style='
@@ -22,7 +21,6 @@
     '
   >
     <div
-      class='container'
       style='
         max-width: 600px;
         margin: 20px auto;
@@ -40,9 +38,29 @@
 
       <p>Lamentamos informarle que su cotización ha sido rechazada por el
         siguiente motivo:</p>
-      <div class='reason'>
+      <div
+        style='width: 100%; background-color: gainsboro; padding: 2px 5px; border-radius: 5px'
+      >
         <p>{{comment}}</p>
       </div>
+
+      <p>Te invitamos a realizar una nueva cotización o ponerte en contacto con
+        nosotros si hubo alguna confuncion en la información</p>
+      <a
+        href='https://app-grupometrocal.com'
+        style="
+        background-color: #09f;
+        border: none;
+        color: white;
+        padding: 6px 25px;
+        text-align: center;
+        text-decoration: none;
+        display: inline-block;
+        border-radius: 5px;
+        font-weight: bold;
+        font-family: 'Montserrat', sans-serif;
+      "
+      >Nueva Cotización</a>
 
       <p>Si tiene dudas o comentarios, quedamos atentos a cualquier consulta y/o
         modificación de ser necesario, con gusto le atendemos, recuerde que
@@ -64,7 +82,7 @@
         color: tomato;
         text-align: center;
         margin-top: 50px;
-        '
+      '
     >Este mensaje fue enviado automáticamente, por favor no responda.</p>
 
   </body>
