@@ -8,6 +8,7 @@ import {
   Not,
   MoreThanOrEqual,
   ILike,
+  Between,
 } from 'typeorm'
 import { EquipmentQuoteRequest } from './entities/equipment-quote-request.entity'
 import { QuoteRequest } from './entities/quote-request.entity'
@@ -43,7 +44,7 @@ import { ModificationRequestDto } from './dto/modification-request.dto'
 import { formatQuoteCode } from 'src/utils/generateCertCode'
 import { EquipmentQuoteRequestDto } from './dto/equipment-quote-request.dto'
 import { DeleteEquipmentFromQuoteDto } from './dto/delete-equipment-from-quote.dto'
-import { subDays } from 'date-fns'
+import { endOfMonth, startOfMonth, subDays, subMonths } from 'date-fns'
 
 @Injectable()
 export class QuotesService {
@@ -1327,5 +1328,79 @@ export class QuotesService {
     )
 
     return await this.pdfService.generateQuoteRequestPdf(data)
+  }
+
+  async fetchQuotationDetails() {
+    try {
+      const startOfCurrentMonth = startOfMonth(new Date())
+      const endOfCurrentMonth = endOfMonth(new Date())
+
+      const startOfLastMonth = startOfMonth(subMonths(new Date(), 1))
+      const endOfLastMonth = endOfMonth(subMonths(new Date(), 1))
+
+      const currentQuotes = await this.quoteRequestRepository.find({
+        where: { created_at: Between(startOfCurrentMonth, endOfCurrentMonth) },
+      })
+
+      const lastQuotes = await this.quoteRequestRepository.find({
+        where: { created_at: Between(startOfLastMonth, endOfLastMonth) },
+      })
+
+      const current_invoice = currentQuotes
+        .map((quote) => quote.price)
+        .reduce((total, price) => total + price, 0)
+
+      const last_invoice = lastQuotes
+        .map((quote) => quote.price)
+        .reduce((total, price) => total + price, 0)
+
+      const number_quotes_rejected_by_client = currentQuotes.filter(
+        (quote) => quote.rejected_by === 'client',
+      )
+
+      const number_quotes_rejected_by_staff = currentQuotes.filter(
+        (quote) => quote.rejected_by === 'staff',
+      )
+
+      const approved_quote_invoice = currentQuotes
+        .map((quote) => quote.status === 'done' && quote.price)
+        .reduce((total, price) => total + price, 0)
+
+      const approved_number_quotes = currentQuotes.map(
+        (quote) => quote.status === 'done',
+      )
+
+      const last_approved_quote_invoice = lastQuotes
+        .map((quote) => quote.status === 'done' && quote.price)
+        .reduce((total, price) => total + price, 0)
+
+      return handleOK({
+        all_quotes: {
+          current_invoice,
+          last_invoice,
+          current_number_quotes_generated: currentQuotes.length,
+        },
+        rejected_quotes: {
+          number_quotes_rejected_by_client:
+            number_quotes_rejected_by_client.length,
+          number_quotes_rejected_by_staff:
+            number_quotes_rejected_by_staff.length,
+        },
+        approved_quotes: {
+          percentageChange: Number(
+            (
+              ((approved_quote_invoice - last_approved_quote_invoice) /
+                last_approved_quote_invoice) *
+              100
+            ).toFixed(2),
+          ),
+          approved_quote_invoice,
+          last_approved_quote_invoice,
+          approved_number_quotes: approved_number_quotes.length,
+        },
+      })
+    } catch (error) {
+      return handleInternalServerError(error.message)
+    }
   }
 }

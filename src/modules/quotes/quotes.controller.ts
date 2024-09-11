@@ -262,4 +262,9 @@ export class QuotesController {
     res.setHeader('Content-Disposition', 'attachment; filename=Cotizacion.pdf')
     res.send(pdfBuffer)
   }
+
+  @Get('fetch-quotation-details')
+  async fetchQuotationDetails() {
+    return await this.quotesService.fetchQuotationDetails()
+  }
 }
