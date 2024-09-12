@@ -1357,10 +1357,16 @@ export class QuotesService {
       const number_quotes_rejected_by_client = currentQuotes.filter(
         (quote) => quote.rejected_by === 'client',
       )
+      const invoice_rejected_by_client = currentQuotes
+        .map((quote) => quote.rejected_by === 'client' && quote.price)
+        .reduce((total, price) => total + price, 0)
 
       const number_quotes_rejected_by_staff = currentQuotes.filter(
         (quote) => quote.rejected_by === 'staff',
       )
+      const invoice_rejected_by_staff = currentQuotes
+        .map((quote) => quote.rejected_by === 'staff' && quote.price)
+        .reduce((total, price) => total + price, 0)
 
       const approved_quote_invoice = currentQuotes
         .map((quote) => quote.status === 'done' && quote.price)
@@ -1383,8 +1389,10 @@ export class QuotesService {
         rejected_quotes: {
           number_quotes_rejected_by_client:
             number_quotes_rejected_by_client.length,
+          invoice_rejected_by_client,
           number_quotes_rejected_by_staff:
             number_quotes_rejected_by_staff.length,
+          invoice_rejected_by_staff,
         },
         approved_quotes: {
           percentageChange: Number(
