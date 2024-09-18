@@ -32,6 +32,9 @@ export class NI_MCIT_D_02 {
   @Column({ nullable: true, type: 'varchar', array: true, default: [] })
   report_messages?: string[]
 
+  @Column({ default: 0 })
+  record_index: number
+
   @ManyToOne(
     () => EquipmentInformationNI_MCIT_D_02,
     (equipmentInformationNI_MCIT_D_02) =>

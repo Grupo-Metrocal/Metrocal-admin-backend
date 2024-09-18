@@ -1,7 +1,11 @@
 import { Inject, Injectable, forwardRef } from '@nestjs/common'
 import { DataSource, MoreThan, Repository } from 'typeorm'
 import { Certificate } from './entities/certificate.entity'
-import { ResponseHTTP, handleInternalServerError, handleOK } from 'src/common/handleHttp'
+import {
+  ResponseHTTP,
+  handleInternalServerError,
+  handleOK,
+} from 'src/common/handleHttp'
 import { InjectRepository } from '@nestjs/typeorm'
 import { generateCertCode, getCertCodeId } from 'src/utils/generateCertCode'
 import { MethodsService } from '../methods/methods.service'
@@ -12,52 +16,51 @@ export class CertificateService {
     @InjectRepository(Certificate)
     private readonly certificateRepository: Repository<Certificate>,
 
-    @Inject(forwardRef(() =>MethodsService ))
+    @Inject(forwardRef(() => MethodsService))
     private readonly methodsService: MethodsService,
     private readonly dataSource: DataSource,
   ) {}
 
-  async create(prefix: string, methodId: number) {
+  async create(prefix: string, index: number) {
     try {
       const certificate = new Certificate()
-      let newMethodId = methodId
+      let newIndex = index
 
-      if (prefix === 'T'){
-
-        const [ t_01, t_03, t_05 ] : [any, any, any]= await Promise.all([
+      if (prefix === 'T') {
+        const [t_01, t_03, t_05]: [any, any, any] = await Promise.all([
           this.methodsService.getCeritifationCodeFromLastMethod('NI_MCIT_T_01'),
           this.methodsService.getCeritifationCodeFromLastMethod('NI_MCIT_T_03'),
           this.methodsService.getCeritifationCodeFromLastMethod('NI_MCIT_T_05'),
         ])
-        
+
         const MethodsCodes = [
           Number(getCertCodeId(t_01?.data?.code || null)),
           Number(getCertCodeId(t_03?.data?.code || null)),
           Number(getCertCodeId(t_05?.data?.code || null)),
         ]
 
-        newMethodId = Math.max(...MethodsCodes) + 1
+        newIndex = Math.max(...MethodsCodes) + 1
       }
 
-      if (prefix === 'D'){
-        const [ d_01, d_02 ] : [any, any]= await Promise.all([
+      if (prefix === 'D') {
+        const [d_01, d_02]: [any, any] = await Promise.all([
           this.methodsService.getCeritifationCodeFromLastMethod('NI_MCIT_D_01'),
           this.methodsService.getCeritifationCodeFromLastMethod('NI_MCIT_D_02'),
         ])
-        
+
         const MethodsCodes = [
           Number(getCertCodeId(d_01?.data?.code || null)),
           Number(getCertCodeId(d_02?.data?.code || null)),
         ]
 
-        newMethodId = Math.max(...MethodsCodes) + 1
+        newIndex = Math.max(...MethodsCodes) + 1
       }
 
       const created = await this.dataSource.transaction(async (manager) => {
         const certificateCreated = await manager.save(certificate)
 
         const code = generateCertCode({
-          id: newMethodId,
+          id: newIndex,
           prefix: prefix,
         })
         certificateCreated.code = code

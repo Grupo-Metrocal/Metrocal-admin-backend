@@ -790,6 +790,12 @@ export class NI_MCIT_T_01Service {
         where: { id: methodID },
       })
 
+      const lastMethod = await this.NI_MCIT_T_01Repository.createQueryBuilder(
+        'NI_MCIT_T_01',
+      )
+        .orderBy('NI_MCIT_T_01.record_index', 'DESC')
+        .getOne()
+
       if (!method) {
         return handleInternalServerError('El método no existe')
       }
@@ -798,7 +804,21 @@ export class NI_MCIT_T_01Service {
         return handleOK('El método ya tiene un código de certificado')
       }
 
-      const certificate = await this.certificateService.create('T', methodID)
+      await this.dataSource.transaction(async (manager) => {
+        method.record_index =
+          !lastMethod ||
+          lastMethod.created_at.getFullYear() !==
+            method.created_at.getFullYear()
+            ? 1
+            : lastMethod.record_index + 1
+
+        await manager.save(method)
+      })
+
+      const certificate = await this.certificateService.create(
+        'T',
+        method.record_index,
+      )
 
       method.certificate_code = certificate.data.code
       method.certificate_id = certificate.data.id

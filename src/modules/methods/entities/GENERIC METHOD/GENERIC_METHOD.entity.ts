@@ -40,6 +40,9 @@ export class GENERIC_METHOD {
   @Column({ nullable: true })
   modification_number?: number
 
+  @Column({ default: 0 })
+  record_index: number
+
   @ManyToOne(
     () => EquipmentInformationGENERIC_METHOD,
     (equipmentInformationGENERIC_METHOD) =>

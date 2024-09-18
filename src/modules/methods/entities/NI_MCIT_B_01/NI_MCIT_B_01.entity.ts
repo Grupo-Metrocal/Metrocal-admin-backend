@@ -50,6 +50,9 @@ export class NI_MCIT_B_01 {
   @Column({ nullable: true })
   review_user_id?: number
 
+  @Column({ default: 0 })
+  record_index: number
+
   @ManyToOne(
     () => EquipmentInformationNI_MCIT_B_01,
     (equipmentInformationNI_MCIT_B_01) =>
