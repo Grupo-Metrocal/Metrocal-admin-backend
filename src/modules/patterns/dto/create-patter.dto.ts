@@ -37,4 +37,9 @@ export class CreatePatternDto {
   @IsNotEmpty()
   @IsString()
   next_calibration: string
+
+  @ApiProperty()
+  @IsNotEmpty()
+  @IsString()
+  brand: string
 }
