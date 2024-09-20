@@ -79,39 +79,37 @@ export class PatternsService {
   }
 
   async createDefaultPatterns() {
-    const patterns = PatternsJSON.map((pattern) => {
-      const {
-        method,
-        equipment,
-        code,
-        certificate,
-        traceability,
-        pattern_range,
-        next_calibration,
-      } = pattern
-      return this.patternRepository.create({
-        method: method as any,
-        equipment,
-        code,
-        certificate,
-        traceability,
-        pattern_range,
-        next_calibration,
-      })
-    })
-
     try {
-      console.log('Creating default patterns...')
+      const patterns = PatternsJSON.map((pattern) => {
+        const {
+          method,
+          equipment,
+          code,
+          certificate,
+          traceability,
+          pattern_range,
+          next_calibration,
+          brand,
+        } = pattern
+        return this.patternRepository.create({
+          method: method as any,
+          equipment,
+          code,
+          certificate,
+          traceability,
+          pattern_range,
+          next_calibration,
+          brand: brand,
+        })
+      })
 
       for (const pattern of patterns) {
-        if (
-          await this.patternRepository.findOne({
-            where: { code: pattern.code, method: pattern.method },
-          })
-        )
-          continue
-
-        await this.patternRepository.save(pattern)
+        const ifExist = await this.patternRepository.findOne({
+          where: { code: pattern.code, method: pattern.method },
+        })
+        if (!ifExist) {
+          await this.patternRepository.save(pattern)
+        }
       }
 
       return handleOK(patterns)

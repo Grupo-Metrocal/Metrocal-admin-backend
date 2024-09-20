@@ -904,7 +904,7 @@
     "equipment": "Masa Patrón",
     "code": "NI-MCPM-JM-04 (100g)",
     "certificate": "RCP-LMV-MSWS-105-23",
-    "traceability": "RECOPE",
+    "traceability": "RECOPE, Certificado RCP-LMV-MSWS-105-23",
     "pattern_range": "",
     "next_calibration": "2027-07-27",
     "brand": "INSCO"
@@ -914,7 +914,7 @@
     "equipment": "Masa Patrón",
     "code": "NI-MCPM-JM-04 (50g)",
     "certificate": "RCP-LMV-MSWS-105-23",
-    "traceability": "RECOPE",
+    "traceability": "RECOPE, Certificado RCP-LMV-MSWS-105-23",
     "pattern_range": "",
     "next_calibration": "2027-07-27",
     "brand": "INSCO"
@@ -924,7 +924,7 @@
     "equipment": "Masa Patrón",
     "code": "NI-MCPM-10-04 (10kg)",
     "certificate": "RCP-LMV-MSWS-105-23",
-    "traceability": "RECOPE",
+    "traceability": "RECOPE, Certificado RCP-LMV-MSWS-105-23",
     "pattern_range": "",
     "next_calibration": "2027-07-27",
     "brand": "INSCO"
@@ -934,7 +934,7 @@
     "equipment": "Masa Patrón",
     "code": "NI-MCPM-20-02 (20kg)",
     "certificate": "RCP-LMV-MSWS-105-23",
-    "traceability": "RECOPE",
+    "traceability": "RECOPE, Certificado RCP-LMV-MSWS-105-23",
     "pattern_range": "",
     "next_calibration": "2027-07-27",
     "brand": "INSCO"
@@ -954,7 +954,7 @@
     "equipment": "Masa Patrón",
     "code": "NI-MCPM-JM-04 (500g)",
     "certificate": "RCP-LMV-MSWS-105-23",
-    "traceability": "RECOPE",
+    "traceability": "RECOPE, Certificado RCP-LMV-MSWS-105-23",
     "pattern_range": "",
     "next_calibration": "2027-07-27",
     "brand": "INSCO"
