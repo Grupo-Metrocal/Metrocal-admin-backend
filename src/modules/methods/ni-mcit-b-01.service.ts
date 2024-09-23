@@ -888,7 +888,7 @@ export class NI_MCIT_B_01Service {
       const equipment_environmental_conditions =
         await this.patternsService.findByCodeAndMethod(
           method.environmental_conditions.equipment_used,
-          'NI-MCIT-B-01',
+          'all',
         )
 
       if (equipment_environmental_conditions.success) {
@@ -899,9 +899,9 @@ export class NI_MCIT_B_01Service {
         const test = method.linearity_test.linearity_test[i]
 
         for (let j = 0; j < test.pointsComposition.length; j++) {
-          const point = test.pointsComposition[j]
+          const point = test.pointsComposition[j] as any
           const response = await this.patternsService.findByCodeAndMethod(
-            point.point,
+            point,
             'NI-MCIT-B-01',
           )
 
