@@ -1007,7 +1007,7 @@ export class ActivitiesService {
           const { data: methods } = stack as { data: any }
 
           for (const method of methods) {
-            if (method.created_at.getMonth() === new Date().getMonth()) {
+            if (method?.created_at?.getMonth() === new Date().getMonth()) {
               currentMonthCertificates += 1
 
               if (
@@ -1019,7 +1019,7 @@ export class ActivitiesService {
               }
             }
 
-            if (method.created_at.getMonth() === new Date().getMonth() - 1) {
+            if (method?.created_at?.getMonth() === new Date().getMonth() - 1) {
               previousMonthCertificatesTotal += 1
             }
           }
