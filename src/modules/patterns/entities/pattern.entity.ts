@@ -27,7 +27,7 @@ export class Pattern {
   @Column({ type: 'varchar', nullable: false })
   next_calibration: string
 
-  @Column({ type: 'varchar', nullable: false })
+  @Column({ type: 'varchar', default: '' })
   brand: string
 
   @Column({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP' })
