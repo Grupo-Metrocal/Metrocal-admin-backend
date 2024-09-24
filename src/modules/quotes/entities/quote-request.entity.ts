@@ -12,6 +12,11 @@ import { EquipmentQuoteRequest } from './equipment-quote-request.entity'
 import { Activity } from 'src/modules/activities/entities/activities.entity'
 import { Client } from 'src/modules/clients/entities/client.entity'
 
+export enum CurrencyType {
+  NIO = 'NIO',
+  USD = 'USD',
+}
+
 @Entity('quote_requests')
 export class QuoteRequest {
   @PrimaryGeneratedColumn('increment', { type: 'int' })
@@ -83,6 +88,13 @@ export class QuoteRequest {
 
   @Column('jsonb', { nullable: true })
   modifications_list_json?: QuoteRequest[]
+
+  @Column({
+    type: 'enum',
+    enum: CurrencyType,
+    default: CurrencyType.USD,
+  })
+  currency_type: CurrencyType
 
   @Column({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP' })
   created_at: Date
