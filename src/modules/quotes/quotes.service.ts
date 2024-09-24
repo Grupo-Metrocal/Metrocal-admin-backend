@@ -11,7 +11,7 @@ import {
   Between,
 } from 'typeorm'
 import { EquipmentQuoteRequest } from './entities/equipment-quote-request.entity'
-import { QuoteRequest } from './entities/quote-request.entity'
+import { CurrencyType, QuoteRequest } from './entities/quote-request.entity'
 import { QuoteRequestDto } from './dto/quote-request.dto'
 import { ClientsService } from '../clients/clients.service'
 import { updateEquipmentQuoteRequestDto } from './dto/update-equipment-quote-request.dto'
@@ -45,6 +45,7 @@ import { formatQuoteCode } from 'src/utils/generateCertCode'
 import { EquipmentQuoteRequestDto } from './dto/equipment-quote-request.dto'
 import { DeleteEquipmentFromQuoteDto } from './dto/delete-equipment-from-quote.dto'
 import { endOfMonth, startOfMonth, subDays, subMonths } from 'date-fns'
+import { getExchangeRateForDay } from 'src/services/currencyType.service'
 
 @Injectable()
 export class QuotesService {
@@ -480,6 +481,13 @@ export class QuotesService {
     if (!quote) {
       throw new Error('La cotización no existe')
     }
+
+    const today = new Date()
+    const currency = await getExchangeRateForDay(
+      today.getFullYear(),
+      today.getMonth() + 1,
+      today.getDate(),
+    )
 
     const data = {}
 
@@ -1407,6 +1415,30 @@ export class QuotesService {
           approved_number_quotes: approved_number_quotes.length,
         },
       })
+    } catch (error) {
+      return handleInternalServerError(error.message)
+    }
+  }
+
+  async changeCurrencyType(id: number, type: CurrencyType) {
+    try {
+      const quote = await this.quoteRequestRepository.findOne({
+        where: { id },
+      })
+
+      if (!quote) {
+        return handleBadrequest(new Error('La cotizaciones no existe'))
+      }
+
+      if (!Object.values(CurrencyType).includes(type)) {
+        return handleBadrequest(new Error('Tipo de moneda inválido'))
+      }
+
+      quote.currency_type = type
+
+      await this.quoteRequestRepository.save(quote)
+
+      return handleOK(quote)
     } catch (error) {
       return handleInternalServerError(error.message)
     }
