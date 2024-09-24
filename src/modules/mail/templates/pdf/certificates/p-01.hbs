@@ -179,29 +179,21 @@
         <tr>
           <th style='background-color: #dddddd'>Equipo</th>
           <th style='background-color: #dddddd'>Código</th>
-          <th style='background-color: #dddddd'>Certificado</th>
+          {{! <th style='background-color: #dddddd'>Certificado</th> }}
           <th style='background-color: #dddddd'>Trazabilidad</th>
           <th style='background-color: #dddddd'>Próxima calibración</th>
         </tr>
       </thead>
       <tbody>
-        <tr>
-          <td>{{used_patterns.ta_eq_enviromental_conditions.equipment}}</td>
-          <td>{{used_patterns.ta_eq_enviromental_conditions.code}}</td>
-          <td>{{used_patterns.ta_eq_enviromental_conditions.certificate}}</td>
-          <td>{{used_patterns.ta_eq_enviromental_conditions.traceability}}</td>
-          <td>
-            {{used_patterns.ta_eq_enviromental_conditions.next_calibration}}
-          </td>
-        </tr>
-
-        <tr>
-          <td>{{used_patterns.pressurePattern.equipment}}</td>
-          <td>{{used_patterns.pressurePattern.code}}</td>
-          <td>{{used_patterns.pressurePattern.certificate}}</td>
-          <td>{{used_patterns.pressurePattern.traceability}}</td>
-          <td>{{used_patterns.pressurePattern.next_calibration}}</td>
-        </tr>
+        {{#each description_pattern as |data|}}
+          <tr>
+            <td>{{data.equipment}}</td>
+            <td>{{data.code}}</td>
+            <!-- <td>{{data.certificate}}</td> -->
+            <td>{{data.traceability}}</td>
+            <td>{{data.next_calibration}}</td>
+          </tr>
+        {{/each}}
       </tbody>
 
       <tbody></tbody>

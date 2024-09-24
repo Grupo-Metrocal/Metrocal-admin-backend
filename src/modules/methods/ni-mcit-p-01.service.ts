@@ -698,15 +698,26 @@ export class NI_MCIT_P_01Service {
         },
       }
 
+      const description_pattern = []
+
       const ta_eq_enviromental_conditions =
         await this.patternsService.findByCodeAndMethod(
           method.environmental_conditions.cycles[0].ta.equipement,
-          'NI-MCIT-P-01',
+          'all',
         )
+
+      if (ta_eq_enviromental_conditions.success) {
+        description_pattern.push(ta_eq_enviromental_conditions.data)
+      }
+
       const pressurePattern = await this.patternsService.findByCodeAndMethod(
         method.description_pattern.pattern,
         'NI-MCIT-P-01',
       )
+
+      if (pressurePattern.success) {
+        description_pattern.push(pressurePattern.data)
+      }
 
       const certificate = {
         pattern: 'NI-MCIT-P-01',
@@ -749,11 +760,8 @@ export class NI_MCIT_P_01Service {
             sheetCER.cell('E81').value(),
           )} % ± ${formatNumberCertification(sheetCER.cell('G81').value())} %`,
         },
-        descriptionPattern: method.description_pattern,
-        used_patterns: {
-          ta_eq_enviromental_conditions: ta_eq_enviromental_conditions.data,
-          pressurePattern: pressurePattern.data,
-        },
+        used_pattern: method.description_pattern,
+        description_pattern,
         creditable: method.description_pattern.creditable,
         ta_eq_enviromental_conditions:
           method.environmental_conditions.cycles[0].ta.equipement,
