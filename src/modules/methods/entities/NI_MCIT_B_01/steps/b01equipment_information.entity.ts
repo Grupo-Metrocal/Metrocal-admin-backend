@@ -25,8 +25,11 @@ export class EquipmentInformationNI_MCIT_B_01 {
   @Column({ type: 'varchar', nullable: true })
   serial_number?: string
 
-  @Column({ type: 'varchar', nullable: true })
-  measurement_range?: string
+  @Column({ type: 'float', nullable: true })
+  range_min: number
+
+  @Column({ type: 'float', nullable: true })
+  range_max: number
 
   @Column({ type: 'float', nullable: true })
   resolution?: number
@@ -37,11 +40,8 @@ export class EquipmentInformationNI_MCIT_B_01 {
   @Column({ type: 'varchar', nullable: true })
   code?: string
 
-  //fecha
   @Column({ type: 'varchar', nullable: true })
   date?: string
-
-  //acredited boolean
 
   @Column({ nullable: true })
   unit?: string

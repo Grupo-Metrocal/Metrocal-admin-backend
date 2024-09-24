@@ -133,7 +133,6 @@ export class NI_MCIT_B_01Service {
           equipment,
         )
       } else {
-        equipment.date = new Date().toISOString()
         const newEquipment =
           this.EquipmentInformationNI_MCIT_B_01Repository.create(equipment)
         method.equipment_information = newEquipment
@@ -475,7 +474,7 @@ export class NI_MCIT_B_01Service {
       sheetGeneral.cell('F8').value(equipment.maker)
       sheetGeneral.cell('F9').value(equipment.model)
       sheetGeneral.cell('F10').value(equipment.serial_number)
-      sheetGeneral.cell('F12').value(equipment.measurement_range)
+      // sheetGeneral.cell('F12').value(``)
       sheetGeneral
         .cell('F14')
         .value(`${equipment.resolution} ${equipment.unit}`)
@@ -939,7 +938,9 @@ export class NI_MCIT_B_01Service {
           maker: equipment_information.maker || '---',
           serial_number: equipment_information.serial_number || '---',
           model: equipment_information.model || '---',
-          measurement_range: equipment_information.measurement_range || '---',
+          measurement_range:
+            `${formatSameNumberCertification(method.equipment_information.range_min)} ${method.equipment_information.unit} a ${formatSameNumberCertification(method.equipment_information.range_max)} ${method.equipment_information.unit}` ||
+            '---',
           resolution:
             `${formatSameNumberCertification(equipment_information.resolution)} ${equipment_information.unit}` ||
             '---',
@@ -976,10 +977,8 @@ export class NI_MCIT_B_01Service {
           La indicación de temperatura de referencia y del equipo, corresponden al promedio de 3 mediciones.
           El factor de conversión al SI corresponde a T(K) = t(°C) + 273,15
           De acuerdo a lo establecido en NTON 07-004-01 Norma Metrológica del Sistema Internacional de Unidades (SI).
-          Los resultados emitidos en este certificado corresponden únicamente al objeto calibrado y a las magnitudes
-          especificadas al momento de realizar el servicio.
-          Este certificado de calibración no debe ser reproducido sin la aprobación del laboratorio, excepto cuando se
-          reproduce en su totalidad.`,
+          Los resultados emitidos en este certificado corresponden únicamente al objeto calibrado y a las magnitudes especificadas al momento de realizar el servicio.
+          Este certificado de calibración no debe ser reproducido sin la aprobación del laboratorio, excepto cuando se reproduce en su totalidad.`,
         withLb: method.equipment_information.unit === 'lb' ? true : false,
       }
 

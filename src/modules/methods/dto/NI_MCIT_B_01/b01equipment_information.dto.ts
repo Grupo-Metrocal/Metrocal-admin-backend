@@ -11,7 +11,10 @@ export class EquipmentInformationNI_MCIT_B_01Dto {
   serial_number: string
 
   @ApiProperty()
-  measurement_range: string
+  range_min: number
+
+  @ApiProperty()
+  range_max: number
 
   @ApiProperty()
   resolution: number
@@ -21,15 +24,6 @@ export class EquipmentInformationNI_MCIT_B_01Dto {
 
   @ApiProperty()
   code: string
-
-  @ApiProperty()
-  length: string
-
-  @ApiProperty()
-  date: string
-
-  @ApiProperty()
-  acredited: boolean
 
   @ApiProperty()
   unit: string
