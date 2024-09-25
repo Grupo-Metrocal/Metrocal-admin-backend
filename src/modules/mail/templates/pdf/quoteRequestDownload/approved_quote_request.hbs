@@ -131,8 +131,18 @@
               <th>Cantidad</th>
               <th>Observación adicional</th>
               <th>Rango de medición</th>
-              <th>Precio Unitario (USD)</th>
-              <th>Precio Total (USD)</th>
+              <th>Precio Unitario
+                {{#eq currency 'USD'}}
+                  (USD)
+                {{else}}
+                 (C$)
+                {{/eq}}
+                </th>
+              <th>Precio Total {{#eq currency 'USD'}}
+                  (USD)
+                {{else}}
+                 (C$)
+                {{/eq}}</th>
             </tr>
           </thead>
           <tbody>
@@ -151,7 +161,12 @@
             {{/each}}
             <tr>
               <td colspan="8" style="text-align: left">
-                <strong>SUB-TOTAL ($):</strong>
+                <strong>SUB-TOTAL 
+                  {{#eq currency 'USD'}}
+                  ($)
+                {{else}}
+                 (C$)
+                {{/eq}}:</strong>
               </td>
               <td style="background-color: #b8cce4">
                 <strong>{{subtotal1}}</strong>
@@ -160,7 +175,11 @@
 
             <tr>
               <td colspan="8" style="text-align: left">
-                <strong>DESCUENTO ($):</strong>
+                <strong>DESCUENTO {{#eq currency 'USD'}}
+                  ($)
+                {{else}}
+                 (C$)
+                {{/eq}}:</strong>
               </td>
               <td style="background-color: #b8cce4">
                 <strong>{{discount}}</strong>
@@ -169,7 +188,11 @@
 
             <tr>
               <td colspan="8" style="text-align: left">
-                <strong>SUB-TOTAL ($):</strong>
+                <strong>SUB-TOTAL {{#eq currency 'USD'}}
+                  ($)
+                {{else}}
+                 (C$)
+                {{/eq}}:</strong>
               </td>
               <td style="background-color: #b8cce4">
                 <strong>{{subtotal2}}</strong>
@@ -177,7 +200,11 @@
             </tr>
             <tr>
               <td colspan="8" style="text-align: left">
-                <strong>I.V.A ($):</strong>
+                <strong>I.V.A {{#eq currency 'USD'}}
+                  ($)
+                {{else}}
+                 (C$)
+                {{/eq}}:</strong>
               </td>
               <td style="background-color: #b8cce4">
                 <strong>{{tax}}</strong>
@@ -185,7 +212,11 @@
             </tr>
             <tr>
               <td colspan="8" style="text-align: left">
-                <strong>TOTAL ($):</strong>
+                <strong>TOTAL {{#eq currency 'USD'}}
+                  ($)
+                {{else}}
+                 (C$)
+                {{/eq}}:</strong>
               </td>
               <td style="background-color: #b8cce4">
                 <strong>{{total}}</strong>
