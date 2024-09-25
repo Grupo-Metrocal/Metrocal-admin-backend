@@ -869,13 +869,12 @@ export class NI_MCIT_D_02Service {
         creditable: method.pre_installation_comment.accredited,
         descriptionPattern,
         observations: `
-        ${method.pre_installation_comment.comment}
-        Es responsabilidad del encargado del instrumento establecer la frecuencia del servicio de calibración.
-        La corrección corresponde al valor del patrón menos las indicación del equipo.
-        La indicación del equipo corresponde al promedio de 3 mediciones en cada punto de calibración.
-        Los resultados emitidos en este certificado corresponden únicamente al objeto calibrado y a las magnitudes especificadas al momento de realizar el servicio.
-        Este certificado de calibración no debe ser reproducido sin la aprobación del laboratorio, excepto cuando se reproduce en su totalidad.
-        `,
+${method.pre_installation_comment.comment}
+Es responsabilidad del encargado del instrumento establecer la frecuencia del servicio de calibración.
+La corrección corresponde al valor del patrón menos las indicación del equipo.
+La indicación del equipo corresponde al promedio de 3 mediciones en cada punto de calibración.
+Los resultados emitidos en este certificado corresponden únicamente al objeto calibrado y a las magnitudes especificadas al momento de realizar el servicio.
+Este certificado de calibración no debe ser reproducido sin la aprobación del laboratorio, excepto cuando se reproduce en su totalidad.`,
       }
 
       return handleOK(certificate)

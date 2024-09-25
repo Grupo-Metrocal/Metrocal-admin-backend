@@ -700,15 +700,12 @@ export class NI_MCIT_T_03Service {
         client_email: activity.quote_request.client.email,
         creditable: description_pattern.creditable,
         observations: `
-        ${method.description_pattern.observation}
-        Es responsabilidad del encargado del instrumento establecer la frecuencia del servicio de calibración.
-        La corrección corresponde al valor del patrón menos las indicación del equipo.
-        La indicación del patrón de referencia y del equipo corresponde al promedio de 4 mediciones.
-        Los resultados emitidos en este certificado corresponden únicamente al objeto calibrado y a las magnitudes
-        especificadas al momento de realizar el servicio.
-        Este certificado de calibración no puede ser reproducido parcialmente excepto en su totalidad, sin previa
-        aprobación escrita del laboratorio que lo emite.
-        `,
+${method.description_pattern.observation}
+Es responsabilidad del encargado del instrumento establecer la frecuencia del servicio de calibración.
+La corrección corresponde al valor del patrón menos las indicación del equipo.
+La indicación del patrón de referencia y del equipo corresponde al promedio de 4 mediciones.
+Los resultados emitidos en este certificado corresponden únicamente al objeto calibrado y a las magnitudes especificadas al momento de realizar el servicio.
+Este certificado de calibración no puede ser reproducido parcialmente excepto en su totalidad, sin previa aprobación escrita del laboratorio que lo emite.`,
       })
     } catch (error) {
       return handleInternalServerError(error.message)

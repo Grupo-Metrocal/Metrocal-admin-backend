@@ -691,13 +691,12 @@ export class NI_MCIT_T_05Service {
         creditable: method.description_pattern.creditable,
         client_email: activity.quote_request.client.email,
         observations: `
-        ${method.description_pattern.observation}
-        Es responsabilidad del encargado del instrumento establecer la frecuencia del servicio de calibración.
-        ${sheet.cell('A91').value()}
-        ${sheet.cell('A92').value()}
-        Los resultados emitidos en este certificado corresponden únicamente al objeto calibrado y a las magnitudes especificadas al momento de realizar el servicio.
-        Este certificado de calibración no debe ser reproducido sin la aprobación del laboratorio, excepto cuando se reproduce en su totalidad.
-        `,
+${method.description_pattern.observation}
+Es responsabilidad del encargado del instrumento establecer la frecuencia del servicio de calibración.
+${sheet.cell('A91').value()}
+${sheet.cell('A92').value()}
+Los resultados emitidos en este certificado corresponden únicamente al objeto calibrado y a las magnitudes especificadas al momento de realizar el servicio.
+Este certificado de calibración no debe ser reproducido sin la aprobación del laboratorio, excepto cuando se reproduce en su totalidad.`,
       })
     } catch (error) {
       return handleInternalServerError(error.message)

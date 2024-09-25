@@ -943,14 +943,13 @@ export class NI_MCIT_B_01Service {
         description_pattern: await this.getPatternsTableToCertificate(method),
         creditable: method.description_pattern.creditable,
         observations: `
-          ${method.description_pattern.observation || ''}
-          Es responsabilidad del encargado del instrumento establecer la frecuencia del servicio de calibración.
-          La corrección corresponde al valor del patrón menos las indicación del equipo.
-          La indicación de temperatura de referencia y del equipo, corresponden al promedio de 3 mediciones.
-          El factor de conversión al SI corresponde a T(K) = t(°C) + 273,15
-          De acuerdo a lo establecido en NTON 07-004-01 Norma Metrológica del Sistema Internacional de Unidades (SI).
-          Los resultados emitidos en este certificado corresponden únicamente al objeto calibrado y a las magnitudes especificadas al momento de realizar el servicio.
-          Este certificado de calibración no debe ser reproducido sin la aprobación del laboratorio, excepto cuando se reproduce en su totalidad.`,
+${method.description_pattern.observation}
+Es responsabilidad del encargado del instrumento establecer la frecuencia del servicio de calibración.
+La corrección corresponde al valor del patrón menos las indicación del equipo.
+La indicación de temperatura de referencia y del equipo, corresponden al promedio de 3 mediciones.
+El factor de conversión al SI corresponde a T(K) = t(°C) + 273,15 De acuerdo a lo establecido en NTON 07-004-01 Norma Metrológica del Sistema Internacional de Unidades (SI).
+Los resultados emitidos en este certificado corresponden únicamente al objeto calibrado y a las magnitudes especificadas al momento de realizar el servicio.
+Este certificado de calibración no debe ser reproducido sin la aprobación del laboratorio, excepto cuando se reproduce en su totalidad.`,
         withLb: method.equipment_information.unit === 'lb' ? true : false,
       }
 

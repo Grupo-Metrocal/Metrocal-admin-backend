@@ -748,15 +748,14 @@ export class NI_MCIT_P_01Service {
         hPa_eq_enviromental_conditions:
           method.environmental_conditions.cycles[0].hPa.equipement,
         observations: `
-          ${method.description_pattern.observation || ''}
-          Es responsabilidad del encargado del instrumento establecer la frecuencia del servicio de calibración.
-          La corrección corresponde al valor del patrón menos la indicación del equipo.
-          ${sheetCER.cell('A113').value()}
-          Los resultados emitidos en este certificado corresponden únicamente al objeto calibrado y a las magnitudes especificadas al momento de realizar el servicio.
-          Este certificado de calibración no debe ser reproducido sin la aprobación del laboratorio, excepto cuando se reproduce en su totalidad.
-          ${sheetCER.cell('A119').value()}
-          De acuerdo a lo establecido en NTON 07-004-01 Norma Metrológica del Sistema Internacional de Unidades (SI).
-        `,
+${method.description_pattern.observation}
+Es responsabilidad del encargado del instrumento establecer la frecuencia del servicio de calibración.
+La corrección corresponde al valor del patrón menos la indicación del equipo.
+${sheetCER.cell('A113').value()}
+Los resultados emitidos en este certificado corresponden únicamente al objeto calibrado y a las magnitudes especificadas al momento de realizar el servicio.
+Este certificado de calibración no debe ser reproducido sin la aprobación del laboratorio, excepto cuando se reproduce en su totalidad.
+${sheetCER.cell('A119').value()}
+De acuerdo a lo establecido en NTON 07-004-01 Norma Metrológica del Sistema Internacional de Unidades (SI).`,
       }
 
       return handleOK(certificate)
