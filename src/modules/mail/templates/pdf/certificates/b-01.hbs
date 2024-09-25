@@ -1,28 +1,18 @@
 <style>
-  .content { display: flex; flex-direction: column; gap: 25px; } .id_certificate
-  { position: absolute; top: 8.6in; z-index: 100; } .equipment-information {
-  display: flex; justify-content: space-between; margin-top: 20px; }
-  .equipment-information div { width: 50%; display: flex; flex-direction:
-  column; gap: 5px; } .equipment-information .labels { font-weight: bold; }
-  .enviromental-conditions { display: flex; justify-content: space-between; }
-  .enviromental-conditions div { display: flex; flex-direction: column; gap:
-  10px; } table { width: 100%; border-collapse: collapse; } td { border: 1px
-  solid #dddddd; padding: 1px; text-align: center; } .additional-table { width:
-  100%; border-collapse: collapse; } .additional-table > thead > tr > th {
-  border: 1px solid #dddddd; text-align: center; font-weight: bold; }
-  .additional-table > tbody > tr > td { border: 1px solid #dddddd; text-align:
-  center; } .additional-table .stretch { height: 100%; } .additional-table
-  .stretch td { vertical-align: stretch; } .title-container { width: 100%;
-  text-align: center; font-weight: bold; } .table-external > thead > tr > th {
-  border: 1px solid black; text-align: center; font-weight: bold; }
-  .head-nominal-name { padding: 5px; width: 21%; } .head-lecture-name { padding:
-  5px; width: 25%; } .grid-item-phone-footer { grid-column: span 2; text-align:
-  right; margin-right: 30px; font-size: 0.8em; } .full-width { grid-column: span
-  2; }
+  .ni-mcit-b-01 { display: flex; flex-direction: column; gap: 25px; }
+  .id_certificate { position: absolute; top: 8.6in; z-index: 100; }
+  .equipment-information { display: flex; justify-content: space-between;
+  margin-top: 20px; } .equipment-information div { width: 50%; display: flex;
+  flex-direction: column; gap: 5px; } .equipment-information .labels {
+  font-weight: bold; } table { border-collapse: collapse; width: 100%; } th, td
+  { border: 1px solid #dddddd; text-align: center; } .table-title { border: 1px
+  solid #dddddd; text-align: center; } .enviromental-conditions { display: flex;
+  justify-content: space-between; } .enviromental-conditions div { display:
+  flex; flex-direction: column; gap: 10px; }
 
 </style>
 
-<div class='content'>
+<div class='ni-mcit-b-01'>
   <div class='equipment-information'>
     <div class='labels'>
       <span>Identificación del certificado:</span>
@@ -60,12 +50,14 @@
     </div>
   </div>
 
-  <div>
-    <strong><span>Tabla de resultados de la calibración</span></strong>
+  <div class='calibration-result' style='min-height: 130px;'>
+    <strong><span>Resultados de la calibración</span></strong>
     <br />
-    <br />
-    <table class='additional-table' aria-describedby='tableDesc'>
+    <table>
       <thead>
+        <caption class='table-title' colspan='5'>
+          Tabla de resultados de calibración
+        </caption>
         <tr>
           <th style='width: 12%'>Masa de referencia</th>
           <th>Indicación del equipo</th>
@@ -110,12 +102,14 @@
   </div>
 
   {{#if withLb}}
-    <div>
-      <strong><span>Resultados de la calibración en libras (lb)</span></strong>
+    <div class='result_unid_system' style='min-height: 130px'>
+      <strong><span>Resultados de la calibración en</span></strong>
       <br />
-      <br />
-      <table class='additional-table' aria-describedby='tableDesc'>
+      <table>
         <thead>
+          <caption class='table-title' colspan='5'>
+            Tabla de resultados de calibración
+          </caption>
           <tr>
             <th style='width: 12%'>Masa de referencia</th>
             <th>Indicación del equipo</th>
@@ -157,10 +151,18 @@
         </tbody>
       </table>
     </div>
-    <br />
-    <br />
-    <br />
-    <br />
+  {{/if}}
+
+  {{#if withLb}}
+    {{#ifArrayEq calibration_results.result_test 10}}
+      <br />
+      <br />
+      <br />
+    {{/ifArrayEq}}
+    {{#ifArrayEq calibration_results.result_test 11}}
+      <br />
+      <br />
+    {{/ifArrayEq}}
   {{/if}}
 
   <div class='enviromental-conditions'>
@@ -169,11 +171,16 @@
       <span>{{environmental_conditions.temperature}}</span>
       <span>{{environmental_conditions.humidity}}</span>
     </div>
-    {{!-- <div>
-      <strong><span>Presión atmosférica</span></strong>
-      <span>{{environmental_conditions.atmospheric_pressure}}</span>
-    </div> --}}
   </div>
+  {{#if withLb}}
+    {{#ifArrayEq calibration_results.result_test 8}}
+      <br />
+      <br />
+    {{/ifArrayEq}}
+    {{#ifArrayEq calibration_results.result_test 9}}
+      <br />
+    {{/ifArrayEq}}
+  {{/if}}
 
   <div class='calibration-method'>
     <strong><span>Método de calibración</span></strong>
@@ -181,6 +188,23 @@
     <span>Las pruebas se realizaron según NI-MCIT-B-01 Instrucción para
       calibración de calibradores universales.</span>
   </div>
+
+  {{#if withLb}}
+    {{#ltArray calibration_results.result_test 6}}
+      <br />
+      <br />
+      <br />
+      <br />
+    {{/ltArray}}
+    {{#ifArrayEq calibration_results.result_test 6}}
+      <br />
+      <br />
+      <br />
+    {{/ifArrayEq}}
+    {{#ifArrayEq calibration_results.result_test 7}}
+      <br />
+    {{/ifArrayEq}}
+  {{/if}}
 
   <div class='uncertainty'>
     <strong><span>Incertidumbre de los datos</span></strong>
@@ -197,9 +221,23 @@
     </span>
   </div>
 
-  {{#unless withLb}}
-    <br /><br />
-  {{/unless}}
+  {{#if withLb}}{{else}}
+    {{#ifArrayEq calibration_results.result_test 7}}
+      <br /><br /><br /><br /><br />
+    {{/ifArrayEq}}
+    {{#ifArrayEq calibration_results.result_test 8}}
+      <br /><br /><br /><br />
+    {{/ifArrayEq}}
+    {{#ifArrayEq calibration_results.result_test 9}}
+      <br /><br /><br />
+    {{/ifArrayEq}}
+    {{#ifArrayEq calibration_results.result_test 10}}
+      <br /><br />
+    {{/ifArrayEq}}
+    {{#ifArrayEq calibration_results.result_test 11}}
+      <br />
+    {{/ifArrayEq}}
+  {{/if}}
 
   <div class='used_pattern'>
     <strong><span>Descripción de patrones utilizados</span></strong>
@@ -228,6 +266,12 @@
       </tbody>
     </table>
   </div>
+
+  {{#if withLb}}{{else}}
+    {{#ltArray calibration_results.result_test 7}}
+      <br />
+    {{/ltArray}}
+  {{/if}}
 
   <div class='observations'>
     <strong><span>Observaciones</span></strong>
