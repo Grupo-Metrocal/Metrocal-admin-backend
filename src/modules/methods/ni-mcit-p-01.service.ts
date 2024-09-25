@@ -34,6 +34,7 @@ import {
 } from 'src/utils/formatNumberCertification'
 import { conversionTableToKPA } from 'src/common/converionTable'
 import { countDecimals } from 'src/utils/countDecimal'
+import { QuoteRequest } from '../quotes/entities/quote-request.entity'
 
 @Injectable()
 export class NI_MCIT_P_01Service {
@@ -698,27 +699,6 @@ export class NI_MCIT_P_01Service {
         },
       }
 
-      const description_pattern = []
-
-      const ta_eq_enviromental_conditions =
-        await this.patternsService.findByCodeAndMethod(
-          method.environmental_conditions.cycles[0].ta.equipement,
-          'all',
-        )
-
-      if (ta_eq_enviromental_conditions.success) {
-        description_pattern.push(ta_eq_enviromental_conditions.data)
-      }
-
-      const pressurePattern = await this.patternsService.findByCodeAndMethod(
-        method.description_pattern.pattern,
-        'NI-MCIT-P-01',
-      )
-
-      if (pressurePattern.success) {
-        description_pattern.push(pressurePattern.data)
-      }
-
       const certificate = {
         pattern: 'NI-MCIT-P-01',
         email: activity.quote_request.client.email,
@@ -761,7 +741,7 @@ export class NI_MCIT_P_01Service {
           )} % ± ${formatNumberCertification(sheetCER.cell('G81').value())} %`,
         },
         used_pattern: method.description_pattern,
-        description_pattern,
+        description_pattern: await this.getPatternsTableToCertificate(method),
         creditable: method.description_pattern.creditable,
         ta_eq_enviromental_conditions:
           method.environmental_conditions.cycles[0].ta.equipement,
@@ -783,6 +763,44 @@ export class NI_MCIT_P_01Service {
     } catch (error) {
       return handleInternalServerError(error.message)
     }
+  }
+
+  async getPatternsTableToCertificate(method: NI_MCIT_P_01) {
+    const description_pattern = []
+
+    const ta_eq_enviromental_conditions =
+      await this.patternsService.findByCodeAndMethod(
+        method.environmental_conditions.cycles[0].ta.equipement,
+        'all',
+      )
+
+    if (ta_eq_enviromental_conditions.success) {
+      description_pattern.push(ta_eq_enviromental_conditions.data)
+    }
+
+    const pressurePattern = await this.patternsService.findByCodeAndMethod(
+      method.description_pattern.pattern,
+      'NI-MCIT-P-01',
+    )
+
+    if (pressurePattern.success) {
+      description_pattern.push(pressurePattern.data)
+    }
+
+    if (
+      method.description_pattern.pattern === 'NI-MCPP-01' ||
+      method.description_pattern.pattern === 'NI-MCPP-02'
+    ) {
+      const calibrator = await this.patternsService.findByCodeAndMethod(
+        'NI-MCPVE-17',
+        'NI-MCIT-P-01',
+      )
+
+      if (calibrator.success) {
+        description_pattern.push(calibrator.data)
+      }
+    }
+    return description_pattern
   }
 
   formatUncertaintyWithCMC(
