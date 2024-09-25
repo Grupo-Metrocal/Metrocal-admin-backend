@@ -882,34 +882,6 @@ export class NI_MCIT_B_01Service {
         mincmc,
       }
 
-      const description_pattern = []
-
-      const equipment_environmental_conditions =
-        await this.patternsService.findByCodeAndMethod(
-          method.environmental_conditions.equipment_used,
-          'all',
-        )
-
-      if (equipment_environmental_conditions.success) {
-        description_pattern.push(equipment_environmental_conditions.data)
-      }
-
-      for (let i = 0; i < method.linearity_test.linearity_test.length; i++) {
-        const test = method.linearity_test.linearity_test[i]
-
-        for (let j = 0; j < test.pointsComposition.length; j++) {
-          const point = test.pointsComposition[j] as any
-          const response = await this.patternsService.findByCodeAndMethod(
-            point,
-            'NI-MCIT-B-01',
-          )
-
-          if (response.success) {
-            description_pattern.push(response.data)
-          }
-        }
-      }
-
       const result_test = {
         reference_mass,
         equipment_indication,
@@ -968,7 +940,7 @@ export class NI_MCIT_B_01Service {
             environmental_conditions.time.minute +
             ' minutos',
         },
-        description_pattern,
+        description_pattern: await this.getPatternsTableToCertificate(method),
         creditable: method.description_pattern.creditable,
         observations: `
           ${method.description_pattern.observation || ''}
@@ -986,6 +958,43 @@ export class NI_MCIT_B_01Service {
     } catch (error) {
       return handleInternalServerError(error)
     }
+  }
+
+  async getPatternsTableToCertificate(method: NI_MCIT_B_01) {
+    const description_pattern = []
+    const added = []
+
+    const equipment_environmental_conditions =
+      await this.patternsService.findByCodeAndMethod(
+        method.environmental_conditions.equipment_used,
+        'all',
+      )
+
+    if (equipment_environmental_conditions.success) {
+      description_pattern.push(equipment_environmental_conditions.data)
+    }
+
+    for (let i = 0; i < method.linearity_test.linearity_test.length; i++) {
+      const test = method.linearity_test.linearity_test[i]
+
+      for (let j = 0; j < test.pointsComposition.length; j++) {
+        const point = test.pointsComposition[j] as any
+
+        if (!added.includes(point)) {
+          const response = await this.patternsService.findByCodeAndMethod(
+            point,
+            'NI-MCIT-B-01',
+          )
+
+          if (response.success) {
+            description_pattern.push(response.data)
+            added.push(point)
+          }
+        }
+      }
+    }
+
+    return description_pattern
   }
 
   formatUncertaintyWithCMC(uncertainty: any, cmc: any) {
