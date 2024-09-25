@@ -706,7 +706,7 @@ export class NI_MCIT_V_01Service {
         creditable: description_pattern.creditable,
         client_email: activity.quote_request.client.email,
         observations: `
-${method.description_pattern.observation || ''}
+${method.description_pattern.observation}
 Es responsabilidad del encargado del instrumento establecer la frecuencia del servicio de calibración.
 El error corresponde al valor de la indicación del equipo menos el valor convencional de la masa de referencia.
 Los resultados emitidos en este certificado corresponden únicamente al objeto calibrado y a las magnitudes especificadas al momento de realizar el servicio.
