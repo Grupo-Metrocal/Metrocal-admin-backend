@@ -1,9 +1,9 @@
 import { Column, Entity, ManyToOne, PrimaryGeneratedColumn } from 'typeorm'
-import { EquipmentInformationNI_MCIT_B_01 } from './steps/b01equipment_information.entity'
-import { EnvironmentalConditionsNI_MCIT_B_01 } from './steps/b01enviromental_condition.entity'
-import { LinearityTestNI_MCIT_B_01 } from './steps/b01linearity_test.entity'
-import { RepeatabilityTestNI_MCIT_B_01 } from './steps/b01repeatability_test.entity'
-import { EccentricityTestNI_MCIT_B_01 } from './steps/b01eccentricity_test.entity'
+import { EquipmentInformationNI_MCIT_B_01 } from './steps/equipment_information.entity'
+import { EnvironmentalConditionsNI_MCIT_B_01 } from './steps/enviromental_condition.entity'
+import { LinearityTestNI_MCIT_B_01 } from './steps/linearity_test.entity'
+import { RepeatabilityTestNI_MCIT_B_01 } from './steps/repeatability_test.entity'
+import { EccentricityTestNI_MCIT_B_01 } from './steps/eccentricity_test.entity'
 import { DescriptionPatternNI_MCIT_B_01 } from './steps/description_pattern.entity'
 
 @Entity('NI_MCIT_B_01')
