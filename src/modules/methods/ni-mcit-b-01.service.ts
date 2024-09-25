@@ -734,7 +734,11 @@ export class NI_MCIT_B_01Service {
       const maximum_eccentricity = []
       const uncertainty = []
 
-      for (let i = 30; i <= 37; i++) {
+      for (
+        let i = 30;
+        i <= method.linearity_test.linearity_test.length + 30;
+        i++
+      ) {
         let reference_massValue = sheetResultB01.cell(`B${i}`).value()
         let equipment_indicationValue = sheetResultB01.cell(`D${i}`).value()
         let errorValue = sheetResultB01.cell(`F${i}`).value()
@@ -787,7 +791,11 @@ export class NI_MCIT_B_01Service {
       let result_tests_lb = []
 
       if (method.equipment_information.unit === 'lb') {
-        for (let i = 45; i <= 52; i++) {
+        for (
+          let i = 45;
+          i <= method.linearity_test.linearity_test.length + 45;
+          i++
+        ) {
           let reference_mass = sheetResultB01.cell(`B${i}`).value()
           let equipment_indication = sheetResultB01.cell(`D${i}`).value()
           let error = sheetResultB01.cell(`F${i}`).value()
