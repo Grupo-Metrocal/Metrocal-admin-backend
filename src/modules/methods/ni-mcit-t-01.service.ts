@@ -661,18 +661,6 @@ export class NI_MCIT_T_01Service {
         },
       }
 
-      const environment_method_used =
-        await this.patternsService.findByCodeAndMethod(
-          environmental_conditions.environment.ta.equipment,
-          'NI-MCIT-T-01',
-        )
-
-      const calibration_method_used =
-        await this.patternsService.findByCodeAndMethod(
-          description_pattern.pattern,
-          'NI-MCIT-T-01',
-        )
-
       const certificate = {
         pattern: 'NI-MCIT-T-01',
         email: activity.quote_request.client.email,
@@ -705,10 +693,8 @@ export class NI_MCIT_T_01Service {
           calibration_location: method.calibration_location || '---',
         },
         calibration_results: calibration_results_certificate,
-        environment_method_used: environment_method_used.data,
-        calibration_method_used: calibration_method_used.data,
         creditable: description_pattern.creditable,
-        description_pattern,
+        description_pattern: await this.getPatternsTableToCertificate(method),
         environmental_conditions: {
           temperature: `Temperatura: ${formatNumberCertification(
             calibrationResultsSheet.cell('E75').value(),
@@ -729,6 +715,31 @@ Este certificado de calibración no debe ser reproducido sin la aprobación del 
     } catch (error) {
       return handleInternalServerError(error.message)
     }
+  }
+
+  async getPatternsTableToCertificate(method: NI_MCIT_T_01) {
+    const description_pattern = []
+
+    const environment_method_used =
+      await this.patternsService.findByCodeAndMethod(
+        method.environmental_conditions.environment.ta.equipment,
+        'all',
+      )
+    if (environment_method_used.success) {
+      description_pattern.push(environment_method_used.data)
+    }
+
+    const calibration_method_used =
+      await this.patternsService.findByCodeAndMethod(
+        method.description_pattern.pattern,
+        'NI-MCIT-T-01',
+      )
+
+    if (calibration_method_used.success) {
+      description_pattern.push(calibration_method_used.data)
+    }
+
+    return description_pattern
   }
 
   formatUncertaintyWithCMC(uncertainty: any, cmc: any) {

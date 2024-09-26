@@ -139,9 +139,8 @@
   <div class='calibration-method'>
     <strong><span>Método de calibración</span></strong>
     <br />
-    <span>Las pruebas se realizaron según
-      {{pattern}}
-      Intrucción para calibración de instrumentos de presión.</span>
+    <span>Las pruebas se realizaron según NI-MCIT-T-01 Instrucción para
+      calibración de termómetros.</span>
   </div>
 
   {{#if show_table_international_system_units}}
@@ -208,20 +207,14 @@
         </tr>
       </thead>
       <tbody>
-        <tr>
-          <td>{{environment_method_used.equipment}}</td>
-          <td>{{environment_method_used.code}}</td>
-          <td>{{environment_method_used.traceability}}</td>
-          <td>{{environment_method_used.next_calibration}}</td>
-        </tr>
-
-        <tr>
-          <td>{{calibration_method_used.equipment}}</td>
-          <td>{{calibration_method_used.code}}</td>
-          <td>{{calibration_method_used.certificate}}</td>
-          <td>{{calibration_method_used.traceability}}</td>
-          <td>{{calibration_method_used.next_calibration}}</td>
-        </tr>
+        {{#each description_pattern as |data|}}
+          <tr>
+            <td>{{data.equipment}}</td>
+            <td>{{data.code}}</td>
+            <td>{{data.traceability}}</td>
+            <td>{{data.next_calibration}}</td>
+          </tr>
+        {{/each}}
       </tbody>
 
       <tbody></tbody>
