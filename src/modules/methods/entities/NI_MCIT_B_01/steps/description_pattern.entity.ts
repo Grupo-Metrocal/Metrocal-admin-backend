@@ -23,5 +23,5 @@ export class DescriptionPatternNI_MCIT_B_01 {
   creditable?: boolean
 
   @Column({ default: '' })
-  show_additional_table: 'lb' | 'kg'
+  show_additional_table: 'lb' | 'kg' | ''
 }

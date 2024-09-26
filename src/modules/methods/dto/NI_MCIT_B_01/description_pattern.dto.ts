@@ -6,4 +6,7 @@ export class DescriptionPatternB01Dto {
 
   @ApiProperty()
   creditable?: boolean
+
+  @ApiProperty()
+  show_additional_table?: 'lb' | 'kg' | ''
 }
