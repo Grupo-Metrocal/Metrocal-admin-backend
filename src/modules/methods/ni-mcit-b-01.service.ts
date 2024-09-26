@@ -36,6 +36,7 @@ import {
 import { countDecimals } from 'src/utils/countDecimal'
 import { DescriptionPatternNI_MCIT_B_01 } from './entities/NI_MCIT_B_01/steps/description_pattern.entity'
 import { DescriptionPatternB01Dto } from './dto/NI_MCIT_B_01/description_pattern.dto'
+import { workerData } from 'worker_threads'
 
 @Injectable()
 export class NI_MCIT_B_01Service {
@@ -790,20 +791,27 @@ export class NI_MCIT_B_01Service {
 
       let result_tests_lb = []
 
-      if (method.equipment_information.unit === 'lb') {
+      if (method.description_pattern.show_additional_table !== '') {
+        const sheetExtra = respWorkBook.sheet(
+          sheetByUnit.find(
+            (sheet) =>
+              sheet.unit === method.description_pattern.show_additional_table,
+          ).sheetName,
+        )
+
         for (
           let i = 45;
           i <= method.linearity_test.linearity_test.length + 45;
           i++
         ) {
-          let reference_mass = sheetResultB01.cell(`B${i}`).value()
-          let equipment_indication = sheetResultB01.cell(`D${i}`).value()
-          let error = sheetResultB01.cell(`F${i}`).value()
-          let expanded_uncertainty = sheetResultB01.cell(`L${i}`).value()
+          let reference_mass = sheetExtra.cell(`B${i}`).value()
+          let equipment_indication = sheetExtra.cell(`D${i}`).value()
+          let error = sheetExtra.cell(`F${i}`).value()
+          let expanded_uncertainty = sheetExtra.cell(`L${i}`).value()
           let repeatability =
-            i === 45 || i === 46 ? sheetResultB01.cell(`H${i}`).value() : null
+            i === 45 || i === 46 ? sheetExtra.cell(`H${i}`).value() : null
           let maximum_eccentricity =
-            i === 45 || i === 46 ? sheetResultB01.cell(`J${i}`).value() : null
+            i === 45 || i === 46 ? sheetExtra.cell(`J${i}`).value() : null
 
           let result_lb = {
             reference_mass: formatNumberCertification(
@@ -958,7 +966,7 @@ La indicación de temperatura de referencia y del equipo, corresponden al promed
 El factor de conversión al SI corresponde a T(K) = t(°C) + 273,15 De acuerdo a lo establecido en NTON 07-004-01 Norma Metrológica del Sistema Internacional de Unidades (SI).
 Los resultados emitidos en este certificado corresponden únicamente al objeto calibrado y a las magnitudes especificadas al momento de realizar el servicio.
 Este certificado de calibración no debe ser reproducido sin la aprobación del laboratorio, excepto cuando se reproduce en su totalidad.`,
-        withLb: method.equipment_information.unit === 'lb' ? true : false,
+        show_additional_table: method.description_pattern.show_additional_table,
       }
 
       return handleOK(certificate)
