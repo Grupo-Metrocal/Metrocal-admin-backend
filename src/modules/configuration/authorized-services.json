@@ -342,7 +342,7 @@
   {
     "method": "NI-MCIT-P-01",
     "service": "Calibración",
-    "equipment": "Manómetros (Analógico o Digital)",
+    "equipment": "Manómetros Analógico",
     "description": "(5 Puntos de Calibración)",
     "measuring_range": "(-82,74 a 34 500) kPa",
     "accuracy": ["0,2% F.S"],
@@ -352,7 +352,17 @@
   {
     "method": "NI-MCIT-P-01",
     "service": "Calibración",
-    "equipment": "Mano vacuómetros (Analógico o Digital) – Presión positiva y Presión Negativa.",
+    "equipment": "Manómetros Digital",
+    "description": "(5 Puntos de Calibración)",
+    "measuring_range": "(-82,74 a 34 500) kPa",
+    "accuracy": ["0,2% F.S"],
+    "document_delivered": "Certificado de Calibración Acreditado",
+    "price": 45
+  },
+  {
+    "method": "NI-MCIT-P-01",
+    "service": "Calibración",
+    "equipment": "Mano vacuómetros - Presión positiva y Presión Negativa.",
     "description": "(8 Puntos de Calibración – 3 en vacío y 5 en presión positiva)",
     "measuring_range": "(-82,74 a 34 500) kPa",
     "accuracy": ["0,2% F.S"],
@@ -362,7 +372,7 @@
   {
     "method": "NI-MCIT-P-01",
     "service": "Calibración",
-    "equipment": "Vacuómetros (Analógico o Digital)",
+    "equipment": "Vacuómetros Digital",
     "description": "(5 Puntos de Calibración)",
     "measuring_range": "(-82,74 a 34 500) kPa",
     "accuracy": ["0,2% F.S"],
@@ -372,7 +382,17 @@
   {
     "method": "NI-MCIT-P-01",
     "service": "Calibración",
-    "equipment": "Vacuómetros (Analógico o Digital)",
+    "equipment": "Vacuómetros Analógico",
+    "description": "(5 Puntos de Calibración)",
+    "measuring_range": "(-82,74 a 34 500) kPa",
+    "accuracy": ["0,2% F.S"],
+    "document_delivered": "Certificado de Calibración Acreditado",
+    "price": 45
+  },
+  {
+    "method": "NI-MCIT-P-01",
+    "service": "Calibración",
+    "equipment": "Vacuómetros Digital",
     "description": "(5 Puntos de Calibración)",
     "measuring_range": "(-82,74 a 34 500) kPa",
     "accuracy": ["0,2% F.S"],
@@ -382,7 +402,17 @@
   {
     "method": "NI-MCIT-P-01",
     "service": "Calibración",
-    "equipment": "Mano vacuómetros (Analógico o Digital) – Presión positiva y Presión Negativa.",
+    "equipment": "Vacuómetros Analógico",
+    "description": "(5 Puntos de Calibración)",
+    "measuring_range": "(-82,74 a 34 500) kPa",
+    "accuracy": ["0,2% F.S"],
+    "document_delivered": "Certificado de Calibración Acreditado",
+    "price": 10
+  },
+  {
+    "method": "NI-MCIT-P-01",
+    "service": "Calibración",
+    "equipment": "Mano vacuómetros – Presión positiva y Presión Negativa.",
     "description": "(punto adicional)",
     "measuring_range": "(-82,74 a 34 500) kPa",
     "accuracy": ["0,2% F.S"],
@@ -392,7 +422,17 @@
   {
     "method": "NI-MCIT-P-01",
     "service": "Calibración",
-    "equipment": "Vacuómetros (Analógico o Digital)",
+    "equipment": "Vacuómetros Analógico",
+    "description": "(5 Puntos de Calibración)",
+    "measuring_range": "(-82,74 a 34 500) kPa",
+    "accuracy": ["0,2% F.S"],
+    "document_delivered": "Certificado de Calibración Acreditado",
+    "price": 10
+  },
+  {
+    "method": "NI-MCIT-P-01",
+    "service": "Calibración",
+    "equipment": "Vacuómetros Digital",
     "description": "(5 Puntos de Calibración)",
     "measuring_range": "(-82,74 a 34 500) kPa",
     "accuracy": ["0,2% F.S"],
@@ -402,7 +442,7 @@
   {
     "method": "N/A",
     "service": "Comprobación Intermedia",
-    "equipment": "*Comprobación intermedia de Manómetros (Analógico o Digital)",
+    "equipment": "*Comprobación intermedia de Manómetros",
     "description": "Aplica solo equipos calibrados previamente por Metrocal (máximo 2 puntos de comprobación)",
     "measuring_range": "(-10 a 10 000) psi",
     "accuracy": ["0,2% F.S"],
@@ -412,7 +452,7 @@
   {
     "method": "N/A",
     "service": "Comprobación Intermedia",
-    "equipment": "*Comprobación intermedia de Mano vacuómetros (Analógico o Digital)",
+    "equipment": "*Comprobación intermedia de Mano vacuómetros",
     "description": "Aplica solo equipos calibrados previamente por Metrocal (máximo 2 puntos de comprobación)",
     "measuring_range": "(-10 a 10 000) psi",
     "accuracy": ["0,2% F.S"],
@@ -422,7 +462,7 @@
   {
     "method": "N/A",
     "service": "Comprobación Intermedia",
-    "equipment": "*Comprobación intermedia de Vacuómetros (Analógico o Digital)",
+    "equipment": "*Comprobación intermedia de Vacuómetros",
     "description": "Aplica solo equipos calibrados previamente por Metrocal (máximo 2 puntos de comprobación)",
     "measuring_range": "(-10 a 10 000) psi",
     "accuracy": ["0,2% F.S"],
@@ -432,7 +472,7 @@
   {
     "method": "NI-MCIT-P-01",
     "service": "Calibración",
-    "equipment": "Manómetro (Analógico o Digital)",
+    "equipment": "Manómetro Analógico",
     "description": "",
     "measuring_range": "(-82,74 a 68 947,6) kPa",
     "accuracy": ["0,2% F.S"],
@@ -442,7 +482,27 @@
   {
     "method": "NI-MCIT-P-01",
     "service": "Calibración",
-    "equipment": "Mano Vacuómetro (Analógico o Digital)",
+    "equipment": "Manómetro Digital",
+    "description": "",
+    "measuring_range": "(-82,74 a 68 947,6) kPa",
+    "accuracy": ["0,2% F.S"],
+    "document_delivered": "Certificado trazable",
+    "price": 45
+  },
+  {
+    "method": "NI-MCIT-P-01",
+    "service": "Calibración",
+    "equipment": "Mano Vacuómetro Analógico",
+    "description": "",
+    "measuring_range": "(-82,74 a 68 947,6) kPa",
+    "accuracy": ["0,2% F.S"],
+    "document_delivered": "Certificado trazable",
+    "price": 45
+  },
+  {
+    "method": "NI-MCIT-P-01",
+    "service": "Calibración",
+    "equipment": "Mano Vacuómetro Digital",
     "description": "",
     "measuring_range": "(-82,74 a 68 947,6) kPa",
     "accuracy": ["0,2% F.S"],
@@ -652,7 +712,7 @@
   {
     "method": "N/A",
     "service": "Comprobación Intermedia",
-    "equipment": "*Comprobación intermedia de termómetro (Digital o Analógico)",
+    "equipment": "*Comprobación intermedia de termómetro",
     "description": "Aplica solo equipos calibrados previamente por Metrocal (máximo 2 puntos de comprobación)",
     "measuring_range": "-30 °C a 350 °C",
     "accuracy": ["0,1 °C"],
@@ -1032,7 +1092,7 @@
   {
     "method": "NI-MCIT-V-01",
     "service": "Calibración ",
-    "equipment": "*Calibración de Pipetas",
+    "equipment": "Calibración de Pipetas",
     "description": "(Material Volumétrico)",
     "measuring_range": "(10 a 250) ml y (2 a 20) L",
     "accuracy": ["N/A"],
@@ -1042,7 +1102,7 @@
   {
     "method": "NI-MCIT-V-01",
     "service": "Calibración ",
-    "equipment": "*Calibración de Matraz",
+    "equipment": "Calibración de Matraz",
     "description": "(Material Volumétrico)",
     "measuring_range": "(10 a 250) ml y (2 a 20) L",
     "accuracy": ["N/A"],
@@ -1052,7 +1112,7 @@
   {
     "method": "NI-MCIT-V-01",
     "service": "Calibración ",
-    "equipment": "*Calibración de Dispensador",
+    "equipment": "Calibración de Dispensador",
     "description": "(Material Volumétrico)",
     "measuring_range": "(10 a 250) ml y (2 a 20) L",
     "accuracy": ["N/A"],
@@ -1062,7 +1122,7 @@
   {
     "method": "NI-MCIT-V-01",
     "service": "Calibración ",
-    "equipment": "*Calibración de Bureta",
+    "equipment": "Calibración de Bureta",
     "description": "(Material Volumétrico)",
     "measuring_range": "(10 a 250) ml y (2 a 20) L",
     "accuracy": ["N/A"],
@@ -1072,7 +1132,7 @@
   {
     "method": "NI-MCIT-V-01",
     "service": "Calibración ",
-    "equipment": "*Calibración de Probeta",
+    "equipment": "Calibración de Probeta",
     "description": "(Material Volumétrico)",
     "measuring_range": "(10 a 250) ml y (2 a 20) L",
     "accuracy": ["N/A"],
@@ -1082,7 +1142,7 @@
   {
     "method": "NI-MCIT-V-01",
     "service": "Calibración ",
-    "equipment": "*Calibración Tubo para Centrifuga",
+    "equipment": "Calibración Tubo para Centrifuga",
     "description": "(Material Volumétrico)",
     "measuring_range": "(10 a 250) ml y (2 a 20) L",
     "accuracy": ["N/A"],
@@ -1092,7 +1152,7 @@
   {
     "method": "NI-MCIT-V-01",
     "service": "Calibración ",
-    "equipment": "*Calibración de Beaker",
+    "equipment": "Calibración de Beaker",
     "description": "(Material Volumétrico)",
     "measuring_range": "(10 a 250) ml y (2 a 20) L",
     "accuracy": ["N/A"],
@@ -1102,7 +1162,7 @@
   {
     "method": "NI-MCIT-V-01",
     "service": "Calibración ",
-    "equipment": "*Calibración de Erlenmeyer",
+    "equipment": "Calibración de Erlenmeyer",
     "description": "(Material Volumétrico)",
     "measuring_range": "(10 a 250) ml y (2 a 20) L",
     "accuracy": ["N/A"],
@@ -1112,7 +1172,7 @@
   {
     "method": "NI-MCIT-V-01",
     "service": "Calibración ",
-    "equipment": "*Calibración de Balón Aforado",
+    "equipment": "Calibración de Balón Aforado",
     "description": "(Material Volumétrico)",
     "measuring_range": "(10 a 250) ml y (2 a 20) L",
     "accuracy": ["N/A"],
@@ -1122,7 +1182,7 @@
   {
     "method": "NI-MCIT-V-01",
     "service": "Calibración ",
-    "equipment": "*Calibración de Dosificadores Volumétricos",
+    "equipment": "Calibración de Dosificadores Volumétricos",
     "description": "(Material Volumétrico)",
     "measuring_range": "(10 a 250) ml y (2 a 20) L",
     "accuracy": ["N/A"],
