@@ -101,7 +101,7 @@
     </table>
   </div>
 
-  {{#if withLb}}
+  {{#if show_additional_table}}
     <div class='result_unid_system' style='min-height: 130px'>
       <strong><span>Resultados de la calibración en</span></strong>
       <br />
@@ -153,7 +153,7 @@
     </div>
   {{/if}}
 
-  {{#if withLb}}
+  {{#if show_additional_table}}
     {{#ifArrayEq calibration_results.result_test 10}}
       <br />
       <br />
@@ -172,7 +172,7 @@
       <span>{{environmental_conditions.humidity}}</span>
     </div>
   </div>
-  {{#if withLb}}
+  {{#if show_additional_table}}
     {{#ifArrayEq calibration_results.result_test 8}}
       <br />
       <br />
@@ -189,7 +189,7 @@
       calibración de calibradores universales.</span>
   </div>
 
-  {{#if withLb}}
+  {{#if show_additional_table}}
     {{#ltArray calibration_results.result_test 6}}
       <br />
       <br />
@@ -221,7 +221,7 @@
     </span>
   </div>
 
-  {{#if withLb}}{{else}}
+  {{#if show_additional_table}}{{else}}
     {{#ifArrayEq calibration_results.result_test 7}}
       <br /><br /><br /><br /><br />
     {{/ifArrayEq}}
@@ -265,7 +265,7 @@
     </table>
   </div>
 
-  {{#if withLb}}{{else}}
+  {{#if show_additional_table}}{{else}}
     {{#ltArray calibration_results.result_test 7}}
       <br />
     {{/ltArray}}
