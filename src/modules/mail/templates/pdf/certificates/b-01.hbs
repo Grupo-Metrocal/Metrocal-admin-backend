@@ -9,7 +9,6 @@
   solid #dddddd; text-align: center; } .enviromental-conditions { display: flex;
   justify-content: space-between; } .enviromental-conditions div { display:
   flex; flex-direction: column; gap: 10px; }
-
 </style>
 
 <div class='ni-mcit-b-01'>
@@ -50,7 +49,7 @@
     </div>
   </div>
 
-  <div class='calibration-result' style='min-height: 130px;'>
+  <div class='calibration-result' style='min-height: 130px'>
     <strong><span>Resultados de calibración</span></strong>
     <br />
     <table>
@@ -64,9 +63,7 @@
           <th>Error</th>
           <th>Repetibilidad</th>
           <th>Excentricidad máxima</th>
-          <th style='width: 20%'>
-            Incertidumbre expandida k=2
-          </th>
+          <th style='width: 20%'>Incertidumbre expandida k=2</th>
         </tr>
       </thead>
       <tbody>
@@ -77,21 +74,15 @@
             <td>{{data.error}}</td>
             {{#if data.repeatability}}
               {{#eq @index 1}}
-                <td
-                  rowspan='10'
-                  style='vertical-align: middle;'
-                >{{data.repeatability}}</td>
-                <td
-                  rowspan='10'
-                  style='vertical-align: middle;'
-                >{{data.maximum_eccentricity}}</td>
-              {{else}}
-                <td>
+                <td rowspan='10' style='vertical-align: middle'>
                   {{data.repeatability}}
                 </td>
-                <td>
+                <td rowspan='10' style='vertical-align: middle'>
                   {{data.maximum_eccentricity}}
                 </td>
+              {{else}}
+                <td>{{data.repeatability}}</td>
+                <td>{{data.maximum_eccentricity}}</td>
               {{/eq}}
             {{/if}}
             <td>{{data.uncertainty}}</td>
@@ -128,21 +119,15 @@
               <td>{{data.error}}</td>
               {{#if data.repeatability}}
                 {{#eq @index 1}}
-                  <td
-                    rowspan='10'
-                    style='vertical-align: middle;'
-                  >{{data.repeatability}}</td>
-                  <td
-                    rowspan='10'
-                    style='vertical-align: middle;'
-                  >{{data.maximum_eccentricity}}</td>
-                {{else}}
-                  <td>
+                  <td rowspan='10' style='vertical-align: middle'>
                     {{data.repeatability}}
                   </td>
-                  <td>
+                  <td rowspan='10' style='vertical-align: middle'>
                     {{data.maximum_eccentricity}}
                   </td>
+                {{else}}
+                  <td>{{data.repeatability}}</td>
+                  <td>{{data.maximum_eccentricity}}</td>
                 {{/eq}}
               {{/if}}
 
@@ -153,7 +138,6 @@
       </table>
     </div>
   {{/if}}
-
   {{#if show_additional_table}}
     {{#ifArrayEq calibration_results.result_test 10}}
       <br />
@@ -170,6 +154,9 @@
     <div>
       <strong><span>Condiciones ambientales</span></strong>
       <span>{{environmental_conditions.temperature}}</span>
+    </div>
+    <div>
+      <br />
       <span>{{environmental_conditions.humidity}}</span>
     </div>
   </div>
@@ -274,9 +261,7 @@
 
   <div class='observations'>
     <strong><span>Observaciones</span></strong>
-    <span style='white-space: pre-wrap;'>
-      {{observations}}
-    </span>
+    <span style='white-space: pre-wrap'> {{observations}} </span>
   </div>
 </div>
 
