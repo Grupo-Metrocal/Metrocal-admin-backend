@@ -26,35 +26,35 @@ export class CertificateService {
       const certificate = new Certificate()
       let newIndex = index
 
-      if (prefix === 'T') {
-        const [t_01, t_03, t_05]: [any, any, any] = await Promise.all([
-          this.methodsService.getCeritifationCodeFromLastMethod('NI_MCIT_T_01'),
-          this.methodsService.getCeritifationCodeFromLastMethod('NI_MCIT_T_03'),
-          this.methodsService.getCeritifationCodeFromLastMethod('NI_MCIT_T_05'),
-        ])
+      // if (prefix === 'T') {
+      //   const [t_01, t_03, t_05]: [any, any, any] = await Promise.all([
+      //     this.methodsService.getCeritifationCodeFromLastMethod('NI_MCIT_T_01'),
+      //     this.methodsService.getCeritifationCodeFromLastMethod('NI_MCIT_T_03'),
+      //     this.methodsService.getCeritifationCodeFromLastMethod('NI_MCIT_T_05'),
+      //   ])
 
-        const MethodsCodes = [
-          Number(getCertCodeId(t_01?.data?.code || null)),
-          Number(getCertCodeId(t_03?.data?.code || null)),
-          Number(getCertCodeId(t_05?.data?.code || null)),
-        ]
+      //   const MethodsCodes = [
+      //     Number(getCertCodeId(t_01?.data?.code || null)),
+      //     Number(getCertCodeId(t_03?.data?.code || null)),
+      //     Number(getCertCodeId(t_05?.data?.code || null)),
+      //   ]
 
-        newIndex = Math.max(...MethodsCodes) + 1
-      }
+      //   newIndex = Math.max(...MethodsCodes) + 1
+      // }
 
-      if (prefix === 'D') {
-        const [d_01, d_02]: [any, any] = await Promise.all([
-          this.methodsService.getCeritifationCodeFromLastMethod('NI_MCIT_D_01'),
-          this.methodsService.getCeritifationCodeFromLastMethod('NI_MCIT_D_02'),
-        ])
+      // if (prefix === 'D') {
+      //   const [d_01, d_02]: [any, any] = await Promise.all([
+      //     this.methodsService.getCeritifationCodeFromLastMethod('NI_MCIT_D_01'),
+      // this.methodsService.getCeritifationCodeFromLastMethod('NI_MCIT_D_02'),
+      //   ])
 
-        const MethodsCodes = [
-          Number(getCertCodeId(d_01?.data?.code || null)),
-          Number(getCertCodeId(d_02?.data?.code || null)),
-        ]
+      //   const MethodsCodes = [
+      //     Number(getCertCodeId(d_01?.data?.code || null)),
+      //     Number(getCertCodeId(d_02?.data?.code || null)),
+      //   ]
 
-        newIndex = Math.max(...MethodsCodes) + 1
-      }
+      //   newIndex = Math.max(...MethodsCodes) + 1
+      // }
 
       const created = await this.dataSource.transaction(async (manager) => {
         const certificateCreated = await manager.save(certificate)
