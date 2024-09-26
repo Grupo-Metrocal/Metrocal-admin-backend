@@ -21,4 +21,7 @@ export class DescriptionPatternNI_MCIT_B_01 {
 
   @Column({ nullable: true })
   creditable?: boolean
+
+  @Column({ default: '' })
+  show_additional_table: 'lb' | 'kg'
 }
