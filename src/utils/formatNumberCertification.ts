@@ -33,7 +33,8 @@ export const convertToValidNumber = (value: any) => {
     return value
   }
 
-  let cleanedStr = value.replace(/,/g, '')
+  let cleanedStr = value.replace(/\s/g, '').replace(/,/g, '.')
+
   const number = parseFloat(cleanedStr)
 
   if (isNaN(number)) {
