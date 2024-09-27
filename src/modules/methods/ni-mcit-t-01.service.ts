@@ -26,6 +26,7 @@ import { MethodsService } from './methods.service'
 import { CertificationDetailsDto } from './dto/NI_MCIT_P_01/certification_details.dto'
 import { formatCertCode } from 'src/utils/generateCertCode'
 import {
+  convertToValidNumber,
   formatNumberCertification,
   formatSameNumberCertification,
 } from 'src/utils/formatNumberCertification'
@@ -541,14 +542,18 @@ export class NI_MCIT_T_01Service {
             countDecimals(method.equipment_information.resolution),
           ),
         )
-        const correctionVal = calibrationResultsSheet.cell(`L${28 + i}`).value()
+        // const correctionVal = calibrationResultsSheet.cell(`L${28 + i}`).value()
 
         correction.push(
-          formatNumberCertification(
-            correctionVal,
-            countDecimals(method.equipment_information.resolution),
-          ),
+          i === 0
+            ? temperatureReference[i]
+            : formatNumberCertification(
+                convertToValidNumber(temperatureReference[i]) -
+                  convertToValidNumber(thermometerIndication[i]),
+                countDecimals(method.equipment_information.resolution),
+              ),
         )
+
         const expandedUncertaintyK2Val = calibrationResultsSheet
           .cell(`R${28 + i}`)
           .value()
