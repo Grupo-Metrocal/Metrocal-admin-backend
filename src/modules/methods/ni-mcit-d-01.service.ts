@@ -494,8 +494,11 @@ export class NI_MCIT_D_01Service {
           await manager.save(method)
         })
 
-        await this.generateCertificateCodeToMethod(method.id)
-        await this.activitiesService.updateActivityProgress(activityID)
+        await Promise.all([
+          this.generateCertificateCodeToMethod(method.id),
+          this.activitiesService.updateActivityProgress(activityID),
+          this.methodService.isResolvedAllServices(activityID),
+        ])
 
         return handleOK(method)
       } catch (error) {

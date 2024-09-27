@@ -763,4 +763,39 @@ export class MethodsService {
         : value
     })
   }
+
+  async isResolvedAllServices(activityID: number) {
+    try {
+      const activity = await this.activitiesService.getActivityById(activityID)
+      const { equipment_quote_request } = activity.data.quote_request
+
+      for (const equipment of equipment_quote_request) {
+        if (equipment.isResolved || equipment.calibration_method === 'N/A') {
+          continue
+        }
+        let flagResolved = true
+
+        const { data: stackMethods } = await this.getMethodsID(
+          equipment.method_id,
+        )
+
+        for (const method of stackMethods) {
+          if (method.status !== 'done') {
+            flagResolved = false
+            break
+          }
+        }
+
+        if (flagResolved) {
+          await this.dataSource.transaction(async (manager) => {
+            equipment.isResolved = true
+
+            await manager.save(equipment)
+          })
+        }
+      }
+    } catch (error) {
+      handleInternalServerError(error.message)
+    }
+  }
 }
