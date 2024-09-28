@@ -45,7 +45,10 @@ import { formatQuoteCode } from 'src/utils/generateCertCode'
 import { EquipmentQuoteRequestDto } from './dto/equipment-quote-request.dto'
 import { DeleteEquipmentFromQuoteDto } from './dto/delete-equipment-from-quote.dto'
 import { endOfMonth, startOfMonth, subDays, subMonths } from 'date-fns'
-import { getExchangeRateForDay } from 'src/services/currencyType.service'
+import {
+  callGetExchangeRateForDay,
+  getExchangeRateForDay,
+} from 'src/services/currencyType.service'
 
 @Injectable()
 export class QuotesService {
@@ -482,12 +485,7 @@ export class QuotesService {
       throw new Error('La cotización no existe')
     }
 
-    const today = new Date()
-    const currency = await getExchangeRateForDay(
-      today.getFullYear(),
-      today.getMonth() + 1,
-      today.getDate(),
-    )
+    const currency = await callGetExchangeRateForDay()
 
     const data = {}
 
@@ -1281,6 +1279,8 @@ export class QuotesService {
       )
     }
 
+    const currency = await callGetExchangeRateForDay()
+
     const quote = response.modifications_list_json[indexList]
     const data = {}
 
@@ -1295,8 +1295,12 @@ export class QuotesService {
               ? 'Comp. Directa Trazable'
               : equipment.calibration_method,
           count: equipment.count,
-          unitPrice: formatPrice(equipment.price),
-          subTotal: formatPrice(equipment.total),
+          unitPrice: formatPrice(
+            equipment.price,
+            currency,
+            quote.currency_type,
+          ),
+          subTotal: formatPrice(equipment.total, currency, quote.currency_type),
           comment: equipment.additional_remarks || 'N/A',
           measuring_range: equipment.measuring_range || 'N/A',
           status: equipment.status,
@@ -1311,8 +1315,8 @@ export class QuotesService {
         equipment: '---',
         method: '---',
         count: '---',
-        unitPrice: formatPrice(quote.extras),
-        subTotal: formatPrice(quote.extras),
+        unitPrice: formatPrice(quote.extras, currency, quote.currency_type),
+        subTotal: formatPrice(quote.extras, currency, quote.currency_type),
         comment: '---',
         measuring_range: '---',
       })
@@ -1326,18 +1330,26 @@ export class QuotesService {
 
     data['discount'] =
       quote.general_discount > 0
-        ? formatPrice((subtotal * quote.general_discount) / 100)
+        ? formatPrice(
+            (subtotal * quote.general_discount) / 100,
+            currency,
+            quote.currency_type,
+          )
         : 'N/A'
-    data['subtotal1'] = formatPrice(subtotal)
+    data['subtotal1'] = formatPrice(subtotal, currency, quote.currency_type)
     data['subtotal2'] = formatPrice(
       subtotal - (subtotal * quote.general_discount) / 100,
+      currency,
+      quote.currency_type,
     )
     data['tax'] = formatPrice(
       ((subtotal - (subtotal * quote.general_discount) / 100) *
         (quote.tax || 0)) /
         100,
+      currency,
+      quote.currency_type,
     )
-    data['total'] = formatPrice(quote.price)
+    data['total'] = formatPrice(quote.price, currency, quote.currency_type)
     data['client'] = quote.client
     data['date'] = formatDate(quote.created_at.toString())
 
@@ -1347,6 +1359,7 @@ export class QuotesService {
       quote.service_request_code,
       quote.modification_number,
     )
+    data['currency'] = quote.currency_type
 
     return await this.pdfService.generateQuoteRequestPdf(data)
   }

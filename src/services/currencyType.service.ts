@@ -57,6 +57,17 @@ export const getExchangeRateForDay = async (
   }
 }
 
+export const callGetExchangeRateForDay = async () => {
+  const today = new Date()
+  const currency = await getExchangeRateForDay(
+    today.getFullYear(),
+    today.getMonth() + 1,
+    today.getDate(),
+  )
+
+  return currency
+}
+
 // Llamar a la función con la fecha deseada y manejar el resultado
 /*
 const today = new Date()
