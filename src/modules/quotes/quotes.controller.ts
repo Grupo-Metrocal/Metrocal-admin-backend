@@ -23,7 +23,6 @@ import { ReviewEquipmentDto } from './dto/review-equipment.dto'
 import { ModificationRequestDto } from './dto/modification-request.dto'
 import { EquipmentQuoteRequestDto } from './dto/equipment-quote-request.dto'
 import { DeleteEquipmentFromQuoteDto } from './dto/delete-equipment-from-quote.dto'
-import { buffer } from 'stream/consumers'
 import { CurrencyType } from './entities/quote-request.entity'
 
 @ApiTags('quotes')
@@ -275,5 +274,13 @@ export class QuotesController {
     @Param('id') id: number,
   ) {
     return await this.quotesService.changeCurrencyType(id, type)
+  }
+
+  @Get('copy/:quoteId/:clientId')
+  async copyQuote(
+    @Param('clientId') clientId: number,
+    @Param('quoteId') quoteId: number,
+  ) {
+    return await this.quotesService.copyQuote(quoteId, clientId)
   }
 }

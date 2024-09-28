@@ -49,6 +49,7 @@ import {
   callGetExchangeRateForDay,
   getExchangeRateForDay,
 } from 'src/services/currencyType.service'
+import { Client } from '../clients/entities/client.entity'
 
 @Injectable()
 export class QuotesService {
@@ -1216,6 +1217,7 @@ export class QuotesService {
       const quote = response.data as QuoteRequest
       delete quote.id
       delete quote.created_at
+      quote.activity = null
       quote.status = 'pending'
 
       // clear id property from equipments
@@ -1466,6 +1468,81 @@ export class QuotesService {
 
       return handleOK(quote)
     } catch (error) {
+      return handleInternalServerError(error.message)
+    }
+  }
+
+  async copyQuote(quoteId: number, clientId: number) {
+    try {
+      const response = await this.getQuoteRequestByIdWithoutModify(quoteId)
+
+      if (!response.success) {
+        return handleBadrequest(
+          new Error('La cotización que intenta copiar no existe'),
+        )
+      }
+
+      const clientResponse = await this.clientsService.findById(clientId)
+
+      if (!clientResponse) {
+        return handleBadrequest(
+          new Error('El cliente asignado a la cotizacion no existe'),
+        )
+      }
+
+      const quote = response.data as QuoteRequest
+      const client = clientResponse.data as Client
+
+      delete quote.id
+      delete quote.created_at
+      quote.activity = null
+      quote.status = 'pending'
+
+      // clear id property from equipments
+      quote.equipment_quote_request = quote.equipment_quote_request.map(
+        (equipment) => {
+          delete equipment.id
+          equipment.status = 'pending'
+          return equipment
+        },
+      )
+
+      quote.client = client
+
+      const lastQuote = await this.quoteRequestRepository
+        .createQueryBuilder('quote_requests')
+        .orderBy('quote_requests.id', 'DESC')
+        .getOne()
+
+      const newQuote = this.quoteRequestRepository.create(quote)
+
+      await this.dataSource.transaction(async (manager) => {
+        await manager.save(newQuote)
+        await manager.save(newQuote.equipment_quote_request)
+        await manager.save(newQuote.client)
+        await manager.save(client)
+      })
+
+      await this.dataSource.transaction(async (manager) => {
+        newQuote.record_index =
+          !lastQuote ||
+          lastQuote.created_at.getFullYear() !==
+            newQuote.created_at.getFullYear()
+            ? 1
+            : lastQuote.record_index + 1
+
+        newQuote.no = generateQuoteRequestCode(newQuote.record_index)
+        newQuote.service_request_code = generateQuoteServiceRequestCode(
+          newQuote.record_index,
+        )
+        await manager.save(newQuote)
+      })
+
+      return handleOK({
+        id: newQuote.id,
+      })
+    } catch (error) {
+      console.error({ error })
       return handleInternalServerError(error.message)
     }
   }
