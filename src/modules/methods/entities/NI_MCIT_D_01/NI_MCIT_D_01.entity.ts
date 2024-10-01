@@ -1,5 +1,5 @@
 import { Entity, Column, PrimaryGeneratedColumn, ManyToOne } from 'typeorm'
-import { EquipmentInformationNI_MCIT_D_01 } from './steps/equipment_informatio.entity'
+import { EquipmentInformationNI_MCIT_D_01 } from './steps/equipment_information.entity'
 import { EnvironmentalConditionsNI_MCIT_D_01 } from './steps/environmental_conditions.entity'
 import { DescriptionPatternNI_MCIT_D_01 } from './steps/description_pattern.entity'
 import { PreInstallationCommentNI_MCIT_D_01 } from './steps/pre_installation_comment.entity'
