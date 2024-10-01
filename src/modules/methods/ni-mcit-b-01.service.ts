@@ -920,28 +920,28 @@ export class NI_MCIT_B_01Service {
             formatCertCode(
               method.certificate_code,
               method.modification_number,
-            ) || '---',
+            ) || 'N/A',
           service_code: activity.quote_request.no,
           certificate_issue_date: formatDate(new Date().toString()),
           calibration_date: formatDate(method.equipment_information.date),
-          object_calibrated: equipment_information.device || '---',
-          maker: equipment_information.maker || '---',
-          serial_number: equipment_information.serial_number || '---',
-          model: equipment_information.model || '---',
+          object_calibrated: equipment_information.device || 'N/A',
+          maker: equipment_information.maker || 'N/A',
+          serial_number: equipment_information.serial_number || 'N/A',
+          model: equipment_information.model || 'N/A',
           measurement_range:
             `${formatSameNumberCertification(method.equipment_information.range_min)} ${method.equipment_information.unit} a ${formatSameNumberCertification(method.equipment_information.range_max)} ${method.equipment_information.unit}` ||
-            '---',
+            'N/A',
           resolution:
             `${formatSameNumberCertification(equipment_information.resolution)} ${equipment_information.unit}` ||
-            '---',
-          identification_code: equipment_information.code || '---',
+            'N/A',
+          identification_code: equipment_information.code || 'N/A',
           applicant:
             method?.applicant_name ||
             activity.quote_request.client.company_name,
           address:
             method?.applicant_address || activity.quote_request.client.address,
-          calibration_location: method.calibration_location || '---',
-          code: equipment_information?.code || '---',
+          calibration_location: method.calibration_location || 'N/A',
+          code: equipment_information?.code || 'N/A',
         },
         calibration_results: {
           result_test,

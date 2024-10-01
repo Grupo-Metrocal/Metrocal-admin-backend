@@ -4,7 +4,7 @@ import { InjectRepository } from '@nestjs/typeorm'
 import { DataSource, Repository, Column } from 'typeorm'
 import { handleInternalServerError, handleOK } from 'src/common/handleHttp'
 import { EquipmentInformationNI_MCIT_D_02Dto } from './dto/NI_MCIT_D_02/d02equipment_information.dto'
-import { EquipmentInformationNI_MCIT_D_02 } from './entities/NI_MCIT_D_02/steps/equipment_informatio.entity'
+import { EquipmentInformationNI_MCIT_D_02 } from './entities/NI_MCIT_D_02/steps/equipment_information.entity'
 import { EnvironmentalConditionsNI_MCIT_D_02Dto } from './dto/NI_MCIT_D_02/d02environmental_conditions.dto'
 import { EnvironmentalConditionsNI_MCIT_D_02 } from './entities/NI_MCIT_D_02/steps/environmental_conditions.entity'
 import { DescriptionPatternNI_MCIT_D_02 } from './entities/NI_MCIT_D_02/steps/description_pattern.entity'
@@ -492,8 +492,8 @@ export class NI_MCIT_D_02Service {
       sheetNI_R01_MCIT_D_02.cell('C11').value(equipmentInfo.device)
       sheetNI_R01_MCIT_D_02.cell('C12').value(equipmentInfo.maker)
       sheetNI_R01_MCIT_D_02.cell('C13').value(equipmentInfo.serial_number)
-      sheetNI_R01_MCIT_D_02.cell('C14').value(equipmentInfo.measurement_range)
       sheetNI_R01_MCIT_D_02.cell('C15').value(equipmentInfo.resolution)
+      sheetNI_R01_MCIT_D_02.cell('F11').value(equipmentInfo.unit)
       sheetNI_R01_MCIT_D_02.cell('F12').value(equipmentInfo.model)
       sheetNI_R01_MCIT_D_02.cell('F13').value(equipmentInfo.code)
       sheetNI_R01_MCIT_D_02.cell('F14').value(equipmentInfo.length)
@@ -847,7 +847,8 @@ export class NI_MCIT_D_02Service {
           serial_number: method.equipment_information.serial_number || 'N/A',
           model: method.equipment_information.model || 'N/A',
           measurement_range:
-            method.equipment_information.measurement_range || 'N/A',
+            `${formatSameNumberCertification(method.equipment_information.range_min)} ${method.equipment_information.unit} a ${formatSameNumberCertification(method.equipment_information.range_max)} ${method.equipment_information.unit}` ||
+            'N/A',
           resolution:
             `${formatSameNumberCertification(method.equipment_information.resolution)} ${sheet.cell('Q17').value()}` ||
             'N/A',

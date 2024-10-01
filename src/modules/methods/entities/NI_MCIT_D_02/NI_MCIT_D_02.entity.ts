@@ -1,6 +1,6 @@
 import { Column, Entity, ManyToOne, PrimaryGeneratedColumn } from 'typeorm'
 import { EnvironmentalConditionsNI_MCIT_D_02 } from './steps/environmental_conditions.entity'
-import { EquipmentInformationNI_MCIT_D_02 } from './steps/equipment_informatio.entity'
+import { EquipmentInformationNI_MCIT_D_02 } from './steps/equipment_information.entity'
 import { DescriptionPatternNI_MCIT_D_02 } from './steps/description_pattern.entity'
 import { PreInstallationCommentNI_MCIT_D_02 } from './steps/pre_installation_comment.entity'
 import { InstrumentZeroCheckNI_MCIT_D_02 } from './steps/instrument_zero_check.entity'

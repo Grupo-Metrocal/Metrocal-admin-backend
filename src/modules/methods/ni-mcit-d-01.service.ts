@@ -593,7 +593,7 @@ export class NI_MCIT_D_01Service {
       //serie
       sheetEC.cell('B14').value(method.equipment_information.serial_number)
       //range
-      sheetEC.cell('B15').value(method.equipment_information.measurement_range)
+      // sheetEC.cell('B15').value(method.equipment_information.measurement_range)
       //resolution
       sheetEC.cell('B16').value(method.equipment_information.resolution)
       //model
@@ -1143,7 +1143,8 @@ export class NI_MCIT_D_01Service {
           serial_number: method.equipment_information.serial_number || 'N/A',
           model: method.equipment_information.model || 'N/A',
           measurement_range:
-            method.equipment_information.measurement_range || 'N/A',
+            `${formatSameNumberCertification(method.equipment_information.range_min)} ${method.equipment_information.unit} a ${formatSameNumberCertification(method.equipment_information.range_max)} ${method.equipment_information.unit}` ||
+            'N/A',
           resolution:
             `${formatSameNumberCertification(method.equipment_information.resolution)} ${sheet.cell('S17').value()}` ||
             'N/A',
