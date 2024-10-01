@@ -813,24 +813,6 @@ export class NI_MCIT_D_02Service {
         uncertainty: this.methodService.formatUncertainty(uncertainty),
       }
 
-      const descriptionPattern = []
-
-      for (
-        let i = 0;
-        i < method.description_pattern.descriptionPattern.length;
-        i++
-      ) {
-        const code = method.description_pattern.descriptionPattern[i]
-        const patternService = await this.patternsService.findByCodeAndMethod(
-          code,
-          'NI-MCIT-D-02',
-        )
-
-        if (patternService.success) {
-          descriptionPattern.push(patternService.data)
-        }
-      }
-
       const certificate = {
         pattern: 'NI-MCIT-D-02',
         email: activity.quote_request.client.email,
@@ -872,7 +854,7 @@ export class NI_MCIT_D_02Service {
           )} ± ${formatNumberCertification(sheet.cell('J46').value(), 1)} % HR`,
         },
         creditable: method.pre_installation_comment.accredited,
-        descriptionPattern,
+        descriptionPattern: await this.getPatternsTableToCertificate(method),
         observations: `
 ${method.pre_installation_comment.comment}
 Es responsabilidad del encargado del instrumento establecer la frecuencia del servicio de calibración.
@@ -887,6 +869,38 @@ Este certificado de calibración no debe ser reproducido sin la aprobación del 
       console.log(error)
       return handleInternalServerError('Error al generar el archivo')
     }
+  }
+
+  async getPatternsTableToCertificate(method: NI_MCIT_D_02) {
+    const description_pattern = []
+
+    for (
+      let i = 0;
+      i < method.description_pattern.descriptionPattern.length;
+      i++
+    ) {
+      const code = method.description_pattern.descriptionPattern[i]
+      const patternService = await this.patternsService.findByCodeAndMethod(
+        code,
+        'NI-MCIT-D-02',
+      )
+
+      if (patternService.success) {
+        description_pattern.push(patternService.data)
+      }
+    }
+
+    const environmentalConditionPattern =
+      await this.patternsService.findByCodeAndMethod(
+        method.environmental_conditions.equipment_used,
+        'all',
+      )
+
+    if (environmentalConditionPattern.success) {
+      description_pattern.push(environmentalConditionPattern.data)
+    }
+
+    return description_pattern
   }
 
   async generatePDFCertificate(
