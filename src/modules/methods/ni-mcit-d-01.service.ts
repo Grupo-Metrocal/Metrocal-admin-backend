@@ -1121,12 +1121,6 @@ export class NI_MCIT_D_01Service {
         deviation_outside,
       }
 
-      const calibration_method_used =
-        await this.patternsService.findByCodeAndMethod(
-          method.description_pattern.descriptionPatterns[0],
-          'NI-MCIT-D-01',
-        )
-
       const certificate = {
         pattern: 'NI-MCIT-D-01',
         email: activity.quote_request.client.email,
@@ -1171,10 +1165,7 @@ export class NI_MCIT_D_01Service {
             1,
           )} ± ${formatNumberCertification(sheet.cell('J69').value(), 1)} %`,
         },
-        descriptionPattern: {
-          calibration_method_used: calibration_method_used.data,
-        },
-        creditable: method.pre_installation_comment.accredited,
+        descriptionPattern: await this.getPatternsTableToCertificate(method),
         observations: `
 ${method.pre_installation_comment.comment}
 Es responsabilidad del encargado del instrumento establecer la frecuencia del servicio de calibración.
@@ -1188,6 +1179,32 @@ Este certificado de calibración no debe ser reproducido sin la aprobación del 
     } catch (error) {
       return handleInternalServerError(error.message)
     }
+  }
+
+  async getPatternsTableToCertificate(method: NI_MCIT_D_01) {
+    const description_pattern = []
+
+    const calibration_method_used =
+      await this.patternsService.findByCodeAndMethod(
+        method.description_pattern.descriptionPatterns[0],
+        'NI-MCIT-D-01',
+      )
+
+    if (calibration_method_used.success) {
+      description_pattern.push(calibration_method_used.data)
+    }
+
+    const environmentalConditionPattern =
+      await this.patternsService.findByCodeAndMethod(
+        method.environmental_conditions.equipment_used,
+        'all',
+      )
+
+    if (environmentalConditionPattern.success) {
+      description_pattern.push(environmentalConditionPattern.data)
+    }
+
+    return description_pattern
   }
 
   async generatePDFCertificate(

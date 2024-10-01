@@ -208,18 +208,16 @@
         </tr>
       </thead>
       <tbody>
-        <tr>
-          <td>{{descriptionPattern.calibration_method_used.equipment}}</td>
-          <td>{{descriptionPattern.calibration_method_used.code}}</td>
-          <td>{{descriptionPattern.calibration_method_used.certificate}}</td>
-          <td>{{descriptionPattern.calibration_method_used.traceability}}</td>
-          <td>
-            {{descriptionPattern.calibration_method_used.next_calibration}}
-          </td>
-        </tr>
+        {{#each descriptionPattern as |data|}}
+          <tr>
+            <td>{{data.equipment}}</td>
+            <td>{{data.code}}</td>
+            <td>{{data.certificate}}</td>
+            <td>{{data.traceability}}</td>
+            <td>{{data.next_calibration}}</td>
+          </tr>
+        {{/each}}
       </tbody>
-
-      <tbody></tbody>
     </table>
   </div>
 
