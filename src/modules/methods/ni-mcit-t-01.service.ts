@@ -565,35 +565,40 @@ export class NI_MCIT_T_01Service {
         )
 
         if (description_pattern.show_table_international_system_units) {
+          const reference = calibrationResultsSheet.cell(`D${62 + i}`).value()
           temperatureReferenceInternationalSystemUnits.push(
             i !== 0
-              ? Math.trunc(
-                  Number(calibrationResultsSheet.cell(`D${62 + i}`).value()),
+              ? formatNumberCertification(
+                  Number(reference),
+                  countDecimals(method.equipment_information.resolution),
                 )
-              : calibrationResultsSheet.cell(`D${62 + i}`).value(),
+              : reference,
           )
+          const thermometer = calibrationResultsSheet.cell(`F${62 + i}`).value()
           thermometerIndicationInternationalSystemUnits.push(
             i !== 0
-              ? Math.trunc(
-                  Number(calibrationResultsSheet.cell(`F${62 + i}`).value()),
-                )
-              : calibrationResultsSheet.cell(`F${62 + i}`).value(),
+              ? formatNumberCertification(Number(thermometer))
+              : thermometer,
           )
           correctionInternationalSystemUnits.push(
             i !== 0
-              ? Math.trunc(
-                  Number(calibrationResultsSheet.cell(`L${62 + i}`).value()),
+              ? formatNumberCertification(
+                  convertToValidNumber(
+                    temperatureReferenceInternationalSystemUnits[i],
+                  ) -
+                    convertToValidNumber(
+                      thermometerIndicationInternationalSystemUnits[i],
+                    ),
+                  countDecimals(method.equipment_information.resolution),
                 )
               : calibrationResultsSheet.cell(`L${62 + i}`).value(),
           )
 
-          const expandedUncertaintyK2ValInternationalSystemUnits =
-            calibrationResultsSheet.cell(`R${62 + i}`).value()
+          const uncertainty = calibrationResultsSheet.cell(`R${62 + i}`).value()
+
           expandedUncertaintyK2InternationalSystemUnits.push(
             formatNumberCertification(
-              this.methodService.getSignificantFigure(
-                expandedUncertaintyK2ValInternationalSystemUnits,
-              ),
+              this.methodService.getSignificantFigure(uncertainty),
               2,
             ),
           )
