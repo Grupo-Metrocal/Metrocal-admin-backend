@@ -18,4 +18,7 @@ export class DescriptionPatternNI_MCIT_D_02 {
 
   @Column('jsonb', { nullable: true })
   descriptionPattern: string[]
+
+  @Column({ nullable: true })
+  next_calibration: string
 }

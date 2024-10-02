@@ -24,4 +24,7 @@ export class DescriptionPatternNI_MCIT_V_01 {
 
   @Column({ nullable: true })
   creditable?: boolean
+
+  @Column({ nullable: true })
+  next_calibration: string
 }

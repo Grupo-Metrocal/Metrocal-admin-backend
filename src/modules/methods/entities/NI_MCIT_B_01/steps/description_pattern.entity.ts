@@ -24,4 +24,7 @@ export class DescriptionPatternNI_MCIT_B_01 {
 
   @Column({ default: '' })
   show_additional_table: 'lb' | 'kg' | ''
+
+  @Column({ nullable: true })
+  next_calibration: string
 }

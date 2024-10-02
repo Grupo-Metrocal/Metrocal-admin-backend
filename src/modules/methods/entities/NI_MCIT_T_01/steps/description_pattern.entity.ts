@@ -27,4 +27,7 @@ export class DescriptionPatternNI_MCIT_T_01 {
 
   @Column({ nullable: true })
   show_table_international_system_units?: boolean
+
+  @Column({ nullable: true })
+  next_calibration: string
 }
