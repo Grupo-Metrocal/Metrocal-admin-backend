@@ -9,4 +9,7 @@ export class DescriptionPatternB01Dto {
 
   @ApiProperty()
   show_additional_table?: 'lb' | 'kg' | ''
+
+  @ApiProperty()
+  next_calibration: string
 }

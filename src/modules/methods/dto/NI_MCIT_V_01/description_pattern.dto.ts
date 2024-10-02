@@ -9,4 +9,7 @@ export class DescriptionPatternV01Dto {
 
   @ApiProperty()
   creditable?: boolean
+
+  @ApiProperty()
+  next_calibration: string
 }

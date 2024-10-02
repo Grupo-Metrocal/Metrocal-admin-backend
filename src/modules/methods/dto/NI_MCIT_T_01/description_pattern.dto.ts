@@ -12,4 +12,7 @@ export class DescriptionPatternT_01Dto {
 
   @ApiProperty()
   show_table_international_system_units?: boolean
+
+  @ApiProperty()
+  next_calibration: string
 }
