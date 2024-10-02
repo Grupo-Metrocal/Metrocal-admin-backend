@@ -482,6 +482,7 @@ export class NI_MCIT_D_01Service {
       try {
         await this.dataSource.transaction(async (manager) => {
           await manager.save(method.exterior_measurement_accuracy)
+          method.updated_at = new Date()
           method.status = 'done'
 
           if (increase) {
@@ -1131,7 +1132,7 @@ export class NI_MCIT_D_01Service {
           ),
           service_code: activity.quote_request.no,
           certificate_issue_date: formatDate(new Date().toString()),
-          calibration_date: formatDate(activity.updated_at.toString()),
+          calibration_date: formatDate(method.updated_at.toString()),
           object_calibrated: method.equipment_information.device || 'N/A',
           maker: method.equipment_information.maker || 'N/A',
           serial_number: method.equipment_information.serial_number || 'N/A',

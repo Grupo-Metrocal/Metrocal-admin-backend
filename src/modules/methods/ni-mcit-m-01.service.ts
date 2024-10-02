@@ -276,7 +276,7 @@ export class NI_MCIT_M_01Service {
 
       await this.dataSource.transaction(async (manager) => {
         await manager.save(method.description_pattern)
-
+        method.updated_at = new Date()
         method.status = 'done'
 
         if (increase) {
@@ -699,7 +699,7 @@ export class NI_MCIT_M_01Service {
           ),
           service_code: activity.quote_request.no,
           certificate_issue_date: formatDate(new Date().toString()),
-          calibration_date: formatDate(activity.updated_at as any),
+          calibration_date: formatDate(method.updated_at.toString()),
           device: method.equipment_information.calibration_object || '---',
           maximum_capacity: `${formatSameNumberCertification(method.equipment_information.maximum_capacity)} ${conventional_units[0]}`,
           maker: method.equipment_information.maker || '---',

@@ -283,7 +283,7 @@ export class NI_MCIT_P_01Service {
 
       await this.dataSource.transaction(async (manager) => {
         await manager.save(method.description_pattern)
-
+        method.updated_at = new Date()
         method.status = 'done'
 
         if (increase) {
@@ -713,7 +713,7 @@ export class NI_MCIT_P_01Service {
           ),
           service_code: activity.quote_request.no,
           certificate_issue_date: formatDate(new Date().toString()),
-          calibration_date: formatDate(activity.updated_at.toString()),
+          calibration_date: formatDate(method.updated_at.toString()),
           object_calibrated: method.equipment_information.device || '---',
           manufacturer: method.equipment_information.maker || '---',
           no_series: method.equipment_information.serial_number || '---',
