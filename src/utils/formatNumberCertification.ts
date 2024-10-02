@@ -43,3 +43,19 @@ export const convertToValidNumber = (value: any) => {
 
   return number
 }
+
+export const repairNumberFromCertificate = (value: any) => {
+  if (typeof value === 'number') {
+    return value
+  }
+
+  let cleanedStr = value.replace(/\s/g, '').replace(/,/g, '')
+
+  const number = parseFloat(cleanedStr)
+
+  if (isNaN(number)) {
+    return value
+  }
+
+  return number
+}
