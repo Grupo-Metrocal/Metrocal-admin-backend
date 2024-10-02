@@ -29,12 +29,12 @@ import { MethodsService } from './methods.service'
 import { CertificationDetailsDto } from './dto/NI_MCIT_P_01/certification_details.dto'
 import { formatCertCode } from 'src/utils/generateCertCode'
 import {
+  convertToValidNumber,
   formatNumberCertification,
   formatSameNumberCertification,
 } from 'src/utils/formatNumberCertification'
 import { conversionTableToKPA } from 'src/common/converionTable'
 import { countDecimals } from 'src/utils/countDecimal'
-import { QuoteRequest } from '../quotes/entities/quote-request.entity'
 
 @Injectable()
 export class NI_MCIT_P_01Service {
@@ -564,12 +564,13 @@ export class NI_MCIT_P_01Service {
 
         const correctionValue = sheetCER.cell(`L${27 + i}`).value()
         correction.push(
-          typeof correctionValue === 'number'
-            ? formatNumberCertification(
-                Number(correctionValue.toFixed(2)),
+          i === 0
+            ? correctionValue
+            : formatNumberCertification(
+                convertToValidNumber(reference_pressure[i]) -
+                  convertToValidNumber(indicationValue[i]),
                 countDecimals(method.equipment_information.resolution),
-              )
-            : correctionValue,
+              ),
         )
 
         const uncertaintyValue = sheetCER.cell(`R${27 + i}`).value()
