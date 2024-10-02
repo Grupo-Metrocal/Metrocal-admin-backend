@@ -29,9 +29,9 @@ import { MethodsService } from './methods.service'
 import { CertificationDetailsDto } from './dto/NI_MCIT_P_01/certification_details.dto'
 import { formatCertCode } from 'src/utils/generateCertCode'
 import {
-  convertToValidNumber,
   formatNumberCertification,
   formatSameNumberCertification,
+  repairNumberFromCertificate,
 } from 'src/utils/formatNumberCertification'
 import { countDecimals } from 'src/utils/countDecimal'
 import { DescriptionPatternNI_MCIT_B_01 } from './entities/NI_MCIT_B_01/steps/description_pattern.entity'
@@ -481,6 +481,7 @@ export class NI_MCIT_B_01Service {
       sheetGeneral
         .cell('F14')
         .value(`${equipment.resolution} ${equipment.unit}`)
+      sheetCalibración.cell('C15').value(equipment.unit)
 
       //environmental conditions
       const environmentalConditions = method.environmental_conditions
@@ -749,21 +750,21 @@ export class NI_MCIT_B_01Service {
 
         reference_mass.push(
           formatNumberCertification(
-            convertToValidNumber(reference_massValue),
+            repairNumberFromCertificate(reference_massValue),
             countDecimals(equipment_information.resolution),
           ),
         )
 
         equipment_indication.push(
           formatNumberCertification(
-            convertToValidNumber(equipment_indicationValue),
+            repairNumberFromCertificate(equipment_indicationValue),
             countDecimals(equipment_information.resolution),
           ),
         )
 
         error.push(
           formatNumberCertification(
-            convertToValidNumber(errorValue),
+            repairNumberFromCertificate(errorValue),
             countDecimals(equipment_information.resolution),
           ),
         )
