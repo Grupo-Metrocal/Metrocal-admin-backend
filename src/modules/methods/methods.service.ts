@@ -16,7 +16,6 @@ import { Methods } from './entities/method.entity'
 import { QuoteRequest } from '../quotes/entities/quote-request.entity'
 import { addOrRemoveMethodToStackDto } from './dto/add-remove-method-stack.dto'
 import * as path from 'path'
-import { exec } from 'child_process'
 import { TokenService } from '../auth/jwt/jwt.service'
 
 import { NI_MCIT_D_01 } from './entities/NI_MCIT_D_01/NI_MCIT_D_01.entity'
@@ -44,7 +43,6 @@ import { GENERIC_METHODService } from './generic-method.service'
 import { formatCertCode } from 'src/utils/generateCertCode'
 import { OptionsCMCOnCertificateDto } from './dto/setSOptionsCMCOnCertificate.dto'
 import {
-  convertToValidNumber,
   formatNumberCertification,
   formatSameNumberCertification,
 } from 'src/utils/formatNumberCertification'

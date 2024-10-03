@@ -398,6 +398,7 @@ export class NI_MCIT_B_01Service {
         await manager.save(method.description_pattern)
         method.updated_at = new Date()
         method.status = 'done'
+        method.method_end_date_finished = new Date()
 
         if (increase) {
           method.modification_number =

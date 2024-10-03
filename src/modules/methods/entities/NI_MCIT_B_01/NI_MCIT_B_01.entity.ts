@@ -23,6 +23,9 @@ export class NI_MCIT_B_01 {
   @Column({ nullable: true })
   modification_number?: number
 
+  @Column({ nullable: true })
+  method_end_date_finished: Date
+
   @Column({ nullable: true, default: 'asterisks' })
   optionsCMCOnCertificate?: 'asterisks' | 'change_values'
 

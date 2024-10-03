@@ -484,6 +484,7 @@ export class NI_MCIT_D_01Service {
           await manager.save(method.exterior_measurement_accuracy)
           method.updated_at = new Date()
           method.status = 'done'
+          method.method_end_date_finished = new Date()
 
           if (increase) {
             method.modification_number =

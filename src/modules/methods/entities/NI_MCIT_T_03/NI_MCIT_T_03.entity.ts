@@ -19,6 +19,9 @@ export class NI_MCIT_T_03 {
   applicant_name: string
 
   @Column({ nullable: true })
+  method_end_date_finished: Date
+
+  @Column({ nullable: true })
   modification_number?: number
 
   @Column({ nullable: true, default: 'asterisks' })
