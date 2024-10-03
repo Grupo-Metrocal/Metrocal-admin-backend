@@ -568,7 +568,7 @@ export class NI_MCIT_P_01Service {
             ? correctionValue
             : formatNumberCertification(
                 convertToValidNumber(reference_pressure[i]) -
-                  convertToValidNumber(indicationValue[i]),
+                  convertToValidNumber(equipment_indication[i]),
                 countDecimals(method.equipment_information.resolution),
               ),
         )
@@ -604,12 +604,13 @@ export class NI_MCIT_P_01Service {
 
         const correctionSysValue = sheetCER.cell(`L${63 + i}`).value()
         correctionSys.push(
-          typeof correctionSysValue === 'number'
-            ? formatNumberCertification(
-                Number(correctionSysValue.toFixed(1)),
+          i === 0
+            ? correctionSysValue
+            : formatNumberCertification(
+                convertToValidNumber(reference_pressureSys[i]) -
+                  convertToValidNumber(equipment_indicationSys[i]),
                 countDecimals(method.equipment_information.resolution),
-              )
-            : correctionSysValue,
+              ),
         )
 
         const uncertaintySysValue = sheetCER.cell(`R${63 + i}`).value()
