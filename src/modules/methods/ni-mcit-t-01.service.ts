@@ -669,7 +669,9 @@ export class NI_MCIT_T_01Service {
           temperatureReference: temperatureReferenceInternationalSystemUnits,
           thermometerIndication: thermometerIndicationInternationalSystemUnits,
           correction: correctionInternationalSystemUnits,
-          expandedUncertaintyK2: expandedUncertaintyK2InternationalSystemUnits,
+          expandedUncertaintyK2: this.methodService.formatUncertainty(
+            this.formatUncertaintyWithCMC(expandedUncertaintyK2, CMC),
+          ),
         },
       }
 
