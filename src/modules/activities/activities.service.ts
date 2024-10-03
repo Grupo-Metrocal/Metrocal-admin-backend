@@ -464,6 +464,10 @@ export class ActivitiesService {
       activity.start_time = data.start_time
       activity.end_time = data.end_time
 
+      if (!activity.finish_date) {
+        activity.finish_date = new Date()
+      }
+
       await this.activityRepository.save(activity)
 
       return await this.generateServiceOrder(activity.id)
@@ -486,7 +490,7 @@ export class ActivitiesService {
 
       const data = {
         clientName: activity.quote_request.client.company_name,
-        endDate: formatDate(activity.updated_at + ''),
+        endDate: formatDate(activity.finish_date.toString()),
         startTime: activity.start_time,
         endTime: activity.end_time,
         address: activity.quote_request.client.address,
@@ -510,11 +514,7 @@ export class ActivitiesService {
           .filter((equipment) => equipment.status === 'done'),
         resolved_services: activity.quote_request.equipment_quote_request
           .map((service) => {
-            if (service.isResolved && service.calibration_method === '(N/A)') {
-              return service.type_service
-            }
-
-            if (service.calibration_method !== '(N/A)' && !service.isResolved) {
+            if (service.isResolved) {
               return service.type_service
             }
           })

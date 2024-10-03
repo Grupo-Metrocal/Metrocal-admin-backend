@@ -59,4 +59,7 @@ export class Activity {
 
   @Column({ type: 'varchar', nullable: true })
   end_time?: string
+
+  @Column({ nullable: true })
+  finish_date: Date
 }
