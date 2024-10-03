@@ -29,6 +29,7 @@ import { MethodsService } from './methods.service'
 import { CertificationDetailsDto } from './dto/NI_MCIT_P_01/certification_details.dto'
 import { formatCertCode } from 'src/utils/generateCertCode'
 import {
+  convertToValidNumber,
   formatNumberCertification,
   formatSameNumberCertification,
   repairNumberFromCertificate,
@@ -928,6 +929,24 @@ export class NI_MCIT_B_01Service {
         maximum_eccentricity,
       }
 
+      result_test.repeatability[1] = formatNumberCertification(
+        convertToValidNumber(result_test.repeatability[1]),
+        countDecimals(
+          convertToValidNumber(
+            result_test.uncertainty[result_test.uncertainty.length - 1],
+          ),
+        ),
+      )
+
+      result_test.maximum_eccentricity[1] = formatNumberCertification(
+        convertToValidNumber(result_test.maximum_eccentricity[1]),
+        countDecimals(
+          convertToValidNumber(
+            result_test.uncertainty[result_test.uncertainty.length - 1],
+          ),
+        ),
+      )
+
       let result_test_extra = null
       if (method.description_pattern.show_additional_table) {
         result_test_extra = {
@@ -938,6 +957,28 @@ export class NI_MCIT_B_01Service {
           repeatability: repeatability_2,
           maximum_eccentricity: maximum_eccentricity_2,
         }
+
+        result_test_extra.repeatability[1] = formatNumberCertification(
+          convertToValidNumber(result_test_extra.repeatability[1]),
+          countDecimals(
+            convertToValidNumber(
+              result_test_extra.uncertainty[
+                result_test_extra.uncertainty.length - 1
+              ],
+            ),
+          ),
+        )
+
+        result_test_extra.maximum_eccentricity[1] = formatNumberCertification(
+          convertToValidNumber(result_test_extra.maximum_eccentricity[1]),
+          countDecimals(
+            convertToValidNumber(
+              result_test_extra.uncertainty[
+                result_test_extra.uncertainty.length - 1
+              ],
+            ),
+          ),
+        )
       }
 
       const certificate = {
