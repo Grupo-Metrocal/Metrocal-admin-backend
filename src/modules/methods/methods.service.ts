@@ -527,6 +527,7 @@ export class MethodsService {
 
           for (const method of stackMethods) {
             if (method.review_state) {
+              await this[method_name].setCertificateIssueDate(method.id)
               const dataMethod = await this[method_name].generatePDFCertificate(
                 activityID,
                 method.id,

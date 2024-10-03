@@ -24,6 +24,9 @@ export class NI_MCIT_T_03 {
   @Column({ nullable: true })
   modification_number?: number
 
+  @Column({ nullable: true })
+  certificate_issue_date: Date
+
   @Column({ nullable: true, default: 'asterisks' })
   optionsCMCOnCertificate?: 'asterisks' | 'change_values'
 

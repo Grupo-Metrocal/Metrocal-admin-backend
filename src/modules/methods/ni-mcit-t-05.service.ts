@@ -241,6 +241,20 @@ export class NI_MCIT_T_05Service {
     }
   }
 
+  async setCertificateIssueDate(id: number) {
+    const response = await this.getMehotdById(id)
+
+    const { data: method } = response as { data: NI_MCIT_T_05 }
+
+    return await this.dataSource.transaction((manager) => {
+      if (!method.certificate_issue_date) {
+        method.certificate_issue_date = new Date()
+      }
+
+      return manager.save(method)
+    })
+  }
+
   async descriptionPattern(
     descriptionPattern: DescriptionPatternT05Dto,
     methodId: number,
@@ -672,7 +686,9 @@ export class NI_MCIT_T_05Service {
             method.modification_number,
           ),
           service_code: activity.quote_request.no,
-          certificate_issue_date: formatDate(new Date().toString()),
+          certificate_issue_date: formatDate(
+            method.certificate_issue_date.toString(),
+          ),
           calibration_date: formatDate(
             method.method_end_date_finished.toString(),
           ),
