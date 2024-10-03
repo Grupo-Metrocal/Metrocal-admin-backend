@@ -704,13 +704,13 @@ export class NI_MCIT_V_01Service {
           ),
           service_code: activity.quote_request.no,
           certificate_issue_date: formatDate(
-            method.certificate_issue_date.toString(),
+            method?.certificate_issue_date?.toString(),
           ),
           calibration_date: formatDate(
-            method.method_end_date_finished.toString(),
+            method?.method_end_date_finished?.toString(),
           ),
           next_calibration_date: formatDate(
-            method.description_pattern.next_calibration,
+            method?.description_pattern?.next_calibration,
           ),
           device: method.equipment_information.device || '---',
           maker: method.equipment_information.maker || '---',

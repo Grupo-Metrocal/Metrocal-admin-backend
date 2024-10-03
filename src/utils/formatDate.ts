@@ -1,5 +1,11 @@
 export const formatDate = (date: string) => {
-  const dateObj = new Date(date)
+  let dateObj
+  if (date) {
+    dateObj = new Date(date)
+  } else {
+    dateObj = new Date()
+  }
+
   const month =
     dateObj.getMonth() + 1 < 10
       ? `0${dateObj.getMonth() + 1}`
