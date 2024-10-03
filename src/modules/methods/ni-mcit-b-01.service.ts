@@ -23,7 +23,6 @@ import * as path from 'path'
 import * as fs from 'fs'
 import * as XlsxPopulate from 'xlsx-populate'
 import { exec } from 'child_process'
-import { UnitOfMeasurementNI_MCIT_B_01Dto } from './dto/NI_MCIT_B_01/b01unitOfMeasurement.dto'
 import { formatDate } from 'src/utils/formatDate'
 import { MethodsService } from './methods.service'
 import { CertificationDetailsDto } from './dto/NI_MCIT_P_01/certification_details.dto'
@@ -37,7 +36,6 @@ import {
 import { countDecimals } from 'src/utils/countDecimal'
 import { DescriptionPatternNI_MCIT_B_01 } from './entities/NI_MCIT_B_01/steps/description_pattern.entity'
 import { DescriptionPatternB01Dto } from './dto/NI_MCIT_B_01/description_pattern.dto'
-import { workerData } from 'worker_threads'
 
 @Injectable()
 export class NI_MCIT_B_01Service {
@@ -923,7 +921,11 @@ export class NI_MCIT_B_01Service {
         equipment_indication,
         error,
         uncertainty: this.methodService.formatUncertainty(
-          this.formatUncertaintyWithCMC(uncertainty, CMC),
+          this.formatUncertaintyWithCMC(
+            uncertainty,
+            CMC,
+            method.equipment_information.unit,
+          ),
         ),
         repeatability,
         maximum_eccentricity,
@@ -1082,13 +1084,19 @@ Este certificado de calibración no debe ser reproducido sin la aprobación del 
     return description_pattern
   }
 
-  formatUncertaintyWithCMC(uncertainty: any, cmc: any) {
+  formatUncertaintyWithCMC(uncertainty: any, cmc: any, unit: string) {
     const uncertaintyWithCMC = uncertainty.map(
       (uncertaintyValue: number, index: number) => {
         if (typeof uncertaintyValue !== 'number') return uncertaintyValue
 
         if (Number(uncertaintyValue) < Number(cmc.mincmc[index - 1])) {
-          return this.methodService.getSignificantFigure(cmc.cmc[index - 1])
+          const cmcValue = cmc.cmc[index - 1]
+
+          if (unit !== 'kg') {
+            return this.methodService.getSignificantFigure(cmcValue)
+          } else {
+            return this.methodService.getSignificantFigure(cmcValue / 1000)
+          }
         }
 
         return uncertaintyValue
