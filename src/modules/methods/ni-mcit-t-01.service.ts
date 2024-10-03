@@ -695,6 +695,9 @@ export class NI_MCIT_T_01Service {
           calibration_date: formatDate(
             method.method_end_date_finished.toString(),
           ),
+          next_calibration_date: formatDate(
+            method.description_pattern.next_calibration,
+          ),
           object_calibrated: equipment_information.device || '---',
           maker: equipment_information.maker || '---',
           serial_number: method.equipment_information.serial_number || '---',

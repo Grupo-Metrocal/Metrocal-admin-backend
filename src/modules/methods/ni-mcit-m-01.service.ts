@@ -706,6 +706,9 @@ export class NI_MCIT_M_01Service {
           calibration_date: formatDate(
             method.method_end_date_finished.toString(),
           ),
+          next_calibration_date: formatDate(
+            method.description_pattern.next_calibration,
+          ),
           device: method.equipment_information.calibration_object || '---',
           maximum_capacity: `${formatSameNumberCertification(method.equipment_information.maximum_capacity)} ${conventional_units[0]}`,
           maker: method.equipment_information.maker || '---',
