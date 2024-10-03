@@ -44,10 +44,12 @@ import { GENERIC_METHODService } from './generic-method.service'
 import { formatCertCode } from 'src/utils/generateCertCode'
 import { OptionsCMCOnCertificateDto } from './dto/setSOptionsCMCOnCertificate.dto'
 import {
+  convertToValidNumber,
   formatNumberCertification,
   formatSameNumberCertification,
 } from 'src/utils/formatNumberCertification'
 import { NI_MCIT_M_01Service } from './ni-mcit-m-01.service'
+import { countDecimals } from 'src/utils/countDecimal'
 
 @Injectable()
 export class MethodsService {
@@ -747,8 +749,17 @@ export class MethodsService {
 
   formatUncertainty(uncertainty: number[]) {
     return uncertainty.map((value) => {
-      if (value === 0) {
+      const convertNumber = typeof value === 'string' ? Number(value) : value
+
+      if (isNaN(convertNumber)) {
         return value
+      }
+
+      if (convertNumber === 0) {
+        return formatNumberCertification(
+          convertNumber,
+          countDecimals(uncertainty[uncertainty.length - 1]),
+        )
       }
 
       const decimal = value.toString().split('.')[1]

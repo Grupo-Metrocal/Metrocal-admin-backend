@@ -792,7 +792,12 @@ export class NI_MCIT_B_01Service {
         }
       }
 
-      let result_tests_lb = []
+      const reference_mass_2 = []
+      const equipment_indication_2 = []
+      const error_2 = []
+      const repeatability_2 = []
+      const maximum_eccentricity_2 = []
+      const uncertainty_2 = []
 
       if (method.description_pattern.show_additional_table !== '') {
         const sheetExtra = respWorkBook.sheet(
@@ -807,46 +812,57 @@ export class NI_MCIT_B_01Service {
           i <= method.linearity_test.linearity_test.length + 45;
           i++
         ) {
-          let reference_mass = sheetExtra.cell(`B${i}`).value()
-          let equipment_indication = sheetExtra.cell(`D${i}`).value()
-          let error = sheetExtra.cell(`F${i}`).value()
-          let expanded_uncertainty = sheetExtra.cell(`L${i}`).value()
-          let repeatability =
-            i === 45 || i === 46 ? sheetExtra.cell(`H${i}`).value() : null
-          let maximum_eccentricity =
-            i === 45 || i === 46 ? sheetExtra.cell(`J${i}`).value() : null
+          let reference_massValue = sheetExtra.cell(`B${i}`).value()
+          let equipment_indicationValue = sheetExtra.cell(`D${i}`).value()
+          let errorValue = sheetExtra.cell(`F${i}`).value()
+          let expanded_uncertaintyValue = sheetExtra.cell(`L${i}`).value()
 
-          let result_lb = {
-            reference_mass: formatNumberCertification(
-              reference_mass,
+          reference_mass_2.push(
+            formatNumberCertification(
+              reference_massValue,
               countDecimals(equipment_information.resolution),
             ),
-            equipment_indication: formatNumberCertification(
-              equipment_indication,
-              countDecimals(equipment_information.resolution),
-            ),
-            error: formatNumberCertification(
-              error,
-              countDecimals(equipment_information.resolution),
-            ),
-            uncertainty:
-              expanded_uncertainty !== undefined
-                ? this.methodService.getSignificantFigure(expanded_uncertainty)
-                : 0,
-          }
+          )
 
-          if (repeatability !== null && maximum_eccentricity !== null) {
-            result_lb['repeatability'] = formatNumberCertification(
-              repeatability,
+          equipment_indication_2.push(
+            formatNumberCertification(
+              equipment_indicationValue,
               countDecimals(equipment_information.resolution),
+            ),
+          )
+
+          error_2.push(
+            formatNumberCertification(
+              repairNumberFromCertificate(errorValue),
+              countDecimals(equipment_information.resolution),
+            ),
+          )
+
+          uncertainty_2.push(
+            expanded_uncertaintyValue !== undefined
+              ? this.methodService.getSignificantFigure(
+                  expanded_uncertaintyValue,
+                )
+              : 0,
+          )
+
+          // Solo agregar repeatability y maximum_eccentricity en las filas 45 y 46
+          let repeatabilityValue = sheetExtra.cell(`H${i}`).value()
+          let maximum_eccentricityValue = sheetExtra.cell(`J${i}`).value()
+          if (i === 45 || i === 46) {
+            repeatability_2.push(
+              formatNumberCertification(
+                repeatabilityValue,
+                countDecimals(equipment_information.resolution),
+              ),
             )
-            result_lb['maximum_eccentricity'] = formatNumberCertification(
-              maximum_eccentricity,
-              countDecimals(equipment_information.resolution),
+            maximum_eccentricity_2.push(
+              formatNumberCertification(
+                maximum_eccentricityValue,
+                countDecimals(equipment_information.resolution),
+              ),
             )
           }
-
-          result_tests_lb.push(result_lb)
         }
       }
 
@@ -912,6 +928,18 @@ export class NI_MCIT_B_01Service {
         maximum_eccentricity,
       }
 
+      let result_test_extra = null
+      if (method.description_pattern.show_additional_table) {
+        result_test_extra = {
+          reference_mass: reference_mass_2,
+          equipment_indication: equipment_indication_2,
+          error: error_2,
+          uncertainty: this.methodService.formatUncertainty(uncertainty_2),
+          repeatability: repeatability_2,
+          maximum_eccentricity: maximum_eccentricity_2,
+        }
+      }
+
       const certificate = {
         pattern: 'NI-MCIT-B-01',
         email: activity.quote_request.client.email,
@@ -946,7 +974,7 @@ export class NI_MCIT_B_01Service {
         },
         calibration_results: {
           result_test,
-          result_tests_lb,
+          result_test_extra,
         },
         environmental_conditions: {
           temperature: `Temperatura ( ${formatSameNumberCertification(sheetResultB01.cell('D64').value())} ± ${formatSameNumberCertification(sheetResultB01.cell('F64').value())} ) °C`,
@@ -1085,10 +1113,37 @@ Este certificado de calibración no debe ser reproducido sin la aprobación del 
           },
         )
 
+      if (certificateData.data.show_additional_table !== '') {
+        certificateData.data.calibration_results.result_test_extra =
+          certificateData.data.calibration_results.result_test_extra.reference_mass.map(
+            (reference_mass, index) => {
+              return {
+                reference_mass,
+                equipment_indication:
+                  certificateData.data.calibration_results.result_test_extra
+                    .equipment_indication[index],
+                error:
+                  certificateData.data.calibration_results.result_test_extra
+                    .error[index],
+                uncertainty:
+                  certificateData.data.calibration_results.result_test_extra
+                    .uncertainty[index],
+                repeatability:
+                  certificateData.data.calibration_results.result_test_extra
+                    .repeatability[index],
+                maximum_eccentricity:
+                  certificateData.data.calibration_results.result_test_extra
+                    .maximum_eccentricity[index],
+              }
+            },
+          )
+      }
+
       const PDF = await this.pdfService.generateCertificatePdf(
         '/certificates/b-01.hbs',
         certificateData.data,
       )
+
       if (!PDF) {
         return handleInternalServerError('Error al generar el PDF')
       }
