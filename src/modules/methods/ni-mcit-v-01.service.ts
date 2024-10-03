@@ -272,7 +272,10 @@ export class NI_MCIT_V_01Service {
         await manager.save(method.description_pattern)
         method.updated_at = new Date()
         method.status = 'done'
-        method.method_end_date_finished = new Date()
+
+        if (!method.method_end_date_finished) {
+          method.method_end_date_finished = new Date()
+        }
 
         if (increase) {
           method.modification_number =
@@ -687,7 +690,9 @@ export class NI_MCIT_V_01Service {
           ),
           service_code: activity.quote_request.no,
           certificate_issue_date: formatDate(new Date().toString()),
-          calibration_date: formatDate(method.updated_at.toString()),
+          calibration_date: formatDate(
+            method.method_end_date_finished.toString(),
+          ),
           device: method.equipment_information.device || '---',
           maker: method.equipment_information.maker || '---',
           serial_number: method.equipment_information.serial_number || '---',
