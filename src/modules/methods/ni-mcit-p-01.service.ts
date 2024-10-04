@@ -1014,21 +1014,23 @@ De acuerdo a lo establecido en NTON 07-004-01 Norma Metrológica del Sistema Int
           }),
         )
 
-      dataCertificate.data.calibration_results.result_unid_system =
-        dataCertificate.data.calibration_results.result_unid_system.reference_pressure.map(
-          (pressure, index) => ({
-            reference_pressure: pressure,
-            equipment_indication:
-              dataCertificate.data.calibration_results.result_unid_system
-                .equipment_indication[index],
-            correction:
-              dataCertificate.data.calibration_results.result_unid_system
-                .correction[index],
-            uncertainty:
-              dataCertificate.data.calibration_results.result_unid_system
-                .uncertainty[index],
-          }),
-        )
+      if (dataCertificate.data.show_table_international_system_units) {
+        dataCertificate.data.calibration_results.result_unid_system =
+          dataCertificate.data.calibration_results.result_unid_system.reference_pressure.map(
+            (pressure, index) => ({
+              reference_pressure: pressure,
+              equipment_indication:
+                dataCertificate.data.calibration_results.result_unid_system
+                  .equipment_indication[index],
+              correction:
+                dataCertificate.data.calibration_results.result_unid_system
+                  .correction[index],
+              uncertainty:
+                dataCertificate.data.calibration_results.result_unid_system
+                  .uncertainty[index],
+            }),
+          )
+      }
 
       const PDF = await this.pdfService.generateCertificatePdf(
         '/certificates/p-01.hbs',

@@ -110,6 +110,9 @@
   {{/if}}
 
   {{#if show_table_international_system_units}}
+    {{#ifArrayEq calibration_results.result 9}}
+      <br />
+    {{/ifArrayEq}}
     {{#ifArrayEq calibration_results.result 10}}
       <br />
       <br />
@@ -131,9 +134,6 @@
   {{#if show_table_international_system_units}}
     {{#ifArrayEq calibration_results.result 8}}
       <br />
-      <br />
-    {{/ifArrayEq}}
-    {{#ifArrayEq calibration_results.result 9}}
       <br />
     {{/ifArrayEq}}
   {{/if}}
@@ -178,6 +178,9 @@
   </div>
 
   {{#if show_table_international_system_units}}{{else}}
+    {{#ifArrayEq calibration_results.result 6}}
+      <br /><br /><br /><br /><br />
+    {{/ifArrayEq}}
     {{#ifArrayEq calibration_results.result 7}}
       <br /><br /><br /><br /><br />
     {{/ifArrayEq}}

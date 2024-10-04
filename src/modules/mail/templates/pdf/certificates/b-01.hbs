@@ -141,6 +141,10 @@
     </div>
   {{/if}}
   {{#if show_additional_table}}
+    {{#ifArrayEq calibration_results.result_test 9}}
+      <br />
+      <br /><br /><br />
+    {{/ifArrayEq}}
     {{#ifArrayEq calibration_results.result_test 10}}
       <br />
       <br />
@@ -165,9 +169,6 @@
   {{#if show_additional_table}}
     {{#ifArrayEq calibration_results.result_test 8}}
       <br />
-      <br />
-    {{/ifArrayEq}}
-    {{#ifArrayEq calibration_results.result_test 9}}
       <br />
     {{/ifArrayEq}}
   {{/if}}
@@ -212,6 +213,9 @@
   </div>
 
   {{#if show_additional_table}}{{else}}
+    {{#ifArrayEq calibration_results.result_test 6}}
+      <br /><br /><br /><br /><br />
+    {{/ifArrayEq}}
     {{#ifArrayEq calibration_results.result_test 7}}
       <br /><br /><br /><br /><br />
     {{/ifArrayEq}}
