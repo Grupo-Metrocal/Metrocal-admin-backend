@@ -1199,6 +1199,7 @@ La corrección corresponde al valor del patrón menos las indicación del equipo
 La indicación del equipo corresponde al promedio de 3 mediciones en cada punto de calibración.
 Los resultados emitidos en este certificado corresponden únicamente al objeto calibrado y a las magnitudes especificadas al momento de realizar el servicio.
 Este certificado de calibración no debe ser reproducido sin la aprobación del laboratorio, excepto cuando se reproduce en su totalidad.`,
+        creditable: method.pre_installation_comment.accredited,
       }
 
       return handleOK(certificate)
