@@ -1,14 +1,14 @@
 <style>
   .ni-mcit-p-01 { display: flex; flex-direction: column; gap: 25px; }
   .id_certificate { position: absolute; top: 8.6in; z-index: 100; }
-  .equipment-information { display: flex; justify-content: space-between; }
-  .equipment-information div { width: 50%; display: flex; flex-direction:
-  column; gap: 5px; } .equipment-information .labels { font-weight: bold; }
-  table { border-collapse: collapse; width: 100%; } th, td { border: 1px solid
-  #dddddd; text-align: center; } .table-title { border: 1px solid #dddddd;
-  text-align: center; font-weight: bold; } .enviromental-conditions { display:
-  flex; justify-content: space-between; } .enviromental-conditions div {
-  display: flex; flex-direction: column; gap: 10px; }
+  .equipment-information { display: flex; justify-content: space-between;
+  margin-top: 20px; } .equipment-information div { width: 50%; display: flex;
+  flex-direction: column; gap: 5px; } .equipment-information .labels {
+  font-weight: bold; } table { border-collapse: collapse; width: 100%; } th, td
+  { border: 1px solid #dddddd; text-align: center; } .table-title { border: 1px
+  solid #dddddd; text-align: center; } .enviromental-conditions { display: flex;
+  justify-content: space-between; } .enviromental-conditions div { display:
+  flex; flex-direction: column; gap: 10px; }
 </style>
 
 <div class='ni-mcit-p-01'>
@@ -24,7 +24,7 @@
       <span>Serie:</span>
       <span>Modelo:</span>
       <span>Rango de medida:</span>
-      <span>Resolución:</span>
+      <span>Resolución</span>
       <span>Código de identificación:</span>
       <span>Solicitante:</span>
       <span>Dirección del solicitante:</span>
@@ -51,7 +51,7 @@
     </div>
   </div>
 
-  <div class='calibration-result' style='max-height: 230px; min-height: 160px;'>
+  <div class='calibration-result' style='min-height: 130px;'>
     <strong><span>Resultados de la calibración</span></strong>
     <br />
     <table>
@@ -79,39 +79,47 @@
     </table>
   </div>
 
-  <div class='result_unid_system' style='max-height: 230px; min-height: 160px;'>
-    <strong><span>Resultados en Unidad de Sistema Internacional de Unidades</span></strong>
-    <br />
-    <table>
-      <thead>
-        <caption class='table-title' colspan='5'>
-          Tabla de resultados de calibración
-        </caption>
-        <tr>
-          <th>Presión de referencia</th>
-          <th>Indicación del equipo</th>
-          <th>Corrección</th>
-          <th>Incertidumbre expandida K = 2</th>
-        </tr>
-      </thead>
-      <tbody>
-        {{#each calibration_results.result_unid_system as |data|}}
+  {{#if show_table_international_system_units}}
+    <div class='result_unid_system' style='min-height: 130px'>
+      <strong><span>Resultados en Unidad de Sistema Internacional de Unidades</span></strong>
+      <br />
+      <table>
+        <thead>
+          <caption class='table-title' colspan='5'>
+            Tabla de resultados de calibración
+          </caption>
           <tr>
-            <td>{{data.reference_pressure}}</td>
-            <td>{{data.equipment_indication}}</td>
-            <td>{{data.correction}}</td>
-            <td>{{data.uncertainty}}</td>
+            <th>Presión de referencia</th>
+            <th>Indicación del equipo</th>
+            <th>Corrección</th>
+            <th>Incertidumbre expandida K = 2</th>
           </tr>
-        {{/each}}
-      </tbody>
-    </table>
-  </div>
+        </thead>
+        <tbody>
+          {{#each calibration_results.result_unid_system as |data|}}
+            <tr>
+              <td>{{data.reference_pressure}}</td>
+              <td>{{data.equipment_indication}}</td>
+              <td>{{data.correction}}</td>
+              <td>{{data.uncertainty}}</td>
+            </tr>
+          {{/each}}
+        </tbody>
+      </table>
+    </div>
+  {{/if}}
 
-  {{#ifArrayEq calibration_results.result 11}}
-    <br />
-    <br />
-    <span></span>
-  {{/ifArrayEq}}
+  {{#if show_table_international_system_units}}
+    {{#ifArrayEq calibration_results.result 10}}
+      <br />
+      <br />
+      <br />
+    {{/ifArrayEq}}
+    {{#ifArrayEq calibration_results.result 11}}
+      <br />
+      <br />
+    {{/ifArrayEq}}
+  {{/if}}
 
   <div class='enviromental-conditions'>
     <div>
@@ -125,14 +133,15 @@
       <span>{{environmental_conditions.atmospheric_pressure}}</span>
     </div>
   </div>
-
-  {{#ifArrayEq calibration_results.result 9}}
-    <br />
-    <br />
-  {{/ifArrayEq}}
-  {{#ifArrayEq calibration_results.result 10}}
-    <span></span>
-  {{/ifArrayEq}}
+  {{#if show_table_international_system_units}}
+    {{#ifArrayEq calibration_results.result 8}}
+      <br />
+      <br />
+    {{/ifArrayEq}}
+    {{#ifArrayEq calibration_results.result 9}}
+      <br />
+    {{/ifArrayEq}}
+  {{/if}}
 
   <div class='calibration-method'>
     <strong><span>Método de calibración</span></strong>
@@ -142,19 +151,22 @@
       Intrucción para calibración de instrumentos de presión.</span>
   </div>
 
-  {{#ifArrayEq calibration_results.result 6}}
-    <br />
-    <br />
-  {{/ifArrayEq}}
-
-  {{#ifArrayEq calibration_results.result 7}}
-    <br />
-    <br />
-  {{/ifArrayEq}}
-
-  {{#ifArrayEq calibration_results.result 8}}
-    <br />
-  {{/ifArrayEq}}
+  {{#if show_table_international_system_units}}
+    {{#ltArray calibration_results.result 6}}
+      <br />
+      <br />
+      <br />
+      <br />
+    {{/ltArray}}
+    {{#ifArrayEq calibration_results.result 6}}
+      <br />
+      <br />
+      <br />
+    {{/ifArrayEq}}
+    {{#ifArrayEq calibration_results.result 7}}
+      <br />
+    {{/ifArrayEq}}
+  {{/if}}
 
   <div class='uncertainty'>
     <strong><span>Incertidumbre de los datos</span></strong>
@@ -170,6 +182,24 @@
       a calibración.
     </span>
   </div>
+
+  {{#if show_table_international_system_units}}{{else}}
+    {{#ifArrayEq calibration_results.result 7}}
+      <br /><br /><br /><br /><br />
+    {{/ifArrayEq}}
+    {{#ifArrayEq calibration_results.result 8}}
+      <br /><br /><br /><br />
+    {{/ifArrayEq}}
+    {{#ifArrayEq calibration_results.result 9}}
+      <br /><br /><br />
+    {{/ifArrayEq}}
+    {{#ifArrayEq calibration_results.result 10}}
+      <br /><br />
+    {{/ifArrayEq}}
+    {{#ifArrayEq calibration_results.result 11}}
+      <br />
+    {{/ifArrayEq}}
+  {{/if}}
 
   <div class='used_pattern'>
     <strong><span>Descripción de patrones utilizados</span></strong>
@@ -198,6 +228,12 @@
       <tbody></tbody>
     </table>
   </div>
+
+  {{#if show_table_international_system_units}}{{else}}
+    {{#ltArray calibration_results.result 7}}
+      <br />
+    {{/ltArray}}
+  {{/if}}
 
   <div class='observations'>
     <strong><span>Observaciones</span></strong>

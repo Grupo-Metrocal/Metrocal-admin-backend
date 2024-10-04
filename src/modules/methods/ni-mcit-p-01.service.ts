@@ -785,6 +785,8 @@ Los resultados emitidos en este certificado corresponden únicamente al objeto c
 Este certificado de calibración no debe ser reproducido sin la aprobación del laboratorio, excepto cuando se reproduce en su totalidad.
 ${sheetCER.cell('A119').value()}
 De acuerdo a lo establecido en NTON 07-004-01 Norma Metrológica del Sistema Internacional de Unidades (SI).`,
+        show_table_international_system_units:
+          method.description_pattern.show_table_international_system_units,
       }
 
       return handleOK(certificate)
