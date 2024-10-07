@@ -76,10 +76,10 @@
             <td>{{data.error}}</td>
             {{#if data.repeatability}}
               {{#eq @index 1}}
-                <td rowspan='10' style='vertical-align: middle'>
+                <td rowspan='11' style='vertical-align: middle'>
                   {{data.repeatability}}
                 </td>
-                <td rowspan='10' style='vertical-align: middle'>
+                <td rowspan='11' style='vertical-align: middle'>
                   {{data.maximum_eccentricity}}
                 </td>
               {{else}}
@@ -121,10 +121,10 @@
               <td>{{data.error}}</td>
               {{#if data.repeatability}}
                 {{#eq @index 1}}
-                  <td rowspan='10' style='vertical-align: middle'>
+                  <td rowspan='11' style='vertical-align: middle'>
                     {{data.repeatability}}
                   </td>
-                  <td rowspan='10' style='vertical-align: middle'>
+                  <td rowspan='11' style='vertical-align: middle'>
                     {{data.maximum_eccentricity}}
                   </td>
                 {{else}}
@@ -143,12 +143,12 @@
   {{#if show_additional_table}}
     {{#ifArrayEq calibration_results.result_test 9}}
       <br />
-      <br /><br /><br />
+      <br /><br />
     {{/ifArrayEq}}
     {{#ifArrayEq calibration_results.result_test 10}}
       <br />
       <br />
-      <br />
+
     {{/ifArrayEq}}
     {{#ifArrayEq calibration_results.result_test 11}}
       <br />
@@ -168,6 +168,10 @@
   </div>
   {{#if show_additional_table}}
     {{#ifArrayEq calibration_results.result_test 8}}
+      <br />
+      <br />
+    {{/ifArrayEq}}
+    {{#ifArrayEq calibration_results.result_test 7}}
       <br />
       <br />
     {{/ifArrayEq}}
@@ -192,8 +196,9 @@
       <br />
       <br />
     {{/ifArrayEq}}
-    {{#ifArrayEq calibration_results.result_test 7}}
-      <br />
+  {{else}}
+    {{#ifArrayEq calibration_results.result_test 12}}
+      <br /><br /><br /><br /><br />
     {{/ifArrayEq}}
   {{/if}}
 
@@ -213,6 +218,19 @@
   </div>
 
   {{#if show_additional_table}}{{else}}
+    {{#ifArrayEq calibration_results.result_test 3}}
+      <br /><br /><br /><br /><br />
+      <br />
+      <br />
+    {{/ifArrayEq}}
+    {{#ifArrayEq calibration_results.result_test 4}}
+      <br /><br /><br /><br /><br />
+      <br />
+    {{/ifArrayEq}}
+    {{#ifArrayEq calibration_results.result_test 5}}
+      <br /><br /><br /><br /><br />
+      <br />
+    {{/ifArrayEq}}
     {{#ifArrayEq calibration_results.result_test 6}}
       <br /><br /><br /><br /><br />
     {{/ifArrayEq}}
