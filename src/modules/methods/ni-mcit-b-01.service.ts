@@ -757,7 +757,7 @@ export class NI_MCIT_B_01Service {
 
       for (
         let i = 30;
-        i <= method.linearity_test.linearity_test.length + 30;
+        i <= method.linearity_test.linearity_test.length + 30 + 1;
         i++
       ) {
         let reference_massValue = sheetResultB01.cell(`B${i}`).value()
@@ -826,7 +826,7 @@ export class NI_MCIT_B_01Service {
 
         for (
           let i = 45;
-          i <= method.linearity_test.linearity_test.length + 45;
+          i <= method.linearity_test.linearity_test.length + 45 + 1;
           i++
         ) {
           let reference_massValue = sheetExtra.cell(`B${i}`).value()
