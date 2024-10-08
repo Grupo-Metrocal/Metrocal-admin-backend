@@ -734,6 +734,7 @@ export class NI_MCIT_T_01Service {
         calibration_results: calibration_results_certificate,
         creditable: description_pattern.creditable,
         description_pattern: await this.getPatternsTableToCertificate(method),
+        used_pattern: method.description_pattern,
         environmental_conditions: {
           temperature: `Temperatura: ${formatNumberCertification(
             calibrationResultsSheet.cell('E75').value(),
