@@ -1057,6 +1057,7 @@ export class NI_MCIT_B_01Service {
         },
         description_pattern: await this.getPatternsTableToCertificate(method),
         creditable: method.description_pattern.creditable,
+        used_pattern: method.description_pattern,
         observations: `
 ${method.description_pattern.observation}
 Es responsabilidad del encargado del instrumento establecer la frecuencia del servicio de calibración.
