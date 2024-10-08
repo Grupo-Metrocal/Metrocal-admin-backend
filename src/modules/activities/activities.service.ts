@@ -930,7 +930,7 @@ export class ActivitiesService {
           emited_date: formatDate(activity.updated_at + ''),
           calibrated_equipment,
           client_company_name,
-          emited_by: emited_by.username,
+          emited_by: emited_by?.username || '',
           client_email,
           pending_certificates,
           quote_request_id,

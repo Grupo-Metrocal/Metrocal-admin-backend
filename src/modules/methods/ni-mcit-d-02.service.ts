@@ -785,7 +785,7 @@ export class NI_MCIT_D_02Service {
       const deviation = []
       const uncertainty = []
 
-      for (let i = 0; i <= method.accuracy_test.measureD02.length; i++) {
+      for (let i = 0; i <= method.accuracy_test.measureD02.length + 1; i++) {
         const nominal_valueValue = sheet.cell(`C${30 + i}`).value()
         nominal_value.push(
           formatNumberCertification(
