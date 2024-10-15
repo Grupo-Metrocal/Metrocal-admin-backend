@@ -783,11 +783,10 @@ export class MethodsService {
       const { equipment_quote_request } = activity.data.quote_request
 
       for (const equipment of equipment_quote_request) {
-        if (equipment.isResolved || equipment.calibration_method === 'N/A') {
+        if (equipment.calibration_method === 'N/A') {
           continue
         }
         let flagResolved = true
-
         const { data: stackMethods } = await this.getMethodsID(
           equipment.method_id,
         )
@@ -805,7 +804,10 @@ export class MethodsService {
           await manager.save(equipment)
         })
       }
+
+      return handleOK('')
     } catch (error) {
+      console.log(error.message)
       handleInternalServerError(error.message)
     }
   }
