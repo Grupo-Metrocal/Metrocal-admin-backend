@@ -299,6 +299,7 @@ export class MethodsService {
   async addMethodToStack({
     methodsStackID,
     quoteRequestID,
+    activityID,
   }: addOrRemoveMethodToStackDto) {
     try {
       const method = await this.methodsRepository.findOneBy({
@@ -329,7 +330,7 @@ export class MethodsService {
           ).id,
         })
         await this.activitiesService.updateActivityProgress(data.activity.id)
-
+        await this.isResolvedAllServices(activityID)
         return handleOK(newMethod)
       })
     } catch (error) {
@@ -341,6 +342,7 @@ export class MethodsService {
     methodsStackID,
     quoteRequestID,
     methodID,
+    activityID,
   }: addOrRemoveMethodToStackDto) {
     try {
       const method = await this.methodsRepository.findOneBy({
@@ -383,6 +385,7 @@ export class MethodsService {
         })
 
         await this.activitiesService.updateActivityProgress(data.activity.id)
+        await this.isResolvedAllServices(activityID)
         return handleOK('Método eliminado')
       })
     } catch (error) {

@@ -120,23 +120,30 @@ export class MethodsController {
   @Post('add-method-to-stack/')
   async addMethodToStack(
     @Body()
-    { methodsStackID, quoteRequestID }: addOrRemoveMethodToStackDto,
+    { methodsStackID, quoteRequestID, activityID }: addOrRemoveMethodToStackDto,
   ) {
     return await this.methodsService.addMethodToStack({
       methodsStackID,
       quoteRequestID,
+      activityID,
     })
   }
 
   @Post('remove-method-to-stack/')
   async removeMethodToStack(
     @Body()
-    { methodsStackID, quoteRequestID, methodID }: addOrRemoveMethodToStackDto,
+    {
+      methodsStackID,
+      quoteRequestID,
+      methodID,
+      activityID,
+    }: addOrRemoveMethodToStackDto,
   ) {
     return await this.methodsService.removeMethodToStack({
       methodsStackID,
       quoteRequestID,
       methodID,
+      activityID,
     })
   }
 

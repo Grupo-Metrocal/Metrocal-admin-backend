@@ -12,4 +12,7 @@ export class addOrRemoveMethodToStackDto {
 
   @ApiProperty()
   methodID?: number
+
+  @ApiProperty()
+  activityID: number
 }
