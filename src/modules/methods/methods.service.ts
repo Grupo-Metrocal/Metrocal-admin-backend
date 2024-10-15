@@ -796,13 +796,11 @@ export class MethodsService {
           }
         }
 
-        if (flagResolved) {
-          await this.dataSource.transaction(async (manager) => {
-            equipment.isResolved = true
+        await this.dataSource.transaction(async (manager) => {
+          equipment.isResolved = flagResolved
 
-            await manager.save(equipment)
-          })
-        }
+          await manager.save(equipment)
+        })
       }
     } catch (error) {
       handleInternalServerError(error.message)
