@@ -353,6 +353,7 @@ export class ActivitiesService {
           team_members: members.data,
           created_at: activity.created_at,
           client_signature: activity.client_signature,
+          currency_type: activity.quote_request.currency_type,
         }
         data.push(activityData)
       }
