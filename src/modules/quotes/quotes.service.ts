@@ -568,6 +568,10 @@ export class QuotesService {
       quote.service_request_code,
       quote.modification_number,
     )
+    data['alt_client_email'] = quote.alt_client_email || quote?.client?.email
+    data['alt_client_requested_by'] =
+      quote.alt_client_requested_by || quote?.client?.requested_by
+    data['alt_client_phone'] = quote.alt_client_phone || quote?.client?.phone
     data['currency'] = quote.currency_type
 
     return await this.pdfService.generateQuoteRequestPdf(data)
@@ -1364,6 +1368,10 @@ export class QuotesService {
       quote.service_request_code,
       quote.modification_number,
     )
+    data['alt_client_email'] = quote.alt_client_email || quote?.client?.email
+    data['alt_client_requested_by'] =
+      quote.alt_client_requested_by || quote?.client?.requested_by
+    data['alt_client_phone'] = quote.alt_client_phone || quote?.client?.phone
     data['currency'] = quote.currency_type
 
     return await this.pdfService.generateQuoteRequestPdf(data)
