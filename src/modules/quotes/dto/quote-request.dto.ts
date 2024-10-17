@@ -39,4 +39,13 @@ export class QuoteRequestDto {
 
   @ApiProperty()
   extras?: number
+
+  @ApiProperty()
+  alt_client_email?: string
+
+  @ApiProperty()
+  alt_client_requested_by?: string
+
+  @ApiProperty()
+  alt_client_phone?: string
 }

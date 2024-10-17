@@ -85,6 +85,9 @@ export class QuotesService {
       price: quoteRequestDto.price,
       rejected_comment: quoteRequestDto.rejected_comment,
       rejected_options: quoteRequestDto.rejected_options,
+      alt_client_email: quoteRequestDto.alt_client_email,
+      alt_client_phone: quoteRequestDto.alt_client_phone,
+      alt_client_requested_by: quoteRequestDto.alt_client_requested_by,
     })
 
     const equipmentQuoteRequest = quoteRequestDto.equipment_quote_request.map(

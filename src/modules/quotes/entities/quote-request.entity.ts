@@ -96,6 +96,15 @@ export class QuoteRequest {
   })
   currency_type: CurrencyType
 
+  @Column({ nullable: true })
+  alt_client_email?: string
+
+  @Column({ nullable: true })
+  alt_client_requested_by?: string
+
+  @Column({ nullable: true })
+  alt_client_phone?: string
+
   @Column({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP' })
   created_at: Date
 
