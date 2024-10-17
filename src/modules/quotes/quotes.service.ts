@@ -764,7 +764,8 @@ export class QuotesService {
 
       approvedQuoteRequestDto.total = formatPrice(quoteRequest.price)
       approvedQuoteRequestDto.token = token
-      approvedQuoteRequestDto.email = quoteRequest.client.email
+      approvedQuoteRequestDto.email =
+        quoteRequest?.alt_client_email || quoteRequest.client.email
       approvedQuoteRequestDto.linkDetailQuote = `${process.env.DOMAIN}/quote/${token}`
       approvedQuoteRequestDto.subtotal = formatPrice(
         quoteRequest?.equipment_quote_request
