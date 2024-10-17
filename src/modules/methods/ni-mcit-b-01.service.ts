@@ -1115,17 +1115,19 @@ Este certificado de calibración no debe ser reproducido sin la aprobación del 
       (uncertaintyValue: number, index: number) => {
         if (typeof uncertaintyValue !== 'number') return uncertaintyValue
 
-        if (Number(uncertaintyValue) < Number(cmc.mincmc[index - 1])) {
-          const cmcValue = cmc.cmc[index - 1]
+        let returnValue = uncertaintyValue
 
-          if (unit !== 'kg') {
-            return this.methodService.getSignificantFigure(cmcValue)
-          } else {
-            return this.methodService.getSignificantFigure(cmcValue / 1000)
-          }
+        if (
+          Number(cmc.uncertaintyCMC[index - 1]) > Number(cmc.cmc[index - 1])
+        ) {
+          returnValue = cmc.uncertaintyCMC[index - 1]
+        } else {
+          returnValue = cmc.cmc[index - 1]
         }
 
-        return uncertaintyValue
+        return this.methodService.getSignificantFigure(
+          unit === 'kg' ? returnValue / 1000 : returnValue,
+        )
       },
     )
 
