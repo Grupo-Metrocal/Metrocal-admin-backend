@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common'
 import { InjectRepository } from '@nestjs/typeorm'
 import { Pattern } from './entities/pattern.entity'
-import { Equal, ILike, Repository } from 'typeorm'
+import { Repository } from 'typeorm'
 import {
   handleBadrequest,
   handleInternalServerError,
@@ -16,6 +16,45 @@ export class PatternsService {
     @InjectRepository(Pattern)
     private readonly patternRepository: Repository<Pattern>,
   ) {}
+
+  async remove(id: number) {
+    const patternFound = await this.patternRepository.findOne({
+      where: {
+        id
+      }
+    })
+
+    if (patternFound) {
+      return handleBadrequest(new Error('El patron ya existe'))
+    }
+
+    try {
+      const patternRemoved = await this.patternRepository.remove(patternFound)
+      return handleOK(patternRemoved)
+    } catch (error) {
+      return handleInternalServerError(error.message)
+    }
+  }
+
+  async update(id: number, updatePatternDto: CreatePatternDto) {
+    const patternFound = await this.patternRepository.findOne({
+      where: {
+        id
+      }
+    })
+
+    if (!patternFound) {
+      return handleBadrequest(new Error('El patron no existe'))
+    }
+
+    try {
+      const patternUpdated = this.patternRepository.merge(patternFound, updatePatternDto)
+      const patternSaved = await this.patternRepository.save(patternUpdated)
+      handleOK(patternSaved)
+    } catch (error) {
+      return handleInternalServerError(error.message)
+    }
+  }
 
   async createPattern(pattern: CreatePatternDto) {
     const patternFound = await this.patternRepository.findOne({
@@ -41,6 +80,18 @@ export class PatternsService {
 
     if (!pattern) {
       return handleBadrequest(new Error('El patron no existe, verifique el id'))
+    }
+
+    return handleOK(pattern)
+  }
+
+  async findByCode(code: string) {
+    const pattern = await this.patternRepository.findOne({
+      where: { code },
+    })
+
+    if (!pattern) {
+      return handleBadrequest(new Error('El patron no existe, verifique el codigo'))
     }
 
     return handleOK(pattern)
@@ -120,10 +171,11 @@ export class PatternsService {
 
   async deleteAllRecords() {
     try {
-      await this.patternRepository.delete({})
-      return handleOK('All records deleted')
+      await this.patternRepository.clear();
+      return handleOK('All records deleted');
     } catch (error) {
-      return handleInternalServerError(error)
+      return handleInternalServerError(error);
     }
   }
+
 }
