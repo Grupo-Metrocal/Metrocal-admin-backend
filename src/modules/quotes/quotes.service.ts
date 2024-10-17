@@ -320,7 +320,9 @@ export class QuotesService {
 
       let approvedQuoteRequestDto: ApprovedQuoteRequestDto | undefined | any
 
-      const { data: quote } = await this.getQuoteRequestById(quoteRequestDto.id)
+      const { data: quote } = (await this.getQuoteRequestById(
+        quoteRequestDto.id,
+      )) as { data: QuoteRequest }
       approvedQuoteRequestDto = new ApprovedQuoteRequestDto()
       approvedQuoteRequestDto.clientName = quote.client.company_name
 
@@ -376,7 +378,8 @@ export class QuotesService {
       approvedQuoteRequestDto['no'] = quote.no
       approvedQuoteRequestDto.linkDetailQuote = `${process.env.DOMAIN}/quote/${token}`
       approvedQuoteRequestDto.token = token
-      approvedQuoteRequestDto.email = quote.client.email
+      approvedQuoteRequestDto.email =
+        quote?.alt_client_email || quote.client.email
 
       await this.dataSource.transaction(async (manager) => {
         quoteRequest.quote_modification_status =
@@ -442,11 +445,13 @@ export class QuotesService {
       const user = userResponse.data as User
 
       let rejectedquoterequest: RejectedQuoteRequest | undefined
-      const { data: quote } = await this.getQuoteRequestById(quoteRequestDto.id)
+      const { data: quote } = (await this.getQuoteRequestById(
+        quoteRequestDto.id,
+      )) as { data: QuoteRequest }
 
       rejectedquoterequest = new RejectedQuoteRequest()
       rejectedquoterequest.clientName = quote.client.company_name
-      rejectedquoterequest.email = quote.client.email
+      rejectedquoterequest.email = quote?.alt_client_email || quote.client.email
       rejectedquoterequest.comment = quoteRequestDto.rejected_comment
       rejectedquoterequest.linkToNewQuote = `${process.env.DOMAIN}`
 
