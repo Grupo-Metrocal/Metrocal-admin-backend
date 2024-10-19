@@ -39,6 +39,7 @@ import {
 import { countDecimals } from 'src/utils/countDecimal'
 import { MethodsService } from './methods.service'
 import { formatCertCode } from 'src/utils/generateCertCode'
+import { constrainedMemory } from 'process'
 
 @Injectable()
 export class NI_MCIT_D_02Service {
@@ -497,225 +498,141 @@ export class NI_MCIT_D_02Service {
         return handleInternalServerError('El archivo no existe')
       }
 
-      const sheetNI_R01_MCIT_D_02 = workbook.sheet('NI-R01-MCIT-D-02')
+      const sheetData = workbook.sheet('NI-R01-MCIT-D-02')
       const sheetResultados = workbook.sheet('Resultados')
-      const sheetPatrones = workbook.sheet('Patrones')
+      const sheetPattern = workbook.sheet('Patrones')
 
       //Datos del cliente
-      sheetNI_R01_MCIT_D_02.cell('B7').value(dataClient.company_name)
+      sheetData.cell('B7').value(dataClient.company_name)
 
       const equipmentInfo = method.equipment_information
       // Asignar la fecha formateada a la celda E8
-      sheetNI_R01_MCIT_D_02.cell('H7').value(equipmentInfo.date)
+      sheetData.cell('H7').value(equipmentInfo.date)
       //Informacion de equipos
-      sheetNI_R01_MCIT_D_02.cell('C11').value(equipmentInfo.device)
-      sheetNI_R01_MCIT_D_02.cell('C12').value(equipmentInfo.maker)
-      sheetNI_R01_MCIT_D_02.cell('C13').value(equipmentInfo.serial_number)
-      sheetNI_R01_MCIT_D_02.cell('C15').value(equipmentInfo.resolution)
-      sheetNI_R01_MCIT_D_02.cell('F11').value(equipmentInfo.unit)
-      sheetNI_R01_MCIT_D_02.cell('F12').value(equipmentInfo.model)
-      sheetNI_R01_MCIT_D_02.cell('F13').value(equipmentInfo.code)
-      sheetNI_R01_MCIT_D_02.cell('F14').value(equipmentInfo.length)
+      sheetData.cell('C11').value(equipmentInfo.device)
+      sheetData.cell('C12').value(equipmentInfo.maker)
+      sheetData.cell('C13').value(equipmentInfo.serial_number)
+      sheetData.cell('C15').value(equipmentInfo.resolution)
+      sheetData.cell('F11').value(equipmentInfo.unit)
+      sheetData.cell('F12').value(equipmentInfo.model)
+      sheetData.cell('F13').value(equipmentInfo.code)
+      sheetData.cell('F14').value(equipmentInfo.length)
 
       //Condiciones ambientales
       const environmentalConditions = method.environmental_conditions
-      sheetNI_R01_MCIT_D_02
-        .cell('D19')
-        .value(environmentalConditions.equipment_used)
-      sheetNI_R01_MCIT_D_02
-        .cell('F19')
-        .value(environmentalConditions.time.minute)
-      sheetNI_R01_MCIT_D_02.cell('J19').value(method.calibration_location)
-      sheetNI_R01_MCIT_D_02
-        .cell('B19')
-        .value(environmentalConditions.cycles.ta.initial)
-      sheetNI_R01_MCIT_D_02
-        .cell('B20')
-        .value(environmentalConditions.cycles.ta.end)
-      sheetNI_R01_MCIT_D_02
-        .cell('C19')
-        .value(environmentalConditions.cycles.hr.initial)
-      sheetNI_R01_MCIT_D_02
-        .cell('C20')
-        .value(environmentalConditions.cycles.hr.end)
+      sheetData.cell('D19').value(environmentalConditions.equipment_used)
+      sheetData.cell('F19').value(environmentalConditions.time.minute)
+      sheetData.cell('J19').value(method.calibration_location)
+      sheetData.cell('B19').value(environmentalConditions.cycles.ta.initial)
+      sheetData.cell('B20').value(environmentalConditions.cycles.ta.end)
+      sheetData.cell('C19').value(environmentalConditions.cycles.hr.initial)
+      sheetData.cell('C20').value(environmentalConditions.cycles.hr.end)
 
       //Observaciones pre-instalacion
       const preInstallationComment = method.pre_installation_comment
-      sheetNI_R01_MCIT_D_02.cell('A26').value(preInstallationComment.comment)
+      sheetData.cell('A26').value(preInstallationComment.comment)
 
       //Verificacion de cero del instrumento
       const instrumentZeroCheck = method.instrument_zero_check
-      sheetNI_R01_MCIT_D_02.cell('A32').value(instrumentZeroCheck.nominal_value)
-      sheetNI_R01_MCIT_D_02
+      sheetData.cell('A32').value(instrumentZeroCheck.nominal_value)
+      sheetData
         .cell('B32')
         .value(instrumentZeroCheck.x1 == 0.0 ? 0 : instrumentZeroCheck.x1)
-      sheetNI_R01_MCIT_D_02
+      sheetData
         .cell('C32')
         .value(instrumentZeroCheck.x2 == 0.0 ? 0 : instrumentZeroCheck.x2)
-      sheetNI_R01_MCIT_D_02
+      sheetData
         .cell('D32')
         .value(instrumentZeroCheck.x3 == 0.0 ? 0 : instrumentZeroCheck.x3)
-      sheetNI_R01_MCIT_D_02
+      sheetData
         .cell('E32')
         .value(instrumentZeroCheck.x4 == 0.0 ? 0 : instrumentZeroCheck.x4)
-      sheetNI_R01_MCIT_D_02
+      sheetData
         .cell('F32')
         .value(instrumentZeroCheck.x5 == 0.0 ? 0 : instrumentZeroCheck.x5)
-      sheetNI_R01_MCIT_D_02
+      sheetData
         .cell('G32')
         .value(instrumentZeroCheck.x6 == 0.0 ? 0 : instrumentZeroCheck.x6)
-      sheetNI_R01_MCIT_D_02
+      sheetData
         .cell('H32')
         .value(instrumentZeroCheck.x7 == 0.0 ? 0 : instrumentZeroCheck.x7)
-      sheetNI_R01_MCIT_D_02
+      sheetData
         .cell('I32')
         .value(instrumentZeroCheck.x8 == 0.0 ? 0 : instrumentZeroCheck.x8)
-      sheetNI_R01_MCIT_D_02
+      sheetData
         .cell('J32')
         .value(instrumentZeroCheck.x9 == 0.0 ? 0 : instrumentZeroCheck.x9)
-      sheetNI_R01_MCIT_D_02
+      sheetData
         .cell('K32')
         .value(instrumentZeroCheck.x10 == 0.0 ? 0 : instrumentZeroCheck.x10)
 
-      //Prueba de exactitud
-      let fila = 37
-      let fila_position = 1
-      const column_verificaction = [
-        'B',
-        'C',
-        'D',
-        'E',
-        'F',
-        'G',
-        'H',
-        'I',
-        'J',
-        'K',
-      ]
-      method.accuracy_test.measureD02.forEach((item) => {
-        Object.entries(item.varification_lengths).forEach(
-          ([key, value], index) => {
-            const columna = column_verificaction[index]
-            sheetNI_R01_MCIT_D_02.cell(`${columna}${fila}`).value(value)
-          },
-        )
+      const getNominalValue: Record<string, number> = {
+        'BP - 0,5': 1,
+        'BP - 1': 2,
+        'BP - 1.5': 3,
+        'BP - 2': 4,
+        'BP - 2.5': 5,
+        'BP - 3': 6,
+        'BP - 3.5': 7,
+        'BP - 4': 8,
+        'BP - 4.5': 9,
+        'BP - 5': 10,
+        'BP - 5.5': 11,
+        'BP - 6': 12,
+        'BP - 6.5': 13,
+        'BP - 7': 14,
+        'BP - 7.5': 15,
+        'BP - 8': 16,
+        'BP - 8.5': 17,
+        'BP - 9': 18,
+        'BP - 9.5': 19,
+        'BP - 10': 20,
+        'BP - 20': 21,
+        'BP - 30': 22,
+        'BP - 40': 23,
+        'BP - 50': 24,
+        'BP - 60': 25,
+        'BP - 70': 26,
+        'BP - 80': 27,
+        'BP - 90': 28,
+        'BP - 100': 29,
+        '0': 30,
+        undefined: 30,
+      }
 
-        if (fila_position == 1) {
-          const starinColumns = 'L'
-          let currentColumn = starinColumns
-          let fila_l = 6
-          Object.entries(item.nominal_value).forEach(([key, value]) => {
-            let position_l = getPosition(String(value))
-            sheetPatrones.cell(`${currentColumn}${fila_l}`).value(position_l)
-            currentColumn = String.fromCharCode(currentColumn.charCodeAt(0) + 1)
-          })
+      let initialRow = 37
+      let i = 1
+
+      for (const item of method.accuracy_test.measureD02) {
+        let rowSkip = i * 6
+        let colSkip = 12
+
+        sheetData.cell(`B${initialRow}`).value(item.varification_lengths.x1)
+        sheetData.cell(`C${initialRow}`).value(item.varification_lengths.x2)
+        sheetData.cell(`D${initialRow}`).value(item.varification_lengths.x3)
+        sheetData.cell(`E${initialRow}`).value(item.varification_lengths.x4)
+        sheetData.cell(`F${initialRow}`).value(item.varification_lengths.x5)
+        sheetData.cell(`G${initialRow}`).value(item.varification_lengths.x6)
+        sheetData.cell(`H${initialRow}`).value(item.varification_lengths.x7)
+        sheetData.cell(`I${initialRow}`).value(item.varification_lengths.x8)
+        sheetData.cell(`J${initialRow}`).value(item.varification_lengths.x9)
+        sheetData.cell(`K${initialRow}`).value(item.varification_lengths.x10)
+
+        for (let j = 0; j <= item.nominal_value.length; j++) {
+          if (
+            (item.nominal_value[i] as any) !== '0' ||
+            item.nominal_value[i] !== undefined
+          ) {
+            sheetPattern
+              .cell(rowSkip, colSkip + j)
+              .value(getNominalValue[item.nominal_value[j] as any])
+          }
         }
 
-        if (fila_position == 2) {
-          const starinColumns = 'L'
-          let currentColumn = starinColumns
-          let fila_l = 12
-          Object.entries(item.nominal_value).forEach(([key, value]) => {
-            let position_l = getPositionNominal(String(value))
-            sheetPatrones.cell(`${currentColumn}${fila_l}`).value(position_l)
-            currentColumn = String.fromCharCode(currentColumn.charCodeAt(0) + 1)
-          })
-        }
+        initialRow++
+        i++
+      }
 
-        if (fila_position == 3) {
-          const starinColumns = 'L'
-          let currentColumn = starinColumns
-          let fila_l = 18
-          Object.entries(item.nominal_value).forEach(([key, value]) => {
-            let position_l = getPosition(String(value))
-            sheetPatrones.cell(`${currentColumn}${fila_l}`).value(position_l)
-            currentColumn = String.fromCharCode(currentColumn.charCodeAt(0) + 1)
-          })
-        }
-
-        if (fila_position == 4) {
-          const starinColumns = 'L'
-          let currentColumn = starinColumns
-          let fila_l = 24
-          Object.entries(item.nominal_value).forEach(([key, value]) => {
-            let position_l = getPosition(String(value))
-            sheetPatrones.cell(`${currentColumn}${fila_l}`).value(position_l)
-            currentColumn = String.fromCharCode(currentColumn.charCodeAt(0) + 1)
-          })
-        }
-
-        if (fila_position == 5) {
-          const starinColumns = 'L'
-          let currentColumn = starinColumns
-          let fila_l = 30
-          Object.entries(item.nominal_value).forEach(([key, value]) => {
-            let position_l = getPositionNominal(String(value))
-            sheetPatrones.cell(`${currentColumn}${fila_l}`).value(position_l)
-            currentColumn = String.fromCharCode(currentColumn.charCodeAt(0) + 1)
-          })
-        }
-
-        if (fila_position == 6) {
-          const starinColumns = 'L'
-          let currentColumn = starinColumns
-          let fila_l = 36
-          Object.entries(item.nominal_value).forEach(([key, value]) => {
-            let position_l = getPosition(String(value))
-            sheetPatrones.cell(`${currentColumn}${fila_l}`).value(position_l)
-            currentColumn = String.fromCharCode(currentColumn.charCodeAt(0) + 1)
-          })
-        }
-
-        if (fila_position == 7) {
-          const starinColumns = 'L'
-          let currentColumn = starinColumns
-          let fila_l = 42
-          Object.entries(item.nominal_value).forEach(([key, value]) => {
-            let position_l = getPositionNominal(String(value))
-            sheetPatrones.cell(`${currentColumn}${fila_l}`).value(position_l)
-            currentColumn = String.fromCharCode(currentColumn.charCodeAt(0) + 1)
-          })
-        }
-
-        if (fila_position == 8) {
-          const starinColumns = 'L'
-          let currentColumn = starinColumns
-          let fila_l = 48
-          Object.entries(item.nominal_value).forEach(([key, value]) => {
-            let position_l = getPosition(String(value))
-            sheetPatrones.cell(`${currentColumn}${fila_l}`).value(position_l)
-            currentColumn = String.fromCharCode(currentColumn.charCodeAt(0) + 1)
-          })
-        }
-
-        if (fila_position == 9) {
-          const starinColumns = 'L'
-          let currentColumn = starinColumns
-          let fila_l = 54
-          Object.entries(item.nominal_value).forEach(([key, value]) => {
-            let position_l = getPositionNominal(String(value))
-            sheetPatrones.cell(`${currentColumn}${fila_l}`).value(position_l)
-            currentColumn = String.fromCharCode(currentColumn.charCodeAt(0) + 1)
-          })
-        }
-
-        if (fila_position == 10) {
-          const starinColumns = 'L'
-          let currentColumn = starinColumns
-          let fila_l = 60
-          Object.entries(item.nominal_value).forEach(([key, value]) => {
-            let position_l = getPosition(String(value))
-            sheetPatrones.cell(`${currentColumn}${fila_l}`).value(position_l)
-            currentColumn = String.fromCharCode(currentColumn.charCodeAt(0) + 1)
-          })
-        }
-
-        fila++
-        fila_position++
-      })
-
-      //tipo patrones de medicion
-      //tipo de patrone de medicion
       if (method.environmental_conditions.equipment_used == 'NI-MCPPT-02') {
         sheetResultados.cell('Z66').value(1)
       }
