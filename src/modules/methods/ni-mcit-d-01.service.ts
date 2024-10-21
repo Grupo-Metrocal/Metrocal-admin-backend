@@ -831,21 +831,21 @@ export class NI_MCIT_D_01Service {
                 const startingColumn = 'P'
                 let currentColumn = startingColumn
                 let fila_P = 6
-                let position_P = getPositionNominal(item.nominal_patron)
+                let position_P = getPositionNominal(item.point_number)
                 sheetEC2.cell(`${currentColumn}${fila_P}`).value(position_P)
               }
               if (position_interior_parallelism == 2) {
                 const startingColumn = 'P'
                 let currentColumn = startingColumn
                 let fila_P = 13
-                let position_P = getPositionNominal(item.nominal_patron)
+                let position_P = getPositionNominal(item.point_number)
                 sheetEC2.cell(`${currentColumn}${fila_P}`).value(position_P)
               }
               if (position_interior_parallelism == 3) {
                 const startingColumn = 'P'
                 let currentColumn = startingColumn
                 let fila_P = 20
-                let position_P = getPositionNominal(item.nominal_patron)
+                let position_P = getPositionNominal(item.point_number)
                 sheetEC2.cell(`${currentColumn}${fila_P}`).value(position_P)
               }
               fila_interior_parallelism++
@@ -943,6 +943,24 @@ export class NI_MCIT_D_01Service {
       if (method.environmental_conditions.equipment_used == 'NI-MCPPT-06') {
         sheetEC.cell('S52').value(3)
       }
+
+      const getNominalValue: Record<string, number> = {
+        '0': 2,
+        '5': 3,
+        '10': 4,
+        '15': 5,
+        '20': 6,
+        '25': 7,
+      }
+
+      sheetEC2
+        .cell('P6')
+        .value(
+          getNominalValue[
+            method.interior_parallelism_measurement.measurementsd01[0]
+              .point_number[0]
+          ],
+        )
 
       // Procesamiento de equipos DA (mm) y FA (mm)
       const descipcioPatrines = []

@@ -21,7 +21,7 @@ export class InteriorParallelismMeasurementNI_MCIT_D_01 {
 }
 
 interface IMeasurements {
-  nominal_patron: string
+  point_number: string
   verification_lengths: IPlaces
 }
 
