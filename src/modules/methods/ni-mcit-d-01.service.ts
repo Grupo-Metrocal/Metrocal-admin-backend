@@ -1229,14 +1229,20 @@ Este certificado de calibración no debe ser reproducido sin la aprobación del 
   async getPatternsTableToCertificate(method: NI_MCIT_D_01) {
     const description_pattern = []
 
-    const calibration_method_used =
-      await this.patternsService.findByCodeAndMethod(
-        method.description_pattern.descriptionPatterns[0],
+    for (
+      let i = 0;
+      i < method.description_pattern.descriptionPatterns.length;
+      i++
+    ) {
+      const code = method.description_pattern.descriptionPatterns[i]
+      const patternService = await this.patternsService.findByCodeAndMethod(
+        code,
         'NI-MCIT-D-01',
       )
 
-    if (calibration_method_used.success) {
-      description_pattern.push(calibration_method_used.data)
+      if (patternService.success) {
+        description_pattern.push(patternService.data)
+      }
     }
 
     const environmentalConditionPattern =
