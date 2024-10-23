@@ -513,10 +513,7 @@ export class ActivitiesService {
                 equipment.status === 'rejected' ? 'No realizado' : 'Realizado',
             }
           })
-          .filter(
-            (equipment) =>
-              equipment.status === 'done' || equipment.status === 'pending',
-          ),
+          .filter((equipment) => equipment.status === 'Realizado'),
         resolved_services: activity.quote_request.equipment_quote_request
           .map((service) => {
             if (service.isResolved) {
