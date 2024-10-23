@@ -509,10 +509,14 @@ export class ActivitiesService {
               review_comment: equipment.review_comment,
               index: index + 1,
               quoteNumber: activity.quote_request.no,
-              status: equipment.status,
+              status:
+                equipment.status === 'rejected' ? 'No realizado' : 'Realizado',
             }
           })
-          .filter((equipment) => equipment.status === 'done'),
+          .filter(
+            (equipment) =>
+              equipment.status === 'done' || equipment.status === 'pending',
+          ),
         resolved_services: activity.quote_request.equipment_quote_request
           .map((service) => {
             if (service.isResolved) {
@@ -542,7 +546,9 @@ export class ActivitiesService {
       }
 
       const response = await this.mailService.sendServiceOrderMail({
-        to: activity.quote_request.client.email.split(',')[0],
+        to:
+          activity.quote_request.alt_client_email ||
+          activity.quote_request.client.email,
         pdf,
         clientName: activity.quote_request.client.company_name,
         quoteNumber: activity.quote_request.no,

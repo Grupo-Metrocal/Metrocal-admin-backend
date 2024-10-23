@@ -993,10 +993,11 @@ export class QuotesService {
       equipment.review_comment = review.review_comment
       equipment.review_status = 'reviewed'
 
-      const response =
-        await this.equipmentQuoteRequestRepository.save(equipment)
+      await this.dataSource.transaction(async (manager) => {
+        await manager.save(equipment)
+      })
 
-      return handleOK(response)
+      return handleOK(equipment)
     } catch (error) {
       return handleInternalServerError(error.message)
     }

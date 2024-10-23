@@ -61,6 +61,6 @@ export class EquipmentQuoteRequest {
   @Column({ type: 'boolean', nullable: false, default: false })
   isResolved: boolean
 
-  @Column({ nullable: true })
+  @Column({ nullable: true, default: '' })
   review_comment?: string
 }
