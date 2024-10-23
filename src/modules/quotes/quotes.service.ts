@@ -1627,9 +1627,11 @@ export class QuotesService {
         await manager.save(quote)
       })
 
-      return await this.methodsService.createMethodStackFromEquipment(
+      await this.methodsService.createMethodStackFromEquipment(
         createdEquipment.data.id,
       )
+
+      return handleOK(quote)
     } catch (error: any) {
       return handleInternalServerError(error.message)
     }
