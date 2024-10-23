@@ -19,7 +19,6 @@ export class updateEquipmentQuoteRequestDto {
   count: number
 
   @ApiProperty()
-  @IsNotEmpty()
   model: string
 
   @ApiProperty()
