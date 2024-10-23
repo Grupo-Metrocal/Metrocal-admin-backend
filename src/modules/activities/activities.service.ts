@@ -131,7 +131,7 @@ export class ActivitiesService {
 
       response.quote_request.equipment_quote_request =
         response.quote_request.equipment_quote_request.filter(
-          (item) => item.status === 'done',
+          (item) => item.status !== 'rejected',
         )
 
       const teamMembers = response.team_members.map((member) => {

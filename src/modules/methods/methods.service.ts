@@ -48,6 +48,7 @@ import {
 } from 'src/utils/formatNumberCertification'
 import { NI_MCIT_M_01Service } from './ni-mcit-m-01.service'
 import { countDecimals } from 'src/utils/countDecimal'
+import { EquipmentQuoteRequest } from '../quotes/entities/equipment-quote-request.entity'
 
 @Injectable()
 export class MethodsService {
@@ -151,6 +152,51 @@ export class MethodsService {
       return handleOK(activity.quote_request.equipment_quote_request)
     } catch (error) {
       return handleBadrequest(error.message)
+    }
+  }
+
+  async createMethodStackFromEquipment(equipmentId: number) {
+    try {
+      const resEquipment =
+        await this.quotesService.getEquipmentById(equipmentId)
+
+      if (!resEquipment.success) {
+        return handleBadrequest(new Error('Equipo no encontrado'))
+      }
+
+      const { data: equipment } = resEquipment as {
+        data: EquipmentQuoteRequest
+      }
+
+      const methodName = `${equipment.calibration_method
+        .split(' ')[0]
+        .replaceAll('-', '_')}Repository`
+
+      if (typeof this[methodName] === 'undefined') {
+        return handleBadrequest(new Error('Method not found'))
+      }
+
+      await this.dataSource.transaction(async (manager) => {
+        const methodsID = [] as any
+
+        for (let i = 0; i < equipment.count; i++) {
+          const newMethod = await this[methodName].create()
+          await manager.save(newMethod)
+          methodsID.push(newMethod.id)
+        }
+
+        const method = await this.createMethodID(methodsID, methodName)
+
+        await this.quotesService.asyncMethodToEquipment({
+          equipmentID: equipment.id,
+          methodID: method.id,
+        })
+      })
+
+      return handleOK(equipment)
+    } catch (error: any) {
+      console.log({ error })
+      return handleInternalServerError(error.message)
     }
   }
 

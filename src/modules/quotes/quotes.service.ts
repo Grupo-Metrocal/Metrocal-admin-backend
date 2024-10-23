@@ -148,7 +148,36 @@ export class QuotesService {
         ],
         where: {
           status: In(['pending', 'waiting', 'done']),
+          quote_modification_status: In(['done', 'none']),
           activity: filterActive ? IsNull() : Not(IsNull()), // Si filterActive es true, buscamos activity null, de lo contrario, activity no es null
+          created_at: MoreThanOrEqual(subDays(new Date(), 30)),
+        },
+        order: { id: 'DESC' },
+      })
+
+      return handleOK(
+        quotes.map((quote) => {
+          quote.no = formatQuoteCode(quote.no, quote.modification_number)
+          return quote
+        }),
+      )
+    } catch (error) {
+      return handleInternalServerError(error.message)
+    }
+  }
+
+  async getAllRequestModify() {
+    try {
+      const quotes = await this.quoteRequestRepository.find({
+        relations: [
+          'equipment_quote_request',
+          'client',
+          'approved_by',
+          'activity',
+        ],
+        where: {
+          status: In(['waiting']),
+          quote_modification_status: 'pending',
           created_at: MoreThanOrEqual(subDays(new Date(), 30)),
         },
         order: { id: 'DESC' },
@@ -382,10 +411,8 @@ export class QuotesService {
         quote?.alt_client_email || quote.client.email
 
       await this.dataSource.transaction(async (manager) => {
-        quoteRequest.quote_modification_status =
-          quoteRequest.quote_modification_status === 'pending'
-            ? 'done'
-            : quoteRequest.quote_modification_status
+        quoteRequest.quote_modification_status = 'none'
+        quote.quote_modification_message = ''
 
         if (increase) {
           quoteRequest.modification_number =
@@ -1171,6 +1198,7 @@ export class QuotesService {
       equipment.quote_request = quoteRequest
 
       await this.dataSource.transaction(async (manager) => {
+        quoteRequest.status = 'waiting'
         await manager.save(equipment)
       })
       return handleOK(equipment)
@@ -1560,6 +1588,65 @@ export class QuotesService {
       })
     } catch (error) {
       console.error({ error })
+      return handleInternalServerError(error.message)
+    }
+  }
+
+  async createMutateServiceAndGenerateMethods(
+    quoteId: number,
+    equipment: EquipmentQuoteRequestDto,
+  ) {
+    try {
+      const quote = await this.quoteRequestRepository.findOne({
+        where: { id: quoteId },
+      })
+
+      if (!quote) {
+        return handleBadrequest(new Error('No se encontro la cotización'))
+      }
+
+      const createdEquipment = await this.addEquipmentToQuoteRequest(
+        quoteId,
+        equipment,
+      )
+
+      if (!createdEquipment.success) {
+        return handleBadrequest(
+          new Error('Hubo un error al crear el nuevo servicio'),
+        )
+      }
+
+      quote.quote_modification_message = quote.quote_modification_message
+        ? `${quote.quote_modification_message}
+* Se agrego el equipo ${equipment.name} con el servicio de ${equipment.type_service} y se generaron con el metodo de ${equipment.calibration_method.split(' ')[0]}`
+        : `Se agrego el equipo ${equipment.name} con el servicio de ${equipment.type_service} y se generaron con el metodo de ${equipment.calibration_method.split(' ')[0]}`
+      quote.quote_modification_status = 'pending'
+      quote.status = 'waiting'
+
+      await this.dataSource.transaction(async (manager) => {
+        await manager.save(quote)
+      })
+
+      return await this.methodsService.createMethodStackFromEquipment(
+        createdEquipment.data.id,
+      )
+    } catch (error: any) {
+      return handleInternalServerError(error.message)
+    }
+  }
+
+  async getEquipmentById(id: number) {
+    try {
+      const equipment = await this.equipmentQuoteRequestRepository.findOne({
+        where: { id },
+      })
+
+      if (!equipment) {
+        return handleBadrequest(new Error('Equipo no encontrado'))
+      }
+
+      return handleOK(equipment)
+    } catch (error: any) {
       return handleInternalServerError(error.message)
     }
   }

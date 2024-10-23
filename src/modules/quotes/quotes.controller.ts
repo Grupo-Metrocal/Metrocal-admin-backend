@@ -42,6 +42,12 @@ export class QuotesController {
     return await this.quotesService.getAll({ filterActive: true })
   }
 
+  @UseGuards(JwtAuthGuard)
+  @Get('get-request-modify')
+  async getAllRequestModify() {
+    return await this.quotesService.getAllRequestModify()
+  }
+
   @Get('request/all')
   async getAllQuoteRequest(@Query() pagination?: PaginationQueryDto) {
     if (isNaN(pagination.limit) || isNaN(pagination.offset)) {
@@ -282,5 +288,16 @@ export class QuotesController {
     @Param('quoteId') quoteId: number,
   ) {
     return await this.quotesService.copyQuote(quoteId, clientId)
+  }
+
+  @Post('create-service/generate-methods/:quoteId')
+  async createMutateServiceAndGenerateMethods(
+    @Param('quoteId') quoteId: number,
+    @Body() equipment: EquipmentQuoteRequestDto,
+  ) {
+    return await this.quotesService.createMutateServiceAndGenerateMethods(
+      quoteId,
+      equipment,
+    )
   }
 }

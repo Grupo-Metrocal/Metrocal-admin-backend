@@ -15,11 +15,9 @@ export class EquipmentQuoteRequestDto {
   count: number
 
   @ApiProperty()
-  @IsNotEmpty()
   model: string
 
   @ApiProperty()
-  @IsNotEmpty()
   measuring_range: string
 
   @ApiProperty()
