@@ -501,8 +501,8 @@ export class ActivitiesService {
         work_areas: activity.work_areas.join(', ') || '',
         comments_insitu1: activity?.comments_insitu?.[0] || '',
         comments_insitu2: activity?.comments_insitu?.[1] || '',
-        equipments: activity.quote_request.equipment_quote_request
-          .map((equipment, index) => {
+        equipments: activity.quote_request.equipment_quote_request.map(
+          (equipment, index) => {
             return {
               name: equipment.name,
               count: equipment.count,
@@ -512,8 +512,8 @@ export class ActivitiesService {
               status:
                 equipment.status === 'rejected' ? 'No realizado' : 'Realizado',
             }
-          })
-          .filter((equipment) => equipment.status === 'Realizado'),
+          },
+        ),
         resolved_services: activity.quote_request.equipment_quote_request
           .map((service) => {
             if (service.isResolved) {
