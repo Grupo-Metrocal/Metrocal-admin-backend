@@ -176,9 +176,9 @@ export class QuotesService {
           'activity',
         ],
         where: {
-          status: In(['waiting']),
+          // status: In(['waiting']),
           quote_modification_status: 'pending',
-          created_at: MoreThanOrEqual(subDays(new Date(), 30)),
+          // created_at: MoreThanOrEqual(subDays(new Date(), 30)),
         },
         order: { id: 'DESC' },
       })
