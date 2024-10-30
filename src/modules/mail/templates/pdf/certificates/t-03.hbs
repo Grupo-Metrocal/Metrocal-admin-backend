@@ -151,7 +151,6 @@
     <strong><span>Descripción de patrones utilizados</span></strong>
     <br />
 
-    <!-- tabla -->
     <table>
       <thead>
         <tr>
@@ -162,22 +161,17 @@
         </tr>
       </thead>
       <tbody>
-        <tr>
-          <td>{{process_calibrator_used.equipment}}</td>
-          <td>{{process_calibrator_used.code}}</td>
-          <td>{{process_calibrator_used.certificate}}</td>
-          <td>{{process_calibrator_used.traceability}}</td>
-          <td>{{process_calibrator_used.next_calibration}}</td>
-        </tr>
-
-        <tr>
-          <td>{{hygrothermometer_used.equipment}}</td>
-          <td>{{hygrothermometer_used.code}}</td>
-          <td>{{hygrothermometer_used.certificate}}</td>
-          <td>{{hygrothermometer_used.traceability}}</td>
-          <td>{{hygrothermometer_used.next_calibration}}</td>
-        </tr>
+        {{#each description_pattern as |data|}}
+          <tr>
+            <td>{{data.equipment}}</td>
+            <td>{{data.code}}</td>
+            <td>{{data.traceability}}</td>
+            <td>{{data.next_calibration}}</td>
+          </tr>
+        {{/each}}
       </tbody>
+
+      <tbody></tbody>
     </table>
   </div>
 
