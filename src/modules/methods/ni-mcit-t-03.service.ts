@@ -27,6 +27,7 @@ import { formatDate } from 'src/utils/formatDate'
 import { CertificationDetailsDto } from './dto/NI_MCIT_P_01/certification_details.dto'
 import { formatCertCode } from 'src/utils/generateCertCode'
 import {
+  convertToValidNumber,
   formatNumberCertification,
   formatSameNumberCertification,
 } from 'src/utils/formatNumberCertification'
@@ -600,10 +601,13 @@ export class NI_MCIT_T_03Service {
 
         const correctionValue = sheet.cell(`L${25 + i}`).value()
         correction.push(
-          formatNumberCertification(
-            correctionValue,
-            countDecimals(method.equipment_information.resolution),
-          ),
+          i === 0
+            ? correctionValue
+            : formatNumberCertification(
+                convertToValidNumber(pattern_indication[i]) -
+                  convertToValidNumber(instrument_indication[i]),
+                countDecimals(method.equipment_information.resolution),
+              ),
         )
 
         const uncertaintyValue = sheet.cell(`R${25 + i}`).value()
