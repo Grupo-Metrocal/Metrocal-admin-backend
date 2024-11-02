@@ -7,9 +7,14 @@ export const formatDate = (date: string) => {
   }
 
   const month =
-    dateObj.getMonth() + 1 < 10
-      ? `0${dateObj.getMonth() + 1}`
-      : dateObj.getMonth() + 1
+    dateObj.getUTCMonth() + 1 < 10
+      ? `0${dateObj.getUTCMonth() + 1}`
+      : dateObj.getUTCMonth() + 1
 
-  return `${dateObj.getFullYear()}-${month}-${dateObj.getDate()}`
+  const day =
+    dateObj.getUTCDate() < 10
+      ? `0${dateObj.getUTCDate()}`
+      : dateObj.getUTCDate()
+
+  return `${dateObj.getUTCFullYear()}-${month}-${day}`
 }
