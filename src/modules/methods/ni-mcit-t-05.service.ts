@@ -717,6 +717,7 @@ export class NI_MCIT_T_05Service {
         },
         creditable: method.description_pattern.creditable,
         client_email: activity.quote_request.client.email,
+        description_pattern: await this.getPatternsTableToCertificate(method),
         observations: `
 ${method.description_pattern.observation}
 Es responsabilidad del encargado del instrumento establecer la frecuencia del servicio de calibración.
@@ -728,6 +729,31 @@ Este certificado de calibración no debe ser reproducido sin la aprobación del 
     } catch (error) {
       return handleInternalServerError(error.message)
     }
+  }
+
+  async getPatternsTableToCertificate(method: NI_MCIT_T_05) {
+    const description_pattern = []
+
+    // const environment_method_used =
+    //   await this.patternsService.findByCodeAndMethod(
+    //     method.environmental_conditions,
+    //     'all',
+    //   )
+    // if (environment_method_used.success) {
+    //   description_pattern.push(environment_method_used.data)
+    // }
+
+    const calibration_method_used =
+      await this.patternsService.findByCodeAndMethod(
+        method.description_pattern.pattern,
+        'NI-MCIT-T-05',
+      )
+
+    if (calibration_method_used.success) {
+      description_pattern.push(calibration_method_used.data)
+    }
+
+    return description_pattern
   }
 
   async generatePDFCertificate(
