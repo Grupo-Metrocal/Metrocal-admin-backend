@@ -6,4 +6,7 @@ export class DescriptionPatternNI_MCIT_D_02Dto {
 
   @ApiProperty()
   next_calibration: string
+
+  @ApiProperty()
+  calibration_date: string
 }

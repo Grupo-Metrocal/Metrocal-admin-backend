@@ -12,4 +12,7 @@ export class DescriptionPatternDto {
 
   @ApiProperty()
   next_calibration: string
+
+  @ApiProperty()
+  calibration_date: string
 }

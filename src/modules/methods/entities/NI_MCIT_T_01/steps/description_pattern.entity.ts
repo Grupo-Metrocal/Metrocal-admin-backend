@@ -30,4 +30,7 @@ export class DescriptionPatternNI_MCIT_T_01 {
 
   @Column({ nullable: true })
   next_calibration: string
+
+  @Column({ nullable: true })
+  calibration_date: string
 }
