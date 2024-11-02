@@ -667,16 +667,6 @@ export class NI_MCIT_T_03Service {
         mincmc,
       }
 
-      const process_calibrator = await this.patternsService.findByCodeAndMethod(
-        method.description_pattern.pattern,
-        'NI-MCIT-T-03',
-      )
-
-      const hygrothermometer = await this.patternsService.findByCodeAndMethod(
-        method.environmental_conditions.pattern,
-        'NI-MCIT-T-03',
-      )
-
       const calibration_results_certificate = {
         pattern_indication,
         instrument_indication,
@@ -688,8 +678,6 @@ export class NI_MCIT_T_03Service {
 
       return handleOK({
         calibration_results: calibration_results_certificate,
-        process_calibrator_used: process_calibrator.data,
-        hygrothermometer_used: hygrothermometer?.data || {},
         optionsCMCOnCertificate: method.optionsCMCOnCertificate,
         equipment_information: {
           certification_code: formatCertCode(
