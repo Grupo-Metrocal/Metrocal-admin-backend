@@ -709,7 +709,7 @@ export class NI_MCIT_T_01Service {
             method?.certificate_issue_date?.toString(),
           ),
           calibration_date: formatDate(
-            method?.method_end_date_finished?.toString(),
+            method?.description_pattern.calibration_date?.toString() || Date(),
           ),
           next_calibration_date: method?.description_pattern?.next_calibration
             ? formatDate(method?.description_pattern?.next_calibration)
