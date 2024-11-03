@@ -54,7 +54,6 @@
   <div class='calibration-result' style='min-height: 130px;'>
     <strong><span>Resultados de la calibración</span></strong>
     <br />
-    <br />
     <table>
       <thead>
         <caption class='table-title' colspan='5'>
@@ -68,7 +67,7 @@
         </tr>
       </thead>
       <tbody>
-        {{#each calibration_results as |data|}}
+        {{#each calibration_results.result as |data|}}
           <tr>
             <td>{{data.pattern_indication}}</td>
             <td>{{data.instrument_indication}}</td>
@@ -80,6 +79,51 @@
     </table>
   </div>
 
+  {{#if show_table_international_system_units}}
+    <div class='result_unid_system' style='min-height: 130px'>
+      <strong><span>Resultados en Unidad de Sistema Internacional de Unidades</span></strong>
+      <br />
+      <table>
+        <thead>
+          <caption class='table-title' colspan='5'>
+            Tabla de resultados de calibración
+          </caption>
+          <tr>
+            <th>Indicación del Patrón</th>
+            <th>Indicación del Instrumento</th>
+            <th>Corrección</th>
+            <th>Incertidumbre expandida K = 2</th>
+          </tr>
+        </thead>
+        <tbody>
+          {{#each calibration_results.result_unid_system as |data|}}
+            <tr>
+              <td>{{data.pattern_indication}}</td>
+              <td>{{data.instrument_indication}}</td>
+              <td>{{data.correction}}</td>
+              <td>{{data.uncertainty}}</td>
+            </tr>
+          {{/each}}
+        </tbody>
+      </table>
+    </div>
+  {{/if}}
+
+  {{#if show_table_international_system_units}}
+    {{#ifArrayEq calibration_results.result 9}}
+      <br />
+    {{/ifArrayEq}}
+    {{#ifArrayEq calibration_results.result 10}}
+      <br />
+      <br />
+      <br />
+    {{/ifArrayEq}}
+    {{#ifArrayEq calibration_results.result 11}}
+      <br />
+      <br />
+    {{/ifArrayEq}}
+  {{/if}}
+
   <div class='enviromental-conditions'>
     <div>
       <strong><span>Condiciones ambientales</span></strong>
@@ -87,6 +131,12 @@
       <span>{{environmental_conditions.humidity}}</span>
     </div>
   </div>
+  {{#if show_table_international_system_units}}
+    {{#ifArrayEq calibration_results.result 8}}
+      <br />
+      <br />
+    {{/ifArrayEq}}
+  {{/if}}
 
   <div class='calibration-method'>
     <strong><span>Método de calibración:</span></strong>
@@ -94,22 +144,26 @@
     <br />
 
     <span style='text-align: justify;'>Las pruebas se realizaron según
-      NI-MCIT-T-03 Instrucción para calibración de controladores (indicadores)
-      de temperatura, con sensor RTD, de dos, tres y cuatro hilos en el rango
-      comprendido entre -180 ºC hasta 800 ºC, y termopares, tipo K en el rango
-      comprendido entre -180 ºC hasta 1300 ºC
+      NI-MCIT-T-03 Instrucción para calibración de controladores de temperatura.
     </span>
   </div>
 
-  {{#ifArrayEq calibration_results 9}}
-    <br /><br /><br /><br /><br /><br /><br />
-  {{/ifArrayEq}}
-  {{#ifArrayEq calibration_results 10}}
-    <br /><br /><br /><br /><br /><br />
-  {{/ifArrayEq}}
-  {{#ifArrayEq calibration_results 11}}
-    <br /><br /><br /><br /><br />
-  {{/ifArrayEq}}
+  {{#if show_table_international_system_units}}
+    {{#ltArray calibration_results.result 6}}
+      <br />
+      <br />
+      <br />
+      <br />
+    {{/ltArray}}
+    {{#ifArrayEq calibration_results.result 6}}
+      <br />
+      <br />
+      <br />
+    {{/ifArrayEq}}
+    {{#ifArrayEq calibration_results.result 7}}
+      <br />
+    {{/ifArrayEq}}
+  {{/if}}
 
   <div class='uncertainty'>
     <strong><span>Incertidumbre de los datos</span></strong>
@@ -127,25 +181,26 @@
     </span>
   </div>
 
-  {{#ltArray calibration_results 5}}
-    <br /><br /><br />
-  {{/ltArray}}
-
-  {{#ifArrayEq calibration_results 5}}
-    <br /><br />
-  {{/ifArrayEq}}
-
-  {{#ifArrayEq calibration_results 6}}
-    <br />
-  {{/ifArrayEq}}
-
-  {{#ifArrayEq calibration_results 7}}
-    <br />
-  {{/ifArrayEq}}
-
-  {{#ifArrayEq calibration_results 8}}
-    <span></span>
-  {{/ifArrayEq}}
+  {{#if show_table_international_system_units}}{{else}}
+    {{#ifArrayEq calibration_results.result 6}}
+      <br /><br /><br /><br /><br />
+    {{/ifArrayEq}}
+    {{#ifArrayEq calibration_results.result 7}}
+      <br /><br /><br /><br /><br />
+    {{/ifArrayEq}}
+    {{#ifArrayEq calibration_results.result 8}}
+      <br /><br /><br /><br />
+    {{/ifArrayEq}}
+    {{#ifArrayEq calibration_results.result 9}}
+      <br /><br /><br />
+    {{/ifArrayEq}}
+    {{#ifArrayEq calibration_results.result 10}}
+      <br /><br />
+    {{/ifArrayEq}}
+    {{#ifArrayEq calibration_results.result 11}}
+      <br />
+    {{/ifArrayEq}}
+  {{/if}}
 
   <div class='used_pattern'>
     <strong><span>Descripción de patrones utilizados</span></strong>
@@ -172,6 +227,12 @@
       </tbody>
     </table>
   </div>
+
+  {{#if show_table_international_system_units}}{{else}}
+    {{#ltArray calibration_results.result 7}}
+      <br />
+    {{/ltArray}}
+  {{/if}}
 
   <div class='observations'>
     <strong><span>Observaciones</span></strong>
