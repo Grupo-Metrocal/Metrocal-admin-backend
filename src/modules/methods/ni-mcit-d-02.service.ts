@@ -38,7 +38,7 @@ import {
 } from 'src/utils/formatNumberCertification'
 import { countDecimals } from 'src/utils/countDecimal'
 import { MethodsService } from './methods.service'
-import { formatCertCode } from 'src/utils/generateCertCode'
+import { formatCertCode, formatQuoteCode } from 'src/utils/generateCertCode'
 import { constrainedMemory } from 'process'
 
 @Injectable()
@@ -757,7 +757,10 @@ export class NI_MCIT_D_02Service {
             method.certificate_code,
             method.modification_number,
           ),
-          service_code: activity.quote_request.no,
+          service_code: formatQuoteCode(
+            activity.quote_request.no,
+            activity.quote_request.modification_number,
+          ),
           certificate_issue_date: formatDate(
             method?.certificate_issue_date?.toString(),
           ),

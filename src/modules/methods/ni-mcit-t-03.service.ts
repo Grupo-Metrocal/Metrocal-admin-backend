@@ -25,7 +25,7 @@ import * as fs from 'fs'
 import { Activity } from '../activities/entities/activities.entity'
 import { formatDate } from 'src/utils/formatDate'
 import { CertificationDetailsDto } from './dto/NI_MCIT_P_01/certification_details.dto'
-import { formatCertCode } from 'src/utils/generateCertCode'
+import { formatCertCode, formatQuoteCode } from 'src/utils/generateCertCode'
 import {
   convertToValidNumber,
   formatNumberCertification,
@@ -740,7 +740,10 @@ export class NI_MCIT_T_03Service {
             method.certificate_code,
             method.modification_number,
           ),
-          service_code: activity.quote_request.no,
+          service_code: formatQuoteCode(
+            activity.quote_request.no,
+            activity.quote_request.modification_number,
+          ),
           certificate_issue_date: formatDate(
             method?.certificate_issue_date?.toString(),
           ),

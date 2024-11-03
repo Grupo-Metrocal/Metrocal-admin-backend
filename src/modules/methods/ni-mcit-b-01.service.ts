@@ -26,7 +26,7 @@ import { exec } from 'child_process'
 import { formatDate } from 'src/utils/formatDate'
 import { MethodsService } from './methods.service'
 import { CertificationDetailsDto } from './dto/NI_MCIT_P_01/certification_details.dto'
-import { formatCertCode } from 'src/utils/generateCertCode'
+import { formatCertCode, formatQuoteCode } from 'src/utils/generateCertCode'
 import {
   convertToValidNumber,
   formatNumberCertification,
@@ -1011,7 +1011,10 @@ export class NI_MCIT_B_01Service {
               method.certificate_code,
               method.modification_number,
             ) || 'N/A',
-          service_code: activity.quote_request.no,
+          service_code: formatQuoteCode(
+            activity.quote_request.no,
+            activity.quote_request.modification_number,
+          ),
           certificate_issue_date: formatDate(
             method?.certificate_issue_date?.toString(),
           ),
