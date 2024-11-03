@@ -30,4 +30,7 @@ export class DescriptionPatternNI_MCIT_T_03 {
 
   @Column({ nullable: true })
   calibration_date: string
+
+  @Column({ nullable: true })
+  show_table_international_system_units?: boolean
 }

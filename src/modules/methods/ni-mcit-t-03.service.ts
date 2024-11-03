@@ -578,6 +578,11 @@ export class NI_MCIT_T_03Service {
       let correction = []
       let uncertainty = []
 
+      let pattern_indication_2 = []
+      let instrument_indication_2 = []
+      let correction_2 = []
+      let uncertainty_2 = []
+
       for (
         let i = 0;
         i <= method.calibration_results.results[0].calibration_factor.length;
@@ -614,6 +619,46 @@ export class NI_MCIT_T_03Service {
         uncertainty.push(
           this.methodService.getSignificantFigure(uncertaintyValue),
         )
+      }
+
+      if (method.description_pattern.show_table_international_system_units) {
+        for (
+          let i = 0;
+          i <= method.calibration_results.results[0].calibration_factor.length;
+          i++
+        ) {
+          const patternIndication = sheet.cell(`D${25 + i}`).value()
+          pattern_indication_2.push(
+            formatNumberCertification(
+              patternIndication,
+              countDecimals(method.equipment_information.resolution),
+            ),
+          )
+
+          const instrumentIndication = sheet.cell(`F${25 + i}`).value()
+          instrument_indication_2.push(
+            formatNumberCertification(
+              instrumentIndication,
+              countDecimals(method.equipment_information.resolution),
+            ),
+          )
+
+          const correctionValue = sheet.cell(`L${25 + i}`).value()
+          correction_2.push(
+            i === 0
+              ? correctionValue
+              : formatNumberCertification(
+                  convertToValidNumber(pattern_indication[i]) -
+                    convertToValidNumber(instrument_indication[i]),
+                  countDecimals(method.equipment_information.resolution),
+                ),
+          )
+
+          const uncertaintyValue = sheet.cell(`R${25 + i}`).value()
+          uncertainty_2.push(
+            this.methodService.getSignificantFigure(uncertaintyValue),
+          )
+        }
       }
 
       let cmcPoint = []
@@ -668,12 +713,23 @@ export class NI_MCIT_T_03Service {
       }
 
       const calibration_results_certificate = {
-        pattern_indication,
-        instrument_indication,
-        correction,
-        uncertainty: this.methodService.formatUncertainty(
-          this.formatUncertaintyWithCMC(uncertainty, CMC),
-        ),
+        result: {
+          pattern_indication,
+          instrument_indication,
+          correction,
+          uncertainty: this.methodService.formatUncertainty(
+            this.formatUncertaintyWithCMC(uncertainty, CMC),
+          ),
+        },
+
+        result_unid_system: {
+          pattern_indication: pattern_indication_2,
+          instrument_indication: instrument_indication_2,
+          correction: correction_2,
+          uncertainty: this.methodService.formatUncertainty(
+            this.formatUncertaintyWithCMC(uncertainty_2, CMC),
+          ),
+        },
       }
 
       return handleOK({
@@ -715,6 +771,8 @@ export class NI_MCIT_T_03Service {
           temperature: `Temperatura: ${formatNumberCertification(sheet.cell('E39').value())} °C ± ${formatNumberCertification(sheet.cell('G39').value())} °C`,
           humidity: `Humedad: ${formatNumberCertification(sheet.cell('E40').value())} % ± ${formatNumberCertification(sheet.cell('G40').value())} %`,
         },
+        show_table_international_system_units:
+          description_pattern.show_table_international_system_units,
         client_email: activity.quote_request.client.email,
         creditable: description_pattern.creditable,
         description_pattern: await this.getPatternsTableToCertificate(method),
@@ -807,20 +865,39 @@ Este certificado de calibración no puede ser reproducido parcialmente excepto e
         return dataCertificate
       }
 
-      dataCertificate.data.calibration_results =
-        dataCertificate.data.calibration_results.pattern_indication.map(
+      dataCertificate.data.calibration_results.result =
+        dataCertificate.data.calibration_results.result.pattern_indication.map(
           (indication, index) => ({
             pattern_indication: indication,
             instrument_indication:
-              dataCertificate.data.calibration_results.instrument_indication[
+              dataCertificate.data.calibration_results.result
+                .instrument_indication[index],
+            correction:
+              dataCertificate.data.calibration_results.result.correction[index],
+            uncertainty:
+              dataCertificate.data.calibration_results.result.uncertainty[
                 index
               ],
-            correction:
-              dataCertificate.data.calibration_results.correction[index],
-            uncertainty:
-              dataCertificate.data.calibration_results.uncertainty[index],
           }),
         )
+
+      if (dataCertificate.data.show_table_international_system_units) {
+        dataCertificate.data.calibration_results.result_unid_system =
+          dataCertificate.data.calibration_results.result_unid_system.pattern_indication.map(
+            (indication, index) => ({
+              pattern_indication: indication,
+              instrument_indication:
+                dataCertificate.data.calibration_results.result_unid_system
+                  .instrument_indication[index],
+              correction:
+                dataCertificate.data.calibration_results.result_unid_system
+                  .correction[index],
+              uncertainty:
+                dataCertificate.data.calibration_results.result_unid_system
+                  .uncertainty[index],
+            }),
+          )
+      }
       const PDF = await this.pdfService.generateCertificatePdf(
         '/certificates/t-03.hbs',
         dataCertificate.data,

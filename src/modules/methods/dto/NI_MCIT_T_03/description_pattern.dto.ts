@@ -15,4 +15,7 @@ export class DescriptionPatternDto {
 
   @ApiProperty()
   calibration_date: string
+
+  @ApiProperty()
+  show_table_international_system_units?: boolean
 }
