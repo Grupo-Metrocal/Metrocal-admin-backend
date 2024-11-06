@@ -1100,6 +1100,26 @@
     "brand": "Fluke"
   },
   {
+    "method": "NI-MCIT-P-01",
+    "equipment": "Manómetro Digital",
+    "code": "NI-MCPP-13",
+    "certificate": "No Aplica (N/A)",
+    "traceability": "SCM-00055926",
+    "pattern_range": "",
+    "next_calibration": "2025-02-17",
+    "brand": "SPMK"
+  },
+  {
+    "method": "NI-MCIT-P-01",
+    "equipment": "Manómetro Digital",
+    "code": "NI-MCPP-12",
+    "certificate": "No Aplica (N/A)",
+    "traceability": "SCM-00055216",
+    "pattern_range": "",
+    "next_calibration": "2025-02-17",
+    "brand": "SSI Technologies"
+  },
+  {
     "method": "NI-MCIT-T-01",
     "equipment": "Termómetro de estándares Chub-E4",
     "code": "NI-MCPT-01",
