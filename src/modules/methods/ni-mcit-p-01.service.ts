@@ -377,6 +377,14 @@ export class NI_MCIT_P_01Service {
           __dirname,
           '../mail/templates/excels/ni_mcit_p_01_06.xlsx',
         )
+      } else if (
+        method.description_pattern.pattern === 'NI-MCPP-13' ||
+        method.description_pattern.pattern === 'NI-MCPP-12'
+      ) {
+        filePath = path.join(
+          __dirname,
+          '../mail/templates/excels/ni_mcit_p_01_13.xlsx',
+        )
       } else {
         filePath = path.join(
           __dirname,
