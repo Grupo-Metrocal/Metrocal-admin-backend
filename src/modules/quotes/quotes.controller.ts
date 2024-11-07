@@ -10,6 +10,8 @@ import {
   Delete,
   UseGuards,
   Query,
+  UseInterceptors,
+  UploadedFile,
 } from '@nestjs/common'
 import { QuoteRequestDto } from './dto/quote-request.dto'
 import { updateEquipmentQuoteRequestDto } from './dto/update-equipment-quote-request.dto'
@@ -24,6 +26,7 @@ import { ModificationRequestDto } from './dto/modification-request.dto'
 import { EquipmentQuoteRequestDto } from './dto/equipment-quote-request.dto'
 import { DeleteEquipmentFromQuoteDto } from './dto/delete-equipment-from-quote.dto'
 import { CurrencyType } from './entities/quote-request.entity'
+import { FileInterceptor } from '@nestjs/platform-express'
 
 @ApiTags('quotes')
 @Controller('quotes')
@@ -299,5 +302,11 @@ export class QuotesController {
       quoteId,
       equipment,
     )
+  }
+
+  @Post('upload-to-extract')
+  @UseInterceptors(FileInterceptor('file'))
+  async uploadFile(@UploadedFile() file: Express.Multer.File) {
+    return await this.quotesService.extractQuoteFromExcel(file)
   }
 }

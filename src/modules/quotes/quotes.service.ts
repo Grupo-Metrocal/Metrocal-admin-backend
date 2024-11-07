@@ -50,6 +50,7 @@ import {
   getExchangeRateForDay,
 } from 'src/services/currencyType.service'
 import { Client } from '../clients/entities/client.entity'
+import * as XlsxPopulate from 'xlsx-populate'
 
 @Injectable()
 export class QuotesService {
@@ -1650,6 +1651,65 @@ export class QuotesService {
 
       return handleOK(equipment)
     } catch (error: any) {
+      return handleInternalServerError(error.message)
+    }
+  }
+
+  async extractQuoteFromExcel(file: Express.Multer.File) {
+    try {
+      if (!file) {
+        return handleBadrequest(new Error('Archivo no subido'))
+      }
+
+      const workbook = await XlsxPopulate.fromDataAsync(file.buffer)
+      const sheetNames = [
+        'Solicitud de Servicio',
+        'Solicitud de Servicio (grande)',
+      ]
+
+      const extractData = []
+      let id = 0
+
+      for (let i = 0; i < sheetNames.length; i++) {
+        const sheet = workbook.sheet(sheetNames[i])
+        let fault = 0
+
+        for (let j = 0; j <= 54; j++) {
+          const equipmentExist = sheet.cell(`D${12 + j}`).value()
+
+          if (fault === 2) break
+
+          if (!equipmentExist) {
+            fault++
+            continue
+          }
+
+          let service = sheet.cell(`B${12 + j}`).value()
+          service = service === 'Calibración' ? 'Calibracion' : service
+
+          const count = sheet.cell(`Q${12 + j}`).value()
+          const model = sheet.cell(`R${12 + j}`).value()
+          const measuring_range = sheet.cell(`V${12 + j}`).value()
+          const additional_remarks = sheet.cell(`X${12 + j}`).value()
+
+          extractData.push({
+            id,
+            name: equipmentExist,
+            type_service: service,
+            count,
+            model,
+            measuring_range,
+            calibration_method: '',
+            additional_remarks,
+          })
+
+          id++
+        }
+      }
+
+      return handleOK(extractData)
+    } catch (error: any) {
+      console.log(error.message)
       return handleInternalServerError(error.message)
     }
   }
