@@ -535,7 +535,7 @@ export class QuotesService {
           method:
             equipment.calibration_method === 'GENERIC_METHOD'
               ? 'Comp. Directa Trazable'
-              : equipment.calibration_method,
+              : `${equipment.calibration_method.split(' ')[0]} ${equipment.is_creditable === false ? 'No Acreditado' : 'Acreditado'}`,
           count: equipment.count,
           unitPrice: formatPrice(
             equipment.price,
@@ -1338,7 +1338,7 @@ export class QuotesService {
           method:
             equipment.calibration_method === 'GENERIC_METHOD'
               ? 'Comp. Directa Trazable'
-              : equipment.calibration_method,
+              : `${equipment.calibration_method.split(' ')[0]} ${equipment.is_creditable === false ? 'No Acreditado' : 'Acreditado'}`,
           count: equipment.count,
           unitPrice: formatPrice(
             equipment.price,
