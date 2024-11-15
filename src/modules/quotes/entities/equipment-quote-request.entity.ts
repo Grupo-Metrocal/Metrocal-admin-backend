@@ -63,4 +63,7 @@ export class EquipmentQuoteRequest {
 
   @Column({ nullable: true, default: '' })
   review_comment?: string
+
+  @Column({ nullable: true })
+  is_creditable?: boolean
 }

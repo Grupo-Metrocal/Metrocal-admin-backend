@@ -46,4 +46,7 @@ export class updateEquipmentQuoteRequestDto {
 
   @ApiProperty()
   total?: number
+
+  @ApiProperty()
+  is_creditable: boolean
 }
