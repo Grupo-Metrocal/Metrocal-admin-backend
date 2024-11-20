@@ -567,7 +567,7 @@ export class NI_MCIT_D_02Service {
         .value(instrumentZeroCheck.x10 == 0.0 ? 0 : instrumentZeroCheck.x10)
 
       const getNominalValue: Record<string, number> = {
-        'BP - 0,5': 1,
+        'BP - 0.5': 1,
         'BP - 1': 2,
         'BP - 1.5': 3,
         'BP - 2': 4,
