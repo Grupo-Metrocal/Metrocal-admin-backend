@@ -31,8 +31,8 @@ export class EquipmentInformationNI_MCIT_V_01 {
   @Column({ type: 'float', nullable: true })
   nominal_range?: number
 
-  @Column({ type: 'float', nullable: true })
-  scale_division?: number
+  @Column({ nullable: true })
+  scale_division?: string
 
   @Column({ type: 'varchar', nullable: true })
   unit?: string

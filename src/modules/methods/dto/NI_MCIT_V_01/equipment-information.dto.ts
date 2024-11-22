@@ -8,7 +8,7 @@ export class EquipmentInformationV01Dto {
   nominal_range?: number
 
   @ApiProperty()
-  scale_division?: number
+  scale_division?: string
 
   @ApiProperty()
   maker?: string

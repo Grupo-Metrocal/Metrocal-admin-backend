@@ -455,11 +455,7 @@ export class NI_MCIT_V_01Service {
           `${method.equipment_information.nominal_range} ${method.equipment_information.unit}`,
         )
 
-      sheet
-        .cell('D9')
-        .value(
-          `${method.equipment_information.scale_division} ${method.equipment_information.unit}`,
-        )
+      sheet.cell('D9').value(`${method.equipment_information.scale_division}`)
 
       sheet.cell('K4').value(equipment_information.material)
       sheet.cell('N4').value(equipment_information.balance)
