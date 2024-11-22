@@ -103,54 +103,45 @@ export class MethodsService {
   async createMethod(createMethod: CreateMethodDto) {
     const { activity_id } = createMethod
     const data = await this.activitiesService.getActivitiesByID(activity_id)
-
     const activity = data.data as Activity
 
     if (!activity) {
       return handleBadrequest(new Error('Activity not found'))
     }
 
-    // Dynamically create method by method_name
     try {
-      const promises = activity.quote_request.equipment_quote_request.map(
-        async (equipment) => {
-          try {
-            await this.dataSource.transaction(async (manager) => {
-              if (equipment.status === 'done') {
-                const methodName = `${equipment.calibration_method
-                  .split(' ')[0]
-                  .replaceAll('-', '_')}Repository`
+      await this.dataSource.transaction(async (manager) => {
+        const promises = activity.quote_request.equipment_quote_request.map(
+          async (equipment) => {
+            if (equipment.status === 'done') {
+              const methodName = `${equipment.calibration_method.split(' ')[0].replaceAll('-', '_')}Repository`
 
-                if (typeof this[methodName] === 'undefined') {
-                  return handleBadrequest(new Error('Method not found'))
-                }
+              if (!this[methodName]) {
+                return
+              }
 
-                const methodsID = [] as any
-
-                for (let i = 0; i < equipment.count; i++) {
+              const methodsID = await Promise.all(
+                Array.from({ length: equipment.count }, async () => {
                   const newMethod = await this[methodName].create()
                   await manager.save(newMethod)
-                  methodsID.push(newMethod.id)
-                }
+                  return newMethod.id
+                }),
+              )
 
-                const method = await this.createMethodID(methodsID, methodName)
-
-                await this.quotesService.asyncMethodToEquipment({
-                  equipmentID: equipment.id,
-                  methodID: method.id,
-                })
-              }
-            })
-          } catch (error) {
-            return handleBadrequest(error.message)
-          }
-        },
-      )
-
-      await Promise.all(promises)
+              const method = await this.createMethodID(methodsID, methodName)
+              await this.quotesService.asyncMethodToEquipment({
+                equipmentID: equipment.id,
+                methodID: method.id,
+              })
+            }
+          },
+        )
+        await Promise.all(promises)
+      })
 
       return handleOK(activity.quote_request.equipment_quote_request)
     } catch (error) {
+      console.log({ error })
       return handleBadrequest(error.message)
     }
   }
