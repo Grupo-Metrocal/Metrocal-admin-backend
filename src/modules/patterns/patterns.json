@@ -1101,6 +1101,26 @@
   },
   {
     "method": "NI-MCIT-P-01",
+    "equipment": "Calibrador de procesos",
+    "code": "NI-MCPVE-18",
+    "certificate": "No Aplica (N/A)",
+    "traceability": "SCM Metrología y Laboratorios SCM-00056900",
+    "pattern_range": "",
+    "next_calibration": "2025-04-02",
+    "brand": ""
+  },
+  {
+    "method": "NI-MCIT-P-01",
+    "equipment": "Calibrador de procesos",
+    "code": "NI-MCPVE-16",
+    "certificate": "No Aplica (N/A)",
+    "traceability": "SCM Metrología y Laboratorios SCM-00041608",
+    "pattern_range": "",
+    "next_calibration": "2026-05-05",
+    "brand": "Martel"
+  },
+  {
+    "method": "NI-MCIT-P-01",
     "equipment": "Manómetro Digital",
     "code": "NI-MCPP-13",
     "certificate": "No Aplica (N/A)",
@@ -1166,7 +1186,7 @@
     "certificate": "No Aplica (N/A)",
     "traceability": "SCM Metrología y Laboratorios SCM-00039472",
     "pattern_range": "",
-    "next_calibration": "2024-11-15",
+    "next_calibration": "2026-10-05",
     "brand": "AccuMac/Fluke"
   },
   {
@@ -1196,7 +1216,7 @@
     "certificate": "No Aplica (N/A)",
     "traceability": "SCM Metrología y Laboratorios SCM-00039466",
     "pattern_range": "",
-    "next_calibration": "2024-11-15",
+    "next_calibration": "2024-12-17",
     "brand": "Fluke"
   },
   {
@@ -1286,7 +1306,7 @@
     "certificate": "No Aplica (N/A)",
     "traceability": "RECOPE, Certificado RCP-LMV-MSWS-095-23",
     "pattern_range": "",
-    "next_calibration": "2025-07-27",
+    "next_calibration": "2025-05-17",
     "brand": "Zwiebel"
   },
   {
@@ -1306,7 +1326,7 @@
     "certificate": "No Aplica (N/A)",
     "traceability": "RECOPE, Certificado RCP-LMV-MSW5-095-23",
     "pattern_range": "",
-    "next_calibration": "2025-07-27",
+    "next_calibration": "2025-05-17",
     "brand": "Zwiebel"
   },
   {
@@ -1316,7 +1336,7 @@
     "certificate": "No Aplica (N/A)",
     "traceability": "RECOPE, Certificado RCP-LMV-MSWS-095-23",
     "pattern_range": "",
-    "next_calibration": "2025-07-27",
+    "next_calibration": "2025-05-17",
     "brand": "Zwiebel"
   },
   {
@@ -1656,7 +1676,7 @@
     "certificate": "",
     "traceability": "RECOPE, Certificado RCP-LMV-MSWS-095-23",
     "pattern_range": "",
-    "next_calibration": "2025-07-27",
+    "next_calibration": "2027-07-27",
     "brand": "Zwiebel"
   },
   {
@@ -1666,7 +1686,7 @@
     "certificate": "",
     "traceability": "RECOPE, Certificado RCP-LMV-MSWS-095-23",
     "pattern_range": "",
-    "next_calibration": "2025-07-27",
+    "next_calibration": "2025-05-17",
     "brand": "Zwiebel"
   },
   {
@@ -1676,7 +1696,7 @@
     "certificate": "",
     "traceability": "RECOPE, Certificado RCP-LMV-MSWS-095-23",
     "pattern_range": "",
-    "next_calibration": "2025-07-27",
+    "next_calibration": "2025-05-17",
     "brand": "Zwiebel"
   },
   {
@@ -1686,7 +1706,7 @@
     "certificate": "",
     "traceability": "RECOPE, Certificado RCP-LMV-MSWS-095-23",
     "pattern_range": "",
-    "next_calibration": "2025-07-27",
+    "next_calibration": "2025-05-17",
     "brand": "Zwiebel"
   },
   {
@@ -1696,7 +1716,7 @@
     "certificate": "",
     "traceability": "RECOPE, Certificado RCP-LMV-MSWS-095-23",
     "pattern_range": "",
-    "next_calibration": "2025-07-27",
+    "next_calibration": "2025-05-17",
     "brand": "Zwiebel"
   },
   {
@@ -1706,7 +1726,7 @@
     "certificate": "",
     "traceability": "RECOPE, Certificado RCP-LMV-MSWS-095-23",
     "pattern_range": "",
-    "next_calibration": "2025-07-27",
+    "next_calibration": "2025-05-17",
     "brand": "Zwiebel"
   },
   {
@@ -1716,7 +1736,7 @@
     "certificate": "",
     "traceability": "RECOPE, Certificado RCP-LMV-MSWS-095-23",
     "pattern_range": "",
-    "next_calibration": "2025-07-27",
+    "next_calibration": "2025-05-17",
     "brand": "Zwiebel"
   },
   {
@@ -1726,7 +1746,7 @@
     "certificate": "",
     "traceability": "RECOPE, Certificado RCP-LMV-MSWS-095-23",
     "pattern_range": "",
-    "next_calibration": "2025-07-27",
+    "next_calibration": "2025-05-17",
     "brand": "Zwiebel"
   },
   {
@@ -1736,7 +1756,7 @@
     "certificate": "",
     "traceability": "RECOPE, Certificado RCP-LMV-MSWS-095-23",
     "pattern_range": "",
-    "next_calibration": "2025-07-27",
+    "next_calibration": "2025-05-17",
     "brand": "Zwiebel"
   },
   {
@@ -1746,7 +1766,7 @@
     "certificate": "",
     "traceability": "RECOPE, Certificado RCP-LMV-MSWS-095-23",
     "pattern_range": "",
-    "next_calibration": "2025-07-27",
+    "next_calibration": "2025-05-17",
     "brand": "Zwiebel"
   },
   {
@@ -1756,7 +1776,7 @@
     "certificate": "",
     "traceability": "RECOPE, Certificado RCP-LMV-MSWS-095-23",
     "pattern_range": "",
-    "next_calibration": "2025-07-27",
+    "next_calibration": "2025-05-17",
     "brand": "Zwiebel"
   },
   {
@@ -1766,7 +1786,7 @@
     "certificate": "",
     "traceability": "RECOPE, Certificado RCP-LMV-MSWS-095-23",
     "pattern_range": "",
-    "next_calibration": "2025-07-27",
+    "next_calibration": "2025-05-17",
     "brand": "Zwiebel"
   },
   {
@@ -1776,7 +1796,7 @@
     "certificate": "",
     "traceability": "RECOPE, Certificado RCP-LMV-MSWS-095-23",
     "pattern_range": "",
-    "next_calibration": "2025-07-27",
+    "next_calibration": "2025-05-17",
     "brand": "Zwiebel"
   },
   {
@@ -1786,7 +1806,7 @@
     "certificate": "",
     "traceability": "RECOPE, Certificado RCP-LMV-MSWS-095-23",
     "pattern_range": "",
-    "next_calibration": "2025-07-27",
+    "next_calibration": "2025-05-17",
     "brand": "Zwiebel"
   },
   {
@@ -1796,7 +1816,7 @@
     "certificate": "",
     "traceability": "RECOPE, Certificado RCP-LMV-MSWS-095-23",
     "pattern_range": "",
-    "next_calibration": "2025-07-27",
+    "next_calibration": "2025-05-17",
     "brand": "Zwiebel"
   },
   {
@@ -1806,7 +1826,7 @@
     "certificate": "",
     "traceability": "RECOPE, Certificado RCP-LMV-MSWS-095-23",
     "pattern_range": "",
-    "next_calibration": "2025-07-27",
+    "next_calibration": "2025-05-17",
     "brand": "Zwiebel"
   },
   {
@@ -1816,7 +1836,7 @@
     "certificate": "",
     "traceability": "RECOPE, Certificado RCP-LMV-MSWS-095-23",
     "pattern_range": "",
-    "next_calibration": "2025-07-27",
+    "next_calibration": "2025-05-17",
     "brand": "Zwiebel"
   },
   {
@@ -1916,7 +1936,7 @@
     "certificate": "No Aplica (N/A)",
     "traceability": "SCM Metrología y Laboratorios SCM-00039472",
     "pattern_range": "",
-    "next_calibration": "2024-11-15",
+    "next_calibration": "2026-10-05",
     "brand": "AccuMac/Fluke"
   },
   {
@@ -1976,7 +1996,7 @@
     "certificate": "No Aplica (N/A)",
     "traceability": "SCM Metrología y Laboratorios SCM-00039467",
     "pattern_range": "",
-    "next_calibration": "2024-10-05",
+    "next_calibration": "2025-10-05",
     "brand": "Fluke"
   },
   {
