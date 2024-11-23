@@ -679,18 +679,19 @@ export class NI_MCIT_B_01Service {
 
   //resultados para generar PDF
   async getCertificateResult(methodID: number, activityID: number) {
-    const method = await this.NI_MCIT_B_01Repository.findOne({
-      where: { id: methodID },
-      relations: [
-        'equipment_information',
-        'environmental_conditions',
-        'eccentricity_test',
-        'repeatability_test',
-        'linearity_test',
-        'description_pattern',
-      ],
-    })
     try {
+      const method = await this.NI_MCIT_B_01Repository.findOne({
+        where: { id: methodID },
+        relations: [
+          'equipment_information',
+          'environmental_conditions',
+          'eccentricity_test',
+          'repeatability_test',
+          'linearity_test',
+          'description_pattern',
+        ],
+      })
+
       if (!method) {
         return handleInternalServerError('El metodo no existe')
       }

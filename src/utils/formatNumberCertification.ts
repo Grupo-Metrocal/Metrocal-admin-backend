@@ -49,7 +49,7 @@ export const convertToValidNumber = (value: any) => {
 }
 
 export const repairNumberFromCertificate = (value: any) => {
-  if (typeof value === 'number') {
+  if (typeof value === 'number' || value === undefined) {
     return value
   }
 
