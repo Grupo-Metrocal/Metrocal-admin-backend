@@ -40,7 +40,7 @@ import { NI_MCIT_V_01Service } from './ni-mcit-v-01.service'
 
 import { GENERIC_METHOD } from './entities/GENERIC METHOD/GENERIC_METHOD.entity'
 import { GENERIC_METHODService } from './generic-method.service'
-import { formatCertCode } from 'src/utils/generateCertCode'
+import { formatCertCode, updateCertCode } from 'src/utils/generateCertCode'
 import { OptionsCMCOnCertificateDto } from './dto/setSOptionsCMCOnCertificate.dto'
 import {
   formatNumberCertification,
@@ -846,6 +846,101 @@ export class MethodsService {
     } catch (error) {
       console.log(error.message)
       handleInternalServerError(error.message)
+    }
+  }
+
+  async updateLastRecordIndex(method_name: string) {
+    try {
+      const method = `${method_name}Repository`
+      const last_method = await this[method]
+        .createQueryBuilder(`${method_name}`)
+        .orderBy(`${method_name}.last_record_index`, 'DESC')
+        .getOne()
+
+      await this.dataSource.transaction(async (manager) => {
+        console.log(
+          'current last record index ==>> ',
+          last_method.last_record_index,
+        )
+
+        last_method.last_record_index =
+          !last_method ||
+          last_method.created_at.getFullYear() !== new Date().getFullYear()
+            ? 1
+            : last_method.last_record_index + 1
+
+        console.log(
+          'updated last record index ==>> ',
+          last_method.last_record_index,
+        )
+        await manager.save(last_method)
+      })
+
+      return handleOK(last_method)
+    } catch (error) {
+      return handleInternalServerError(error.message)
+    }
+  }
+
+  async getAlternativeRecordIndex(method_name: string) {
+    try {
+      const method = `${method_name}Repository`
+      const last_method = await this[method]
+        .createQueryBuilder(`${method_name}`)
+        .orderBy(`${method_name}.last_record_index`, 'DESC')
+        .getOne()
+
+      return handleOK({
+        last_record_index: last_method.last_record_index + 1,
+        certificate_code: last_method.certificate_code,
+      })
+    } catch (error) {
+      return handleInternalServerError(error.message)
+    }
+  }
+
+  async updateRecordByAlternativeIndex(
+    from_method_name: string,
+    to_method_name: string,
+    equipmentID: number,
+  ) {
+    try {
+      const method_name = `${to_method_name}Repository`
+
+      const equipment = await this[method_name].findOne({
+        where: { id: equipmentID },
+      })
+
+      if (!equipment) {
+        return handleBadrequest(new Error('Equipo no encontrado'))
+      }
+
+      await this.dataSource.transaction(async (manager) => {
+        const { success, data } =
+          await this.getAlternativeRecordIndex(from_method_name)
+
+        if (!success) {
+          return handleBadrequest(
+            new Error('Hubo un error en el metodo de referencia'),
+          )
+        }
+
+        const { last_record_index, certificate_code } = data
+
+        equipment.record_index = last_record_index
+        equipment.last_record_index = 0
+        equipment.certificate_code = updateCertCode(
+          certificate_code,
+          Number(last_record_index),
+        )
+
+        await manager.save(equipment)
+        await this.updateLastRecordIndex(from_method_name)
+      })
+
+      return handleOK(equipment)
+    } catch (error) {
+      return handleInternalServerError(error.message)
     }
   }
 }
