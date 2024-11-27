@@ -961,7 +961,7 @@ Este certificado de calibración no debe ser reproducido sin la aprobación del 
       const lastMethod = await this.NI_MCIT_D_02Repository.createQueryBuilder(
         'NI_MCIT_D_02',
       )
-        .orderBy('NI_MCIT_D_02.record_index', 'DESC')
+        .orderBy('NI_MCIT_D_02.last_record_index', 'DESC')
         .getOne()
 
       if (!method) {
@@ -978,7 +978,9 @@ Este certificado de calibración no debe ser reproducido sin la aprobación del 
           lastMethod.created_at.getFullYear() !==
             method.created_at.getFullYear()
             ? 1
-            : lastMethod.record_index + 1
+            : lastMethod.last_record_index + 1
+
+        await this.methodService.updateLastRecordIndex('NI_MCIT_D_02')
 
         await manager.save(method)
       })

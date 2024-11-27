@@ -43,6 +43,9 @@ export class GENERIC_METHOD {
   @Column({ default: 0 })
   record_index: number
 
+  @Column({ default: 0 })
+  last_record_index: number
+
   @ManyToOne(
     () => EquipmentInformationGENERIC_METHOD,
     (equipmentInformationGENERIC_METHOD) =>

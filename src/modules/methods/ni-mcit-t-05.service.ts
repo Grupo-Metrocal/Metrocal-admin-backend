@@ -326,7 +326,7 @@ export class NI_MCIT_T_05Service {
       const lastMethod = await this.NI_MCIT_T_05Repository.createQueryBuilder(
         'NI_MCIT_T_05',
       )
-        .orderBy('NI_MCIT_T_05.record_index', 'DESC')
+        .orderBy('NI_MCIT_T_05.last_record_index', 'DESC')
         .getOne()
 
       if (!method) {
@@ -343,7 +343,9 @@ export class NI_MCIT_T_05Service {
           lastMethod.created_at.getFullYear() !==
             method.created_at.getFullYear()
             ? 1
-            : lastMethod.record_index + 1
+            : lastMethod.last_record_index + 1
+
+        await this.methodService.updateLastRecordIndex('NI_MCIT_T_05')
 
         await manager.save(method)
       })

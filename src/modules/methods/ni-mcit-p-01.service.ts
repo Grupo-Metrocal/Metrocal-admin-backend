@@ -914,7 +914,7 @@ De acuerdo a lo establecido en NTON 07-004-01 Norma Metrológica del Sistema Int
       const lastMethod = await this.NI_MCIT_P_01Repository.createQueryBuilder(
         'NI_MCIT_P_01',
       )
-        .orderBy('NI_MCIT_P_01.record_index', 'DESC')
+        .orderBy('NI_MCIT_P_01.last_record_index', 'DESC')
         .getOne()
 
       if (!method) {
@@ -931,7 +931,9 @@ De acuerdo a lo establecido en NTON 07-004-01 Norma Metrológica del Sistema Int
           lastMethod.created_at.getFullYear() !==
             method.created_at.getFullYear()
             ? 1
-            : lastMethod.record_index + 1
+            : lastMethod.last_record_index + 1
+
+        await this.methodService.updateLastRecordIndex('NI_MCIT_P_01')
 
         await manager.save(method)
       })

@@ -57,6 +57,9 @@ export class NI_MCIT_T_05 {
   @Column({ default: 0 })
   record_index: number
 
+  @Column({ default: 0 })
+  last_record_index: number
+
   @ManyToOne(
     () => EquipmentInformationNI_MCIT_T_05,
     (EquipmentInformationNI_MCIT_T_05) =>
