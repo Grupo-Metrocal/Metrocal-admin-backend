@@ -223,12 +223,14 @@ export class MethodsController {
     res.send(certificateBuffer.data)
   }
 
-  @Get('get-alternative-record-index/:method_name')
+  @Get('get-alternative-certification-code/:method_name')
   async getAlternativeRecordIndex(@Param('method_name') method_name: string) {
     return await this.methodsService.getAlternativeRecordIndex(method_name)
   }
 
-  @Get('update-record-index/:from_method_name/:to_method_name/:equipmentID')
+  @Get(
+    'update-certification-code/:from_method_name/:to_method_name/:equipmentID',
+  )
   async updateRecordByAlternativeIndex(
     @Param('from_method_name') from_method_name: string,
     @Param('to_method_name') to_method_name: string,
