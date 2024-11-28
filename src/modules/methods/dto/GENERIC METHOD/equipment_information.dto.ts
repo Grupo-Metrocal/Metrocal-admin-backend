@@ -2,9 +2,6 @@ import { ApiProperty } from '@nestjs/swagger'
 
 export class EquipmentInformationGENERIC_METHODDto {
   @ApiProperty()
-  date?: Date
-
-  @ApiProperty()
   device?: string
 
   @ApiProperty()
@@ -30,5 +27,4 @@ export class EquipmentInformationGENERIC_METHODDto {
 
   @ApiProperty()
   estabilization_site?: string
-  
 }

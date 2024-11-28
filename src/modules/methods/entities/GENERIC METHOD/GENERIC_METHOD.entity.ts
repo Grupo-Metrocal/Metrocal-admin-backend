@@ -6,27 +6,41 @@ import { ResultMeditionGENERIC_METHOD } from './steps/result_medition.entity'
 
 @Entity('GENERIC_METHOD')
 export class GENERIC_METHOD {
-  // Add your columns here
   @PrimaryGeneratedColumn('increment')
   id: number
+
+  @Column({ nullable: true })
+  calibration_location?: string
+
+  @Column({ nullable: true })
+  applicant_address?: string
+
+  @Column({ nullable: true })
+  applicant_name: string
+
+  @Column({ nullable: true })
+  modification_number?: number
+
+  @Column({ nullable: true })
+  method_end_date_finished: Date
+
+  @Column({ nullable: true })
+  certificate_issue_date: Date
 
   @Column({ nullable: true, default: false, type: 'boolean' })
   report_status?: boolean
 
-  @Column({ nullable: true, default: 'pending' })
-  status?: string // pending, done
-
   @Column({ nullable: true, type: 'varchar', array: true, default: [] })
   report_messages?: string[]
+
+  @Column({ nullable: true, default: 'pending' })
+  status?: string // pending, done
 
   @Column({ nullable: true })
   certificate_id?: string
 
   @Column({ nullable: true })
   certificate_code?: string
-
-  @Column({ nullable: true, default: 'asterisks' })
-  optionsCMCOnCertificate?: 'asterisks' | 'change_values'
 
   @Column({ nullable: true })
   certificate_url?: string
@@ -36,9 +50,6 @@ export class GENERIC_METHOD {
 
   @Column({ nullable: true })
   review_user_id?: number
-
-  @Column({ nullable: true })
-  modification_number?: number
 
   @Column({ default: 0 })
   record_index: number

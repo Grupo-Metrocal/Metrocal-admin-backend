@@ -1,11 +1,11 @@
-import { Column, Entity, ManyToOne, PrimaryGeneratedColumn } from "typeorm";
-import { GENERIC_METHOD } from "../GENERIC_METHOD.entity";
+import { Column, Entity, ManyToOne, PrimaryGeneratedColumn } from 'typeorm'
+import { GENERIC_METHOD } from '../GENERIC_METHOD.entity'
 
 @Entity('computer_data_GENERIC_METHOD')
 export class ComputerDataGENERIC_METHOD {
-    @PrimaryGeneratedColumn('increment')
-    id?: number
-  // Add your columns here
+  @PrimaryGeneratedColumn('increment')
+  id: number
+
   @ManyToOne(
     () => GENERIC_METHOD,
     (GENERIC_METHOD) => GENERIC_METHOD.computer_data,
@@ -14,12 +14,11 @@ export class ComputerDataGENERIC_METHOD {
       onUpdate: 'CASCADE',
     },
   )
-    GENERIC_METHOD: GENERIC_METHOD
+  GENERIC_METHOD: GENERIC_METHOD
 
-    @Column({ type: 'varchar', nullable: true })
-    unit_of_measurement: string
+  @Column({ type: 'varchar', nullable: true })
+  unit_of_measurement: string
 
-    @Column({ type: 'varchar', nullable: true })
-    scale_unit: string
-
+  @Column({ nullable: true })
+  scale_unit: number
 }

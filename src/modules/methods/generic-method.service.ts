@@ -451,7 +451,7 @@ export class GENERIC_METHODService {
           humidity: humidity,
           temperature2: temperature2,
           humidity2: humidity2, */
-          equipment_used: method.environmental_conditions.equipment_used,
+          equipment_used: method.environmental_conditions.pattern,
         },
         description_pattern: 'Standard calibration pattern',
         observations: `Es responsabilidad del encargado del instrumento establecer la frecuencia del servicio de calibración.			

@@ -1,9 +1,9 @@
-import { ApiProperty } from "@nestjs/swagger";
+import { ApiProperty } from '@nestjs/swagger'
 
-export class ComputerDataGENERIC_METHODDto {  
-    @ApiProperty()
-    unit_of_measurement: string
+export class ComputerDataGENERIC_METHODDto {
+  @ApiProperty()
+  unit_of_measurement: string
 
-    @ApiProperty()
-    scale_unit : string
+  @ApiProperty()
+  scale_unit: number
 }

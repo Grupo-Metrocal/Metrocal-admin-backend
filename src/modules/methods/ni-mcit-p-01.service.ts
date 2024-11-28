@@ -733,7 +733,6 @@ export class NI_MCIT_P_01Service {
         pattern: 'NI-MCIT-P-01',
         email: activity.quote_request.client.email,
         CMC,
-        optionsCMCOnCertificate: method.optionsCMCOnCertificate,
         equipment_information: {
           certification_code: formatCertCode(
             method.certificate_code,
