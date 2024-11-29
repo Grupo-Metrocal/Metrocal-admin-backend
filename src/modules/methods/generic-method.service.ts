@@ -30,6 +30,8 @@ import {
   formatNumberCertification,
 } from 'src/utils/formatNumberCertification'
 import { countDecimals } from 'src/utils/countDecimal'
+import { CertificationDetailsDto } from './dto/NI_MCIT_P_01/certification_details.dto'
+import { DescriptionPatternGenericMethodDto } from './dto/GENERIC METHOD/description_pattern.dto'
 
 @Injectable()
 export class GENERIC_METHODService {
@@ -85,6 +87,7 @@ export class GENERIC_METHODService {
   async equipmentInformationCreate(
     equipement: EquipmentInformationGENERIC_METHODDto,
     methodId: number,
+    increase?: boolean,
   ) {
     try {
       const method = await this.GENERIC_METHODRepository.findOne({
@@ -107,10 +110,15 @@ export class GENERIC_METHODService {
         method.equipment_information = newEquipment
       }
 
-      await this.generateCertificateCodeToMethod(method.id)
-
       await this.dataSource.transaction(async (manager) => {
         await manager.save(method.equipment_information)
+        if (increase) {
+          method.modification_number =
+            method.modification_number === null
+              ? 1
+              : method.modification_number + 1
+        }
+
         await manager.save(method)
       })
       return handleOK(method.equipment_information)
@@ -122,6 +130,7 @@ export class GENERIC_METHODService {
   async environmentalConditionsCreate(
     environmentalConditions: EnvironmentalConditionsGENERIC_METHODDto,
     methodId: number,
+    increase?: boolean,
   ) {
     try {
       const method = await this.GENERIC_METHODRepository.findOne({
@@ -148,6 +157,12 @@ export class GENERIC_METHODService {
 
       await this.dataSource.transaction(async (manager) => {
         await manager.save(method.environmental_conditions)
+        if (increase) {
+          method.modification_number =
+            method.modification_number === null
+              ? 1
+              : method.modification_number + 1
+        }
         await manager.save(method)
       })
       return handleOK(method.environmental_conditions)
@@ -159,6 +174,7 @@ export class GENERIC_METHODService {
   async computerDataCreate(
     computerData: ComputerDataGENERIC_METHODDto,
     methodId: number,
+    increase?: boolean,
   ) {
     try {
       const method = await this.GENERIC_METHODRepository.findOne({
@@ -183,6 +199,12 @@ export class GENERIC_METHODService {
 
       await this.dataSource.transaction(async (manager) => {
         await manager.save(method.computer_data)
+        if (increase) {
+          method.modification_number =
+            method.modification_number === null
+              ? 1
+              : method.modification_number + 1
+        }
         await manager.save(method)
       })
       return handleOK(method.computer_data)
@@ -192,7 +214,7 @@ export class GENERIC_METHODService {
   }
 
   async descriptionPattern(
-    descriptionPattern: DescriptionPatternGENERIC_METHOD,
+    descriptionPattern: DescriptionPatternGenericMethodDto,
     methodId: number,
     activityId: number,
     increase?: boolean,
@@ -253,10 +275,35 @@ export class GENERIC_METHODService {
     }
   }
 
+  async addCalibrationLocation(
+    certificatonDetails: CertificationDetailsDto,
+    methodId: number,
+  ) {
+    const method = await this.GENERIC_METHODRepository.findOne({
+      where: { id: methodId },
+    })
+
+    if (!method) {
+      return handleInternalServerError('El método no existe')
+    }
+
+    method.calibration_location = certificatonDetails.location
+    method.applicant_name = certificatonDetails.applicant_name
+    method.applicant_address = certificatonDetails.applicant_address
+
+    try {
+      await this.GENERIC_METHODRepository.save(method)
+
+      return handleOK(method)
+    } catch (error) {
+      return handleInternalServerError(error.message)
+    }
+  }
+
   async resultMeditionCreate(
     resultMedition: Result_MeditionGENERIC_METHODDto,
     methodId: number,
-    activityId: number,
+    increase?: boolean,
   ) {
     try {
       const method = await this.GENERIC_METHODRepository.findOne({
@@ -281,11 +328,14 @@ export class GENERIC_METHODService {
 
       await this.dataSource.transaction(async (manager) => {
         await manager.save(method.result_medition)
+        if (increase) {
+          method.modification_number =
+            method.modification_number === null
+              ? 1
+              : method.modification_number + 1
+        }
         await manager.save(method)
       })
-
-      await this.generateCertificateCodeToMethod(method.id)
-      await this.activitiesService.updateActivityProgress(activityId)
 
       return handleOK(method.result_medition)
     } catch (error) {

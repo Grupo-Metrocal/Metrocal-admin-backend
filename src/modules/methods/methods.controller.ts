@@ -82,6 +82,7 @@ import { CalibrationResultsM01Dto } from './dto/NI_MCIT_M_01/calibraion_results.
 import { DescriptionPatternM01Dto } from './dto/NI_MCIT_M_01/description_pattern.dto'
 import { Response } from 'express'
 import { DescriptionPatternB01Dto } from './dto/NI_MCIT_B_01/description_pattern.dto'
+import { DescriptionPatternGenericMethodDto } from './dto/GENERIC METHOD/description_pattern.dto'
 
 @ApiTags('methods')
 @Controller('methods')
@@ -668,7 +669,6 @@ export class MethodsController {
     )
   }
 
-  //T-01
   @Post('ni-mcit-t-01/calibration-location/:methodId')
   async createNI_MCIT_T_01CalibrationLocation(
     @Body() certificationDetails: CertificationDetailsDto,
@@ -1353,19 +1353,30 @@ export class MethodsController {
     return await this.ni_mcit_v_01Service.getMehotdById(id)
   }
 
-  @Post('generic-method/create')
-  async createGenericMethod() {
-    return await this.GenericMethodService.create()
+  @Post('generic-method/calibration-location/:methodId')
+  async createGENERIC_METHODCalibrationLocation(
+    @Body() certificationDetails: CertificationDetailsDto,
+    @Param('methodId') methodId: number,
+  ) {
+    return await this.GenericMethodService.addCalibrationLocation(
+      certificationDetails,
+      methodId,
+    )
   }
 
+  @ApiQuery({ name: 'increase', required: false })
   @Post('generic-method/equipment-information/:methodId')
   async createGenericMethodEquipmentInformation(
     @Body() equipment: EquipmentInformationGENERIC_METHODDto,
     @Param('methodId') methodId: number,
+    @Query('increase') increase?: string,
   ) {
+    const valueIncrease = increase === 'true' ? true : false
+
     return await this.GenericMethodService.equipmentInformationCreate(
       equipment,
       methodId,
+      valueIncrease,
     )
   }
 
@@ -1380,28 +1391,65 @@ export class MethodsController {
     )
   }
 
-  @Post('generic-method/results-medition/:methodId/:activityId')
+  @ApiQuery({ name: 'increase', required: false })
+  @Post('generic-method/results-medition/:methodId/')
   async createGenericMethodResultsMedition(
     @Body() resultsMedition: Result_MeditionGENERIC_METHODDto,
     @Param('methodId') methodId: number,
-    @Param('activityId') activityId: number,
+    @Query('increase') increase?: string,
   ) {
+    const valueIncrease = increase === 'true' ? true : false
+
     return await this.GenericMethodService.resultMeditionCreate(
       resultsMedition,
       methodId,
-      activityId,
+      valueIncrease,
     )
   }
 
+  @ApiQuery({ name: 'increase', required: false })
   @Post('generic-method/computer-data/:methodId')
   async createGenericMethodComputerData(
     @Body() computerData: ComputerDataGENERIC_METHODDto,
     @Param('methodId') methodId: number,
+    @Query('increase') increase?: string,
   ) {
+    const valueIncrease = increase === 'true' ? true : false
+
     return await this.GenericMethodService.computerDataCreate(
       computerData,
       methodId,
+      valueIncrease,
     )
+  }
+
+  @ApiQuery({ name: 'increase', required: false })
+  @Post('generic-method/description-pattern/:methodId/:activityId')
+  async createGENERIC_METHODDescriptionPattern(
+    @Body() descriptionPattern: DescriptionPatternGenericMethodDto,
+    @Param('methodId') methodId: number,
+    @Param('activityId') activityId: number,
+    @Query('increase') increase?: string,
+  ) {
+    const valueIncrease = increase === 'true' ? true : false
+
+    return await this.GenericMethodService.descriptionPattern(
+      descriptionPattern,
+      methodId,
+      activityId,
+      valueIncrease,
+    )
+  }
+
+  @Get('generic-method/certificates/activity/:activityId/method/:methodId')
+  async getGENERIC_METHODCertificate(
+    @Param('activityId') activityId: number,
+    @Param('methodId') methodId: number,
+  ) {
+    return await this.GenericMethodService.generateCertificate({
+      activityID: activityId,
+      methodID: methodId,
+    })
   }
 
   @Get('generic-method/generate-certificate/send/pdf/:idActivity/:idMethod')
@@ -1415,7 +1463,23 @@ export class MethodsController {
     )
   }
 
-  @Get('generic_method/certificates/activity/:activityId/method/:methodId')
+  @Get('generic-method/generate-certificate/pdf/:idActivity/:idMethod')
+  async getCertificatePdfGenericMethod(
+    @Param('idActivity') idActivity: number,
+    @Param('idMethod') idMethod: number,
+  ) {
+    return await this.ni_mcit_t_01Service.generatePDFCertificate(
+      idActivity,
+      idMethod,
+    )
+  }
+
+  @Get('generic-method/equipment/:id')
+  async getEquipmentGenericMethodId(@Param('id') id: number) {
+    return await this.ni_mcit_t_01Service.getMehotdById(id)
+  }
+
+  @Get('generic-method/certificates/activity/:activityId/method/:methodId')
   async getCetficateGeneric(
     @Param('activityId') activityId: number,
     @Param('methodId') methodId: number,
@@ -1426,7 +1490,7 @@ export class MethodsController {
     })
   }
 
-  @Get('generic_method/equipment/:id')
+  @Get('generic-method/equipment/:id')
   async getEquipmentGeneric(@Param('id') id: number) {
     return await this.GenericMethodService.getMehotdById(id)
   }

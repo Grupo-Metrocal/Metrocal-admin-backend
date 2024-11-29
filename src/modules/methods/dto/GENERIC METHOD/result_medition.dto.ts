@@ -3,5 +3,5 @@ import { IMedition } from '../../entities/GENERIC METHOD/steps/result_medition.e
 
 export class Result_MeditionGENERIC_METHODDto {
   @ApiProperty()
-  meditions?: IMedition[]
+  meditions: IMedition[]
 }
