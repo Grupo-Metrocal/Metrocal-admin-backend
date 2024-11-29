@@ -1380,14 +1380,19 @@ export class MethodsController {
     )
   }
 
+  @ApiQuery({ name: 'increase', required: false })
   @Post('generic-method/environmental-conditions/:methodId')
   async createGenericMethodEnvironmentalConditions(
     @Body() environmentalConditions: EnvironmentalConditionsGENERIC_METHODDto,
     @Param('methodId') methodId: number,
+    @Query('increase') increase?: string,
   ) {
+    const valueIncrease = increase === 'true' ? true : false
+
     return await this.GenericMethodService.environmentalConditionsCreate(
       environmentalConditions,
       methodId,
+      valueIncrease,
     )
   }
 
@@ -1474,9 +1479,9 @@ export class MethodsController {
     )
   }
 
-  @Get('generic-method/equipment/:id')
+  @Get('generic_method/equipment/:id')
   async getEquipmentGenericMethodId(@Param('id') id: number) {
-    return await this.ni_mcit_t_01Service.getMehotdById(id)
+    return await this.GenericMethodService.getMehotdById(id)
   }
 
   @Get('generic-method/certificates/activity/:activityId/method/:methodId')
