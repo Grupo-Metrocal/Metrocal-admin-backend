@@ -109,6 +109,25 @@
     </span>
   </div>
 
+  {{#ifArrayEq calibration_results.result 6}}
+    <br /><br /><br /><br /><br />
+  {{/ifArrayEq}}
+  {{#ifArrayEq calibration_results.result 7}}
+    <br /><br /><br /><br /><br />
+  {{/ifArrayEq}}
+  {{#ifArrayEq calibration_results.result 8}}
+    <br /><br /><br /><br />
+  {{/ifArrayEq}}
+  {{#ifArrayEq calibration_results.result 9}}
+    <br /><br /><br />
+  {{/ifArrayEq}}
+  {{#ifArrayEq calibration_results.result 10}}
+    <br /><br />
+  {{/ifArrayEq}}
+  {{#ifArrayEq calibration_results.result 11}}
+    <br />
+  {{/ifArrayEq}}
+
   <div class='used_pattern'>
     <strong><span>Descripción de patrones utilizados</span></strong>
     <br />
@@ -132,10 +151,12 @@
           </tr>
         {{/each}}
       </tbody>
-
-      <tbody></tbody>
     </table>
   </div>
+
+  {{#ltArray calibration_results.result 7}}
+    <br />
+  {{/ltArray}}
 
   <div class='observations'>
     <strong><span>Observaciones</span></strong>
