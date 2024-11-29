@@ -5,5 +5,5 @@ export class ComputerDataGENERIC_METHODDto {
   unit_of_measurement: string
 
   @ApiProperty()
-  scale_unit: number
+  scale_division: number
 }

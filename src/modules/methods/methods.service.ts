@@ -41,7 +41,6 @@ import { NI_MCIT_V_01Service } from './ni-mcit-v-01.service'
 import { GENERIC_METHOD } from './entities/GENERIC METHOD/GENERIC_METHOD.entity'
 import { GENERIC_METHODService } from './generic-method.service'
 import { formatCertCode, updateCertCode } from 'src/utils/generateCertCode'
-import { OptionsCMCOnCertificateDto } from './dto/setSOptionsCMCOnCertificate.dto'
 import {
   formatNumberCertification,
   formatSameNumberCertification,
@@ -668,30 +667,6 @@ export class MethodsService {
       return handleOK({ code: method.certificate_code })
     } catch (e) {
       console.log(e)
-      return handleInternalServerError(e.message)
-    }
-  }
-
-  async setSOptionsCMCOnCertificate({
-    method_name,
-    method_id,
-    optionsCMCOnCertificate,
-  }: OptionsCMCOnCertificateDto) {
-    try {
-      const repository = `${method_name}Repository`
-      const method = await this[repository].findOne({
-        where: {
-          id: method_id,
-        },
-      })
-
-      await this.dataSource.transaction(async (manager) => {
-        method.optionsCMCOnCertificate = optionsCMCOnCertificate
-        await manager.save(method)
-      })
-
-      return handleOK('Opciones de CMC en certificado actualizadas')
-    } catch (e) {
       return handleInternalServerError(e.message)
     }
   }

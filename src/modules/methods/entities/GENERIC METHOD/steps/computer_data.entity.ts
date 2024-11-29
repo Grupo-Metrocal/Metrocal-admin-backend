@@ -20,5 +20,5 @@ export class ComputerDataGENERIC_METHOD {
   unit_of_measurement: string
 
   @Column({ nullable: true })
-  scale_unit: number
+  scale_division: number
 }

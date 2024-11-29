@@ -87,6 +87,7 @@ import { EnvironmentalConditionsGENERIC_METHOD } from './entities/GENERIC METHOD
 import { ResultMeditionGENERIC_METHOD } from './entities/GENERIC METHOD/steps/result_medition.entity'
 import { EquipmentInformationGENERIC_METHOD } from './entities/GENERIC METHOD/steps/equipment_information.entity'
 import { GENERIC_METHODService } from './generic-method.service'
+import { DescriptionPatternGENERIC_METHOD } from './entities/GENERIC METHOD/steps/description_pattern.entity'
 
 @Module({
   imports: [
@@ -160,6 +161,7 @@ import { GENERIC_METHODService } from './generic-method.service'
       EnvironmentalConditionsGENERIC_METHOD,
       EquipmentInformationGENERIC_METHOD,
       ResultMeditionGENERIC_METHOD,
+      DescriptionPatternGENERIC_METHOD,
     ]),
     forwardRef(() => ActivitiesModule),
     forwardRef(() => QuotesModule),

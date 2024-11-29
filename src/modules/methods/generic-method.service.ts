@@ -23,12 +23,16 @@ import { PatternsService } from '../patterns/patterns.service'
 import { CertificateService } from '../certificate/certificate.service'
 import { exec } from 'child_process'
 import { ActivitiesService } from '../activities/activities.service'
-import { formatCertCode } from 'src/utils/generateCertCode'
-import { generateServiceCodeToMethod } from 'src/utils/codeGenerator'
+import { formatCertCode, formatQuoteCode } from 'src/utils/generateCertCode'
+import { DescriptionPatternGENERIC_METHOD } from './entities/GENERIC METHOD/steps/description_pattern.entity'
+import {
+  convertToValidNumber,
+  formatNumberCertification,
+} from 'src/utils/formatNumberCertification'
+import { countDecimals } from 'src/utils/countDecimal'
 
 @Injectable()
 export class GENERIC_METHODService {
-  // Add your methods here
   constructor(
     private readonly dataSource: DataSource,
     @InjectRepository(GENERIC_METHOD)
@@ -45,6 +49,9 @@ export class GENERIC_METHODService {
 
     @InjectRepository(ResultMeditionGENERIC_METHOD)
     private readonly resultMeditionGENERIC_METHODRepository: Repository<ResultMeditionGENERIC_METHOD>,
+
+    @InjectRepository(DescriptionPatternGENERIC_METHOD)
+    private readonly descriptionPatternGENERIC_METHODRepository: Repository<DescriptionPatternGENERIC_METHOD>,
 
     @Inject(forwardRef(() => ActivitiesService))
     private activitiesService: ActivitiesService,
@@ -184,6 +191,68 @@ export class GENERIC_METHODService {
     }
   }
 
+  async descriptionPattern(
+    descriptionPattern: DescriptionPatternGENERIC_METHOD,
+    methodId: number,
+    activityId: number,
+    increase?: boolean,
+  ) {
+    try {
+      const method = await this.GENERIC_METHODRepository.findOne({
+        where: { id: methodId },
+        relations: ['description_pattern'],
+      })
+
+      if (!method) {
+        return handleInternalServerError('El método no existe')
+      }
+
+      const existingDescriptionPattern = method.description_pattern
+
+      if (existingDescriptionPattern) {
+        this.descriptionPatternGENERIC_METHODRepository.merge(
+          existingDescriptionPattern,
+          descriptionPattern,
+        )
+      } else {
+        const newDescriptionPattern =
+          this.descriptionPatternGENERIC_METHODRepository.create(
+            descriptionPattern,
+          )
+        method.description_pattern = newDescriptionPattern
+      }
+
+      await this.dataSource.transaction(async (manager) => {
+        await manager.save(method.description_pattern)
+        method.updated_at = new Date()
+        method.status = 'done'
+
+        if (!method.method_end_date_finished) {
+          method.method_end_date_finished = new Date()
+        }
+
+        if (increase) {
+          method.modification_number =
+            method.modification_number === null
+              ? 1
+              : method.modification_number + 1
+        }
+
+        await manager.save(method)
+      })
+
+      await Promise.all([
+        this.generateCertificateCodeToMethod(method.id),
+        this.activitiesService.updateActivityProgress(activityId),
+        this.methodService.isResolvedAllServices(activityId),
+      ])
+
+      return handleOK(method)
+    } catch (error) {
+      return handleInternalServerError(error.message)
+    }
+  }
+
   async resultMeditionCreate(
     resultMedition: Result_MeditionGENERIC_METHODDto,
     methodId: number,
@@ -224,7 +293,6 @@ export class GENERIC_METHODService {
     }
   }
 
-  //get generate certificate
   async generateCertificate({
     activityID,
     methodID,
@@ -239,6 +307,7 @@ export class GENERIC_METHODService {
         'environmental_conditions',
         'computer_data',
         'result_medition',
+        'description_pattern',
       ],
     })
 
@@ -278,73 +347,41 @@ export class GENERIC_METHODService {
 
       const workbook = await XlsxPopulate.fromFileAsync(method.certificate_url)
 
-      const worksheetGenerales = workbook.sheet('Generales')
-      const worksheetEntradaDatos = workbook.sheet('Entrada de Datos')
+      const generalSheet = workbook.sheet('Generales')
+      const inputSheet = workbook.sheet('Entrada de Datos')
 
-      //date
-      worksheetGenerales.cell('C7').value(method.equipment_information.date)
-      //device
-      worksheetGenerales.cell('C9').value(method.equipment_information.device)
-      //maker
-      worksheetGenerales.cell('C11').value(method.equipment_information.maker)
-      //serial_number
-      worksheetGenerales
-        .cell('C13')
-        .value(method.equipment_information.serial_number)
-      //model
-      worksheetGenerales.cell('C15').value(method.equipment_information.model)
-      //measurement_range
-      worksheetGenerales
-        .cell('C17')
-        .value(method.equipment_information.measurement_range)
-      //scale_interval
-      worksheetGenerales
-        .cell('C19')
-        .value(method.equipment_information.scale_interval)
-      //code
-      worksheetGenerales.cell('C21').value(method.equipment_information.code)
-      //estabilization_site
-      worksheetGenerales
-        .cell('C27')
-        .value(method.equipment_information.estabilization_site)
+      inputSheet.cell('C2').value(method.computer_data.scale_division)
+      inputSheet.cell('C3').value('% HR')
 
-      //temperature
-      worksheetGenerales
+      generalSheet
         .cell('C30')
         .value(method.environmental_conditions.temperature)
-      //humidity
-      worksheetGenerales.cell('C31').value(method.environmental_conditions.hr)
+      generalSheet.cell('C31').value(method.environmental_conditions.hr)
+      inputSheet.cell('J4').value(method.environmental_conditions.pattern)
 
-      let fila = 10
-      for (let i = fila; i < method.result_medition.medition.length; i++) {
-        worksheetEntradaDatos
-          .cell(`A${fila}`)
-          .value(method.result_medition.medition[i].patron1)
-        worksheetEntradaDatos
-          .cell(`B${fila}`)
-          .value(method.result_medition.medition[i].equiopo1)
-        worksheetEntradaDatos
-          .cell(`C${fila}`)
-          .value(method.result_medition.medition[i].patron2)
-        worksheetEntradaDatos
-          .cell(`D${fila}`)
-          .value(method.result_medition.medition[i].equiopo2)
-        worksheetEntradaDatos
-          .cell(`E${fila}`)
-          .value(method.result_medition.medition[i].patron3)
-        worksheetEntradaDatos
-          .cell(`F${fila}`)
-          .value(method.result_medition.medition[i].equiopo3)
-        fila++
+      let initialRow = 9
+      for (const value of method.result_medition.meditions) {
+        initialRow++
+
+        inputSheet
+          .cell(`A${initialRow}`)
+          .value(Number(value?.medition[0]?.patron) || 0)
+        inputSheet
+          .cell(`B${initialRow}`)
+          .value(Number(value?.medition[0]?.equipment) || 0)
+        inputSheet
+          .cell(`C${initialRow}`)
+          .value(Number(value?.medition[1]?.patron) || 0)
+        inputSheet
+          .cell(`D${initialRow}`)
+          .value(Number(value?.medition[1]?.equipment) || 0)
+        inputSheet
+          .cell(`E${initialRow}`)
+          .value(Number(value?.medition[2]?.patron) || 0)
+        inputSheet
+          .cell(`F${initialRow}`)
+          .value(Number(value?.medition[2]?.equipment) || 0)
       }
-
-      worksheetEntradaDatos.cell('C2').value(method.computer_data.scale_unit)
-      worksheetEntradaDatos
-        .cell('C3')
-        .value(method.computer_data.unit_of_measurement)
-      worksheetEntradaDatos
-        .cell('C4')
-        .value(method.environmental_conditions.equipment_used)
 
       workbook.toFileAsync(method.certificate_url)
       await this.autoSaveExcel(method.certificate_url)
@@ -364,6 +401,7 @@ export class GENERIC_METHODService {
           'environmental_conditions',
           'computer_data',
           'result_medition',
+          'description_pattern',
         ],
       })
 
@@ -400,36 +438,81 @@ export class GENERIC_METHODService {
       const reopnedWorkbook = await XlsxPopulate.fromFileAsync(
         method.certificate_url,
       )
-      const sheetFA1pto = reopnedWorkbook.sheet('FA  1 pto')
+      const sheet = reopnedWorkbook.sheet('FA  1 pto')
 
-      let result = []
-      for (let i = 28; i <= 30; i++) {
-        let results_test = {
-          /*       pattern_indication: sheetFA1pto.cell(`D${i}`).value().toString(),
-          instrument_indication: sheetFA1pto.cell(`F${i}`).value().toString(),
-          correction: sheetFA1pto.cell(`L${i}`).value().toString(),
-          expanded_uncertainty: sheetFA1pto.cell(`R${i}`).value().toString(), */
-        }
-        result.push(results_test)
+      let patternIndication = []
+      let instrumentIndication = []
+      let correction = []
+      let uncertainty = []
+
+      for (let i = 0; i <= method.result_medition.meditions.length; i++) {
+        const patternIndicationVal = sheet.cell(`D${28 + i}`).value()
+        patternIndication.push(
+          formatNumberCertification(
+            patternIndicationVal,
+            countDecimals(method.computer_data.scale_division),
+          ),
+        )
+
+        const instrumentIndicationVal = sheet.cell(`F${28 + i}`).value()
+        instrumentIndication.push(
+          formatNumberCertification(
+            instrumentIndicationVal,
+            countDecimals(method.computer_data.scale_division),
+          ),
+        )
+        // const correctionVal = sheet.cell(`L${28 + i}`).value()
+
+        correction.push(
+          i === 0
+            ? patternIndication[i]
+            : formatNumberCertification(
+                convertToValidNumber(patternIndication[i]) -
+                  convertToValidNumber(instrumentIndication[i]),
+                countDecimals(method.computer_data.scale_division),
+              ),
+        )
+
+        const uncertaintyValue = sheet.cell(`R${28 + i}`).value()
+        uncertainty.push(
+          typeof uncertaintyValue === 'number'
+            ? this.methodService.getSignificantFigure(
+                Number(uncertaintyValue.toFixed(7)),
+              )
+            : uncertaintyValue,
+        )
       }
 
-      /*     let temperature = sheetFA1pto.cell('E33').value().toString()
-      let humidity = sheetFA1pto.cell('E33').value().toString()
-      let temperature2 = sheetFA1pto.cell('G34').value().toString()
-      let humidity2 = sheetFA1pto.cell('G34').value().toString()  */
+      const calibration_results_certificate = {
+        result: {
+          patternIndication,
+          instrumentIndication,
+          correction,
+          uncertainty: this.methodService.formatUncertainty(uncertainty),
+        },
+      }
 
       const certificate = {
         pattern: 'GENERIC_METHOD',
         email: activity.quote_request.client.email,
         equipment_information: {
-          certification_code:
-            formatCertCode(
-              method.certificate_code,
-              method.modification_number,
-            ) || '---',
-          service_code: activity.quote_request.no,
-          certificate_issue_date: formatDate(new Date().toString()),
-          calibration_date: method.equipment_information.date,
+          certification_code: formatCertCode(
+            method.certificate_code,
+            method.modification_number,
+          ),
+          service_code: formatQuoteCode(
+            activity.quote_request.no,
+            activity.quote_request.modification_number,
+          ),
+          certificate_issue_date: formatDate(
+            method?.certificate_issue_date?.toString(),
+          ),
+          calibration_date: formatDate(
+            method?.description_pattern.calibration_date?.toString() || Date(),
+          ),
+          next_calibration_date: method?.description_pattern?.next_calibration
+            ? formatDate(method?.description_pattern?.next_calibration)
+            : 'No especificado',
           object_calibrated: method.equipment_information.device || '---',
           maker: method.equipment_information.maker || '---',
           serial_number: method.equipment_information.serial_number || '---',
@@ -438,29 +521,28 @@ export class GENERIC_METHODService {
             method.equipment_information.measurement_range || '---',
           scale_interval: method.equipment_information.scale_interval || '---',
           identification_code: method.equipment_information.code || '---',
-          applicant: activity.quote_request.client.name || '---',
-          address: activity.quote_request.client.address,
-          calibration_location:
-            method.equipment_information.estabilization_site || '---',
+          applicant:
+            method?.applicant_name ||
+            activity.quote_request.client.company_name,
+          address:
+            method?.applicant_address || activity.quote_request.client.address,
+          calibration_location: method.calibration_location || '---',
         },
-        calibration_results: {
-          results: result,
-        },
+        calibration_results_certificate,
+        creditable: method.description_pattern.creditable,
+        description_pattern: await this.getPatternsTableToCertificate(method),
         environmental_conditions: {
-          /* temperature: temperature,
-          humidity: humidity,
-          temperature2: temperature2,
-          humidity2: humidity2, */
-          equipment_used: method.environmental_conditions.pattern,
+          temperature: `Temperatura: ${formatNumberCertification(
+            sheet.cell('E57').value(),
+          )} °C ± ${formatNumberCertification(sheet.cell('G57').value())} °C`,
+          humidity: `Humedad relativa: ${formatNumberCertification(sheet.cell('E58').value())} % ± ${formatNumberCertification(sheet.cell('G58').value())} %`,
         },
-        description_pattern: 'Standard calibration pattern',
-        observations: `Es responsabilidad del encargado del instrumento establecer la frecuencia del servicio de calibración.			
-         La corrección corresponde al valor del patrón menos las indicación del equipo.			
-         La indicación del patrón de referencia y del equipo corresponde al promedio de 3 mediciones.			
-         Los resultados emitidos en este certificado corresponden únicamente al objeto calibrado y a las magnitudes			
-         especificadas al momento de realizar el servicio.			
-         Este certificado de calibración no debe ser reproducido sin la aprobación del laboratorio, excepto cuando se			
-         reproduce en su totalidad.			
+        observations: `
+Es responsabilidad del encargado del instrumento establecer la frecuencia del servicio de calibración.
+La corrección corresponde al valor del patrón menos las indicación del equipo.
+La indicación del patrón de referencia y del equipo corresponde al promedio de 3 mediciones.
+Los resultados emitidos en este certificado corresponden únicamente al objeto calibrado y a las magnitudes especificadas al momento de realizar el servicio.
+Este certificado de calibración no debe ser reproducido sin la aprobación del laboratorio, excepto cuando se reproduce en su totalidad.
          `,
       }
       return handleOK(certificate)
@@ -469,10 +551,23 @@ export class GENERIC_METHODService {
     }
   }
 
+  async getPatternsTableToCertificate(method: GENERIC_METHOD) {
+    const description_pattern = []
+
+    const environment_method_used =
+      await this.patternsService.findByCodeAndMethod(
+        method.environmental_conditions.pattern,
+        'all',
+      )
+    if (environment_method_used.success) {
+      description_pattern.push(environment_method_used.data)
+    }
+
+    return description_pattern
+  }
+
   async autoSaveExcel(filePath: string) {
     return new Promise((resolve, reject) => {
-      // save excel file from powershell
-
       const powershellCommand = `
       $Excel = New-Object -ComObject Excel.Application
       $Excel.Visible = $false
@@ -500,7 +595,11 @@ export class GENERIC_METHODService {
     })
   }
 
-  async generatePDFCertificate(activityID: number, methodID: number) {
+  async generatePDFCertificate(
+    activityID: number,
+    methodID: number,
+    generatePDF = false,
+  ) {
     try {
       const method = await this.GENERIC_METHODRepository.findOne({
         where: { id: methodID },
@@ -509,14 +608,17 @@ export class GENERIC_METHODService {
           'environmental_conditions',
           'computer_data',
           'result_medition',
+          'description_pattern',
         ],
       })
 
       if (!method) {
         return handleInternalServerError('El método no existe')
       }
+
       let dataCertificate: any
-      if (!fs.existsSync(method.certificate_url)) {
+
+      if (!fs.existsSync(method.certificate_url) || generatePDF) {
         dataCertificate = await this.generateCertificate({
           activityID,
           methodID,
@@ -524,6 +626,26 @@ export class GENERIC_METHODService {
       } else {
         dataCertificate = await this.getCertificateResult(methodID, activityID)
       }
+
+      if (!dataCertificate.success) {
+        return dataCertificate
+      }
+
+      dataCertificate.data.calibration_results_certificate.result =
+        dataCertificate.data.calibration_results_certificate.result.patternIndication.map(
+          (value, index) => ({
+            patternIndication: value,
+            instrumentIndication:
+              dataCertificate.data.calibration_results_certificate.result
+                .instrumentIndication[index],
+            correction:
+              dataCertificate.data.calibration_results_certificate.result
+                .correction[index],
+            uncertainty:
+              dataCertificate.data.calibration_results_certificate.result
+                .uncertainty[index],
+          }),
+        )
 
       const PDF = await this.pdfService.generateCertificatePdf(
         '/certificates/generic-method.hbs',
@@ -533,9 +655,12 @@ export class GENERIC_METHODService {
       if (!PDF) {
         return handleInternalServerError('Error al generar el PDF')
       }
+
       return handleOK({
         pdf: PDF,
         client_email: dataCertificate.data.email,
+        fileName: `Certificado-${dataCertificate.data.equipment_information.object_calibrated}-${dataCertificate.data.equipment_information.certification_code}.pdf`,
+        clientName: dataCertificate.data.equipment_information.applicant,
       })
     } catch (error) {
       return handleInternalServerError(error.message)
@@ -578,6 +703,7 @@ export class GENERIC_METHODService {
           'environmental_conditions',
           'computer_data',
           'result_medition',
+          'description_pattern',
         ],
       })
 
@@ -586,6 +712,29 @@ export class GENERIC_METHODService {
       }
 
       return handleOK(method)
+    } catch (error) {
+      return handleInternalServerError(error.message)
+    }
+  }
+
+  async sendCertificateToClient(activityID: number, methodID: number) {
+    try {
+      const data = await this.generatePDFCertificate(activityID, methodID, true)
+
+      if (!data.success) {
+        return data
+      }
+
+      const { pdf, client_email, fileName, clientName } = data.data
+
+      await this.mailService.sendMailCertification({
+        user: client_email,
+        pdf,
+        fileName,
+        clientName,
+      })
+
+      return handleOK('Certificado enviado con exito')
     } catch (error) {
       return handleInternalServerError(error.message)
     }

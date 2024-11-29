@@ -61,7 +61,6 @@ import { EccentricityTestNI_MCIT_B_01Dto } from './dto/NI_MCIT_B_01/b01eccentric
 import { RepeatabilityTestNI_MCIT_B_01Dto } from './dto/NI_MCIT_B_01/b01repeatability_test.dto'
 import { LinearityTestNI_MCIT_B_01Dto } from './dto/NI_MCIT_B_01/b01linearity_test.dto'
 import { EnviromentalConditionsNI_MCIT_B_01Dto } from './dto/NI_MCIT_B_01/b01enviromental_condition.dto'
-import { UnitOfMeasurementNI_MCIT_B_01Dto } from './dto/NI_MCIT_B_01/b01unitOfMeasurement.dto'
 import { NI_MCIT_T_05Service } from './ni-mcit-t-05.service'
 import { EquipmentInformationT05Dto } from './dto/NI_MCIT_T_05/equipment-information.dto'
 import { CalibrationResultsT05Dto } from './dto/NI_MCIT_T_05/calibraion_results.dto'
@@ -81,7 +80,6 @@ import { EquipmentInformationM01Dto } from './dto/NI_MCIT_M_01/equipment_informa
 import { EnvironmentalConditionsM01Dto } from './dto/NI_MCIT_M_01/environmental_condition.dto'
 import { CalibrationResultsM01Dto } from './dto/NI_MCIT_M_01/calibraion_results.dto'
 import { DescriptionPatternM01Dto } from './dto/NI_MCIT_M_01/description_pattern.dto'
-import { OptionsCMCOnCertificateDto } from './dto/setSOptionsCMCOnCertificate.dto'
 import { Response } from 'express'
 import { DescriptionPatternB01Dto } from './dto/NI_MCIT_B_01/description_pattern.dto'
 
@@ -190,15 +188,6 @@ export class MethodsController {
   @Get('send-certifications-to-client/:activityID')
   async sendAllCertificatesToClient(@Param('activityID') activityID: number) {
     return this.methodsService.sendAllCertificatesToClient(activityID)
-  }
-
-  @Post('options-cmc-on-certificate')
-  async setSOptionsCMCOnCertificate(
-    @Body() OptionsCMCOnCertificate: OptionsCMCOnCertificateDto,
-  ) {
-    return this.methodsService.setSOptionsCMCOnCertificate(
-      OptionsCMCOnCertificate,
-    )
   }
 
   @Get('download-certificate-pdf/:acitivty_id/:method_name/:methodID')

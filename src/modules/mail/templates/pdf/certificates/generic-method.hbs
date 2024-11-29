@@ -1,335 +1,154 @@
-<head>
+<style>
+  .ni-mcit-t-01 { display: flex; flex-direction: column; gap: 25px; }
+  .id_certificate { position: absolute; top: 8.6in; z-index: 100; }
+  .equipment-information { display: flex; justify-content: space-between;
+  margin-top: 20px; } .equipment-information div { width: 50%; display: flex;
+  flex-direction: column; gap: 5px; } .equipment-information .labels {
+  font-weight: bold; } table { border-collapse: collapse; width: 100%; } th, td
+  { border: 1px solid #dddddd; text-align: center; } .table-title { border: 1px
+  solid #dddddd; text-align: center; } .enviromental-conditions { display: flex;
+  justify-content: space-between; } .enviromental-conditions div { display:
+  flex; flex-direction: column; gap: 10px; }
+</style>
 
-    <style>
-        .content {
-            padding: 20px;
-            box-sizing: border-box;
-            font-family: Arial, sans-serif;
-        }
-
-        .content-1 {
-            width: 100%;
-            height: 100%;
-        }
-
-        table {
-            width: 100%;
-            border-collapse: collapse;
-        }
-
-        thead {
-            background-color: #fcfaef;
-            height: 40px;
-        }
-
-        td {
-            border: 1px solid black;
-            padding: 1px;
-            text-align: center;
-        }
-
-        .additional-table {
-            width: 95%;
-            border-collapse: collapse;
-            margin: 15px;
-        }
-
-        .additional-table>thead>tr>th {
-            border: 1px solid black;
-            text-align: center;
-            font-size: 0.8em;
-            font-weight: bold;
-        }
-
-        .additional-table>tbody>tr>td {
-            border: 1px solid black;
-            text-align: center;
-            font-size: 0.8em;
-        }
-
-        .grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            grid-gap: 5px;
-            margin: 15px;
-        }
-
-        .grid-item {
-            text-align: left;
-            font-size: 0.8em;
-        }
-
-        .grid-item-table-header {
-            margin-top: 20px;
-            grid-column: span 2;
-            /* Esto hace que el encabezado abarque las dos columnas */
-            font-weight: bold;
-            /* Esto hace que el encabezado esté en negrita */
-        }
-
-        .grid-two-tables {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            grid-gap: 15px;
-            margin: 15px;
-        }
-
-        .grid-four-columns {
-            display: grid;
-            grid-template-columns: repeat(4, 1fr);
-            grid-gap: 5px;
-            margin-top: 25px;
-        }
-
-        .grid-item-dash-line {
-            border: 1px dashed black;
-            width: 100%;
-            grid-column: span 4;
-        }
-
-        .grid-item-line {
-            border: 1px solid black;
-            width: 100%;
-            grid-column: span 4;
-        }
-
-        .grid-item-address {
-            text-align: center;
-            width: 100%;
-            grid-column: span 4;
-            font-size: 0.8em;
-            font-weight: bold;
-        }
-
-        .grid-item-address>p {
-            margin: 0px;
-        }
-
-        .grid-item-email-web-page {
-            text-align: center;
-            width: 100%;
-            grid-column: span 4;
-            display: grid;
-            grid-template-columns: repeat(4, 1fr);
-            gap: 10px;
-        }
-
-        .grid-item-phone-id {
-            text-align: center;
-            width: 100%;
-            grid-column: span 4;
-            display: flex;
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 10px;
-        }
-
-        .title-container {
-            width: 100%;
-            text-align: center;
-            font-weight: bold;
-
-        }
-
-        .title {
-            margin: 0px;
-            margin-bottom: 5px;
-        }
-
-        .table-external>thead>tr>th {
-            border: 1px solid black;
-            text-align: center;
-            font-weight: bold;
-        }
-
-        .head-nominal-name {
-            padding: 5px;
-            width: 21%;
-        }
-
-        .head-lecture-name {
-            padding: 5px;
-            width: 25%;
-        }
-
-        .grid-item-phone-footer {
-            grid-column: span 2;
-            text-align: right;
-            margin-right: 30px;
-            font-size: 0.8em;
-        }
-
-        .full-width {
-            grid-column: span 2;
-        }
-    </style>
-</head>
-
-<div class="content content-1">
-
-    <div class="grid">
-        <div class="grid-item"><b>Identificación del certificado:</b></div>
-        <div class="grid-item"><b>{{equipment_information.certification_code}}</b></div>
-        <div class="grid-item"><b>Código de servicio:</b></div>
-        <div class="grid-item"><b>{{equipment_information.service_code}}</b></div>
-
-        <div class="grid-item"><b>Fecha de calibración:</b></div>
-        <div class="grid-item">{{equipment_information.certificate_issue_date}}</div>
-
-        <div class="grid-item"><b>Fecha de emisión del certificado:</b></div>
-        <div class="grid-item">{{equipment_information.calibration_date}}</div>
-
-        <div class="grid-item"><b>Objeto de calibración:</b></div>
-        <div class="grid-item">{{equipment_information.object_calibrated}}</div>
-
-        <div class="grid-item"><b>Fabricante/Marca:</b></div>
-        <div class="grid-item">{{equipment_information.maker}}</div>
-
-        <div class="grid-item"><b>Serie:</b></div>
-        <div class="grid-item">{{equipment_information.serial_number}}</div>
-
-        <div class="grid-item"><b>Modelo:</b></div>
-        <div class="grid-item">{{equipment_information.model}}</div>
-
-        <div class="grid-item"><b>Rango de medida:</b></div>
-        <div class="grid-item">{{equipment_information.measurement_range}}</div>
-
-        <div class="grid-item"><b>Intervalo de escala:</b></div>
-        <div class="grid-item">{{equipment_information.scale_interval}}</div>
-
-        <div class="grid-item"><b>Código de identificación:</b></div>
-        <div class="grid-item">{{equipment_information.identification_code}}</div>
-
-        <div class="grid-item"><b>Solicitante:</b></div>
-        <div class="grid-item">{{equipment_information.applicant}}</div>
-
-        <div class="grid-item"><b>Dirección del solicitante:</b></div>
-        <div class="grid-item">{{equipment_information.address}}</div>
-
-        <div class="grid-item"><b>Lugar de calibración:</b></div>
-        <div class="grid-item">{{equipment_information.calibration_location}}</div>
-
-        <div class="grid-item-table-header" id="tableDesc"><b>Resultados de la calibración</b></div>
-
+<div class='ni-mcit-t-01'>
+  <div class='equipment-information'>
+    <div class='labels'>
+      <span>Identificación del certificado:</span>
+      <span>Código de servicio:</span>
+      <span>Fecha de calibración:</span>
+      <span>Fecha de emisión de certificado:</span>
+      <span>Fecha de próxima calibración:</span>
+      <span>Objeto de calibración:</span>
+      <span>Fabricante/Marca:</span>
+      <span>Serie:</span>
+      <span>Modelo:</span>
+      <span>Rango de medida:</span>
+      <span>Resolución</span>
+      <span>Código de identificación:</span>
+      <span>Solicitante:</span>
+      <span>Dirección del solicitante:</span>
+      <span>Lugar de calibración:</span>
     </div>
-    <div>
-        <div class="grid-item-table-header" id="tableDesc"><b>Tabla de resultados de la calibración</b></div>
+    <div class='values'>
+      <span
+        style='font-weight: bold'
+      >{{equipment_information.certification_code}}</span>
+      <span>{{equipment_information.service_code}}</span>
+      <span>{{equipment_information.calibration_date}}</span>
+      <span>{{equipment_information.certificate_issue_date}}</span>
+      <span>{{equipment_information.next_calibration_date}}</span>
+      <span>{{equipment_information.object_calibrated}}</span>
+      <span>{{equipment_information.maker}}</span>
+      <span>{{equipment_information.serial_number}}</span>
+      <span>{{equipment_information.model}}</span>
+      <span>{{equipment_information.measurement_range}}</span>
+      <span>{{equipment_information.resolution}}</span>
+      <span>{{equipment_information.code}}</span>
+      <span>{{equipment_information.applicant}}</span>
+      <span>{{equipment_information.address}}</span>
+      <span>{{equipment_information.calibration_location}}</span>
     </div>
+  </div>
 
-    <table class="additional-table" aria-describedby="tableDesc">
-        <thead>
-            <tr>
-                <th style="width: 12%;">Indicación del Patrón</th>
-                <th>Indicación del Instrumento</th>
-                <th>Corrección</th>
-                <th style="width: 20%;">Incertidumbre expandida<br /> k=2</th>
-            </tr> 
-        </thead>
-        <tbody>
-            {{#each calibration_results.results as |data|}}
-            <tr>
-                <td>{{pattern_indication}}</td>
-                <td>{{instrument_indication}}</td>
-                <td>{{correction}}</td>
-                <td>{{expanded_uncertainty}}</td>
-            </tr>
-            {{/each}}
-        </tbody>
+  <div class='calibration-result' style='min-height: 130px;'>
+    <strong><span>Resultados de la calibración</span></strong>
+    <br />
+    <table>
+      <thead>
+        <caption class='table-title' colspan='5'>
+          Tabla de resultados de calibración
+        </caption>
+        <tr>
+          <th>Indicación del Patrón</th>
+          <th>Indicación del Instrumento</th>
+          <th>Corrección</th>
+          <th>Incertidumbre expandida K = 2</th>
+        </tr>
+      </thead>
+      <tbody>
+        {{#each calibration_results_certificate.result as |data|}}
+          <tr>
+            <td>{{data.patternIndication}}</td>
+            <td>{{data.instrumentIndication}}</td>
+            <td>{{data.correction}}</td>
+            <td>{{data.uncertainty}}</td>
+          </tr>
+        {{/each}}
+      </tbody>
     </table>
-    </div>
+  </div>
 
+  <div class='enviromental-conditions'>
+    <div>
+      <strong><span>Condiciones ambientales</span></strong>
+      <span>{{environmental_conditions.temperature}}</span>
+      <span>{{environmental_conditions.humidity}}</span>
+    </div>
+  </div>
+
+  <div class='calibration-method'>
+    <strong><span>Método de calibración</span></strong>
+    <br />
+    <span>Las pruebas se realizaron según NI-MCIT-T-01 Instrucción para
+      calibración de termómetros.</span>
+  </div>
+
+  <div class='uncertainty'>
+    <strong><span>Incertidumbre de los datos</span></strong>
+    <br />
+    <span style='text-align: justify;'>
+      La incertidumbre de las medición se obtuvo multiplicando la incertidumbre
+      estándar combinada por un factor de cobertura k = 2, con el que se alcanza
+      un nivel de confianza de al menos 95 %. La incertidumbre estándar de la
+      medición se determinó conforme a la Guía para la Expresión de la
+      Incertidumbre de la Medida, BIPM-IEC-IFCC-ISO-IUPAC-IUPAP-OIML, en la cual
+      se toma en cuenta la incertidumbre de los patrones, del método de
+      calibración, de las condiciones durante la calibración y del equipo sujeto
+      a calibración.
+    </span>
+  </div>
+
+  <div class='used_pattern'>
+    <strong><span>Descripción de patrones utilizados</span></strong>
+    <br />
+
+    <table>
+      <thead>
+        <tr>
+          <th style='background-color: #dddddd'>Descripción</th>
+          <th style='background-color: #dddddd'>Código</th>
+          <th style='background-color: #dddddd'>Trazabilidad</th>
+          <th style='background-color: #dddddd'>Próx. Calibr.</th>
+        </tr>
+      </thead>
+      <tbody>
+        {{#each description_pattern as |data|}}
+          <tr>
+            <td>{{data.equipment}}</td>
+            <td>{{data.code}}</td>
+            <td>{{data.traceability}}</td>
+            <td>{{data.next_calibration}}</td>
+          </tr>
+        {{/each}}
+      </tbody>
+
+      <tbody></tbody>
+    </table>
+  </div>
+
+  <div class='observations'>
+    <strong><span>Observaciones</span></strong>
+    <span style='white-space: pre-wrap; text-align: justify;'>
+      {{observations}}
+    </span>
+  </div>
 </div>
 
-<div class="content">
-
-
-    <div class="grid">
-
-        <div class="grid-item"><b>Identificación del certificado:</b></div>
-        <div class="grid-item"><b>{{equipment_information.certification_code}}</b></div>
-
-    </div>
-
-    <div class="ambient-conditions">
-        <div class="grid-item" style="margin-bottom: 5px;"><b>Condiciones ambientales</b></div>
-        <div class="grid-item">Temperatura: ( {{environmental_conditions.temperature}} ±
-            {{environmental_conditions.temperatura2}} ) °C</div>
-        <div class="grid-item">Hum R: ( {{environmental_conditions.humidity}} ±
-            {{environmental_conditions.humidity2}} ) % HR</div>
-    </div>
-    <br>
-    <div class="ambient-conditions">
-        <div class="grid-item"><b>Método de calibración</b></div>
-        <div class="grid-item">
-            <p style="margin-top: 5px;">Comparación Directa: Se comparan directa e instantáneamente los 
-                valores proporcionadas por el equipo (instrumento de medición o medida materializada)
-                bajo calibración, contra los valores proporcionados por un patrón.</p>
-        </div>
-    </div>
-
-    <div class="ambient-conditions">
-        <div class="grid-item"><b>Incertidumbre de los datos</b></div>
-        <div class="grid-item">
-            <p style="margin-top: 5px;">La incertidumbre de las medición se obtuvo multiplicando la 
-                incertidumbre estándar combinada por un factor de cobertura k = 2, con el que se alcanza 
-                un nivel de confianza de al menos 95 %. La incertidumbre estándar de la medición se determinó 
-                conforme a la Guide to Expresión of Uncertainty in Measurement, 
-                BIPM-IEC-IFCC-ISO-IUPAC-IUPAP-OIML, en la cual se toma en cuenta la incertidumbre de
-                los patrones, del método de calibración, de las condiciones durante la calibración y 
-                del equipo sujeto a calibración.</p>
-        </div>
-    </div>
-
-    <div class="title-table-flex" style="margin-bottom: 5px;">
-        <div class="grid-item"><b>Descripción de patrones utilizados</b></div>
-    </div>
-    <table class="additional-table" aria-describedby="tableDesc">
-        <thead>
-            <tr>
-                <th style="width: 32%;">Equipo</th>
-                <th>Código</th>
-                <th>Certificado</th>
-                <th>Trazabilidad</th>
-                <th>Próxima Calibración</th>
-            </tr>
-        </thead>
-        <tbody>
-            {{#each certificate.description_pattern as |data|}}
-            <tr>
-                <td>{{data.equipment}}</td>
-                <td>{{data.code}}</td>
-                <td>{{data.certificate}}</td>
-                <td>{{data.traceability}}</td>
-                <td>{{data.next_calibration}}</td>
-            </tr>
-            {{/each}}
-        </tbody>
-    </table>
-
-    <div class="ambient-conditions">
-        <div class="grid-item"><b>Observaciones</b></div>
-        <div class="grid-item">
-            <p style="margin-top: 5px; margin-bottom: 0px;">Es responsabilidad del encargado del instrumento
-                establecer la
-                frecuencia del
-                servicio de calibración.</p>
-            <p style="margin: 0px; margin-top: 5px;">La corrección corresponde al valor del patrón menos las
-                indicación del
-                equipo.
-            </p>
-            <p style="margin: 0px; margin-top: 5px;">La indicación del equipo corresponde al promedio de 3
-                mediciones en
-                cada punto de
-                calibración.
-            </p>
-            <p style="margin: 0px; margin-top: 5px;">Los resultados emitidos en este certificado corresponden
-                únicamente al
-                objeto
-                calibrado y a las magnitudes especificadas al momento de realizar el servicio.
-            </p>
-            <p style="margin: 0px; margin-top: 5px;">Este certificado de calibración no debe ser reproducido sin la
-                aprobación del laboratorio, excepto cuando se reproduce en su totalidad.
-            </p>
-        </div>
-    </div>
+<div
+  class='id_certificate'
+  style='display: flex; justify-content: space-between; width: 90%'
+>
+  <strong><span>Identificación del certificado:</span></strong>
+  <strong><span>{{equipment_information.certification_code}}</span></strong>
 </div>

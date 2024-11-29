@@ -681,7 +681,6 @@ export class NI_MCIT_T_05Service {
         digitalThermometer: digitalThermometer.data,
         hygrothermometer: hygrothermometer.data,
         oilBath: oilBath.data,
-        optionsCMCOnCertificate: method.optionsCMCOnCertificate,
         equipment_information: {
           certification_code: formatCertCode(
             method.certificate_code,

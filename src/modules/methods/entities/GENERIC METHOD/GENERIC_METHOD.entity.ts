@@ -3,6 +3,7 @@ import { EquipmentInformationGENERIC_METHOD } from './steps/equipment_informatio
 import { EnvironmentalConditionsGENERIC_METHOD } from './steps/enviromental_condition.entity'
 import { ComputerDataGENERIC_METHOD } from './steps/computer_data.entity'
 import { ResultMeditionGENERIC_METHOD } from './steps/result_medition.entity'
+import { DescriptionPatternGENERIC_METHOD } from './steps/description_pattern.entity'
 
 @Entity('GENERIC_METHOD')
 export class GENERIC_METHOD {
@@ -99,4 +100,21 @@ export class GENERIC_METHOD {
     },
   )
   result_medition: ResultMeditionGENERIC_METHOD
+
+  @ManyToOne(
+    () => DescriptionPatternGENERIC_METHOD,
+    (DescriptionPatternGENERIC_METHOD) =>
+      DescriptionPatternGENERIC_METHOD.GENERIC_METHOD,
+    {
+      onDelete: 'CASCADE',
+      onUpdate: 'CASCADE',
+    },
+  )
+  description_pattern: DescriptionPatternGENERIC_METHOD
+
+  @Column({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP' })
+  created_at: Date
+
+  @Column({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP' })
+  updated_at: Date
 }

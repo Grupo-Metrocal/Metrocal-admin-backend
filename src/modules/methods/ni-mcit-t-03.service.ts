@@ -736,7 +736,6 @@ export class NI_MCIT_T_03Service {
 
       return handleOK({
         calibration_results: calibration_results_certificate,
-        optionsCMCOnCertificate: method.optionsCMCOnCertificate,
         equipment_information: {
           certification_code: formatCertCode(
             method.certificate_code,
