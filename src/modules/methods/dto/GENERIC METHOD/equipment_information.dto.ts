@@ -14,16 +14,19 @@ export class EquipmentInformationGENERIC_METHODDto {
   model?: string
 
   @ApiProperty()
-  measurement_range?: string
+  unit?: string
 
   @ApiProperty()
-  scale_interval?: string
+  range_min: number
+
+  @ApiProperty()
+  range_max: number
+
+  @ApiProperty()
+  scale_interval?: number
 
   @ApiProperty()
   code?: string
-
-  @ApiProperty()
-  length?: string
 
   @ApiProperty()
   estabilization_site?: string

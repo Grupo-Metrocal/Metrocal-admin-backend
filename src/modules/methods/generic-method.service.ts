@@ -567,8 +567,7 @@ export class GENERIC_METHODService {
           maker: method.equipment_information.maker || '---',
           serial_number: method.equipment_information.serial_number || '---',
           model: method.equipment_information.model || '---',
-          measurement_range:
-            method.equipment_information.measurement_range || '---',
+          measurement_range: `${method.equipment_information.range_min} ${method.computer_data.unit_of_measurement} a ${method.equipment_information.range_max} ${method.computer_data.unit_of_measurement}`,
           scale_interval: method.equipment_information.scale_interval || '---',
           identification_code: method.equipment_information.code || '---',
           applicant:

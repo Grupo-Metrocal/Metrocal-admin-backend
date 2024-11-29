@@ -28,11 +28,14 @@ export class EquipmentInformationGENERIC_METHOD {
   @Column({ type: 'varchar', nullable: true })
   model?: string
 
-  @Column({ type: 'varchar', nullable: true })
-  measurement_range?: string
+  @Column({ nullable: true })
+  range_min?: number
 
-  @Column({ type: 'varchar', nullable: true })
-  scale_interval?: string
+  @Column({ nullable: true })
+  range_max?: number
+
+  @Column({ nullable: true })
+  scale_interval?: number
 
   @Column({ type: 'varchar', nullable: true })
   code?: string
