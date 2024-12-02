@@ -415,19 +415,19 @@ export class GENERIC_METHODService {
 
         inputSheet
           .cell(`A${initialRow}`)
-          .value(Number(value?.medition[0]?.patron) || 0)
+          .value(Number(value?.medition[0]?.pattern) || 0)
         inputSheet
           .cell(`B${initialRow}`)
           .value(Number(value?.medition[0]?.equipment) || 0)
         inputSheet
           .cell(`C${initialRow}`)
-          .value(Number(value?.medition[1]?.patron) || 0)
+          .value(Number(value?.medition[1]?.pattern) || 0)
         inputSheet
           .cell(`D${initialRow}`)
           .value(Number(value?.medition[1]?.equipment) || 0)
         inputSheet
           .cell(`E${initialRow}`)
-          .value(Number(value?.medition[2]?.patron) || 0)
+          .value(Number(value?.medition[2]?.pattern) || 0)
         inputSheet
           .cell(`F${initialRow}`)
           .value(Number(value?.medition[2]?.equipment) || 0)

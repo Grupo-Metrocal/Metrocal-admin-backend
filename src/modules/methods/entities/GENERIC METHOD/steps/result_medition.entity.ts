@@ -22,7 +22,7 @@ export class ResultMeditionGENERIC_METHOD {
 
 export interface IMedition {
   medition: {
-    patron: number
+    pattern: number
     equipment: number
   }[]
 }
