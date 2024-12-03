@@ -497,6 +497,9 @@ export class NI_MCIT_V_01Service {
 
       for (let calibrations of calibration_results.results) {
         const pointSkip = pointSkips[calibrations.point_number]
+        sheet
+          .cell(23 + pointSkip, 5)
+          .value(Number(calibrations?.nominal_value || 0))
 
         for (let [index, calibration] of calibrations.calibrations.entries()) {
           sheet

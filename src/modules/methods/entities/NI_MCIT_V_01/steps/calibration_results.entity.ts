@@ -22,6 +22,7 @@ export class CalibrationResultsNI_MCIT_V_01 {
 
 export interface IResults_NI_MCIT_V_01 {
   point_number: number
+  nominal_value: number
 
   calibrations: {
     pattern_dough: {
