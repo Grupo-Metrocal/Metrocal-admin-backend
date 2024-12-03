@@ -746,9 +746,7 @@ export class MethodsService {
           return Number(`0.${firstFigure + 1}`)
         }
 
-        result = parseFloat(
-          Number(`0.${complement && complement}${firstFigure + 1}0`).toFixed(2),
-        )
+        result = parseFloat(`0.${complement && complement}${firstFigure + 1}1`)
       } else {
         result = Number(
           `0.${complement && complement}${firstFigure}${roundDecimal.toString().charAt(0)}`,
