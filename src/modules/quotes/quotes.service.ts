@@ -235,11 +235,15 @@ export class QuotesService {
   }
 
   async rejectQuoteRequest(id: number) {
-    const quoteRequest = await this.quoteRequestRepository.findOne({
-      where: { id },
-    })
-    quoteRequest.status = 'rejected'
-    return await this.quoteRequestRepository.save(quoteRequest)
+    try {
+      const quoteRequest = await this.quoteRequestRepository.findOne({
+        where: { id },
+      })
+      quoteRequest.status = 'rejected'
+      return handleOK(await this.quoteRequestRepository.save(quoteRequest))
+    } catch (e) {
+      return handleInternalServerError(e.message)
+    }
   }
 
   async getQuoteRequestById(id: number) {

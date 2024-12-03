@@ -27,6 +27,7 @@ import { EquipmentQuoteRequestDto } from './dto/equipment-quote-request.dto'
 import { DeleteEquipmentFromQuoteDto } from './dto/delete-equipment-from-quote.dto'
 import { CurrencyType } from './entities/quote-request.entity'
 import { FileInterceptor } from '@nestjs/platform-express'
+import { ParameterIdDto } from './dto/parameter-id.dto'
 
 @ApiTags('quotes')
 @Controller('quotes')
@@ -61,8 +62,8 @@ export class QuotesController {
   }
 
   @Post('request/reject')
-  async rejectQuoteRequest(@Body() id: number) {
-    return await this.quotesService.rejectQuoteRequest(id)
+  async rejectQuoteRequest(@Body() body: ParameterIdDto) {
+    return await this.quotesService.rejectQuoteRequest(body.id)
   }
 
   @UseGuards(JwtAuthGuard)
