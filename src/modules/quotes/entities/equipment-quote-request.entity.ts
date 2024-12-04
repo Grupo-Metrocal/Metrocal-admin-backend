@@ -66,4 +66,7 @@ export class EquipmentQuoteRequest {
 
   @Column({ nullable: true, default: true })
   is_creditable?: boolean
+
+  @Column({ nullable: true, default: '' })
+  use_alternative_certificate_method?: string
 }

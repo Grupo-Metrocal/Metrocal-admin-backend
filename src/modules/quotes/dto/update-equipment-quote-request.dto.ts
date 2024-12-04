@@ -49,4 +49,7 @@ export class updateEquipmentQuoteRequestDto {
 
   @ApiProperty()
   is_creditable: boolean
+
+  @ApiProperty()
+  use_alternative_certificate_method?: string
 }

@@ -264,7 +264,7 @@ export class GENERIC_METHODService {
       })
 
       await Promise.all([
-        this.generateCertificateCodeToMethod(method.id),
+        this.generateCertificateCodeToMethod(method.id, activityId),
         this.activitiesService.updateActivityProgress(activityId),
         this.methodService.isResolvedAllServices(activityId),
       ])
@@ -716,8 +716,13 @@ Este certificado de calibración no debe ser reproducido sin la aprobación del 
     }
   }
 
-  async generateCertificateCodeToMethod(methodID: number) {
+  async generateCertificateCodeToMethod(methodID: number, activityId: number) {
     try {
+      const resActivity =
+        await this.activitiesService.getActivitiesByID(activityId)
+
+      const { data: activity } = resActivity
+
       const method = await this.GENERIC_METHODRepository.findOne({
         where: { id: methodID },
       })
