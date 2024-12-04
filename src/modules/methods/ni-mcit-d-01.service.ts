@@ -606,17 +606,17 @@ export class NI_MCIT_D_01Service {
 
       // Obtener la fecha actual
       // Asignar la fecha formateada a la celda E8
-      sheetEC.cell('E8').value(method.equipment_information.date)
+      sheetEC.cell('E8').value(method.equipment_information?.date)
       //maker
-      sheetEC.cell('B13').value(method.equipment_information.maker)
+      sheetEC.cell('B13').value(method.equipment_information?.maker)
       //serie
-      sheetEC.cell('B14').value(method.equipment_information.serial_number)
+      sheetEC.cell('B14').value(method.equipment_information?.serial_number)
       //range
       // sheetEC.cell('B15').value(method.equipment_information.measurement_range)
       //resolution
-      sheetEC.cell('B16').value(method.equipment_information.resolution)
+      sheetEC.cell('B16').value(method.equipment_information?.resolution)
       //model
-      sheetEC.cell('E13').value(method.equipment_information.model)
+      sheetEC.cell('E13').value(method.equipment_information?.model)
       //code
       sheetEC.cell('E14').value(method.equipment_information.code)
       //length

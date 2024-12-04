@@ -151,11 +151,11 @@ export class MailService {
 
   async sendMailCollectionCertificate({
     user,
-    collection,
+    linkRAR,
     clientName,
   }: {
     user: string
-    collection: []
+    linkRAR: string
     clientName: string
   }) {
     return await this.mailerService.sendMail({
@@ -165,8 +165,8 @@ export class MailService {
       template: 'certification',
       context: {
         clientName,
+        linkRAR,
       },
-      attachments: collection,
     })
   }
 }

@@ -16,6 +16,8 @@ import { Methods } from './entities/method.entity'
 import { QuoteRequest } from '../quotes/entities/quote-request.entity'
 import { addOrRemoveMethodToStackDto } from './dto/add-remove-method-stack.dto'
 import * as path from 'path'
+import * as fs from 'fs'
+import * as archiver from 'archiver'
 import { TokenService } from '../auth/jwt/jwt.service'
 
 import { NI_MCIT_D_01 } from './entities/NI_MCIT_D_01/NI_MCIT_D_01.entity'
@@ -48,6 +50,8 @@ import {
 import { NI_MCIT_M_01Service } from './ni-mcit-m-01.service'
 import { countDecimals } from 'src/utils/countDecimal'
 import { EquipmentQuoteRequest } from '../quotes/entities/equipment-quote-request.entity'
+import { appendFileSync, existsSync, readFileSync, unlinkSync } from 'fs'
+import { createExtractorFromData } from 'node-unrar-js'
 
 @Injectable()
 export class MethodsService {
@@ -587,9 +591,18 @@ export class MethodsService {
         }
       }
 
+      const rar = await this.convertCollectionFileToZIP(
+        collectionPDF,
+        activity.data.quote_request.no,
+      )
+
+      if (!rar.success) {
+        return handleBadrequest(new Error('RAR ERROR'))
+      }
+
       await this.mailService.sendMailCollectionCertificate({
         user: activity.data.quote_request.client.email,
-        collection: collectionPDF as any,
+        linkRAR: rar.data as any,
         clientName: activity.data.quote_request.client.company_name,
       })
 
@@ -599,6 +612,47 @@ export class MethodsService {
     } catch (error) {
       console.log({ error })
       return handleInternalServerError(error.message)
+    }
+  }
+
+  async convertCollectionFileToZIP(collections: any[], fileName: string) {
+    try {
+      const destination = path.join(
+        process.env.DESTINATION_CLOUD,
+        `${fileName}.zip`,
+      )
+
+      if (fs.existsSync(destination)) {
+        fs.unlinkSync(destination)
+      }
+
+      const output = fs.createWriteStream(destination)
+      const archive = archiver('zip', { zlib: { level: 9 } })
+
+      output.on('close', () => {
+        console.log(`ZIP file created: ${archive.pointer()} total bytes`)
+      })
+
+      archive.on('error', (err) => {
+        throw err
+      })
+
+      archive.pipe(output)
+
+      collections.forEach((file) => {
+        archive.append(file.content, { name: file.filename })
+      })
+
+      await archive.finalize()
+
+      const token = this.tokenService.generateTemporaryLink(
+        `${fileName}.zip`,
+        '30d',
+      )
+      return handleOK(`${process.env.BASE_URL}/images/download/${token}`)
+    } catch (e) {
+      console.error({ e })
+      return handleInternalServerError(e.message)
     }
   }
 

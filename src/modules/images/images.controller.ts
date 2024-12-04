@@ -15,6 +15,7 @@ import * as path from 'path'
 import { Response } from 'express'
 import * as fs from 'fs'
 import { ApiTags } from '@nestjs/swagger'
+import * as jwt from 'jsonwebtoken'
 
 @ApiTags('images')
 @Controller('images')
@@ -73,7 +74,13 @@ export class ImagesController {
     @Res() res: Response,
   ) {
     try {
-      const filePath = path.join(process.env.DESTINATION_CLOUD, filename)
+      let decodeFileName = ''
+
+      const { id } = jwt.decode(filename) as any
+
+      decodeFileName = id || filename
+
+      const filePath = path.join(process.env.DESTINATION_CLOUD, decodeFileName)
 
       if (!fs.existsSync(filePath)) {
         return res.status(404).send('File not found')
@@ -84,7 +91,7 @@ export class ImagesController {
       res.set({
         'Content-Type': 'application/octet-stream',
         'Content-Length': stat.size.toString(),
-        'Content-Disposition': `attachment; filename=${filename}`,
+        'Content-Disposition': `attachment; filename=${decodeFileName}`,
       })
 
       const readStream = fs.createReadStream(filePath)

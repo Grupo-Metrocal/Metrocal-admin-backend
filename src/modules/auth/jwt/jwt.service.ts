@@ -5,7 +5,7 @@ import * as jwt from 'jsonwebtoken'
 export class TokenService {
   private readonly secretKey = process.env.JWT_SECRET
 
-  generateTemporaryLink(id: number, expiresIn: string): string {
+  generateTemporaryLink(id: number | string, expiresIn: string): string {
     if (!id || !expiresIn) {
       throw new Error('Faltan parámetros')
     }
