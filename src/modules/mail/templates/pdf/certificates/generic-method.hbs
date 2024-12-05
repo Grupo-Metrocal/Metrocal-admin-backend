@@ -24,7 +24,7 @@
       <span>Serie:</span>
       <span>Modelo:</span>
       <span>Rango de medida:</span>
-      <span>Resolución</span>
+      <span>Intervalo de escala:</span>
       <span>Código de identificación:</span>
       <span>Solicitante:</span>
       <span>Dirección del solicitante:</span>
@@ -43,7 +43,7 @@
       <span>{{equipment_information.serial_number}}</span>
       <span>{{equipment_information.model}}</span>
       <span>{{equipment_information.measurement_range}}</span>
-      <span>{{equipment_information.resolution}}</span>
+      <span>{{equipment_information.scale_interval}}</span>
       <span>{{equipment_information.code}}</span>
       <span>{{equipment_information.applicant}}</span>
       <span>{{equipment_information.address}}</span>
@@ -67,7 +67,7 @@
         </tr>
       </thead>
       <tbody>
-        {{#each calibration_results_certificate.result as |data|}}
+        {{#each calibration_results.result as |data|}}
           <tr>
             <td>{{data.patternIndication}}</td>
             <td>{{data.instrumentIndication}}</td>
@@ -79,6 +79,51 @@
     </table>
   </div>
 
+  {{!-- {{#if show_table_international_system_units}}
+    <div class='result_unid_system' style='min-height: 130px'>
+      <strong><span>Resultados en Unidad de Sistema Internacional de Unidades</span></strong>
+      <br />
+      <table>
+        <thead>
+          <caption class='table-title' colspan='5'>
+            Tabla de resultados de calibración
+          </caption>
+          <tr>
+            <th>Temperatura de referencia</th>
+            <th>Indicación del Termómetro</th>
+            <th>Corrección</th>
+            <th>Incertidumbre expandida K = 2</th>
+          </tr>
+        </thead>
+        <tbody>
+          {{#each calibration_results.result_unid_system as |data|}}
+            <tr>
+              <td>{{data.temperatureReference}}</td>
+              <td>{{data.thermometerIndication}}</td>
+              <td>{{data.correction}}</td>
+              <td>{{data.expandedUncertaintyK2}}</td>
+            </tr>
+          {{/each}}
+        </tbody>
+      </table>
+    </div>
+  {{/if}} --}}
+
+  {{#if show_table_international_system_units}}
+    {{#ifArrayEq calibration_results.result 9}}
+      <br />
+    {{/ifArrayEq}}
+    {{#ifArrayEq calibration_results.result 10}}
+      <br />
+      <br />
+      <br />
+    {{/ifArrayEq}}
+    {{#ifArrayEq calibration_results.result 11}}
+      <br />
+      <br />
+    {{/ifArrayEq}}
+  {{/if}}
+
   <div class='enviromental-conditions'>
     <div>
       <strong><span>Condiciones ambientales</span></strong>
@@ -86,13 +131,38 @@
       <span>{{environmental_conditions.humidity}}</span>
     </div>
   </div>
+  {{#if show_table_international_system_units}}
+    {{#ifArrayEq calibration_results.result 8}}
+      <br />
+      <br />
+    {{/ifArrayEq}}
+  {{/if}}
 
   <div class='calibration-method'>
     <strong><span>Método de calibración</span></strong>
     <br />
-    <span>Las pruebas se realizaron según NI-MCIT-T-01 Instrucción para
-      calibración de termómetros.</span>
+    <span>Comparación Directa: Se comparan directa e instantáneamente los
+      valores proporcionadas por el equipo (instrumento de medición o medida
+      materializada) bajo calibración, contra los valores proporcionados por un
+      patrón.</span>
   </div>
+
+  {{#if show_table_international_system_units}}
+    {{#ltArray calibration_results.result 6}}
+      <br />
+      <br />
+      <br />
+      <br />
+    {{/ltArray}}
+    {{#ifArrayEq calibration_results.result 6}}
+      <br />
+      <br />
+      <br />
+    {{/ifArrayEq}}
+    {{#ifArrayEq calibration_results.result 7}}
+      <br />
+    {{/ifArrayEq}}
+  {{/if}}
 
   <div class='uncertainty'>
     <strong><span>Incertidumbre de los datos</span></strong>
@@ -101,32 +171,33 @@
       La incertidumbre de las medición se obtuvo multiplicando la incertidumbre
       estándar combinada por un factor de cobertura k = 2, con el que se alcanza
       un nivel de confianza de al menos 95 %. La incertidumbre estándar de la
-      medición se determinó conforme a la Guía para la Expresión de la
-      Incertidumbre de la Medida, BIPM-IEC-IFCC-ISO-IUPAC-IUPAP-OIML, en la cual
-      se toma en cuenta la incertidumbre de los patrones, del método de
-      calibración, de las condiciones durante la calibración y del equipo sujeto
-      a calibración.
+      medición se determinó conforme a la Guide to Expresión of Uncertainty in
+      Measurement, BIPM-IEC-IFCC-ISO-IUPAC-IUPAP-OIML, en la cual se toma en
+      cuenta la incertidumbre de los patrones, del método de calibración, de las
+      condiciones durante la calibración y del equipo sujeto a calibración.
     </span>
   </div>
 
-  {{#ifArrayEq calibration_results.result 6}}
-    <br /><br /><br /><br /><br />
-  {{/ifArrayEq}}
-  {{#ifArrayEq calibration_results.result 7}}
-    <br /><br /><br /><br /><br />
-  {{/ifArrayEq}}
-  {{#ifArrayEq calibration_results.result 8}}
-    <br /><br /><br /><br />
-  {{/ifArrayEq}}
-  {{#ifArrayEq calibration_results.result 9}}
-    <br /><br /><br />
-  {{/ifArrayEq}}
-  {{#ifArrayEq calibration_results.result 10}}
-    <br /><br />
-  {{/ifArrayEq}}
-  {{#ifArrayEq calibration_results.result 11}}
-    <br />
-  {{/ifArrayEq}}
+  {{#if show_table_international_system_units}}{{else}}
+    {{#ifArrayEq calibration_results.result 6}}
+      <br /><br /><br /><br /><br />
+    {{/ifArrayEq}}
+    {{#ifArrayEq calibration_results.result 7}}
+      <br /><br /><br /><br /><br />
+    {{/ifArrayEq}}
+    {{#ifArrayEq calibration_results.result 8}}
+      <br /><br /><br /><br />
+    {{/ifArrayEq}}
+    {{#ifArrayEq calibration_results.result 9}}
+      <br /><br /><br />
+    {{/ifArrayEq}}
+    {{#ifArrayEq calibration_results.result 10}}
+      <br /><br />
+    {{/ifArrayEq}}
+    {{#ifArrayEq calibration_results.result 11}}
+      <br />
+    {{/ifArrayEq}}
+  {{/if}}
 
   <div class='used_pattern'>
     <strong><span>Descripción de patrones utilizados</span></strong>
@@ -154,9 +225,11 @@
     </table>
   </div>
 
-  {{#ltArray calibration_results.result 7}}
-    <br />
-  {{/ltArray}}
+  {{#if show_table_international_system_units}}{{else}}
+    {{#ltArray calibration_results.result 7}}
+      <br />
+    {{/ltArray}}
+  {{/if}}
 
   <div class='observations'>
     <strong><span>Observaciones</span></strong>

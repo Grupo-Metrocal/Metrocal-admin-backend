@@ -1459,7 +1459,7 @@ export class MethodsController {
     })
   }
 
-  @Get('generic-method/generate-certificate/send/pdf/:idActivity/:idMethod')
+  @Get('generic_method/generate-certificate/send/pdf/:idActivity/:idMethod')
   async sendCertificateToClientGenericMethod(
     @Param('idActivity') activityId: number,
     @Param('idMethod') methodId: number,

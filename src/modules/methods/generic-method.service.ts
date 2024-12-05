@@ -451,6 +451,20 @@ export class GENERIC_METHODService {
     }
   }
 
+  async setCertificateIssueDate(id: number) {
+    const response = await this.getMehotdById(id)
+
+    const { data: method } = response as { data: GENERIC_METHOD }
+
+    return await this.dataSource.transaction((manager) => {
+      if (!method.certificate_issue_date) {
+        method.certificate_issue_date = new Date()
+      }
+
+      return manager.save(method)
+    })
+  }
+
   async getCertificateResult(methodID: number, activityID: number) {
     try {
       const method = await this.GENERIC_METHODRepository.findOne({
@@ -690,19 +704,19 @@ Este certificado de calibración no debe ser reproducido sin la aprobación del 
         return dataCertificate
       }
 
-      dataCertificate.data.calibration_results_certificate.result =
-        dataCertificate.data.calibration_results_certificate.result.patternIndication.map(
+      dataCertificate.data.calibration_results.result =
+        dataCertificate.data.calibration_results.result.patternIndication.map(
           (value, index) => ({
             patternIndication: value,
             instrumentIndication:
-              dataCertificate.data.calibration_results_certificate.result
+              dataCertificate.data.calibration_results.result
                 .instrumentIndication[index],
             correction:
-              dataCertificate.data.calibration_results_certificate.result
-                .correction[index],
+              dataCertificate.data.calibration_results.result.correction[index],
             uncertainty:
-              dataCertificate.data.calibration_results_certificate.result
-                .uncertainty[index],
+              dataCertificate.data.calibration_results.result.uncertainty[
+                index
+              ],
           }),
         )
 
