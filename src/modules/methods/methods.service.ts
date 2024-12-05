@@ -50,7 +50,6 @@ import {
 import { NI_MCIT_M_01Service } from './ni-mcit-m-01.service'
 import { countDecimals } from 'src/utils/countDecimal'
 import { EquipmentQuoteRequest } from '../quotes/entities/equipment-quote-request.entity'
-import { appendFileSync, existsSync, readFileSync, unlinkSync } from 'fs'
 
 @Injectable()
 export class MethodsService {

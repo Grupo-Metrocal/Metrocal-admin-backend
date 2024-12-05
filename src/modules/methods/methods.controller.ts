@@ -1429,9 +1429,10 @@ export class MethodsController {
   }
 
   @ApiQuery({ name: 'increase', required: false })
-  @Post('generic-method/description-pattern/:methodId/:activityId')
+  @Post('generic-method/description-pattern/:equipmentId/:methodId/:activityId')
   async createGENERIC_METHODDescriptionPattern(
     @Body() descriptionPattern: DescriptionPatternGenericMethodDto,
+    @Param('equipmentId') equipmentId: number,
     @Param('methodId') methodId: number,
     @Param('activityId') activityId: number,
     @Query('increase') increase?: string,
@@ -1439,6 +1440,7 @@ export class MethodsController {
     const valueIncrease = increase === 'true' ? true : false
 
     return await this.GenericMethodService.descriptionPattern(
+      equipmentId,
       descriptionPattern,
       methodId,
       activityId,

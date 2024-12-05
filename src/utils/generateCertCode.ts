@@ -24,7 +24,7 @@ export const updateCertCode = (code: string, newId: number) => {
 
   const parts = code.split('-')
   const id = parts[3]
-  return code.replace(id, newId.toString())
+  return code.replace(id, newId.toString().padStart(4, '0'))
 }
 
 export const formatQuoteCode = (code: string, modificationsNumber: number) => {

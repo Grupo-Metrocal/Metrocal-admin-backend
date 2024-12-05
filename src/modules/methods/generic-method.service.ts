@@ -32,6 +32,8 @@ import {
 import { countDecimals } from 'src/utils/countDecimal'
 import { CertificationDetailsDto } from './dto/NI_MCIT_P_01/certification_details.dto'
 import { DescriptionPatternGenericMethodDto } from './dto/GENERIC METHOD/description_pattern.dto'
+import { QuotesService } from '../quotes/quotes.service'
+import { EquipmentQuoteRequest } from '../quotes/entities/equipment-quote-request.entity'
 
 @Injectable()
 export class GENERIC_METHODService {
@@ -57,6 +59,9 @@ export class GENERIC_METHODService {
 
     @Inject(forwardRef(() => ActivitiesService))
     private activitiesService: ActivitiesService,
+
+    @Inject(forwardRef(() => QuotesService))
+    private quoeteRequestService: QuotesService,
 
     @Inject(forwardRef(() => PatternsService))
     private readonly patternsService: PatternsService,
@@ -214,6 +219,7 @@ export class GENERIC_METHODService {
   }
 
   async descriptionPattern(
+    equipmentId,
     descriptionPattern: DescriptionPatternGenericMethodDto,
     methodId: number,
     activityId: number,
@@ -264,7 +270,7 @@ export class GENERIC_METHODService {
       })
 
       await Promise.all([
-        this.generateCertificateCodeToMethod(method.id, activityId),
+        this.generateCertificateCodeToMethod(method.id, equipmentId),
         this.activitiesService.updateActivityProgress(activityId),
         this.methodService.isResolvedAllServices(activityId),
       ])
@@ -716,33 +722,71 @@ Este certificado de calibración no debe ser reproducido sin la aprobación del 
     }
   }
 
-  async generateCertificateCodeToMethod(methodID: number, activityId: number) {
+  async generateCertificateCodeToMethod(methodID: number, equipmentId: number) {
     try {
-      const resActivity =
-        await this.activitiesService.getActivitiesByID(activityId)
+      const resEquipment =
+        await this.quoeteRequestService.getEquipmentById(equipmentId)
 
-      const { data: activity } = resActivity
+      const { data: equipment } = resEquipment as {
+        data: EquipmentQuoteRequest
+      }
 
       const method = await this.GENERIC_METHODRepository.findOne({
         where: { id: methodID },
       })
 
+      const lastMethod = await this.GENERIC_METHODRepository.createQueryBuilder(
+        'GENERIC_METHOD',
+      )
+        .orderBy('GENERIC_METHOD.last_record_index', 'DESC')
+        .getOne()
+
       if (!method) {
         return handleInternalServerError('El método no existe')
       }
 
-      if (method.certificate_code) {
-        return handleOK('El método ya tiene un código de certificado')
+      // if (method.certificate_code) {
+      //   return handleOK('El método ya tiene un código de certificado')
+      // }
+
+      if (
+        !equipment.use_alternative_certificate_method ||
+        equipment.use_alternative_certificate_method === 'GENERIC_METHOD' ||
+        equipment.use_alternative_certificate_method === '(N/A)'
+      ) {
+        await this.dataSource.transaction(async (manager) => {
+          method.record_index =
+            !lastMethod ||
+            lastMethod.created_at.getFullYear() !==
+              method.created_at.getFullYear()
+              ? 1
+              : lastMethod.last_record_index + 1
+
+          await this.methodService.updateLastRecordIndex('GENERIC_METHOD')
+
+          await manager.save(method)
+        })
+
+        const certificate = await this.certificateService.create(
+          'FA',
+          method.record_index,
+        )
+
+        method.certificate_code = certificate.data.code
+        method.certificate_id = certificate.data.id
+
+        await this.GENERIC_METHODRepository.save(method)
+      } else {
+        await this.methodService.updateRecordByAlternativeIndex(
+          equipment.use_alternative_certificate_method
+            .split(' ')[0]
+            .replaceAll('-', '_'),
+          'GENERIC_METHOD',
+          method.id,
+        )
       }
 
-      const certificate = await this.certificateService.create('T', methodID)
-
-      method.certificate_code = certificate.data.code
-      method.certificate_id = certificate.data.id
-
-      await this.GENERIC_METHODRepository.save(method)
-
-      return handleOK(certificate)
+      return handleOK('certificate')
     } catch (error) {
       return handleInternalServerError(error.message)
     }
