@@ -1448,7 +1448,7 @@ export class MethodsController {
     )
   }
 
-  @Get('generic-method/certificates/activity/:activityId/method/:methodId')
+  @Get('generic_method/certificates/activity/:activityId/method/:methodId')
   async getGENERIC_METHODCertificate(
     @Param('activityId') activityId: number,
     @Param('methodId') methodId: number,

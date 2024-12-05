@@ -756,6 +756,10 @@ export class MethodsService {
     const [integer, decimal] = convertNumber.toString().split('.')
 
     if (Number(integer) >= 10) {
+      if (!decimal) {
+        return integer
+      }
+
       let firstNumber: number = 0
       for (let i = 0; i < decimal.length; i++) {
         if (Number(decimal[i]) !== 0 && i < 2) {

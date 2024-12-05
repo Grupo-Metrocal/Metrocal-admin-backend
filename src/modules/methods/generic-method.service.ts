@@ -406,8 +406,11 @@ export class GENERIC_METHODService {
       const generalSheet = workbook.sheet('Generales')
       const inputSheet = workbook.sheet('Entrada de Datos')
 
+      workbook
+        .sheet('NI-R01-MCIT-T-01')
+        .cell('F12')
+        .value(method.computer_data.unit_of_measurement)
       inputSheet.cell('C2').value(method.computer_data.scale_division)
-      inputSheet.cell('C3').value('% HR')
 
       generalSheet
         .cell('C30')
@@ -494,7 +497,7 @@ export class GENERIC_METHODService {
       const reopnedWorkbook = await XlsxPopulate.fromFileAsync(
         method.certificate_url,
       )
-      const sheet = reopnedWorkbook.sheet('FA  1 pto')
+      const sheet = reopnedWorkbook.sheet('Fuera del Alcance')
 
       let patternIndication = []
       let instrumentIndication = []
@@ -539,7 +542,7 @@ export class GENERIC_METHODService {
         )
       }
 
-      const calibration_results_certificate = {
+      const calibration_results = {
         result: {
           patternIndication,
           instrumentIndication,
@@ -575,7 +578,7 @@ export class GENERIC_METHODService {
           model: method.equipment_information.model || '---',
           measurement_range: `${method.equipment_information.range_min} ${method.computer_data.unit_of_measurement} a ${method.equipment_information.range_max} ${method.computer_data.unit_of_measurement}`,
           scale_interval: method.equipment_information.scale_interval || '---',
-          identification_code: method.equipment_information.code || '---',
+          code: method.equipment_information.code || '---',
           applicant:
             method?.applicant_name ||
             activity.quote_request.client.company_name,
@@ -583,7 +586,7 @@ export class GENERIC_METHODService {
             method?.applicant_address || activity.quote_request.client.address,
           calibration_location: method.calibration_location || '---',
         },
-        calibration_results_certificate,
+        calibration_results,
         creditable: method.description_pattern.creditable,
         description_pattern: await this.getPatternsTableToCertificate(method),
         environmental_conditions: {
@@ -602,6 +605,7 @@ Este certificado de calibración no debe ser reproducido sin la aprobación del 
       }
       return handleOK(certificate)
     } catch (error) {
+      console.error({ error })
       return handleInternalServerError(error.message)
     }
   }
