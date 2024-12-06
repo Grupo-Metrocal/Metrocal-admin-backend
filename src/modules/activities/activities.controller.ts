@@ -1,4 +1,4 @@
-import { Controller, Delete, Param, UseGuards } from '@nestjs/common'
+import { Controller, Delete, Param, Res, UseGuards } from '@nestjs/common'
 import { ActivitiesService } from './activities.service'
 import { ApiTags } from '@nestjs/swagger'
 import { Get, Post, Body } from '@nestjs/common'
@@ -9,6 +9,7 @@ import { AddResponsableToActivityDto } from './dto/add-responsable.dto'
 import { FinishActivityDto } from './dto/finish-activity.dto'
 import { ReviewActivityDto } from './dto/review-activty.dto'
 import { AddSignatureDto } from './dto/add-signature.dto'
+import { Response } from 'express'
 
 @ApiTags('activities')
 @Controller('activities')
@@ -126,5 +127,32 @@ export class ActivitiesController {
   @Get('certified-activities/statistics')
   async getStatisticsAcitivities() {
     return await this.activitiesService.getStatisticsAcitivities()
+  }
+
+  @Get('get-finishied-activities/:page/:limit/:no?')
+  async getFinisihedActivities(
+    @Param('page') page: number,
+    @Param('limit') limit: number,
+    @Param('no') no: string,
+  ) {
+    return await this.activitiesService.getFinisihedActivities(page, limit, no)
+  }
+
+  @Get('service-order/pdf/:id')
+  async getQuoteRequestPdf(@Param('id') id: number, @Res() res: Response) {
+    const pdfBuffer = await this.activitiesService.getServiceOrderPdf(id)
+
+    console.log({ pdfBuffer })
+
+    if (!pdfBuffer) {
+      return res.status(500).send('Error al generar el PDF')
+    }
+
+    res.setHeader('Content-Type', 'application/pdf')
+    res.setHeader(
+      'Content-Disposition',
+      'attachment; filename=Orden_de_Servicio.pdf',
+    )
+    res.send(pdfBuffer)
   }
 }

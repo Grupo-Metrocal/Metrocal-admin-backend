@@ -477,6 +477,66 @@ export class ActivitiesService {
     }
   }
 
+  async getFinisihedActivities(page: number, limit: number, no?: string) {
+    try {
+      const response = await this.activityRepository.find({
+        where: no
+          ? {
+              status: 'done',
+              quote_request: {
+                no: ILike(`%${no}%`),
+              },
+            }
+          : { status: 'done' },
+        relations: [
+          'quote_request',
+          'quote_request.client',
+          'quote_request.equipment_quote_request',
+          'team_members',
+        ],
+        order: {
+          quote_request: {
+            id: 'DESC',
+          },
+        },
+        skip: (page - 1) * limit,
+        take: limit,
+      })
+
+      const totalActivitiesCount = await this.activityRepository.count({
+        where: { status: 'done' },
+      })
+
+      let data = []
+      for (const activity of response) {
+        if (!activity.quote_request) {
+          continue
+        }
+
+        let services_performed = 0
+        activity.quote_request.equipment_quote_request.forEach(
+          (item) => (services_performed += item.count),
+        )
+
+        data.push({
+          id: activity.id,
+          quote_request_id: activity.quote_request.id,
+          no: activity.quote_request.no,
+          client_name: activity.quote_request.client.company_name,
+          end_date: formatDate(activity.finish_date.toString()),
+          services_performed,
+          resposable: activity.team_members.find(
+            (member) => member.id === activity.responsable,
+          ).username,
+        })
+      }
+
+      return handlePaginate(data, totalActivitiesCount, limit, page)
+    } catch (e) {
+      return handleInternalServerError(e.message)
+    }
+  }
+
   async generateServiceOrder(activityID: number) {
     try {
       const activity = await this.activityRepository.findOne({
@@ -1051,6 +1111,71 @@ export class ActivitiesService {
     } catch (error) {
       console.error({ error })
       return handleInternalServerError(error.message)
+    }
+  }
+
+  async getServiceOrderPdf(activityID: number) {
+    try {
+      const activity = await this.activityRepository.findOne({
+        where: { id: activityID },
+        relations: [
+          'quote_request',
+          'quote_request.equipment_quote_request',
+          'quote_request.client',
+          'team_members',
+        ],
+      })
+
+      const data = {
+        clientName: activity.quote_request.client.company_name,
+        endDate: formatDate(activity.finish_date.toString()),
+        startTime: activity.start_time,
+        endTime: activity.end_time,
+        address: activity.quote_request.client.address,
+        requestedBy: activity.quote_request.client.requested_by,
+        phone: activity.quote_request.client.phone,
+        client_signature: activity.client_signature,
+        work_areas: activity.work_areas.join(', ') || '',
+        comments_insitu1: activity?.comments_insitu?.[0] || '',
+        comments_insitu2: activity?.comments_insitu?.[1] || '',
+        equipments: activity.quote_request.equipment_quote_request.map(
+          (equipment, index) => {
+            return {
+              name: equipment.name,
+              count: equipment.count,
+              review_comment: equipment.review_comment,
+              index: index + 1,
+              quoteNumber: activity.quote_request.no,
+              status:
+                equipment.status === 'rejected' ? 'No realizado' : 'Realizado',
+            }
+          },
+        ),
+        resolved_services: activity.quote_request.equipment_quote_request
+          .map((service) => {
+            if (service.isResolved) {
+              return service.type_service
+            }
+          })
+          .filter((service) => service !== undefined)
+          .map((service) => {
+            if (
+              service === 'Diagnóstico' ||
+              service === 'Otros' ||
+              service === 'Verificación de Cal' ||
+              service === 'Suministro' ||
+              service === 'Proyecto' ||
+              service === 'Informe Técnico'
+            ) {
+              return 'Otro'
+            }
+            return service
+          }),
+      }
+
+      return await this.pdfService.generteServiceOrderPdf(data)
+    } catch (e) {
+      return handleInternalServerError(e.message)
     }
   }
 }
