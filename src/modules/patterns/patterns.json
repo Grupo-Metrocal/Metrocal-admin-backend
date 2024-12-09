@@ -970,6 +970,966 @@
     "brand": "Mitutoyo"
   },
   {
+    "method": "NI-MCIT-M-01",
+    "equipment": "Masa Patrón",
+    "code": "NI-MCPM-JM-02 (20mg)",
+    "certificate": "No Aplica (N/A)",
+    "traceability": "SCM Metrología y Laboratorios SCM-00055159",
+    "pattern_range": "",
+    "next_calibration": "2026-02-06",
+    "brand": "Cobos"
+  },
+  {
+    "method": "NI-MCIT-M-01",
+    "equipment": "Masa Patrón",
+    "code": "NI-MCPM-JM-02 (50mg)",
+    "certificate": "No Aplica (N/A)",
+    "traceability": "SCM Metrología y Laboratorios SCM-00055159",
+    "pattern_range": "",
+    "next_calibration": "2026-02-06",
+    "brand": "Cobos"
+  },
+  {
+    "method": "NI-MCIT-M-01",
+    "equipment": "Masa Patrón",
+    "code": "NI-MCPM-JM-02 (100mg)",
+    "certificate": "No Aplica (N/A)",
+    "traceability": "SCM Metrología y Laboratorios SCM-00055159",
+    "pattern_range": "",
+    "next_calibration": "2026-02-06",
+    "brand": "Cobos"
+  },
+  {
+    "method": "NI-MCIT-M-01",
+    "equipment": "Masa Patrón",
+    "code": "NI-MCPM-JM-02 (200mg)",
+    "certificate": "No Aplica (N/A)",
+    "traceability": "SCM Metrología y Laboratorios SCM-00055159",
+    "pattern_range": "",
+    "next_calibration": "2026-02-06",
+    "brand": "Cobos"
+  },
+  {
+    "method": "NI-MCIT-M-01",
+    "equipment": "Masa Patrón",
+    "code": "NI-MCPM-JM-02 (500mg)",
+    "certificate": "No Aplica (N/A)",
+    "traceability": "SCM Metrología y Laboratorios SCM-00055159",
+    "pattern_range": "",
+    "next_calibration": "2026-02-06",
+    "brand": "Cobos"
+  },
+  {
+    "method": "NI-MCIT-M-01",
+    "equipment": "Masa Patrón",
+    "code": "NI-MCPM-JM-03 (1g ZA57A)",
+    "certificate": "No Aplica (N/A)",
+    "traceability": "RECOPE, Certificado RCP-LMV-MSWS-095-23",
+    "pattern_range": "",
+    "next_calibration": "2025-07-27",
+    "brand": "Zwiebel"
+  },
+  {
+    "method": "NI-MCIT-M-01",
+    "equipment": "Masa Patrón",
+    "code": "NI-MCPM-JM-02 (2g)",
+    "certificate": "No Aplica (N/A)",
+    "traceability": "SCM Metrología y Laboratorios SCM-00055159",
+    "pattern_range": "",
+    "next_calibration": "2026-02-06",
+    "brand": "Cobos"
+  },
+  {
+    "method": "NI-MCIT-M-01",
+    "equipment": "Masa Patrón",
+    "code": "NI-MCPM-JM-03 (2g ZZ47L)",
+    "certificate": "No Aplica (N/A)",
+    "traceability": "RECOPE, Certificado RCP-LMV-MSWS-095-23",
+    "pattern_range": "",
+    "next_calibration": "2025-07-27",
+    "brand": "Zwiebel"
+  },
+  {
+    "method": "NI-MCIT-M-01",
+    "equipment": "Masa Patrón",
+    "code": "NI-MCPM-JM-03 (2g ZZ84J)",
+    "certificate": "No Aplica (N/A)",
+    "traceability": "RECOPE, Certificado RCP-LMV-MSWS-095-23",
+    "pattern_range": "",
+    "next_calibration": "2025-07-27",
+    "brand": "Zwiebel"
+  },
+  {
+    "method": "NI-MCIT-M-01",
+    "equipment": "Masa Patrón",
+    "code": "NI-MCPM-JM-02 (5g)",
+    "certificate": "No Aplica (N/A)",
+    "traceability": "SCM Metrología y Laboratorios SCM-00055159",
+    "pattern_range": "",
+    "next_calibration": "2026-02-06",
+    "brand": "Cobos"
+  },
+  {
+    "method": "NI-MCIT-M-01",
+    "equipment": "Masa Patrón",
+    "code": "NI-MCPM-JM-03 (5g ZZ32G)",
+    "certificate": "No Aplica (N/A)",
+    "traceability": "RECOPE, Certificado RCP-LMV-MSWS-095-23",
+    "pattern_range": "",
+    "next_calibration": "2025-07-27",
+    "brand": "Zwiebel"
+  },
+  {
+    "method": "NI-MCIT-M-01",
+    "equipment": "Masa Patrón",
+    "code": "NI-MCPM-JM-02 (10g)",
+    "certificate": "No Aplica (N/A)",
+    "traceability": "SCM Metrología y Laboratorios SCM-00055159",
+    "pattern_range": "",
+    "next_calibration": "2026-02-06",
+    "brand": "Cobos"
+  },
+  {
+    "method": "NI-MCIT-M-01",
+    "equipment": "Masa Patrón",
+    "code": "NI-MCPM-JM-03 (10g ZZ64K)",
+    "certificate": "No Aplica (N/A)",
+    "traceability": "RECOPE, Certificado RCP-LMV-MSWS-095-23",
+    "pattern_range": "",
+    "next_calibration": "2025-07-27",
+    "brand": "Zwiebel"
+  },
+  {
+    "method": "NI-MCIT-M-01",
+    "equipment": "Masa Patrón",
+    "code": "NI-MCPM-JM-02 (20g)",
+    "certificate": "No Aplica (N/A)",
+    "traceability": "SCM Metrología y Laboratorios SCM-00055159",
+    "pattern_range": "",
+    "next_calibration": "2026-02-06",
+    "brand": "Cobos"
+  },
+  {
+    "method": "NI-MCIT-M-01",
+    "equipment": "Masa Patrón",
+    "code": "NI-MCPM-JM-02 (20\"g)",
+    "certificate": "No Aplica (N/A)",
+    "traceability": "SCM Metrología y Laboratorios SCM-00055159",
+    "pattern_range": "",
+    "next_calibration": "2026-02-06",
+    "brand": "Cobos"
+  },
+  {
+    "method": "NI-MCIT-M-01",
+    "equipment": "Masa Patrón",
+    "code": "NI-MCPM-JM-03 (20g ZZ52L)",
+    "certificate": "No Aplica (N/A)",
+    "traceability": "RECOPE, Certificado RCP-LMV-MSWS-095-23",
+    "pattern_range": "",
+    "next_calibration": "2025-07-27",
+    "brand": "Zwiebel"
+  },
+  {
+    "method": "NI-MCIT-M-01",
+    "equipment": "Masa Patrón",
+    "code": "NI-MCPM-JM-03 (20g ZZ53L)",
+    "certificate": "No Aplica (N/A)",
+    "traceability": "RECOPE, Certificado RCP-LMV-MSWS-095-23",
+    "pattern_range": "",
+    "next_calibration": "2025-07-27",
+    "brand": "Zwiebel"
+  },
+  {
+    "method": "NI-MCIT-M-01",
+    "equipment": "Masa Patrón",
+    "code": "NI-MCPM-JM-02 (50g)",
+    "certificate": "No Aplica (N/A)",
+    "traceability": "SCM Metrología y Laboratorios SCM-00055159",
+    "pattern_range": "",
+    "next_calibration": "2026-02-06",
+    "brand": "Cobos"
+  },
+  {
+    "method": "NI-MCIT-M-01",
+    "equipment": "Masa Patrón",
+    "code": "NI-MCPM-JM-03 (50g ZZ83J)",
+    "certificate": "No Aplica (N/A)",
+    "traceability": "RECOPE, Certificado RCP-LMV-MSWS-095-23",
+    "pattern_range": "",
+    "next_calibration": "2025-07-27",
+    "brand": "Zwiebel"
+  },
+  {
+    "method": "NI-MCIT-M-01",
+    "equipment": "Masa Patrón",
+    "code": "NI-MCPM-JM-03 (100g ZZ51L)",
+    "certificate": "No Aplica (N/A)",
+    "traceability": "RECOPE, Certificado RCP-LMV-MSWS-095-23",
+    "pattern_range": "",
+    "next_calibration": "2025-07-27",
+    "brand": "Zwiebel"
+  },
+  {
+    "method": "NI-MCIT-M-01",
+    "equipment": "Masa Patrón",
+    "code": "NI-MCPM-JM-02 (200g)",
+    "certificate": "No Aplica (N/A)",
+    "traceability": "SCM Metrología y Laboratorios SCM-00055159",
+    "pattern_range": "",
+    "next_calibration": "2026-02-06",
+    "brand": "Cobos"
+  },
+  {
+    "method": "NI-MCIT-M-01",
+    "equipment": "Masa Patrón",
+    "code": " NI-MCPM-JM-02 (200\"g)",
+    "certificate": "No Aplica (N/A)",
+    "traceability": "SCM Metrología y Laboratorios SCM-00055159",
+    "pattern_range": "",
+    "next_calibration": "2026-02-06",
+    "brand": "Cobos"
+  },
+  {
+    "method": "NI-MCIT-M-01",
+    "equipment": "Masa Patrón",
+    "code": "NI-MCPM-JM-03 (200g ZZ18M)",
+    "certificate": "No Aplica (N/A)",
+    "traceability": "RECOPE, Certificado RCP-LMV-MSWS-095-23",
+    "pattern_range": "",
+    "next_calibration": "2025-07-27",
+    "brand": "Zwiebel"
+  },
+  {
+    "method": "NI-MCIT-M-01",
+    "equipment": "Masa Patrón",
+    "code": "NI-MCPM-JM-03 (200g ZZ19M)",
+    "certificate": "No Aplica (N/A)",
+    "traceability": "RECOPE, Certificado RCP-LMV-MSWS-095-23",
+    "pattern_range": "",
+    "next_calibration": "2025-07-27",
+    "brand": "Zwiebel"
+  },
+  {
+    "method": "NI-MCIT-M-01",
+    "equipment": "Masa Patrón",
+    "code": "NI-MCPM-JM-02 (500g)",
+    "certificate": "No Aplica (N/A)",
+    "traceability": "SCM Metrología y Laboratorios SCM-00055159",
+    "pattern_range": "",
+    "next_calibration": "2026-02-06",
+    "brand": "Cobos"
+  },
+  {
+    "method": "NI-MCIT-M-01",
+    "equipment": "Masa Patrón",
+    "code": "NI-MCPM-JM-03 (500g ZZ60E)",
+    "certificate": "No Aplica (N/A)",
+    "traceability": "RECOPE, Certificado RCP-LMV-MSWS-095-23",
+    "pattern_range": "",
+    "next_calibration": "2025-07-27",
+    "brand": "Zwiebel"
+  },
+  {
+    "method": "NI-MCIT-M-01",
+    "equipment": "Masa Patrón",
+    "code": "NI-MCPM-1-01 (1 000g)",
+    "certificate": "No Aplica (N/A)",
+    "traceability": "Metrología CR, Certificado MC-P-2023-096",
+    "pattern_range": "",
+    "next_calibration": "2025-05-01",
+    "brand": "Troemner"
+  },
+  {
+    "method": "NI-MCIT-M-01",
+    "equipment": "Masa Patrón",
+    "code": "NI-MCPM-JM-02 (1 000g)",
+    "certificate": "No Aplica (N/A)",
+    "traceability": "SCM Metrología y Laboratorios SCM-00055159",
+    "pattern_range": "",
+    "next_calibration": "2026-02-06",
+    "brand": "Cobos"
+  },
+  {
+    "method": "NI-MCIT-M-01",
+    "equipment": "Masa Patrón",
+    "code": "NI-MCPM-JM-03 (1 000g ZZ69G)",
+    "certificate": "No Aplica (N/A)",
+    "traceability": "RECOPE, Certificado RCP-LMV-MSWS-095-23",
+    "pattern_range": "",
+    "next_calibration": "2025-07-27",
+    "brand": "Zwiebel"
+  },
+  {
+    "method": "NI-MCIT-M-01",
+    "equipment": "Masa Patrón",
+    "code": "NI-MCPM-2-01 (2 000g)",
+    "certificate": "No Aplica (N/A)",
+    "traceability": "Metrología CR, Certificado MC-P-2023-096",
+    "pattern_range": "",
+    "next_calibration": "2025-05-01",
+    "brand": "Troemner"
+  },
+  {
+    "method": "NI-MCIT-M-01",
+    "equipment": "Masa Patrón",
+    "code": "NI-MCPM-JM-02 (2 000g)",
+    "certificate": "No Aplica (N/A)",
+    "traceability": "SCM Metrología y Laboratorios SCM-00055159",
+    "pattern_range": "",
+    "next_calibration": "2026-02-06",
+    "brand": "Cobos"
+  },
+  {
+    "method": "NI-MCIT-M-01",
+    "equipment": "Masa Patrón",
+    "code": "NI-MCPM-JM-02 (2 000\"g)",
+    "certificate": "No Aplica (N/A)",
+    "traceability": "SCM Metrología y Laboratorios SCM-00055159",
+    "pattern_range": "",
+    "next_calibration": "2026-02-06",
+    "brand": "Cobos"
+  },
+  {
+    "method": "NI-MCIT-M-01",
+    "equipment": "Masa Patrón",
+    "code": "NI-MCPM-JM-03 (2 000g ZZ94E)",
+    "certificate": "No Aplica (N/A)",
+    "traceability": "RECOPE, Certificado RCP-LMV-MSWS-095-23",
+    "pattern_range": "",
+    "next_calibration": "2025-07-27",
+    "brand": "Zwiebel"
+  },
+  {
+    "method": "NI-MCIT-M-01",
+    "equipment": "Masa Patrón",
+    "code": "NI-MCPM-JM-03 (2 000g ZZ97E)",
+    "certificate": "No Aplica (N/A)",
+    "traceability": "RECOPE, Certificado RCP-LMV-MSWS-095-23",
+    "pattern_range": "",
+    "next_calibration": "2025-07-27",
+    "brand": "Zwiebel"
+  },
+  {
+    "method": "NI-MCIT-M-01",
+    "equipment": "Masa Patrón",
+    "code": "NI-MCPM-5-01 (5 000g)",
+    "certificate": "No Aplica (N/A)",
+    "traceability": "Metrología CR, Certificado MC-P-2023-096",
+    "pattern_range": "",
+    "next_calibration": "2025-05-01",
+    "brand": "Troemner"
+  },
+  {
+    "method": "NI-MCIT-M-01",
+    "equipment": "Masa Patrón",
+    "code": "NI-MCPM-JM-02 (5 000g)",
+    "certificate": "No Aplica (N/A)",
+    "traceability": "SCM Metrología y Laboratorios SCM-00055159",
+    "pattern_range": "",
+    "next_calibration": "2026-02-06",
+    "brand": "Cobos"
+  },
+  {
+    "method": "NI-MCIT-M-01",
+    "equipment": "Masa Patrón",
+    "code": "NI-MCPM-JM-03 (5 000g ZZ19C)",
+    "certificate": "No Aplica (N/A)",
+    "traceability": "RECOPE, Certificado RCP-LMV-MSWS-095-23",
+    "pattern_range": "",
+    "next_calibration": "2025-07-27",
+    "brand": "Zwiebel"
+  },
+  {
+    "method": "NI-MCIT-M-01",
+    "equipment": "Masa Patrón",
+    "code": "NI-MCPM-10-01 (10kg)",
+    "certificate": "No Aplica (N/A)",
+    "traceability": "Metrología CR, Certificado MC-P-2023-096",
+    "pattern_range": "",
+    "next_calibration": "2025-05-01",
+    "brand": "N/A"
+  },
+  {
+    "method": "NI-MCIT-M-01",
+    "equipment": "Masa Patrón",
+    "code": "NI-MCPM-10-02 (10kg)",
+    "certificate": "No Aplica (N/A)",
+    "traceability": "RECOPE, Certificado RCP-LMV-MSW-106-23",
+    "pattern_range": "",
+    "next_calibration": "2027-07-25",
+    "brand": "Cobos"
+  },
+  {
+    "method": "NI-MCIT-M-01",
+    "equipment": "Masa Patrón",
+    "code": "NI-MCPM-20-01 (20kg)",
+    "certificate": "No Aplica (N/A)",
+    "traceability": "RECOPE, Certificado RCP-LMV-MSW-096-23",
+    "pattern_range": "",
+    "next_calibration": "2027-07-25",
+    "brand": "N/A"
+  },
+  {
+    "method": "NI-MCIT-M-01",
+    "equipment": "Masa Patrón",
+    "code": "NI-MCPM-20-10 (20kg)",
+    "certificate": "",
+    "traceability": "Metrología CR, Certificado MC-P-2023-096",
+    "pattern_range": "",
+    "next_calibration": "2025-05-01",
+    "brand": "N/A"
+  },
+  {
+    "method": "NI-MCIT-M-01",
+    "equipment": "Masa Patrón",
+    "code": "NI-MCPM-20-11 (20kg)",
+    "certificate": "",
+    "traceability": "Metrología CR, Certificado MC-P-2023-096",
+    "pattern_range": "",
+    "next_calibration": "2025-05-01",
+    "brand": "N/A"
+  },
+  {
+    "method": "NI-MCIT-M-01",
+    "equipment": "Masa Patrón",
+    "code": "NI-MCPM-20-12 (20kg)",
+    "certificate": "",
+    "traceability": "Metrología CR, Certificado MC-P-2023-096",
+    "pattern_range": "",
+    "next_calibration": "2025-05-01",
+    "brand": "N/A"
+  },
+  {
+    "method": "NI-MCIT-M-01",
+    "equipment": "Masa Patrón",
+    "code": "NI-MCPM-20-13 (20kg)",
+    "certificate": "",
+    "traceability": "Metrología CR, Certificado MC-P-2023-096",
+    "pattern_range": "",
+    "next_calibration": "2025-05-01",
+    "brand": "N/A"
+  },
+  {
+    "method": "NI-MCIT-M-01",
+    "equipment": "Masa Patrón",
+    "code": "NI-MCPM-20-14 (20kg)",
+    "certificate": "",
+    "traceability": "Metrología CR, Certificado MC-P-2023-096",
+    "pattern_range": "",
+    "next_calibration": "2025-05-01",
+    "brand": "N/A"
+  },
+  {
+    "method": "NI-MCIT-M-01",
+    "equipment": "Masa Patrón",
+    "code": "NI-MCPM-20-15 (20kg)",
+    "certificate": "",
+    "traceability": "Metrología CR, Certificado MC-P-2023-096",
+    "pattern_range": "",
+    "next_calibration": "2025-05-01",
+    "brand": "N/A"
+  },
+  {
+    "method": "NI-MCIT-M-01",
+    "equipment": "Masa Patrón",
+    "code": "NI-MCPM-20-16 (20kg)",
+    "certificate": "",
+    "traceability": "Metrología CR, Certificado MC-P-2023-096",
+    "pattern_range": "",
+    "next_calibration": "2025-05-01",
+    "brand": "N/A"
+  },
+  {
+    "method": "NI-MCIT-M-01",
+    "equipment": "Masa Patrón",
+    "code": "NI-MCPM-20-17 (20kg)",
+    "certificate": "",
+    "traceability": "Metrología CR, Certificado MC-P-2023-096",
+    "pattern_range": "",
+    "next_calibration": "2025-05-01",
+    "brand": "N/A"
+  },
+  {
+    "method": "NI-MCIT-M-01",
+    "equipment": "Masa Patrón",
+    "code": "NI-MCPM-20-18 (20kg)",
+    "certificate": "",
+    "traceability": "Metrología CR, Certificado MC-P-2023-096",
+    "pattern_range": "",
+    "next_calibration": "2025-05-01",
+    "brand": "N/A"
+  },
+  {
+    "method": "NI-MCIT-M-01",
+    "equipment": "Masa Patrón",
+    "code": "NI-MCPM-20-19 (20kg)",
+    "certificate": "",
+    "traceability": "Metrología CR, Certificado MC-P-2023-096",
+    "pattern_range": "",
+    "next_calibration": "2025-05-01",
+    "brand": "N/A"
+  },
+  {
+    "method": "NI-MCIT-M-01",
+    "equipment": "Masa Patrón",
+    "code": "NI-MCPM-20-20 (20kg)",
+    "certificate": "",
+    "traceability": "Metrología CR, Certificado MC-P-2023-096",
+    "pattern_range": "",
+    "next_calibration": "2025-05-01",
+    "brand": "N/A"
+  },
+  {
+    "method": "NI-MCIT-M-01",
+    "equipment": "Masa Patrón",
+    "code": "NI-MCPM-20-21 (20kg)",
+    "certificate": "",
+    "traceability": "Metrología CR, Certificado MC-P-2023-096",
+    "pattern_range": "",
+    "next_calibration": "2025-05-01",
+    "brand": "N/A"
+  },
+  {
+    "method": "NI-MCIT-M-01",
+    "equipment": "Masa Patrón",
+    "code": "NI-MCPM-20-22 (20kg)",
+    "certificate": "",
+    "traceability": "Metrología CR, Certificado MC-P-2023-096",
+    "pattern_range": "",
+    "next_calibration": "2025-05-01",
+    "brand": "N/A"
+  },
+  {
+    "method": "NI-MCIT-M-01",
+    "equipment": "Masa Patrón",
+    "code": "NI-MCPM-20-23 (20kg)",
+    "certificate": "",
+    "traceability": "Metrología CR, Certificado MC-P-2023-096",
+    "pattern_range": "",
+    "next_calibration": "2025-05-01",
+    "brand": "N/A"
+  },
+  {
+    "method": "NI-MCIT-M-01",
+    "equipment": "Masa Patrón",
+    "code": "NI-MCPM-20-24 (20kg)",
+    "certificate": "",
+    "traceability": "Metrología CR, Certificado MC-P-2023-096",
+    "pattern_range": "",
+    "next_calibration": "2025-05-01",
+    "brand": "N/A"
+  },
+  {
+    "method": "NI-MCIT-M-01",
+    "equipment": "Masa Patrón",
+    "code": "NI-MCPM-20-25 (20kg)",
+    "certificate": "",
+    "traceability": "Metrología CR, Certificado MC-P-2023-096",
+    "pattern_range": "",
+    "next_calibration": "2025-05-01",
+    "brand": "N/A"
+  },
+  {
+    "method": "NI-MCIT-M-01",
+    "equipment": "Masa Patrón",
+    "code": "NI-MCPM-20-26 (20kg)",
+    "certificate": "",
+    "traceability": "Metrología CR, Certificado MC-P-2023-096",
+    "pattern_range": "",
+    "next_calibration": "2025-05-01",
+    "brand": "N/A"
+  },
+  {
+    "method": "NI-MCIT-M-01",
+    "equipment": "Masa Patrón",
+    "code": "NI-MCPM-20-27 (20kg)",
+    "certificate": "",
+    "traceability": "Metrología CR, Certificado MC-P-2023-096",
+    "pattern_range": "",
+    "next_calibration": "2025-05-01",
+    "brand": "N/A"
+  },
+  {
+    "method": "NI-MCIT-M-01",
+    "equipment": "Masa Patrón",
+    "code": "NI-MCPM-20-28 (20kg)",
+    "certificate": "",
+    "traceability": "Metrología CR, Certificado MC-P-2023-096",
+    "pattern_range": "",
+    "next_calibration": "2025-05-01",
+    "brand": "N/A"
+  },
+  {
+    "method": "NI-MCIT-M-01",
+    "equipment": "Masa Patrón",
+    "code": "NI-MCPM-20-29 (20kg)",
+    "certificate": "",
+    "traceability": "Metrología CR, Certificado MC-P-2023-096",
+    "pattern_range": "",
+    "next_calibration": "2025-05-01",
+    "brand": "N/A"
+  },
+  {
+    "method": "NI-MCIT-M-01",
+    "equipment": "Masa Patrón",
+    "code": "NI-MCPM-20-30 (20kg)",
+    "certificate": "",
+    "traceability": "Metrología CR, Certificado MC-P-2023-096",
+    "pattern_range": "",
+    "next_calibration": "2025-05-01",
+    "brand": "N/A"
+  },
+  {
+    "method": "NI-MCIT-M-01",
+    "equipment": "Masa Patrón",
+    "code": "NI-MCPM-20-31 (20kg)",
+    "certificate": "",
+    "traceability": "Metrología CR, Certificado MC-P-2023-096",
+    "pattern_range": "",
+    "next_calibration": "2025-05-01",
+    "brand": "N/A"
+  },
+  {
+    "method": "NI-MCIT-M-01",
+    "equipment": "Masa Patrón",
+    "code": "NI-MCPM-20-32 (20kg)",
+    "certificate": "",
+    "traceability": "Metrología CR, Certificado MC-P-2023-096",
+    "pattern_range": "",
+    "next_calibration": "2025-05-01",
+    "brand": "N/A"
+  },
+  {
+    "method": "NI-MCIT-M-01",
+    "equipment": "Masa Patrón",
+    "code": "NI-MCPM-20-33 (20kg)",
+    "certificate": "",
+    "traceability": "Metrología CR, Certificado MC-P-2023-096",
+    "pattern_range": "",
+    "next_calibration": "2025-05-01",
+    "brand": "N/A"
+  },
+  {
+    "method": "NI-MCIT-M-01",
+    "equipment": "Masa Patrón",
+    "code": "NI-MCPM-20-34 (20kg)",
+    "certificate": "",
+    "traceability": "Metrología CR, Certificado MC-P-2023-096",
+    "pattern_range": "",
+    "next_calibration": "2025-05-01",
+    "brand": "N/A"
+  },
+  {
+    "method": "NI-MCIT-M-01",
+    "equipment": "Masa Patrón",
+    "code": "NI-MCPM-20-35 (20kg)",
+    "certificate": "",
+    "traceability": "Metrología CR, Certificado MC-P-2023-096",
+    "pattern_range": "",
+    "next_calibration": "2025-05-01",
+    "brand": "N/A"
+  },
+  {
+    "method": "NI-MCIT-M-01",
+    "equipment": "Masa Patrón",
+    "code": "NI-MCPM-20-36 (20kg)",
+    "certificate": "",
+    "traceability": "Metrología CR, Certificado MC-P-2023-096",
+    "pattern_range": "",
+    "next_calibration": "2025-05-01",
+    "brand": "N/A"
+  },
+  {
+    "method": "NI-MCIT-M-01",
+    "equipment": "Masa Patrón",
+    "code": "NI-MCPM-20-37 (20kg)",
+    "certificate": "",
+    "traceability": "Metrología CR, Certificado MC-P-2023-096",
+    "pattern_range": "",
+    "next_calibration": "2025-05-01",
+    "brand": "N/A"
+  },
+  {
+    "method": "NI-MCIT-M-01",
+    "equipment": "Masa Patrón",
+    "code": "NI-MCPM-20-38 (20kg)",
+    "certificate": "",
+    "traceability": "Metrología CR, Certificado MC-P-2023-096",
+    "pattern_range": "",
+    "next_calibration": "2025-05-01",
+    "brand": "N/A"
+  },
+  {
+    "method": "NI-MCIT-M-01",
+    "equipment": "Masa Patrón",
+    "code": "NI-MCPM-20-39 (20kg)",
+    "certificate": "",
+    "traceability": "Metrología CR, Certificado MC-P-2023-096",
+    "pattern_range": "",
+    "next_calibration": "2025-05-01",
+    "brand": "N/A"
+  },
+  {
+    "method": "NI-MCIT-M-01",
+    "equipment": "Masa Patrón",
+    "code": "NI-MCPM-20-40 (20kg)",
+    "certificate": "",
+    "traceability": "Metrología CR, Certificado MC-P-2023-096",
+    "pattern_range": "",
+    "next_calibration": "2025-05-01",
+    "brand": "N/A"
+  },
+  {
+    "method": "NI-MCIT-M-01",
+    "equipment": "Masa Patrón",
+    "code": "NI-MCPM-20-41 (20kg)",
+    "certificate": "",
+    "traceability": "Metrología CR, Certificado MC-P-2023-096",
+    "pattern_range": "",
+    "next_calibration": "2025-05-01",
+    "brand": "N/A"
+  },
+  {
+    "method": "NI-MCIT-M-01",
+    "equipment": "Masa Patrón",
+    "code": "NI-MCPM-20-42 (20kg)",
+    "certificate": "",
+    "traceability": "Metrología CR, Certificado MC-P-2023-096",
+    "pattern_range": "",
+    "next_calibration": "2025-05-01",
+    "brand": "N/A"
+  },
+  {
+    "method": "NI-MCIT-M-01",
+    "equipment": "Masa Patrón",
+    "code": "NI-MCPM-20-43 (20kg)",
+    "certificate": "",
+    "traceability": "Metrología CR, Certificado MC-P-2023-096",
+    "pattern_range": "",
+    "next_calibration": "2025-05-01",
+    "brand": "N/A"
+  },
+  {
+    "method": "NI-MCIT-M-01",
+    "equipment": "Masa Patrón",
+    "code": "NI-MCPM-20-44 (20kg)",
+    "certificate": "",
+    "traceability": "Metrología CR, Certificado MC-P-2023-096",
+    "pattern_range": "",
+    "next_calibration": "2025-05-01",
+    "brand": "N/A"
+  },
+  {
+    "method": "NI-MCIT-M-01",
+    "equipment": "Masa Patrón",
+    "code": "NI-MCPM-20-45 (20kg)",
+    "certificate": "",
+    "traceability": "Metrología CR, Certificado MC-P-2023-096",
+    "pattern_range": "",
+    "next_calibration": "2025-05-01",
+    "brand": "N/A"
+  },
+  {
+    "method": "NI-MCIT-M-01",
+    "equipment": "Masa Patrón",
+    "code": "NI-MCPM-20-46 (20kg)",
+    "certificate": "",
+    "traceability": "Metrología CR, Certificado MC-P-2023-096",
+    "pattern_range": "",
+    "next_calibration": "2025-05-01",
+    "brand": "N/A"
+  },
+  {
+    "method": "NI-MCIT-M-01",
+    "equipment": "Masa Patrón",
+    "code": "NI-MCPM-20-47 (20kg)",
+    "certificate": "",
+    "traceability": "Metrología CR, Certificado MC-P-2023-096",
+    "pattern_range": "",
+    "next_calibration": "2025-05-01",
+    "brand": "N/A"
+  },
+  {
+    "method": "NI-MCIT-M-01",
+    "equipment": "Masa Patrón",
+    "code": "NI-MCPM-20-48 (20kg)",
+    "certificate": "",
+    "traceability": "Metrología CR, Certificado MC-P-2023-096",
+    "pattern_range": "",
+    "next_calibration": "2025-05-01",
+    "brand": "N/A"
+  },
+  {
+    "method": "NI-MCIT-M-01",
+    "equipment": "Masa Patrón",
+    "code": "NI-MCPM-20-49 (20kg)",
+    "certificate": "",
+    "traceability": "Metrología CR, Certificado MC-P-2023-096",
+    "pattern_range": "",
+    "next_calibration": "2025-05-01",
+    "brand": "N/A"
+  },
+  {
+    "method": "NI-MCIT-M-01",
+    "equipment": "Masa Patrón",
+    "code": "NI-MCPM-20-50 (20kg)",
+    "certificate": "",
+    "traceability": "Metrología CR, Certificado MC-P-2023-096",
+    "pattern_range": "",
+    "next_calibration": "2025-05-01",
+    "brand": "N/A"
+  },
+  {
+    "method": "NI-MCIT-M-01",
+    "equipment": "Masa Patrón",
+    "code": "NI-MCPM-20-51 (20kg)",
+    "certificate": "",
+    "traceability": "Metrología CR, Certificado MC-P-2023-096",
+    "pattern_range": "",
+    "next_calibration": "2025-05-01",
+    "brand": "N/A"
+  },
+  {
+    "method": "NI-MCIT-M-01",
+    "equipment": "Masa Patrón",
+    "code": "NI-MCPM-20-52 (20kg)",
+    "certificate": "",
+    "traceability": "Metrología CR, Certificado MC-P-2023-096",
+    "pattern_range": "",
+    "next_calibration": "2025-05-01",
+    "brand": "N/A"
+  },
+  {
+    "method": "NI-MCIT-M-01",
+    "equipment": "Masa Patrón",
+    "code": "NI-MCPM-20-53 (20kg)",
+    "certificate": "",
+    "traceability": "Metrología CR, Certificado MC-P-2023-096",
+    "pattern_range": "",
+    "next_calibration": "2025-05-01",
+    "brand": "N/A"
+  },
+  {
+    "method": "NI-MCIT-M-01",
+    "equipment": "Masa Patrón",
+    "code": "NI-MCPM-20-54 (20kg)",
+    "certificate": "",
+    "traceability": "Metrología CR, Certificado MC-P-2023-096",
+    "pattern_range": "",
+    "next_calibration": "2025-05-01",
+    "brand": "N/A"
+  },
+  {
+    "method": "NI-MCIT-M-01",
+    "equipment": "Masa Patrón",
+    "code": "NI-MCPM-20-55 (20kg)",
+    "certificate": "",
+    "traceability": "Metrología CR, Certificado MC-P-2023-096",
+    "pattern_range": "",
+    "next_calibration": "2025-05-01",
+    "brand": "N/A"
+  },
+  {
+    "method": "NI-MCIT-M-01",
+    "equipment": "Masa Patrón",
+    "code": "NI-MCPM-20-56 (20kg)",
+    "certificate": "",
+    "traceability": "Metrología CR, Certificado MC-P-2023-096",
+    "pattern_range": "",
+    "next_calibration": "2025-05-01",
+    "brand": "N/A"
+  },
+  {
+    "method": "NI-MCIT-M-01",
+    "equipment": "Masa Patrón",
+    "code": "NI-MCPM-20-57 (20kg)",
+    "certificate": "",
+    "traceability": "Metrología CR, Certificado MC-P-2023-096",
+    "pattern_range": "",
+    "next_calibration": "2025-05-01",
+    "brand": "N/A"
+  },
+  {
+    "method": "NI-MCIT-M-01",
+    "equipment": "Masa Patrón",
+    "code": "NI-MCPM-20-58 (20kg)",
+    "certificate": "",
+    "traceability": "Metrología CR, Certificado MC-P-2023-096",
+    "pattern_range": "",
+    "next_calibration": "2025-05-01",
+    "brand": "N/A"
+  },
+  {
+    "method": "NI-MCIT-M-01",
+    "equipment": "Masa Patrón",
+    "code": "NI-MCPM-20-59 (20kg)",
+    "certificate": "",
+    "traceability": "Metrología CR, Certificado MC-P-2023-096",
+    "pattern_range": "",
+    "next_calibration": "2025-05-01",
+    "brand": "N/A"
+  },
+  {
+    "method": "NI-MCIT-M-01",
+    "equipment": "Masa Patrón",
+    "code": "NI-MCPM-JM-04 (100g)",
+    "certificate": "RCP-LMV-MSWS-105-23",
+    "traceability": "RECOPE, Certificado RCP-LMV-MSWS-105-23",
+    "pattern_range": "",
+    "next_calibration": "2027-07-27",
+    "brand": "INSCO"
+  },
+  {
+    "method": "NI-MCIT-M-01",
+    "equipment": "Masa Patrón",
+    "code": "NI-MCPM-JM-04 (50g)",
+    "certificate": "RCP-LMV-MSWS-105-23",
+    "traceability": "RECOPE, Certificado RCP-LMV-MSWS-105-23",
+    "pattern_range": "",
+    "next_calibration": "2027-07-27",
+    "brand": "INSCO"
+  },
+  {
+    "method": "NI-MCIT-M-01",
+    "equipment": "Masa Patrón",
+    "code": "NI-MCPM-10-04 (10kg)",
+    "certificate": "RCP-LMV-MSWS-105-23",
+    "traceability": "RECOPE, Certificado RCP-LMV-MSWS-105-23",
+    "pattern_range": "",
+    "next_calibration": "2027-07-27",
+    "brand": "INSCO"
+  },
+  {
+    "method": "NI-MCIT-M-01",
+    "equipment": "Masa Patrón",
+    "code": "NI-MCPM-20-02 (20kg)",
+    "certificate": "RCP-LMV-MSWS-105-23",
+    "traceability": "RECOPE, Certificado RCP-LMV-MSWS-105-23",
+    "pattern_range": "",
+    "next_calibration": "2027-07-27",
+    "brand": "INSCO"
+  },
+  {
+    "method": "NI-MCIT-M-01",
+    "equipment": "Masa Patrón",
+    "code": "NI-MCPM-10-03 (10kg)",
+    "certificate": "",
+    "traceability": "Metrología CR, Certificado MC-P-2023-096",
+    "pattern_range": "",
+    "next_calibration": "2025-05-01",
+    "brand": "N/A"
+  },
+  {
+    "method": "NI-MCIT-M-01",
+    "equipment": "Masa Patrón",
+    "code": "NI-MCPM-JM-04 (500g)",
+    "certificate": "RCP-LMV-MSWS-105-23",
+    "traceability": "RECOPE, Certificado RCP-LMV-MSWS-105-23",
+    "pattern_range": "",
+    "next_calibration": "2027-07-27",
+    "brand": "INSCO"
+  },
+  {
     "method": "NI-MCIT-D-01",
     "equipment": "Vernier digital",
     "code": "NI-MCPD-02",

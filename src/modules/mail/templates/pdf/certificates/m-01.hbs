@@ -234,7 +234,6 @@
     <strong><span>Descripción de patrones utilizados</span></strong>
     <br />
 
-    <!-- tabla -->
     <table>
       <thead>
         <tr>
@@ -245,24 +244,15 @@
         </tr>
       </thead>
       <tbody>
-        <tr>
-          <td>{{digitalThermometer.equipment}}</td>
-          <td>{{digitalThermometer.code}}</td>
-          <td>{{digitalThermometer.certificate}}</td>
-          <td>{{digitalThermometer.traceability}}</td>
-          <td>{{digitalThermometer.next_calibration}}</td>
-        </tr>
-
-        <tr>
-          <td>{{oilBath.equipment}}</td>
-          <td>{{oilBath.code}}</td>
-          <td>{{oilBath.certificate}}</td>
-          <td>{{oilBath.traceability}}</td>
-          <td>{{oilBath.next_calibration}}</td>
-        </tr>
+        {{#each description_pattern as |data|}}
+          <tr>
+            <td>{{data.equipment}}</td>
+            <td>{{data.code}}</td>
+            <td>{{data.traceability}}</td>
+            <td>{{data.next_calibration}}</td>
+          </tr>
+        {{/each}}
       </tbody>
-
-      <tbody></tbody>
     </table>
   </div>
 

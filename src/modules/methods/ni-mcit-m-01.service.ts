@@ -703,14 +703,8 @@ export class NI_MCIT_M_01Service {
         uncertainty_units,
       }
 
-      const masas = await this.patternsService.findByCodeAndMethod(
-        'NI-MCPM-JM-03',
-        'NI-MCIT-V-01',
-      )
-
       return handleOK({
         calibration_results: calibration_results_certificate,
-        masas: masas.data,
         equipment_information: {
           certification_code: formatCertCode(
             method.certificate_code,
@@ -749,6 +743,7 @@ export class NI_MCIT_M_01Service {
         },
         creditable: description_pattern.creditable,
         client_email: activity.quote_request.client.email,
+        description_pattern: await this.getPatternsTableToCertificate(method),
         observations: `
 ${method.description_pattern.observation}
 Es responsabilidad del encargado del instrumento establecer la frecuencia del servicio de calibración.
@@ -760,6 +755,35 @@ Este certificado de calibración no debe ser reproducido sin la aprobación del 
       console.error({ error })
       return handleInternalServerError(error.message)
     }
+  }
+
+  async getPatternsTableToCertificate(method: NI_MCIT_M_01) {
+    const description_pattern = []
+    const added = []
+
+    for (let i = 0; i < method.calibration_results.results.length; i++) {
+      const test = method.calibration_results.results[i]
+
+      for (let j = 0; j < test.patterns.length; j++) {
+        const pattern = test.patterns[j] as any
+
+        console.log({ pattern })
+
+        if (!added.includes(pattern)) {
+          const response = await this.patternsService.findByCodeAndMethod(
+            pattern,
+            'NI-MCIT-M-01',
+          )
+
+          if (response.success) {
+            description_pattern.push(response.data)
+            added.push(pattern)
+          }
+        }
+      }
+    }
+
+    return description_pattern
   }
 
   formatUncertaintyWithCMC(uncertainty: any, cmc: any) {

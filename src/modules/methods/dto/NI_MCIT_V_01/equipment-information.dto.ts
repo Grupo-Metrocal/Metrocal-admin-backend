@@ -35,6 +35,9 @@ export class EquipmentInformationV01Dto {
   volumetric_container?: string
 
   @ApiProperty()
+  model?: string
+
+  @ApiProperty()
   thermometer?: string
 
   @ApiProperty()

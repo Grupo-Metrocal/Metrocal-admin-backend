@@ -609,19 +609,11 @@ export class NI_MCIT_V_01Service {
 
         const conventionalVolume = sheet.cell(`D${30 + i}`).value()
         conventional_volume.push(
-          formatNumberCertification(
-            conventionalVolume,
-            countDecimals(method.equipment_information.resolution),
-          ),
+          formatNumberCertification(conventionalVolume, 2),
         )
 
         const desviationValue = sheet.cell(`H${30 + i}`).value()
-        desviation.push(
-          formatNumberCertification(
-            desviationValue,
-            countDecimals(method.equipment_information.resolution),
-          ),
-        )
+        desviation.push(formatNumberCertification(desviationValue, 2))
 
         const uncertaintyValue = sheet.cell(`L${30 + i}`).value()
         uncertainty.push(
@@ -718,7 +710,10 @@ export class NI_MCIT_V_01Service {
           device: method.equipment_information.device || '---',
           maker: method.equipment_information.maker || '---',
           serial_number: method.equipment_information.serial_number || '---',
-          nominal_range: method.equipment_information.nominal_range || '---',
+          model: method.equipment_information.model || '---',
+          nominal_range:
+            `${method.equipment_information.nominal_range} ${method.equipment_information.unit}` ||
+            '---',
           scale_division: method.equipment_information.scale_division || '---',
           code: method.equipment_information.code || '---',
           applicant:
