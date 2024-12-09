@@ -51,6 +51,12 @@ import { NI_MCIT_M_01Service } from './ni-mcit-m-01.service'
 import { countDecimals } from 'src/utils/countDecimal'
 import { EquipmentQuoteRequest } from '../quotes/entities/equipment-quote-request.entity'
 
+import { NI_MCIT_F } from './entities/NI_MCIT_F/NI_MCIT_F.entity'
+import { NI_MCIT_FQ } from './entities/NI_MCIT_FQ/NI_MCIT_FQ.entity'
+import { NI_MCIT_H } from './entities/NI_MCIT_H/NI_MCIT_H.entity'
+import { NI_MCIT_VE } from './entities/NI_MCIT_VE/NI_MCIT_ve.entity'
+import { CertificateService } from '../certificate/certificate.service'
+
 @Injectable()
 export class MethodsService {
   constructor(
@@ -80,6 +86,18 @@ export class MethodsService {
     @InjectRepository(GENERIC_METHOD)
     private readonly GENERIC_METHODRepository: Repository<GENERIC_METHOD>,
 
+    @InjectRepository(NI_MCIT_F)
+    private readonly NI_MCIT_FRepository: Repository<NI_MCIT_F>,
+
+    @InjectRepository(NI_MCIT_FQ)
+    private readonly NI_MCIT_FQRepository: Repository<NI_MCIT_FQ>,
+
+    @InjectRepository(NI_MCIT_H)
+    private readonly NI_MCIT_HRepository: Repository<NI_MCIT_H>,
+
+    @InjectRepository(NI_MCIT_VE)
+    private readonly NI_MCIT_VERepository: Repository<NI_MCIT_VE>,
+
     @Inject(forwardRef(() => ActivitiesService))
     private readonly activitiesService: ActivitiesService,
     @Inject(forwardRef(() => QuotesService))
@@ -99,7 +117,51 @@ export class MethodsService {
     private readonly NI_MCIT_V_01Services: NI_MCIT_V_01Service,
     private readonly NI_MCIT_M_01Services: NI_MCIT_M_01Service,
     private readonly GENERIC_METHODServices: GENERIC_METHODService,
+
+    @Inject(forwardRef(() => CertificateService))
+    private readonly certificateService: CertificateService,
   ) {}
+
+  async createByDefaultGenericMethod() {
+    try {
+      const methodsName = [
+        'NI_MCIT_F-Repository',
+        'NI_MCIT_FQ-Repository',
+        'NI_MCIT_H-Repository',
+        'NI_MCIT_VE-Repository',
+      ]
+
+      for (let i = 0; i < methodsName.length; i++) {
+        const last_method = await this[methodsName[i].replace('-', '')]
+          .createQueryBuilder(`${methodsName[i].split('-')[0]}`)
+          .orderBy(`${methodsName[i].split('-')[0]}.last_record_index`, 'DESC')
+          .getOne()
+
+        if (!last_method) {
+          const method = this[methodsName[i].replace('-', '')].create()
+
+          method.record_index = 0
+          method.last_record_index = 0
+
+          const certificate = await this.certificateService.create(
+            methodsName[i].split('-')[0].split('_')[2],
+            method.record_index,
+          )
+
+          method.certificate_code = certificate.data.code
+          method.certificate_id = certificate.data.id
+
+          await this.dataSource.transaction(async (manager) => {
+            await manager.save(method)
+          })
+        }
+      }
+
+      return handleOK('Metodos creados')
+    } catch (e) {
+      return handleInternalServerError(e.message)
+    }
+  }
 
   async createMethod(createMethod: CreateMethodDto) {
     const { activity_id } = createMethod
@@ -887,21 +949,12 @@ export class MethodsService {
         .getOne()
 
       await this.dataSource.transaction(async (manager) => {
-        console.log(
-          'current last record index ==>> ',
-          last_method.last_record_index,
-        )
-
         last_method.last_record_index =
           !last_method ||
           last_method.created_at.getFullYear() !== new Date().getFullYear()
             ? 1
             : last_method.last_record_index + 1
 
-        console.log(
-          'updated last record index ==>> ',
-          last_method.last_record_index,
-        )
         await manager.save(last_method)
       })
 

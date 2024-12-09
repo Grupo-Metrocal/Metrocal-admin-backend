@@ -89,6 +89,12 @@ import { EquipmentInformationGENERIC_METHOD } from './entities/GENERIC METHOD/st
 import { GENERIC_METHODService } from './generic-method.service'
 import { DescriptionPatternGENERIC_METHOD } from './entities/GENERIC METHOD/steps/description_pattern.entity'
 
+import { NI_MCIT_F } from './entities/NI_MCIT_F/NI_MCIT_F.entity'
+import { NI_MCIT_FQ } from './entities/NI_MCIT_FQ/NI_MCIT_FQ.entity'
+import { NI_MCIT_H } from './entities/NI_MCIT_H/NI_MCIT_H.entity'
+import { NI_MCIT_VE } from './entities/NI_MCIT_VE/NI_MCIT_ve.entity'
+import { MethodsInitializerService } from './methods.initializer.services'
+
 @Module({
   imports: [
     TypeOrmModule.forFeature([
@@ -162,6 +168,11 @@ import { DescriptionPatternGENERIC_METHOD } from './entities/GENERIC METHOD/step
       EquipmentInformationGENERIC_METHOD,
       ResultMeditionGENERIC_METHOD,
       DescriptionPatternGENERIC_METHOD,
+
+      NI_MCIT_F,
+      NI_MCIT_FQ,
+      NI_MCIT_H,
+      NI_MCIT_VE,
     ]),
     forwardRef(() => ActivitiesModule),
     forwardRef(() => QuotesModule),
@@ -184,6 +195,7 @@ import { DescriptionPatternGENERIC_METHOD } from './entities/GENERIC METHOD/step
     PdfService,
     MailService,
     TokenService,
+    MethodsInitializerService,
   ],
   exports: [MethodsService],
 })

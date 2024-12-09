@@ -763,9 +763,9 @@ Este certificado de calibración no debe ser reproducido sin la aprobación del 
         return handleInternalServerError('El método no existe')
       }
 
-      // if (method.certificate_code) {
-      //   return handleOK('El método ya tiene un código de certificado')
-      // }
+      if (method.certificate_code) {
+        return handleOK('El método ya tiene un código de certificado')
+      }
 
       if (
         !equipment.use_alternative_certificate_method ||
