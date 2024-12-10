@@ -681,14 +681,8 @@ export class NI_MCIT_V_01Service {
         ),
       }
 
-      const masas = await this.patternsService.findByCodeAndMethod(
-        'NI-MCPM-JM-03',
-        'NI-MCIT-V-01',
-      )
-
       return handleOK({
         calibration_results: calibration_results_certificate,
-        masas: masas.data,
         equipment_information: {
           certification_code: formatCertCode(
             method.certificate_code,
@@ -740,6 +734,31 @@ Este certificado de calibración no debe ser reproducido sin la aprobación del 
     } catch (error) {
       return handleInternalServerError(error.message)
     }
+  }
+
+  async getPatternsTableToCertificate(method: NI_MCIT_V_01) {
+    const description_pattern = []
+
+    // const environment_method_used =
+    //   await this.patternsService.findByCodeAndMethod(
+    //     method.environmental_conditions,
+    //     'all',
+    //   )
+    // if (environment_method_used.success) {
+    //   description_pattern.push(environment_method_used.data)
+    // }
+
+    const calibration_method_used =
+      await this.patternsService.findByCodeAndMethod(
+        method.description_pattern.pattern,
+        'NI-MCIT-V-01',
+      )
+
+    if (calibration_method_used.success) {
+      description_pattern.push(calibration_method_used.data)
+    }
+
+    return description_pattern
   }
 
   formatUncertaintyWithCMC(uncertainty: any, cmc: any) {

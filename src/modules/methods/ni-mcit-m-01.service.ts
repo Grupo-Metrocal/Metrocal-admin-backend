@@ -767,8 +767,6 @@ Este certificado de calibración no debe ser reproducido sin la aprobación del 
       for (let j = 0; j < test.patterns.length; j++) {
         const pattern = test.patterns[j] as any
 
-        console.log({ pattern })
-
         if (!added.includes(pattern)) {
           const response = await this.patternsService.findByCodeAndMethod(
             pattern,

@@ -98,6 +98,9 @@
   </div>
 
   
+  {{#ifArrayEq calibration_results 6}}
+    <br /> <br /> <br />  <br /> <br /> <br /> <br /> 
+  {{/ifArrayEq}}
 
   <div class='uncertainty'>
     <strong><span>Incertidumbre de los datos</span></strong>
@@ -108,16 +111,20 @@
     </span>
   </div>
 
-  {{#ifArrayEq calibration_results 6}}
-    <br /> <br>
-  {{/ifArrayEq}}
-
   {{#ifArrayEq calibration_results 5}}
     <br /> <br> <br>
   {{/ifArrayEq}}
 
   {{#ifArrayEq calibration_results 4}}
-    <br /><br> <br> <br>
+    <br /><br />
+  {{/ifArrayEq}}
+
+  {{#ifArrayEq calibration_results 3}}
+    <br /><br>
+  {{/ifArrayEq}}
+
+  {{#ifArrayEq calibration_results 2}}
+    <br /><br> <br>
   {{/ifArrayEq}}
 
   
@@ -150,14 +157,6 @@
       </tbody>
     </table>
   </div>
-
-  {{#ifArrayEq calibration_results 3}}
-    <br /><br>
-  {{/ifArrayEq}}
-
-  {{#ifArrayEq calibration_results 2}}
-    <br /><br>
-  {{/ifArrayEq}}
 
   <div class='observations'>
     <strong><span>Observaciones</span></strong>

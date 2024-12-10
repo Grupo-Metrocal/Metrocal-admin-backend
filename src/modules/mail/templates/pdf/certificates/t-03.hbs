@@ -112,6 +112,9 @@
   {{#if show_table_international_system_units}}
     {{#ifArrayEq calibration_results.result 9}}
       <br />
+      <br />
+      <br />
+      <br />
     {{/ifArrayEq}}
     {{#ifArrayEq calibration_results.result 10}}
       <br />
@@ -136,6 +139,17 @@
       <br />
       <br />
     {{/ifArrayEq}}
+    {{#ifArrayEq calibration_results.result 7}}
+      <br />
+      <br />
+      <br />
+    {{/ifArrayEq}}
+    {{#ifArrayEq calibration_results.result 6}}
+      <br />
+      <br />
+      <br />
+      <br />
+    {{/ifArrayEq}}
   {{/if}}
 
   <div class='calibration-method'>
@@ -149,19 +163,32 @@
   </div>
 
   {{#if show_table_international_system_units}}
-    {{#ltArray calibration_results.result 6}}
-      <br />
-      <br />
-      <br />
-      <br />
-    {{/ltArray}}
-    {{#ifArrayEq calibration_results.result 6}}
-      <br />
+    {{#ifArrayEq calibration_results.result 5}}
       <br />
       <br />
     {{/ifArrayEq}}
-    {{#ifArrayEq calibration_results.result 7}}
+    {{#ifArrayEq calibration_results.result 4}}
       <br />
+      <br />
+    {{/ifArrayEq}}
+    {{#ifArrayEq calibration_results.result 3}}
+      <br />
+      <br />
+    {{/ifArrayEq}}
+    {{#ifArrayEq calibration_results.result 2}}
+      <br />
+      <br />
+    {{/ifArrayEq}}
+  {{else}}
+    {{#ifArrayEq calibration_results.result 9}}
+      <br /><br /><br /><br /><br />
+      <br /><br /><br />
+    {{/ifArrayEq}}
+    {{#ifArrayEq calibration_results.result 10}}
+      <br /><br /><br /><br /><br /><br /><br />
+    {{/ifArrayEq}}
+    {{#ifArrayEq calibration_results.result 11}}
+      <br /><br /><br /><br /><br /><br /><br />
     {{/ifArrayEq}}
   {{/if}}
 
@@ -182,23 +209,29 @@
   </div>
 
   {{#if show_table_international_system_units}}{{else}}
+    {{#ifArrayEq calibration_results.result 2}}
+      <br /><br /><br />
+      <br />
+    {{/ifArrayEq}}
+    {{#ifArrayEq calibration_results.result 3}}
+      <br /><br /><br />
+      <br />
+    {{/ifArrayEq}}
+    {{#ifArrayEq calibration_results.result 4}}
+      <br /><br /><br />
+      <br />
+    {{/ifArrayEq}}
+    {{#ifArrayEq calibration_results.result 5}}
+      <br /><br /><br />
+    {{/ifArrayEq}}
     {{#ifArrayEq calibration_results.result 6}}
-      <br /><br /><br /><br /><br />
+      <br /><br /><br /><br />
     {{/ifArrayEq}}
     {{#ifArrayEq calibration_results.result 7}}
-      <br /><br /><br /><br /><br />
+      <br /><br />
     {{/ifArrayEq}}
     {{#ifArrayEq calibration_results.result 8}}
       <br /><br /><br /><br />
-    {{/ifArrayEq}}
-    {{#ifArrayEq calibration_results.result 9}}
-      <br /><br /><br />
-    {{/ifArrayEq}}
-    {{#ifArrayEq calibration_results.result 10}}
-      <br /><br />
-    {{/ifArrayEq}}
-    {{#ifArrayEq calibration_results.result 11}}
-      <br />
     {{/ifArrayEq}}
   {{/if}}
 
@@ -227,12 +260,6 @@
       </tbody>
     </table>
   </div>
-
-  {{#if show_table_international_system_units}}{{else}}
-    {{#ltArray calibration_results.result 7}}
-      <br />
-    {{/ltArray}}
-  {{/if}}
 
   <div class='observations'>
     <strong><span>Observaciones</span></strong>
