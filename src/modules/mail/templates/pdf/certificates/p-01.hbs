@@ -186,6 +186,12 @@
   </div>
 
   {{#if show_table_international_system_units}}{{else}}
+    {{#ifArrayEq calibration_results.result 3}}
+      <br /><br /><br /><br /><br />
+    {{/ifArrayEq}}
+    {{#ifArrayEq calibration_results.result 4}}
+      <br /><br /><br /><br /><br />
+    {{/ifArrayEq}}
     {{#ifArrayEq calibration_results.result 6}}
       <br /><br /><br /><br /><br />
     {{/ifArrayEq}}
