@@ -10,6 +10,7 @@ import { FinishActivityDto } from './dto/finish-activity.dto'
 import { ReviewActivityDto } from './dto/review-activty.dto'
 import { AddSignatureDto } from './dto/add-signature.dto'
 import { Response } from 'express'
+import { PartialServiceOrderDto } from './dto/partial-service-order.dto'
 
 @ApiTags('activities')
 @Controller('activities')
@@ -142,8 +143,6 @@ export class ActivitiesController {
   async getQuoteRequestPdf(@Param('id') id: number, @Res() res: Response) {
     const pdfBuffer = await this.activitiesService.getServiceOrderPdf(id)
 
-    console.log({ pdfBuffer })
-
     if (!pdfBuffer) {
       return res.status(500).send('Error al generar el PDF')
     }
@@ -154,5 +153,14 @@ export class ActivitiesController {
       'attachment; filename=Orden_de_Servicio.pdf',
     )
     res.send(pdfBuffer)
+  }
+
+  // @UseGuards(JwtAuthGuard)
+  @Post('generate-partial-service-order/:id')
+  async generatePartialServiceOrder(
+    @Param('id') id: number,
+    @Body() data: PartialServiceOrderDto,
+  ) {
+    return await this.activitiesService.generatePartialServiceOrder(id, data)
   }
 }

@@ -21,6 +21,7 @@ import { formatDate } from 'src/utils/formatDate'
 import { FinishActivityDto } from './dto/finish-activity.dto'
 import { TokenService } from '../auth/jwt/jwt.service'
 import { CertificateService } from '../certificate/certificate.service'
+import { PartialServiceOrderDto } from './dto/partial-service-order.dto'
 
 @Injectable()
 export class ActivitiesService {
@@ -1175,6 +1176,85 @@ export class ActivitiesService {
 
       return await this.pdfService.generteServiceOrderPdf(data)
     } catch (e) {
+      return handleInternalServerError(e.message)
+    }
+  }
+
+  async generatePartialServiceOrder(
+    activityId: number,
+    data: PartialServiceOrderDto,
+  ) {
+    try {
+      const activity = await this.activityRepository.findOne({
+        where: { id: activityId },
+        relations: [
+          'quote_request',
+          'quote_request.equipment_quote_request',
+          'quote_request.client',
+          'team_members',
+        ],
+      })
+
+      console.log({ data })
+
+      const serviceOrderDetails = {
+        clientName: activity.quote_request.client.company_name,
+        endDate: formatDate(new Date().toDateString()),
+        startTime: data.start_time,
+        endTime: data.end_time,
+        address: activity.quote_request.client.address,
+        requestedBy: activity.quote_request.client.requested_by,
+        phone: activity.quote_request.client.phone,
+        client_signature: activity.client_signature,
+        work_areas: data.work_areas.join(', ') || '',
+        comments_insitu1: data?.comments_insitu?.[0] || '',
+        comments_insitu2: data?.comments_insitu?.[1] || '',
+        equipments: activity?.quote_request.equipment_quote_request.filter(
+          (equipment) => data.equipments.includes(equipment.id),
+        ),
+        resolved_services: activity.quote_request.equipment_quote_request
+          .map((service) => {
+            if (service.isResolved) {
+              return service.type_service
+            }
+          })
+          .filter((service) => service !== undefined)
+          .map((service) => {
+            if (
+              service === 'Diagnóstico' ||
+              service === 'Otros' ||
+              service === 'Verificación de Cal' ||
+              service === 'Suministro' ||
+              service === 'Proyecto' ||
+              service === 'Informe Técnico'
+            ) {
+              return 'Otro'
+            }
+            return service
+          }),
+      }
+
+      const pdf =
+        await this.pdfService.generteServiceOrderPdf(serviceOrderDetails)
+
+      if (!pdf) {
+        return handleBadrequest(new Error('No se pudo generar el pdf'))
+      }
+
+      const response = await this.mailService.sendServiceOrderMail({
+        to:
+          activity.quote_request.alt_client_email ||
+          activity.quote_request.client.email,
+        pdf,
+        clientName: activity.quote_request.client.company_name,
+        quoteNumber: activity.quote_request.no,
+        startDate: formatDate(new Date().toDateString()),
+        endDate: formatDate(new Date().toDateString()),
+        technicians: activity.team_members.map((member) => member.username),
+      })
+
+      return handleOK(response)
+    } catch (e: any) {
       return handleInternalServerError(e.message)
     }
   }
