@@ -830,7 +830,7 @@ Este certificado de calibración no puede ser reproducido parcialmente excepto e
         if (typeof uncertaintyValue !== 'number') return uncertaintyValue
 
         if (Number(uncertaintyValue) < Number(cmc.mincmc[index - 1])) {
-          return this.methodService.getSignificantFigure(cmc.cmc[index - 1])
+          return this.methodService.getSignificantFigure(cmc.mincmc[index - 1])
         } else {
           return this.methodService.getSignificantFigure(uncertaintyValue)
         }
