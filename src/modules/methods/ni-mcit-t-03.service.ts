@@ -671,7 +671,11 @@ export class NI_MCIT_T_03Service {
 
       const sheetCMC = workbook.sheet('CMC')
 
-      for (let i = 0; i <= method.calibration_results.results.length; i++) {
+      for (
+        let i = 0;
+        i <= method.calibration_results.results[0].calibration_factor.length;
+        i++
+      ) {
         const cmcPointValue = sheetCMC.cell(`I${16 + i}`).value()
         cmcPoint.push(
           typeof cmcPointValue === 'number'
@@ -713,6 +717,8 @@ export class NI_MCIT_T_03Service {
         cmc,
         mincmc,
       }
+
+      console.log({ CMC })
 
       const calibration_results_certificate = {
         result: {
@@ -823,8 +829,8 @@ Este certificado de calibración no puede ser reproducido parcialmente excepto e
       (uncertaintyValue: number, index: number) => {
         if (typeof uncertaintyValue !== 'number') return uncertaintyValue
 
-        if (Number(uncertaintyValue) < Number(cmc.cmc[index - 1])) {
-          return this.methodService.getSignificantFigure(cmc.mincmc[index - 1])
+        if (Number(uncertaintyValue) < Number(cmc.mincmc[index - 1])) {
+          return this.methodService.getSignificantFigure(cmc.cmc[index - 1])
         } else {
           return this.methodService.getSignificantFigure(uncertaintyValue)
         }
