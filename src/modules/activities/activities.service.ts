@@ -890,6 +890,64 @@ export class ActivitiesService {
     }
   }
 
+  async reviewServiceActivity(
+    activityID: number,
+    equipmentId: number,
+    token: string,
+  ) {
+    try {
+      const { sub: id } = this.tokenService.decodeToken(token)
+
+      const user = await this.userRepository.findOneBy({ id: +id })
+
+      if (!user) {
+        return handleBadrequest(new Error('Perfil no encontrado'))
+      }
+
+      const activity = await this.activityRepository.findOne({
+        where: { id: activityID },
+        relations: ['quote_request', 'quote_request.equipment_quote_request'],
+      })
+
+      if (!activity) {
+        return handleBadrequest(new Error('Actividad no encontrada'))
+      }
+
+      activity.reviewed = true
+      activity.reviewed_user_id = user.id
+
+      const equipment = activity.quote_request.equipment_quote_request.find(
+        (item) => item.id === Number(equipmentId),
+      )
+
+      console.log({ equipment })
+
+      const stackMehods = await this.methodsService.getMethodsID(
+        equipment.method_id,
+      )
+
+      const { data: methods } = stackMehods as { data: any }
+
+      for (const method of methods) {
+        await this.methodsService.setCertificateUrlToMethod(
+          equipment.calibration_method.split(' ')[0].replaceAll('-', '_'),
+          method.id,
+          equipment.method_id,
+        )
+      }
+
+      await this.dataSource.transaction(async (manager) => {
+        equipment.isConfirmReviewActivity = true
+
+        await manager.save(activity)
+        await manager.save(equipment)
+      })
+      return handleOK(activity)
+    } catch (error) {
+      return handleInternalServerError(error.message)
+    }
+  }
+
   async changeIsCertificateActivity(activityID: number) {
     try {
       const activity = await this.activityRepository.findOne({

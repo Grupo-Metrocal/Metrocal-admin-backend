@@ -116,6 +116,20 @@ export class ActivitiesController {
     return await this.activitiesService.reviewActivity(id, data.token)
   }
 
+  @Post('review-services-activity/:activityID/:equipmentID')
+  async reviewServiceActivity(
+    @Param('activityID') activityId: number,
+    @Param('equipmentID') equipmentId: number,
+    @Body() data: ReviewActivityDto,
+  ) {
+    console.log({ equipmentId, activityId, data })
+    return await this.activitiesService.reviewServiceActivity(
+      activityId,
+      equipmentId,
+      data.token,
+    )
+  }
+
   @Get('certified-activities/:page/:limit/:no?')
   async getCertifiedActivities(
     @Param('page') page: number,
