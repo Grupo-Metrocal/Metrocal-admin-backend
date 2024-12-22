@@ -69,4 +69,7 @@ export class EquipmentQuoteRequest {
 
   @Column({ nullable: true, default: '' })
   use_alternative_certificate_method?: string
+
+  @Column({ nullable: true, default: false })
+  isConfirmReviewActivity?: boolean
 }

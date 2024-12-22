@@ -748,7 +748,7 @@ export class ActivitiesService {
   async getActivitiesDoneToCertify() {
     try {
       const response = await this.activityRepository.find({
-        where: { status: 'done', reviewed: true, is_certificate: false },
+        where: { is_certificate: false },
         relations: [
           'quote_request',
           'quote_request.equipment_quote_request',
@@ -778,16 +778,19 @@ export class ActivitiesService {
               equipment_quote_request:
                 activity.quote_request.equipment_quote_request.map(
                   (service) => {
-                    return {
-                      id: service.id,
-                      name: service.name,
-                      count: service.count,
-                      type_service: service.type_service,
-                      calibration_method: service.calibration_method,
-                      total: service.total,
-                      price: service.price,
-                      method_id: service.method_id,
-                    }
+                    return (
+                      service.isResolved && service.status !== 'rejected',
+                      service.isConfirmReviewActivity && {
+                        id: service.id,
+                        name: service.name,
+                        count: service.count,
+                        type_service: service.type_service,
+                        calibration_method: service.calibration_method,
+                        total: service.total,
+                        price: service.price,
+                        method_id: service.method_id,
+                      }
+                    )
                   },
                 ),
             },
@@ -795,6 +798,7 @@ export class ActivitiesService {
               return {
                 id: member.id,
                 username: member.username,
+                email: member.email,
                 imageURL: member.imageURL,
               }
             }),
