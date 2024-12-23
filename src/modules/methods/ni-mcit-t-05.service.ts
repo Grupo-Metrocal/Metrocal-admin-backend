@@ -623,7 +623,7 @@ export class NI_MCIT_T_05Service {
       let correction = []
       let uncertainty = []
 
-      for (let i = 0; i <= equipment_information.no_points; i++) {
+      for (let i = 0; i <= calibration_results.results.length; i++) {
         const referenceTemperature = sheet.cell(`D${28 + i}`).value()
         reference_temperature.push(
           formatNumberCertification(
@@ -661,26 +661,8 @@ export class NI_MCIT_T_05Service {
         uncertainty: this.methodService.formatUncertainty(uncertainty),
       }
 
-      const digitalThermometer = await this.patternsService.findByCodeAndMethod(
-        method.description_pattern.pattern,
-        'NI-MCIT-T-05',
-      )
-
-      const hygrothermometer = await this.patternsService.findByCodeAndMethod(
-        'NI-MCPPT-05',
-        'NI-MCIT-T-05',
-      )
-
-      const oilBath = await this.patternsService.findByCodeAndMethod(
-        'NI-MCPT-38',
-        'NI-MCIT-T-05',
-      )
-
       return handleOK({
         calibration_results: calibration_results_certificate,
-        digitalThermometer: digitalThermometer.data,
-        hygrothermometer: hygrothermometer.data,
-        oilBath: oilBath.data,
         equipment_information: {
           certification_code: formatCertCode(
             method.certificate_code,
