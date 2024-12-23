@@ -28,13 +28,13 @@ export class EquipmentInformationGENERIC_METHOD {
   @Column({ type: 'varchar', nullable: true })
   model?: string
 
-  @Column({ nullable: true })
+  @Column({ type: 'float', nullable: true })
   range_min?: number
 
-  @Column({ nullable: true })
+  @Column({ type: 'float', nullable: true })
   range_max?: number
 
-  @Column({ nullable: true })
+  @Column({ type: 'float', nullable: true })
   scale_interval?: number
 
   @Column({ type: 'varchar', nullable: true })

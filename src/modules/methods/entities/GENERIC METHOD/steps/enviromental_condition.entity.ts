@@ -16,10 +16,10 @@ export class EnvironmentalConditionsGENERIC_METHOD {
   )
   GENERIC_METHOD: GENERIC_METHOD
 
-  @Column({ nullable: true })
+  @Column({ type: 'float', nullable: true })
   temperature?: number
 
-  @Column({ nullable: true })
+  @Column({ type: 'float', nullable: true })
   hr?: number
 
   @Column({ type: 'varchar', nullable: true })

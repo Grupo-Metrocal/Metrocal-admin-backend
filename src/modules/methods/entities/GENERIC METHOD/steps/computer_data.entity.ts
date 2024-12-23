@@ -19,6 +19,6 @@ export class ComputerDataGENERIC_METHOD {
   @Column({ type: 'varchar', nullable: true })
   unit_of_measurement: string
 
-  @Column({ nullable: true })
+  @Column({ type: 'float', nullable: true })
   scale_division: number
 }
