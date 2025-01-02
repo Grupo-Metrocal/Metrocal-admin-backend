@@ -16,7 +16,7 @@ export class DescriptionPatternNI_MCIT_V_01 {
   )
   NI_MCIT_V_01: NI_MCIT_V_01[]
 
-  @Column({ nullable: true, array: true, type: 'text' })
+  @Column('text', { array: true, nullable: true })
   patterns?: string[]
 
   @Column({ nullable: true })
