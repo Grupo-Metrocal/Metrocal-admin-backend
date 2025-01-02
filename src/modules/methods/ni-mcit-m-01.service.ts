@@ -30,6 +30,10 @@ import {
   formatNumberCertification,
   formatSameNumberCertification,
 } from 'src/utils/formatNumberCertification'
+import {
+  conversionMasasCMCG,
+  conversionMasasCMCKG,
+} from 'src/common/converionTable'
 
 @Injectable()
 export class NI_MCIT_M_01Service {
@@ -588,7 +592,7 @@ export class NI_MCIT_M_01Service {
 
       const workbook = await XlsxPopulate.fromFileAsync(method.certificate_url)
 
-      const sheet = workbook.sheet('DA Individual (g-mg)')
+      const sheet = workbook.sheet('FA Individual (g-mg)')
 
       let items = []
       let serieCode = []
@@ -624,14 +628,18 @@ export class NI_MCIT_M_01Service {
         conventional_value.push(conventionalValue)
         conventional_units.push(conventionalUnit)
         conventional_indication.push(conventionalIndicationValue)
-        conventional_value_2.push(conventional_value_2Value)
+        conventional_value_2.push(conventional_value_2Value?.toFixed(2))
         conventional_units_2.push(conventional_units_2Value)
 
         const uncertaintyValue = sheet.cell(`S${29 + i}`).value()
         const uncertaintyUnit = sheet.cell(`U${29 + i}`).value()
 
         uncertainty_value.push(
-          this.methodService.getSignificantFigure(uncertaintyValue),
+          this.methodService.getSignificantFigure(
+            nominalUnit === 'g'
+              ? conversionMasasCMCG[nominalValue] ?? uncertaintyValue
+              : conversionMasasCMCKG[nominalValue] ?? uncertaintyValue,
+          ),
         )
         uncertainty_units.push(uncertaintyUnit)
       }

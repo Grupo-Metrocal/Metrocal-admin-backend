@@ -15,3 +15,27 @@ export const conversionTableToKPA = {
   atm: 101.325,
   'mH₂O (4°C)': 9.81,
 }
+
+export const conversionMasasCMCG = {
+  2: 0.13,
+  5: 0.17,
+  10: 0.2,
+  50: 0.33,
+  100: 0.53,
+  200: 1,
+  500: 2.7,
+  10000: 166.7,
+  20000: 400,
+}
+
+export const conversionMasasCMCKG = {
+  0.002: 0.13,
+  0.005: 0.17,
+  0.01: 0.2,
+  0.05: 0.33,
+  0.1: 0.53,
+  0.2: 1,
+  0.5: 2.7,
+  10: 166.7,
+  20: 400,
+}
