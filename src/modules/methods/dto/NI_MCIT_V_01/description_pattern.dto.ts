@@ -5,7 +5,7 @@ export class DescriptionPatternV01Dto {
   observation?: string
 
   @ApiProperty()
-  pattern?: string
+  patterns?: string[]
 
   @ApiProperty()
   creditable?: boolean
