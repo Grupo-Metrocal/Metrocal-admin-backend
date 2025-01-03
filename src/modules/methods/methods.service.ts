@@ -185,7 +185,8 @@ export class MethodsService {
 
               const methodsID = await Promise.all(
                 Array.from({ length: equipment.count }, async () => {
-                  const newMethod = await this[methodName].create()
+                  let newMethod = await this[methodName].create()
+                  newMethod.id = undefined
                   await manager.save(newMethod)
                   return newMethod.id
                 }),
