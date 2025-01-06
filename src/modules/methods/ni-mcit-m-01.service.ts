@@ -328,10 +328,14 @@ export class NI_MCIT_M_01Service {
       const method = await this.NI_MCIT_M_01Repository.findOne({
         where: { id: methodID },
       })
+      const currentYear = new Date().getFullYear()
 
       const lastMethod = await this.NI_MCIT_M_01Repository.createQueryBuilder(
         'NI_MCIT_M_01',
       )
+        .where('EXTRACT(YEAR FROM NI_MCIT_M_01.created_at) = :currentYear', {
+          currentYear,
+        })
         .orderBy('NI_MCIT_M_01.last_record_index', 'DESC')
         .getOne()
 
@@ -344,12 +348,7 @@ export class NI_MCIT_M_01Service {
       }
 
       await this.dataSource.transaction(async (manager) => {
-        method.record_index =
-          !lastMethod ||
-          lastMethod.created_at.getFullYear() !==
-            method.created_at.getFullYear()
-            ? 1
-            : lastMethod.last_record_index + 1
+        method.record_index = !lastMethod ? 1 : lastMethod.last_record_index + 1
 
         await this.methodService.updateLastRecordIndex('NI_MCIT_M_01')
 

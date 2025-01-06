@@ -944,17 +944,21 @@ export class MethodsService {
   async updateLastRecordIndex(method_name: string) {
     try {
       const method = `${method_name}Repository`
+
+      const currentYear = new Date().getFullYear()
+
       const last_method = await this[method]
         .createQueryBuilder(`${method_name}`)
+        .where(`EXTRACT(YEAR FROM ${method_name}.created_at) = :currentYear`, {
+          currentYear,
+        })
         .orderBy(`${method_name}.last_record_index`, 'DESC')
         .getOne()
 
       await this.dataSource.transaction(async (manager) => {
-        last_method.last_record_index =
-          !last_method ||
-          last_method.created_at.getFullYear() !== new Date().getFullYear()
-            ? 1
-            : last_method.last_record_index + 1
+        last_method.last_record_index = !last_method
+          ? 1
+          : last_method.last_record_index + 1
 
         await manager.save(last_method)
       })

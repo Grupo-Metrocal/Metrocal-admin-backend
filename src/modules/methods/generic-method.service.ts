@@ -752,10 +752,14 @@ Este certificado de calibración no debe ser reproducido sin la aprobación del 
       const method = await this.GENERIC_METHODRepository.findOne({
         where: { id: methodID },
       })
+      const currentYear = new Date().getFullYear()
 
       const lastMethod = await this.GENERIC_METHODRepository.createQueryBuilder(
         'GENERIC_METHOD',
       )
+        .where('EXTRACT(YEAR FROM GENERIC_METHOD.created_at) = :currentYear', {
+          currentYear,
+        })
         .orderBy('GENERIC_METHOD.last_record_index', 'DESC')
         .getOne()
 

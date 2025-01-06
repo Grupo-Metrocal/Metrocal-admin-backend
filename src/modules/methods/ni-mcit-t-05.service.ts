@@ -313,6 +313,7 @@ export class NI_MCIT_T_05Service {
 
       return handleOK(method)
     } catch (error) {
+      console.log('Error en description pattern', error)
       return handleInternalServerError(error.message)
     }
   }
@@ -322,28 +323,23 @@ export class NI_MCIT_T_05Service {
       const method = await this.NI_MCIT_T_05Repository.findOne({
         where: { id: methodID },
       })
+      const currentYear = new Date().getFullYear()
 
       const lastMethod = await this.NI_MCIT_T_05Repository.createQueryBuilder(
         'NI_MCIT_T_05',
       )
+        .where('EXTRACT(YEAR FROM NI_MCIT_T_05.created_at) = :currentYear', {
+          currentYear,
+        })
         .orderBy('NI_MCIT_T_05.last_record_index', 'DESC')
         .getOne()
-
-      if (!method) {
-        return handleInternalServerError('El método no existe')
-      }
 
       if (method.certificate_code) {
         return handleOK('El método ya tiene un código de certificado')
       }
 
       await this.dataSource.transaction(async (manager) => {
-        method.record_index =
-          !lastMethod ||
-          lastMethod.created_at.getFullYear() !==
-            method.created_at.getFullYear()
-            ? 1
-            : lastMethod.last_record_index + 1
+        method.record_index = !lastMethod ? 1 : lastMethod.last_record_index + 1
 
         await this.methodService.updateLastRecordIndex('NI_MCIT_T_05')
 
@@ -362,6 +358,7 @@ export class NI_MCIT_T_05Service {
 
       return handleOK(certificate)
     } catch (error) {
+      console.log({ error })
       return handleInternalServerError(error.message)
     }
   }

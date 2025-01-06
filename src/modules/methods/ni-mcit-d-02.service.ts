@@ -957,10 +957,14 @@ Este certificado de calibración no debe ser reproducido sin la aprobación del 
       const method = await this.NI_MCIT_D_02Repository.findOne({
         where: { id: methodID },
       })
+      const currentYear = new Date().getFullYear()
 
       const lastMethod = await this.NI_MCIT_D_02Repository.createQueryBuilder(
         'NI_MCIT_D_02',
       )
+        .where('EXTRACT(YEAR FROM NI_MCIT_D_02.created_at) = :currentYear', {
+          currentYear,
+        })
         .orderBy('NI_MCIT_D_02.last_record_index', 'DESC')
         .getOne()
 
@@ -973,12 +977,7 @@ Este certificado de calibración no debe ser reproducido sin la aprobación del 
       }
 
       await this.dataSource.transaction(async (manager) => {
-        method.record_index =
-          !lastMethod ||
-          lastMethod.created_at.getFullYear() !==
-            method.created_at.getFullYear()
-            ? 1
-            : lastMethod.last_record_index + 1
+        method.record_index = !lastMethod ? 1 : lastMethod.last_record_index + 1
 
         await this.methodService.updateLastRecordIndex('NI_MCIT_D_02')
 
