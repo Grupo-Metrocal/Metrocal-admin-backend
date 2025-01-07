@@ -518,16 +518,16 @@ export class NI_MCIT_T_05Service {
         for (let j = 0; j < result.calibrations.length; j++) {
           const calibration = result.calibrations[j]
 
-          if (result.point_number === -1) {
+          if (result?.point_number === -1) {
             sheet.cell(`H${29 + j}`).value(Number(calibration.initial))
             sheet.cell(`I${29 + j}`).value(Number(calibration.final))
             continue
           }
 
-          let row = 6 + (result.point_number - 1) * 2
+          let row = 6 + (result?.point_number - 1) * 2
           const col = 29 + j
 
-          result.point_number > 1 && (row += 2)
+          result?.point_number > 1 && (row += 2)
 
           sheet.cell(col, row).value(Number(calibration.initial))
           sheet.cell(col, row + 1).value(Number(calibration.final))
