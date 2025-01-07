@@ -502,8 +502,6 @@ export class QuotesService {
           rejectedquoterequest,
         )
 
-      console.log({ response })
-
       return handleOK(response)
     } catch (error) {
       return handleInternalServerError(error.message)
@@ -726,7 +724,6 @@ export class QuotesService {
         page,
       )
     } catch (error) {
-      console.log(error)
       return handleInternalServerError(error.message)
     }
   }
@@ -1713,7 +1710,6 @@ export class QuotesService {
 
       return handleOK(extractData)
     } catch (error: any) {
-      console.log(error.message)
       return handleInternalServerError(error.message)
     }
   }

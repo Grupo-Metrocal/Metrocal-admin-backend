@@ -205,7 +205,6 @@ export class MethodsService {
 
       return handleOK(activity.quote_request.equipment_quote_request)
     } catch (error) {
-      console.log({ error })
       return handleBadrequest(error.message)
     }
   }
@@ -250,7 +249,6 @@ export class MethodsService {
 
       return handleOK(equipment)
     } catch (error: any) {
-      console.log({ error })
       return handleInternalServerError(error.message)
     }
   }
@@ -671,7 +669,6 @@ export class MethodsService {
 
       return handleOK('Email enviado')
     } catch (error) {
-      console.log({ error })
       return handleInternalServerError(error.message)
     }
   }
@@ -691,7 +688,7 @@ export class MethodsService {
       const archive = archiver('zip', { zlib: { level: 9 } })
 
       output.on('close', () => {
-        console.log(`ZIP file created: ${archive.pointer()} total bytes`)
+        ;`ZIP file created: ${archive.pointer()} total bytes`
       })
 
       archive.on('error', (err) => {
@@ -777,11 +774,11 @@ export class MethodsService {
         return handleBadrequest(new Error('No se encontró el método'))
       }
 
-      console.log(method)
+      method
 
       return handleOK({ code: method.certificate_code })
     } catch (e) {
-      console.log(e)
+      e
       return handleInternalServerError(e.message)
     }
   }
@@ -837,6 +834,11 @@ export class MethodsService {
     if (Number(integer) < 10 && Number(integer) >= 1) {
       let complement = ''
       let firstNumber: number = 0
+
+      if (!decimal) {
+        return integer
+      }
+
       for (let i = 0; i < decimal.length; i++) {
         if (Number(decimal[i]) !== 0 && i < 2) {
           firstNumber = Number(Number(`0.${decimal}`).toFixed(1))
@@ -936,7 +938,7 @@ export class MethodsService {
 
       return handleOK('')
     } catch (error) {
-      console.log(error.message)
+      error.message
       handleInternalServerError(error.message)
     }
   }

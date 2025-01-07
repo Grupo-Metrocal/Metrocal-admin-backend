@@ -519,7 +519,7 @@ export class NI_MCIT_M_01Service {
 
       return await this.getCertificateResult(methodID, activityID)
     } catch (error) {
-      console.error(error)
+      console.error({ error })
       return handleInternalServerError(error.message)
     }
   }
@@ -615,7 +615,7 @@ export class NI_MCIT_M_01Service {
         const nominalValue = sheet.cell(`G${29 + i}`).value()
         const nominalUnit = sheet.cell(`H${29 + i}`).value()
 
-        nominal_value.push(nominalValue)
+        nominal_value.push(formatSameNumberCertification(nominalValue))
         nominal_units.push(nominalUnit)
 
         const conventionalValue = sheet.cell(`I${29 + i}`).value()
@@ -624,10 +624,14 @@ export class NI_MCIT_M_01Service {
         const conventional_value_2Value = sheet.cell(`N${29 + i}`).value()
         const conventional_units_2Value = sheet.cell(`Q${29 + i}`).value()
 
-        conventional_value.push(conventionalValue)
+        conventional_value.push(
+          formatSameNumberCertification(conventionalValue),
+        )
         conventional_units.push(conventionalUnit)
         conventional_indication.push(conventionalIndicationValue)
-        conventional_value_2.push(conventional_value_2Value?.toFixed(2))
+        conventional_value_2.push(
+          formatNumberCertification(conventional_value_2Value, 2),
+        )
         conventional_units_2.push(conventional_units_2Value)
 
         const uncertaintyValue = sheet.cell(`S${29 + i}`).value()
@@ -767,6 +771,13 @@ Este certificado de calibración no debe ser reproducido sin la aprobación del 
   async getPatternsTableToCertificate(method: NI_MCIT_M_01) {
     const description_pattern = []
     const added = []
+
+    const defaulEnvironmentalCondition =
+      await this.patternsService.findByCodeAndMethod('NI-MCPPT-06', 'all')
+
+    if (defaulEnvironmentalCondition.success) {
+      description_pattern.push(defaulEnvironmentalCondition.data)
+    }
 
     for (let i = 0; i < method.calibration_results.results.length; i++) {
       const test = method.calibration_results.results[i]

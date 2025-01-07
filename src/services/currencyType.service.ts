@@ -78,11 +78,11 @@ getExchangeRateForDay(
 )
   .then((exchangeRate) => {
     if (exchangeRate !== null) {
-      console.log(
+      (
         `Tipo de cambio del ${today.getFullYear()}-${today.getMonth() + 1}-${today.getDate()}: ${exchangeRate}`,
       )
     } else {
-      console.log('No se pudo obtener el tipo de cambio.')
+      ('No se pudo obtener el tipo de cambio.')
     }
   })
   .catch((error) => {

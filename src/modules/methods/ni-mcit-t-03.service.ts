@@ -717,8 +717,6 @@ export class NI_MCIT_T_03Service {
         mincmc,
       }
 
-      console.log({ CMC })
-
       const calibration_results_certificate = {
         result: {
           pattern_indication,

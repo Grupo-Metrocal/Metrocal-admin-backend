@@ -313,7 +313,6 @@ export class NI_MCIT_T_05Service {
 
       return handleOK(method)
     } catch (error) {
-      console.log('Error en description pattern', error)
       return handleInternalServerError(error.message)
     }
   }
@@ -358,7 +357,6 @@ export class NI_MCIT_T_05Service {
 
       return handleOK(certificate)
     } catch (error) {
-      console.log({ error })
       return handleInternalServerError(error.message)
     }
   }
@@ -817,9 +815,7 @@ Este certificado de calibración no debe ser reproducido sin la aprobación del 
         return data
       }
 
-      const { pdf, client_email, fileName, clientName } = data.data
-
-      console.log({ fileName })
+      const { pdf, client_email, fileName, clientName } = data.data({})
 
       await this.mailService.sendMailCertification({
         user: client_email,

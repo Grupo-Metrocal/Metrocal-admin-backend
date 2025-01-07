@@ -801,7 +801,7 @@ De acuerdo a lo establecido en NTON 07-004-01 Norma Metrológica del Sistema Int
 
       return handleOK(certificate)
     } catch (error) {
-      console.log(error)
+      error
       return handleInternalServerError(error.message)
     }
   }
@@ -856,7 +856,8 @@ De acuerdo a lo establecido en NTON 07-004-01 Norma Metrológica del Sistema Int
 
         if (uncertaintyValue < cmc.mincmc[index - 1] && useConversionTable) {
           return this.methodService.getSignificantFigure(
-            cmc.cmc[index - 1] / conversionTableToKPA[unit],
+            cmc.cmc[index - 1],
+            // cmc.cmc[index - 1] / conversionTableToKPA[unit],
           )
         }
 
@@ -1060,7 +1061,7 @@ De acuerdo a lo establecido en NTON 07-004-01 Norma Metrológica del Sistema Int
         clientName: dataCertificate.data.equipment_information.applicant,
       })
     } catch (error) {
-      console.log(error)
+      error
       return handleInternalServerError(error.message)
     }
   }

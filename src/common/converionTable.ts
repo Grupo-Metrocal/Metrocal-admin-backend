@@ -24,7 +24,7 @@ export const conversionMasasCMCG = {
   100: 0.53,
   200: 1,
   500: 2.7,
-  10000: 166.7,
+  10000: 170,
   20000: 400,
 }
 
@@ -36,6 +36,6 @@ export const conversionMasasCMCKG = {
   0.1: 0.53,
   0.2: 1,
   0.5: 2.7,
-  10: 166.7,
+  10: 170,
   20: 400,
 }

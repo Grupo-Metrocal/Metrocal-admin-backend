@@ -812,7 +812,6 @@ Este certificado de calibración no debe ser reproducido sin la aprobación del 
 
       return handleOK(certificate)
     } catch (error) {
-      console.log(error)
       return handleInternalServerError('Error al generar el archivo')
     }
   }
@@ -944,7 +943,6 @@ Este certificado de calibración no debe ser reproducido sin la aprobación del 
             console.error(`Error en la salida estándar: ${stderr}`)
             reject(new Error(stderr))
           } else {
-            console.log(`Salida estándar: ${stdout}`)
             resolve(stdout)
           }
         },

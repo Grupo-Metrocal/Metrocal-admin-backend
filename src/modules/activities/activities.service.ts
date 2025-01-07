@@ -920,8 +920,6 @@ export class ActivitiesService {
         (item) => item.id === Number(equipmentId),
       )
 
-      console.log({ equipment })
-
       const stackMehods = await this.methodsService.getMethodsID(
         equipment.method_id,
       )
@@ -1256,8 +1254,6 @@ export class ActivitiesService {
           'team_members',
         ],
       })
-
-      console.log({ data })
 
       const serviceOrderDetails = {
         clientName: activity.quote_request.client.company_name,
