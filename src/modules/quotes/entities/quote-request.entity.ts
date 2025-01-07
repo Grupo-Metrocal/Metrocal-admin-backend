@@ -92,9 +92,16 @@ export class QuoteRequest {
   @Column({
     type: 'enum',
     enum: CurrencyType,
-    default: CurrencyType.USD,
+    default: CurrencyType.NIO,
   })
   currency_type: CurrencyType
+
+  @Column({
+    type: 'enum',
+    enum: CurrencyType,
+    default: CurrencyType.NIO,
+  })
+  change_currency_type: CurrencyType
 
   @Column({ nullable: true })
   alt_client_email?: string

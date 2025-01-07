@@ -45,10 +45,7 @@ import { formatQuoteCode } from 'src/utils/generateCertCode'
 import { EquipmentQuoteRequestDto } from './dto/equipment-quote-request.dto'
 import { DeleteEquipmentFromQuoteDto } from './dto/delete-equipment-from-quote.dto'
 import { endOfMonth, startOfMonth, subDays, subMonths } from 'date-fns'
-import {
-  callGetExchangeRateForDay,
-  getExchangeRateForDay,
-} from 'src/services/currencyType.service'
+import { callGetExchangeRateForDay } from 'src/services/currencyType.service'
 import { Client } from '../clients/entities/client.entity'
 import * as XlsxPopulate from 'xlsx-populate'
 
@@ -542,9 +539,13 @@ export class QuotesService {
           unitPrice: formatPrice(
             equipment.price,
             currency,
-            quote.currency_type,
+            quote.change_currency_type,
           ),
-          subTotal: formatPrice(equipment.total, currency, quote.currency_type),
+          subTotal: formatPrice(
+            equipment.total,
+            currency,
+            quote.change_currency_type,
+          ),
           comment: equipment.additional_remarks || 'N/A',
           measuring_range: equipment.measuring_range || 'N/A',
           status: equipment.status,
@@ -559,8 +560,16 @@ export class QuotesService {
         equipment: '---',
         method: '---',
         count: '---',
-        unitPrice: formatPrice(quote.extras, currency, quote.currency_type),
-        subTotal: formatPrice(quote.extras, currency, quote.currency_type),
+        unitPrice: formatPrice(
+          quote.extras,
+          currency,
+          quote.change_currency_type,
+        ),
+        subTotal: formatPrice(
+          quote.extras,
+          currency,
+          quote.change_currency_type,
+        ),
         comment: '---',
         measuring_range: '---',
       })
@@ -577,23 +586,31 @@ export class QuotesService {
         ? formatPrice(
             (subtotal * quote.general_discount) / 100,
             currency,
-            quote.currency_type,
+            quote.change_currency_type,
           )
         : 'N/A'
-    data['subtotal1'] = formatPrice(subtotal, currency, quote.currency_type)
+    data['subtotal1'] = formatPrice(
+      subtotal,
+      currency,
+      quote.change_currency_type,
+    )
     data['subtotal2'] = formatPrice(
       subtotal - (subtotal * quote.general_discount) / 100,
       currency,
-      quote.currency_type,
+      quote.change_currency_type,
     )
     data['tax'] = formatPrice(
       ((subtotal - (subtotal * quote.general_discount) / 100) *
         (quote.tax || 0)) /
         100,
       currency,
-      quote.currency_type,
+      quote.change_currency_type,
     )
-    data['total'] = formatPrice(quote.price, currency, quote.currency_type)
+    data['total'] = formatPrice(
+      quote.price,
+      currency,
+      quote.change_currency_type,
+    )
     data['client'] = quote.client
     data['date'] = formatDate(quote.created_at)
 
@@ -607,7 +624,7 @@ export class QuotesService {
     data['alt_client_requested_by'] =
       quote.alt_client_requested_by || quote?.client?.requested_by
     data['alt_client_phone'] = quote.alt_client_phone || quote?.client?.phone
-    data['currency'] = quote.currency_type
+    data['currency'] = quote.change_currency_type
 
     return await this.pdfService.generateQuoteRequestPdf(data)
   }
@@ -1344,9 +1361,13 @@ export class QuotesService {
           unitPrice: formatPrice(
             equipment.price,
             currency,
-            quote.currency_type,
+            quote.change_currency_type,
           ),
-          subTotal: formatPrice(equipment.total, currency, quote.currency_type),
+          subTotal: formatPrice(
+            equipment.total,
+            currency,
+            quote.change_currency_type,
+          ),
           comment: equipment.additional_remarks || 'N/A',
           measuring_range: equipment.measuring_range || 'N/A',
           status: equipment.status,
@@ -1361,8 +1382,16 @@ export class QuotesService {
         equipment: '---',
         method: '---',
         count: '---',
-        unitPrice: formatPrice(quote.extras, currency, quote.currency_type),
-        subTotal: formatPrice(quote.extras, currency, quote.currency_type),
+        unitPrice: formatPrice(
+          quote.extras,
+          currency,
+          quote.change_currency_type,
+        ),
+        subTotal: formatPrice(
+          quote.extras,
+          currency,
+          quote.change_currency_type,
+        ),
         comment: '---',
         measuring_range: '---',
       })
@@ -1379,23 +1408,31 @@ export class QuotesService {
         ? formatPrice(
             (subtotal * quote.general_discount) / 100,
             currency,
-            quote.currency_type,
+            quote.change_currency_type,
           )
         : 'N/A'
-    data['subtotal1'] = formatPrice(subtotal, currency, quote.currency_type)
+    data['subtotal1'] = formatPrice(
+      subtotal,
+      currency,
+      quote.change_currency_type,
+    )
     data['subtotal2'] = formatPrice(
       subtotal - (subtotal * quote.general_discount) / 100,
       currency,
-      quote.currency_type,
+      quote.change_currency_type,
     )
     data['tax'] = formatPrice(
       ((subtotal - (subtotal * quote.general_discount) / 100) *
         (quote.tax || 0)) /
         100,
       currency,
-      quote.currency_type,
+      quote.change_currency_type,
     )
-    data['total'] = formatPrice(quote.price, currency, quote.currency_type)
+    data['total'] = formatPrice(
+      quote.price,
+      currency,
+      quote.change_currency_type,
+    )
     data['client'] = quote.client
     data['date'] = formatDate(quote.created_at.toString())
 
@@ -1409,7 +1446,7 @@ export class QuotesService {
     data['alt_client_requested_by'] =
       quote.alt_client_requested_by || quote?.client?.requested_by
     data['alt_client_phone'] = quote.alt_client_phone || quote?.client?.phone
-    data['currency'] = quote.currency_type
+    data['currency'] = quote.change_currency_type
 
     return await this.pdfService.generateQuoteRequestPdf(data)
   }
@@ -1510,7 +1547,7 @@ export class QuotesService {
         return handleBadrequest(new Error('Tipo de moneda inválido'))
       }
 
-      quote.currency_type = type
+      quote.change_currency_type = type
 
       await this.quoteRequestRepository.save(quote)
 

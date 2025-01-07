@@ -65,7 +65,8 @@ export const callGetExchangeRateForDay = async () => {
     today.getDate(),
   )
 
-  return currency
+  // return currency
+  return 37
 }
 
 // Llamar a la función con la fecha deseada y manejar el resultado
