@@ -836,7 +836,7 @@ export class MethodsService {
       let firstNumber: number = 0
 
       if (!decimal) {
-        return integer
+        return parseFloat(parseFloat(integer).toFixed(1))
       }
 
       for (let i = 0; i < decimal.length; i++) {
