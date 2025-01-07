@@ -540,11 +540,13 @@ export class QuotesService {
             equipment.price,
             currency,
             quote.change_currency_type,
+            quote.currency_type,
           ),
           subTotal: formatPrice(
             equipment.total,
             currency,
             quote.change_currency_type,
+            quote.currency_type,
           ),
           comment: equipment.additional_remarks || 'N/A',
           measuring_range: equipment.measuring_range || 'N/A',
@@ -564,11 +566,13 @@ export class QuotesService {
           quote.extras,
           currency,
           quote.change_currency_type,
+          quote.currency_type,
         ),
         subTotal: formatPrice(
           quote.extras,
           currency,
           quote.change_currency_type,
+          quote.currency_type,
         ),
         comment: '---',
         measuring_range: '---',
@@ -587,17 +591,20 @@ export class QuotesService {
             (subtotal * quote.general_discount) / 100,
             currency,
             quote.change_currency_type,
+            quote.currency_type,
           )
         : 'N/A'
     data['subtotal1'] = formatPrice(
       subtotal,
       currency,
       quote.change_currency_type,
+      quote.currency_type,
     )
     data['subtotal2'] = formatPrice(
       subtotal - (subtotal * quote.general_discount) / 100,
       currency,
       quote.change_currency_type,
+      quote.currency_type,
     )
     data['tax'] = formatPrice(
       ((subtotal - (subtotal * quote.general_discount) / 100) *
@@ -605,11 +612,13 @@ export class QuotesService {
         100,
       currency,
       quote.change_currency_type,
+      quote.currency_type,
     )
     data['total'] = formatPrice(
       quote.price,
       currency,
       quote.change_currency_type,
+      quote.currency_type,
     )
     data['client'] = quote.client
     data['date'] = formatDate(quote.created_at)
@@ -1362,11 +1371,13 @@ export class QuotesService {
             equipment.price,
             currency,
             quote.change_currency_type,
+            quote.currency_type,
           ),
           subTotal: formatPrice(
             equipment.total,
             currency,
             quote.change_currency_type,
+            quote.currency_type,
           ),
           comment: equipment.additional_remarks || 'N/A',
           measuring_range: equipment.measuring_range || 'N/A',
@@ -1386,11 +1397,13 @@ export class QuotesService {
           quote.extras,
           currency,
           quote.change_currency_type,
+          quote.currency_type,
         ),
         subTotal: formatPrice(
           quote.extras,
           currency,
           quote.change_currency_type,
+          quote.currency_type,
         ),
         comment: '---',
         measuring_range: '---',
@@ -1415,11 +1428,13 @@ export class QuotesService {
       subtotal,
       currency,
       quote.change_currency_type,
+      quote.currency_type,
     )
     data['subtotal2'] = formatPrice(
       subtotal - (subtotal * quote.general_discount) / 100,
       currency,
       quote.change_currency_type,
+      quote.currency_type,
     )
     data['tax'] = formatPrice(
       ((subtotal - (subtotal * quote.general_discount) / 100) *
@@ -1427,11 +1442,13 @@ export class QuotesService {
         100,
       currency,
       quote.change_currency_type,
+      quote.currency_type,
     )
     data['total'] = formatPrice(
       quote.price,
       currency,
       quote.change_currency_type,
+      quote.currency_type,
     )
     data['client'] = quote.client
     data['date'] = formatDate(quote.created_at.toString())

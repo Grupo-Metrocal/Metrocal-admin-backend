@@ -6,6 +6,7 @@ import {
   OneToOne,
   OneToMany,
   JoinColumn,
+  BeforeInsert,
 } from 'typeorm'
 import { User } from 'src/modules/users/entities/user.entity'
 import { EquipmentQuoteRequest } from './equipment-quote-request.entity'
@@ -117,4 +118,11 @@ export class QuoteRequest {
 
   @Column({ type: 'timestamp', nullable: true })
   updated_at: Date
+
+  @BeforeInsert()
+  setDefaultChangeCurrencyType() {
+    if (!this.change_currency_type) {
+      this.change_currency_type = this.currency_type
+    }
+  }
 }
