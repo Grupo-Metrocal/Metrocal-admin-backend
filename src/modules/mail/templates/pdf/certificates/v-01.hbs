@@ -5,10 +5,10 @@
   margin-top: 20px; } .equipment-information div { width: 50%; display: flex;
   flex-direction: column; gap: 5px; } .equipment-information .labels {
   font-weight: bold; } table { border-collapse: collapse; width: 100%; } th, td
-  { border: 1px solid #dddddd; text-align: center; } .table-title
-  { border: 1px solid #dddddd; text-align: center; } .enviromental-conditions {
-  display: flex; justify-content: space-between; } .enviromental-conditions div
-  { display: flex; flex-direction: column; gap: 10px; }
+  { border: 1px solid #dddddd; text-align: center; } .table-title { border: 1px
+  solid #dddddd; text-align: center; } .enviromental-conditions { display: flex;
+  justify-content: space-between; } .enviromental-conditions div { display:
+  flex; flex-direction: column; gap: 10px; }
 </style>
 
 <div class='ni-mcit-v-01'>
@@ -94,25 +94,41 @@
     <br />
     <br />
 
-    <span style="text-align: justify;">Las pruebas se realizaron utilizando el NI-MCIT-V-01 Instrucción para calibración de recipientes volumétricos por el método gravimétrico</span>
+    <span style='text-align: justify;'>Las pruebas se realizaron utilizando el
+      NI-MCIT-V-01 Instrucción para calibración de recipientes volumétricos por
+      el método gravimétrico</span>
   </div>
 
-  
   {{#ifArrayEq calibration_results 6}}
-    <br /> <br /> <br />  <br /> <br /> <br /> <br /> 
+    <br />
+    <br />
+    <br />
+    <br />
+    <br />
+    <br />
+    <br />
   {{/ifArrayEq}}
 
   <div class='uncertainty'>
     <strong><span>Incertidumbre de los datos</span></strong>
     <br />
     <br />
-    <span style="text-align: justify;">
-      La incertidumbre de las medición se obtuvo multiplicando la incertidumbre estándar combinada por un factor de cobertura k = 2, con el que se alcanza un nivel de confianza de aproximadamente un 95 %. La incertidumbre estándar de la medición se determinó conforme a Guía para la Expresión de la Incertidumbre de la Medida, BIPM-IEC-IFCC-ISO-IUPAC-IUPAP-OIML, en la cual se toma en cuenta la incertidumbre de los patrones, del método de calibración, de los factores de influencia durante la calibración y del equipo sujeto a calibración.
+    <span style='text-align: justify;'>
+      La incertidumbre de las medición se obtuvo multiplicando la incertidumbre
+      estándar combinada por un factor de cobertura k = 2, con el que se alcanza
+      un nivel de confianza de aproximadamente un 95 %. La incertidumbre
+      estándar de la medición se determinó conforme a Guía para la Expresión de
+      la Incertidumbre de la Medida, BIPM-IEC-IFCC-ISO-IUPAC-IUPAP-OIML, en la
+      cual se toma en cuenta la incertidumbre de los patrones, del método de
+      calibración, de los factores de influencia durante la calibración y del
+      equipo sujeto a calibración.
     </span>
   </div>
 
   {{#ifArrayEq calibration_results 5}}
-    <br /> <br> <br>
+    <br />
+    <br />
+    <br />
   {{/ifArrayEq}}
 
   {{#ifArrayEq calibration_results 4}}
@@ -120,20 +136,18 @@
   {{/ifArrayEq}}
 
   {{#ifArrayEq calibration_results 3}}
-    <br /><br>
+    <br /><br />
   {{/ifArrayEq}}
 
   {{#ifArrayEq calibration_results 2}}
-    <br /><br> <br>
+    <br /><br />
+    <br />
   {{/ifArrayEq}}
 
-  
-
-  <div class="used_pattern">
+  <div class='used_pattern'>
     <strong><span>Descripción de patrones utilizados</span></strong>
-    <br>
+    <br />
 
-    <!-- tabla -->
     <table>
       <thead>
         <tr>
@@ -144,16 +158,14 @@
         </tr>
       </thead>
       <tbody>
-        <tr>
-          <td>{{masas.equipment}}</td>
-          <td>{{masas.code}}</td>
-          <td>{{masas.certificate}}</td>
-          <td>{{masas.traceability}}</td>
-          <td>{{masas.next_calibration}}</td>
-        </tr>
-
-      <tbody>
-        
+        {{#each description_pattern as |data|}}
+          <tr>
+            <td>{{data.equipment}}</td>
+            <td>{{data.code}}</td>
+            <td>{{data.traceability}}</td>
+            <td>{{data.next_calibration}}</td>
+          </tr>
+        {{/each}}
       </tbody>
     </table>
   </div>
@@ -165,7 +177,6 @@
     </span>
   </div>
 </div>
-
 
 <div
   class='id_certificate'

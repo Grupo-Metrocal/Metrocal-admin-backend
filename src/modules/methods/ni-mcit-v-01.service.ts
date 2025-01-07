@@ -723,6 +723,7 @@ export class NI_MCIT_V_01Service {
         },
         creditable: description_pattern.creditable,
         client_email: activity.quote_request.client.email,
+        description_pattern: await this.getPatternsTableToCertificate(method),
         observations: `
 ${method.description_pattern.observation}
 Es responsabilidad del encargado del instrumento establecer la frecuencia del servicio de calibración.
@@ -736,16 +737,23 @@ Este certificado de calibración no debe ser reproducido sin la aprobación del 
   }
 
   async getPatternsTableToCertificate(method: NI_MCIT_V_01) {
-    const description_pattern = []
+    const patterns = method.description_pattern.patterns
 
-    for (const pattern of method.description_pattern.patterns) {
-      const calibration_method_used =
-        await this.patternsService.findByCodeAndMethod(pattern, 'NI-MCIT-V-01')
+    const description_pattern = await Promise.all(
+      patterns.map(async (pattern) => {
+        let calibration_method_used =
+          await this.patternsService.findByCodeAndMethod(
+            pattern,
+            'NI-MCIT-V-01',
+          )
+        if (!calibration_method_used.success) {
+          calibration_method_used =
+            await this.patternsService.findByCodeAndMethod(pattern, 'all')
+        }
 
-      if (calibration_method_used.success) {
-        description_pattern.push(calibration_method_used.data)
-      }
-    }
+        return calibration_method_used.data || null
+      }),
+    )
 
     return description_pattern
   }
