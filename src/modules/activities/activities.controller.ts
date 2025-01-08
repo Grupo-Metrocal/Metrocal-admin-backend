@@ -91,7 +91,7 @@ export class ActivitiesController {
     @Param('id') id: number,
     @Body() data: FinishActivityDto,
   ) {
-    return await this.activitiesService.finishActivity(id, data)
+    return await this.activitiesService.finishActivity(id)
   }
 
   @UseGuards(JwtAuthGuard)
@@ -170,7 +170,7 @@ export class ActivitiesController {
   }
 
   // @UseGuards(JwtAuthGuard)
-  @Post('generate-partial-service-order/:id')
+  @Post('generate-service-order/:id')
   async generatePartialServiceOrder(
     @Param('id') id: number,
     @Body() data: PartialServiceOrderDto,
