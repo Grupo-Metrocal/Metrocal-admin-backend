@@ -22,6 +22,7 @@ import { FinishActivityDto } from './dto/finish-activity.dto'
 import { TokenService } from '../auth/jwt/jwt.service'
 import { CertificateService } from '../certificate/certificate.service'
 import { PartialServiceOrderDto } from './dto/partial-service-order.dto'
+import { ServiceOrderService } from './service-order.service'
 
 @Injectable()
 export class ActivitiesService {
@@ -39,8 +40,8 @@ export class ActivitiesService {
     private readonly mailService: MailService,
     private readonly tokenService: TokenService,
 
-    @Inject(forwardRef(() => CertificateService))
-    private readonly certificateService: CertificateService,
+    @Inject(forwardRef(() => ServiceOrderService))
+    private readonly serviceOrderService: ServiceOrderService,
   ) {}
 
   async createActivity(activity: Activity) {
@@ -448,7 +449,7 @@ export class ActivitiesService {
     }
   }
 
-  async finishActivity(activityID: number, data: FinishActivityDto) {
+  async finishActivity(activityID: number) {
     const activity = await this.activityRepository.findOne({
       where: { id: activityID },
     })
@@ -461,10 +462,6 @@ export class ActivitiesService {
       activity.status = 'done'
       activity.updated_at = new Date()
       activity.progress = 100
-      activity.work_areas = data.work_areas
-      activity.comments_insitu = data.comments_insitu
-      activity.start_time = data.start_time
-      activity.end_time = data.end_time
 
       if (!activity.finish_date) {
         activity.finish_date = new Date()
@@ -472,7 +469,7 @@ export class ActivitiesService {
 
       await this.activityRepository.save(activity)
 
-      return await this.generateServiceOrder(activity.id)
+      return handleOK(activity)
     } catch (error) {
       return handleInternalServerError(error.message)
     }
@@ -1247,72 +1244,57 @@ export class ActivitiesService {
     try {
       const activity = await this.activityRepository.findOne({
         where: { id: activityId },
-        relations: [
-          'quote_request',
-          'quote_request.equipment_quote_request',
-          'quote_request.client',
-          'team_members',
-        ],
       })
 
-      const serviceOrderDetails = {
-        clientName: activity.quote_request.client.company_name,
-        endDate: formatDate(new Date().toDateString()),
-        startTime: data.start_time,
-        endTime: data.end_time,
-        address: activity.quote_request.client.address,
-        requestedBy: activity.quote_request.client.requested_by,
-        phone: activity.quote_request.client.phone,
-        client_signature: activity.client_signature,
-        work_areas: data.work_areas.join(', ') || '',
-        comments_insitu1: data?.comments_insitu?.[0] || '',
-        comments_insitu2: data?.comments_insitu?.[1] || '',
-        equipments: activity?.quote_request.equipment_quote_request.filter(
-          (equipment) => data.equipments.includes(equipment.id),
-        ),
-        resolved_services: activity.quote_request.equipment_quote_request
-          .map((service) => {
-            if (service.isResolved) {
-              return service.type_service
-            }
-          })
-          .filter((service) => service !== undefined)
-          .map((service) => {
-            if (
-              service === 'Diagnóstico' ||
-              service === 'Otros' ||
-              service === 'Verificación de Cal' ||
-              service === 'Suministro' ||
-              service === 'Proyecto' ||
-              service === 'Informe Técnico'
-            ) {
-              return 'Otro'
-            }
-            return service
-          }),
+      if (!activity) {
+        return handleInternalServerError('Actividad no encontrada')
       }
 
-      const pdf =
-        await this.pdfService.generteServiceOrderPdf(serviceOrderDetails)
+      activity.work_areas = data.work_areas
+      activity.comments_insitu = data.comments_insitu
 
-      if (!pdf) {
-        return handleBadrequest(new Error('No se pudo generar el pdf'))
+      await this.activityRepository.save(activity)
+
+      const serviceOrder = await this.serviceOrderService.createServiceOrder(
+        activityId,
+        {
+          start_time: data.start_time,
+          end_time: data.end_time,
+          equipments: data.equipments,
+        },
+      )
+
+      if (!serviceOrder.success) {
+        return handleBadrequest(
+          new Error('No se pudo crear la orden de servicio'),
+        )
       }
 
-      const response = await this.mailService.sendServiceOrderMail({
-        to:
-          activity.quote_request.alt_client_email ||
-          activity.quote_request.client.email,
-        pdf,
-        clientName: activity.quote_request.client.company_name,
-        quoteNumber: activity.quote_request.no,
-        startDate: formatDate(new Date().toDateString()),
-        endDate: formatDate(new Date().toDateString()),
-        technicians: activity.team_members.map((member) => member.username),
-      })
+      const serviceOrderPdf =
+        await this.serviceOrderService.generateServiceOrderPDF(
+          activityId,
+          serviceOrder.data.id,
+        )
 
-      return handleOK(response)
-    } catch (e: any) {
+      if (!serviceOrderPdf.success) {
+        return handleBadrequest(
+          new Error('No se pudo generar el PDF de la orden de servicio'),
+        )
+      }
+
+      const sendingPDF = await this.serviceOrderService.sendPdfServiceOrder(
+        activityId,
+        serviceOrderPdf.data,
+      )
+
+      if (!serviceOrderPdf.success) {
+        return handleBadrequest(
+          new Error('Error al enviar la orden de servicio'),
+        )
+      }
+
+      return handleOK(sendingPDF.data)
+    } catch (e) {
       return handleInternalServerError(e.message)
     }
   }
