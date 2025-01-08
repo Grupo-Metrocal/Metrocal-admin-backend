@@ -10,16 +10,24 @@ import { PdfService } from '../mail/pdf.service'
 import { MailService } from '../mail/mail.service'
 import { TokenService } from '../auth/jwt/jwt.service'
 import { CertificateModule } from '../certificate/certificate.module'
+import { ServiceOrderService } from './service-order.service'
+import { ServiceOrder } from './entities/service-order.entity'
 
 @Module({
   imports: [
-    TypeOrmModule.forFeature([Activity, User]),
+    TypeOrmModule.forFeature([Activity, User, ServiceOrder]),
     forwardRef(() => QuotesModule),
     forwardRef(() => MethodsModule),
     forwardRef(() => CertificateModule),
   ],
   controllers: [ActivitiesController],
-  providers: [ActivitiesService, PdfService, MailService, TokenService],
-  exports: [ActivitiesService],
+  providers: [
+    ActivitiesService,
+    PdfService,
+    MailService,
+    TokenService,
+    ServiceOrderService,
+  ],
+  exports: [ActivitiesService, ServiceOrderService],
 })
 export class ActivitiesModule {}
