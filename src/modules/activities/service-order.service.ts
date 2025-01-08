@@ -79,7 +79,7 @@ export class ServiceOrderService {
         relations: [
           'quote_request',
           'quote_request.equipment_quote_request',
-          'client',
+          'quote_request.client',
         ],
       })
 
@@ -145,6 +145,7 @@ export class ServiceOrderService {
 
       return handleOK(pdf)
     } catch (e) {
+      console.log({ e })
       return handleInternalServerError(e.message)
     }
   }
@@ -153,7 +154,7 @@ export class ServiceOrderService {
     try {
       const activity = await this.activityRepository.findOne({
         where: { id: activityId },
-        relations: ['quote_request', 'team_members', 'client'],
+        relations: ['quote_request', 'team_members', 'quote_request.client'],
       })
 
       const response = await this.mailService.sendServiceOrderMail({
