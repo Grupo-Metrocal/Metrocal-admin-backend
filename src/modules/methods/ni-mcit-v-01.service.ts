@@ -737,23 +737,28 @@ Este certificado de calibración no debe ser reproducido sin la aprobación del 
   }
 
   async getPatternsTableToCertificate(method: NI_MCIT_V_01) {
-    const patterns = method.description_pattern.patterns
+    const description_pattern = []
 
-    const description_pattern = await Promise.all(
-      patterns.map(async (pattern) => {
-        let calibration_method_used =
-          await this.patternsService.findByCodeAndMethod(
-            pattern,
-            'NI-MCIT-V-01',
-          )
-        if (!calibration_method_used.success) {
-          calibration_method_used =
-            await this.patternsService.findByCodeAndMethod(pattern, 'all')
+    for (let i = 0; i < method.description_pattern.patterns.length; i++) {
+      const pattern = method.description_pattern.patterns[i]
+
+      const response = await this.patternsService.findByCodeAndMethod(
+        pattern,
+        'NI-MCIT-V-01',
+      )
+
+      if (response.success) {
+        description_pattern.push(response.data)
+      } else {
+        const fallbackResponse = await this.patternsService.findByCodeAndMethod(
+          pattern,
+          'all',
+        )
+        if (fallbackResponse.success) {
+          description_pattern.push(fallbackResponse.data)
         }
-
-        return calibration_method_used.data || null
-      }),
-    )
+      }
+    }
 
     return description_pattern
   }
