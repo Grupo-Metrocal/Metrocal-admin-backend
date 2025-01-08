@@ -5,9 +5,11 @@ import {
   OneToOne,
   ManyToMany,
   JoinTable,
+  OneToMany,
 } from 'typeorm'
 import { User } from 'src/modules/users/entities/user.entity'
 import { QuoteRequest } from 'src/modules/quotes/entities/quote-request.entity'
+import { ServiceOrder } from './service-order.entity'
 
 @Entity('activities')
 export class Activity {
@@ -20,6 +22,12 @@ export class Activity {
   @ManyToMany(() => User, (user) => user.activities)
   @JoinTable()
   team_members?: User[]
+
+  @OneToMany(() => ServiceOrder, (serviceOrder) => serviceOrder.activity, {
+    onDelete: 'CASCADE',
+    onUpdate: 'CASCADE',
+  })
+  service_order: ServiceOrder[]
 
   @Column({ type: 'varchar', default: 'pending' })
   status: string // pending, done, canceled

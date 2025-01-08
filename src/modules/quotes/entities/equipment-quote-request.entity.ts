@@ -72,4 +72,7 @@ export class EquipmentQuoteRequest {
 
   @Column({ nullable: true, default: false })
   isConfirmReviewActivity?: boolean
+
+  @Column({ nullable: true, default: false })
+  isEmitedServicesOrder: boolean
 }
