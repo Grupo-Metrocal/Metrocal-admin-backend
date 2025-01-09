@@ -24,6 +24,7 @@ export class Activity {
   team_members?: User[]
 
   @OneToMany(() => ServiceOrder, (serviceOrder) => serviceOrder.activity, {
+    cascade: true,
     onDelete: 'CASCADE',
     onUpdate: 'CASCADE',
   })

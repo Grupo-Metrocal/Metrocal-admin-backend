@@ -40,10 +40,6 @@ export class ServiceOrderService {
         return handleBadrequest(new Error('La actividad no existe'))
       }
 
-      if (!activity.service_order) {
-        activity.service_order = []
-      }
-
       const serviceOrderCreated = this.serviceOrderRepository.create({
         equipments_ids: serviceOrder.equipments,
         finish_date: new Date(),
@@ -51,19 +47,22 @@ export class ServiceOrderService {
         end_time: serviceOrder.end_time,
       })
 
-      activity.service_order.push(serviceOrderCreated)
-
       await this.dataSource.transaction(async (manager) => {
         for (let equipment of activity.quote_request.equipment_quote_request) {
           if (serviceOrder.equipments.includes(equipment.id)) {
             equipment.isEmitedServicesOrder = true
-
             await manager.save(equipment)
           }
         }
 
-        await manager.save(activity)
         await manager.save(serviceOrderCreated)
+
+        if (!activity.service_order) {
+          activity.service_order = []
+        }
+        activity.service_order.push(serviceOrderCreated)
+
+        await manager.save(activity)
       })
 
       return handleOK(serviceOrderCreated)
@@ -87,10 +86,19 @@ export class ServiceOrderService {
         where: { id: serviceOrderId },
       })
 
-      const equipments = activity.quote_request.equipment_quote_request.map(
+      const equipments = activity.quote_request.equipment_quote_request.filter(
         (equipment) =>
           serviceOrder.equipments_ids.includes(equipment.id) && equipment,
       )
+
+      const servicesToNormalize = new Set([
+        'Diagnóstico',
+        'Otros',
+        'Verificación de Cal',
+        'Suministro',
+        'Proyecto',
+        'Informe Técnico',
+      ])
 
       const data = {
         clientName: activity.quote_request.client.company_name,
@@ -105,6 +113,10 @@ export class ServiceOrderService {
         comments_insitu1: activity?.comments_insitu?.[0] || '',
         comments_insitu2: activity?.comments_insitu?.[1] || '',
         equipments: equipments.map((equipment, index) => {
+          const service = equipment.type_service
+          const normalizedService =
+            service && servicesToNormalize.has(service) ? 'Otro' : service
+
           return {
             name: equipment.name,
             count: equipment.count,
@@ -113,28 +125,15 @@ export class ServiceOrderService {
             quoteNumber: activity.quote_request.no,
             status:
               equipment.status === 'rejected' ? 'No realizado' : 'Realizado',
+            resolvedService: normalizedService,
           }
         }),
         resolved_services: equipments
-          .map((equipment) => {
-            if (equipment.isResolved) {
-              return equipment.type_service
-            }
-          })
+          .map((equipment) => equipment.type_service)
           .filter((service) => service !== undefined)
-          .map((service) => {
-            if (
-              service === 'Diagnóstico' ||
-              service === 'Otros' ||
-              service === 'Verificación de Cal' ||
-              service === 'Suministro' ||
-              service === 'Proyecto' ||
-              service === 'Informe Técnico'
-            ) {
-              return 'Otro'
-            }
-            return service
-          }),
+          .map((service) =>
+            servicesToNormalize.has(service) ? 'Otro' : service,
+          ),
       }
 
       const pdf = await this.pdfService.generteServiceOrderPdf(data)
