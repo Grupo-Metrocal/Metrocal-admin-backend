@@ -93,12 +93,10 @@ export class ServiceOrderService {
 
       const servicesToNormalize = new Set([
         'Calibración',
-        'Diagnóstico',
-        'Otros',
-        'Verificación de Cal',
-        'Suministro',
-        'Proyecto',
-        'Informe Técnico',
+        'Caracterización',
+        'Calificación',
+        'Mant. Preventivo',
+        'Mant. Correctivo',
       ])
 
       const data = {
