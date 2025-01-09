@@ -116,7 +116,7 @@ export class ServiceOrderService {
         equipments: equipments.map((equipment, index) => {
           const service = equipment.type_service
           const normalizedService =
-            service && servicesToNormalize.has(service) ? 'Otro' : service
+            service && servicesToNormalize.has(service) ? service : 'Otro'
 
           return {
             name: equipment.name,
