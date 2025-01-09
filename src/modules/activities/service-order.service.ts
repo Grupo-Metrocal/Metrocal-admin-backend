@@ -131,7 +131,7 @@ export class ServiceOrderService {
           .map((equipment) => equipment.type_service)
           .filter((service) => service !== undefined)
           .map((service) =>
-            servicesToNormalize.has(service) ? 'Otro' : service,
+            servicesToNormalize.has(service) ? service : 'Otro',
           ),
       }
 
