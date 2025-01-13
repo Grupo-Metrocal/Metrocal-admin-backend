@@ -144,18 +144,16 @@ export class ActivitiesController {
     return await this.activitiesService.getStatisticsAcitivities()
   }
 
-  @Get('get-finishied-activities/:page/:limit/:no?')
-  async getFinisihedActivities(
-    @Param('page') page: number,
-    @Param('limit') limit: number,
-    @Param('no') no: string,
+  @Get('service-order/pdf/:activityId/:servicesOrderId')
+  async getQuoteRequestPdf(
+    @Param('activityId') activityId: number,
+    @Param('servicesOrderId') servicesOrderId: number,
+    @Res() res: Response,
   ) {
-    return await this.activitiesService.getFinisihedActivities(page, limit, no)
-  }
-
-  @Get('service-order/pdf/:id')
-  async getQuoteRequestPdf(@Param('id') id: number, @Res() res: Response) {
-    const pdfBuffer = await this.activitiesService.getServiceOrderPdf(id)
+    const pdfBuffer = await this.activitiesService.getServiceOrderPdf(
+      activityId,
+      servicesOrderId,
+    )
 
     if (!pdfBuffer) {
       return res.status(500).send('Error al generar el PDF')
@@ -176,5 +174,19 @@ export class ActivitiesController {
     @Body() data: PartialServiceOrderDto,
   ) {
     return await this.activitiesService.generatePartialServiceOrder(id, data)
+  }
+
+  @Get('service-order/:page/:limit/:no?')
+  async getAllServicesOrder(
+    @Param('page') page: number,
+    @Param('limit') limit: number,
+    @Param('no') no: string,
+  ) {
+    return await this.activitiesService.getAllServicesOrder(page, limit, no)
+  }
+
+  @Get('service-order/:id')
+  async getServicesOrderByActivityId(@Param('id') id: number) {
+    return await this.activitiesService.getServicesOrderByActivityId(id)
   }
 }
