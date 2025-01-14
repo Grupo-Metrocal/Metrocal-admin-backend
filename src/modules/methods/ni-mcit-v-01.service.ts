@@ -460,7 +460,7 @@ export class NI_MCIT_V_01Service {
 
       sheet.cell('K4').value(equipment_information.material)
       sheet.cell('N4').value(equipment_information.balance)
-      sheet.cell('P4').value(equipment_information.neck_diameter)
+      sheet.cell('K10').value(equipment_information.neck_diameter)
       sheet.cell('R4').value(equipment_information.thermometer)
       sheet.cell('U4').value(equipment_information.volumetric_container)
 
