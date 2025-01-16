@@ -75,9 +75,7 @@ export class ActivitiesService {
         where: [
           {
             status: 'pending',
-          },
-          {
-            reviewed: false,
+            is_certificate: false,
           },
         ],
         relations: [
