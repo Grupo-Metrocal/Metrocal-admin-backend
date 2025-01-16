@@ -1566,7 +1566,9 @@ export class QuotesService {
 
       quote.change_currency_type = type
 
-      await this.quoteRequestRepository.save(quote)
+      await this.dataSource.transaction(async (manager) => {
+        await manager.save(quote)
+      })
 
       return handleOK(quote)
     } catch (error) {
