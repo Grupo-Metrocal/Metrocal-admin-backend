@@ -1142,7 +1142,7 @@ export class ActivitiesService {
           quote_request_id: activity.quote_request.id,
           no: activity.quote_request.no,
           client_name: activity.quote_request.client.company_name,
-          end_date: formatDate(activity.finish_date.toString()),
+          end_date: formatDate(activity.finish_date?.toString()),
           services_order_quantity: activity?.service_order?.length,
           resposable: activity.team_members.find(
             (member) => member.id === activity.responsable,
