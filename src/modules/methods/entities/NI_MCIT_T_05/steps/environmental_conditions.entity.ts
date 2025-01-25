@@ -18,6 +18,9 @@ export class EnvironmentalConditionsNI_MCIT_T_05 {
 
   @Column('jsonb', { nullable: true })
   points?: IPoints_NI_MCIT_T_05[]
+
+  @Column({ nullable: true })
+  pattern: string
 }
 
 export interface IPoints_NI_MCIT_T_05 {
