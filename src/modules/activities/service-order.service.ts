@@ -92,7 +92,7 @@ export class ServiceOrderService {
       )
 
       const servicesToNormalize = new Set([
-        'Calibración',
+        'Calibracion',
         'Caracterización',
         'Calificación',
         'Mant. Preventivo',
