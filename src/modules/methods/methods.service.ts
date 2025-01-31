@@ -973,11 +973,35 @@ export class MethodsService {
 
   async getAlternativeRecordIndex(method_name: string) {
     try {
+      const currentYear = new Date().getFullYear()
       const method = `${method_name}Repository`
       const last_method = await this[method]
         .createQueryBuilder(`${method_name}`)
+        .where(`EXTRACT(YEAR FROM ${method_name}.created_at) = :currentYear`, {
+          currentYear,
+        })
         .orderBy(`${method_name}.last_record_index`, 'DESC')
         .getOne()
+
+      if (!last_method) {
+        const exampleCode = await this[method]
+          .createQueryBuilder(method_name)
+          .select(`${method_name}.certificate_code`)
+          .where(`${method_name}.certificate_code IS NOT NULL`)
+          .getOne()
+
+        const newRecord = this[method].create({
+          last_record_index: 1,
+          certificate_code: updateCertCode(exampleCode?.certificate_code, 1),
+        })
+
+        const savedRecord = await this[method].save(newRecord)
+
+        return handleOK({
+          last_record_index: savedRecord.last_record_index,
+          certificate_code: newRecord.certificate_code,
+        })
+      }
 
       return handleOK({
         last_record_index: last_method.last_record_index + 1,
@@ -1007,7 +1031,6 @@ export class MethodsService {
       await this.dataSource.transaction(async (manager) => {
         const { success, data } =
           await this.getAlternativeRecordIndex(from_method_name)
-
         if (!success) {
           return handleBadrequest(
             new Error('Hubo un error en el metodo de referencia'),
@@ -1015,7 +1038,6 @@ export class MethodsService {
         }
 
         const { last_record_index, certificate_code } = data
-
         equipment.record_index = last_record_index
         equipment.last_record_index = 0
         equipment.certificate_code = updateCertCode(
@@ -1024,7 +1046,7 @@ export class MethodsService {
         )
 
         await manager.save(equipment)
-        await this.updateLastRecordIndex(from_method_name)
+        return await this.updateLastRecordIndex(from_method_name)
       })
 
       return handleOK(equipment)
