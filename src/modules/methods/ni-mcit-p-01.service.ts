@@ -731,7 +731,9 @@ export class NI_MCIT_P_01Service {
 
       const certificate = {
         pattern: 'NI-MCIT-P-01',
-        email: activity.quote_request.client.email,
+        email:
+          activity.quote_request?.alt_client_email ||
+          activity.quote_request?.client.email,
         CMC,
         equipment_information: {
           certification_code: formatCertCode(

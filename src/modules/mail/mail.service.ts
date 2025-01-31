@@ -136,7 +136,7 @@ export class MailService {
       to: user,
       from: process.env.MAILER_FROM,
       subject: 'Certificación de calibración',
-      template: 'certification',
+      template: 'certificate',
       context: {
         clientName,
       },
@@ -162,7 +162,7 @@ export class MailService {
       to: user,
       from: process.env.MAILER_FROM,
       subject: 'Certificación de actividad',
-      template: 'certification',
+      template: 'certificate_collection',
       context: {
         clientName,
         linkRAR,

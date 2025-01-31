@@ -751,7 +751,9 @@ export class NI_MCIT_D_02Service {
 
       const certificate = {
         pattern: 'NI-MCIT-D-02',
-        email: activity.quote_request.client.email,
+        email:
+          activity.quote_request?.alt_client_email ||
+          activity.quote_request?.client.email,
         equipment_information: {
           certification_code: formatCertCode(
             method.certificate_code,
