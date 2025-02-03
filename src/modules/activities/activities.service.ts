@@ -74,7 +74,6 @@ export class ActivitiesService {
       const response = await this.activityRepository.find({
         where: [
           {
-            status: 'pending',
             is_certificate: false,
           },
         ],
