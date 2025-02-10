@@ -6,6 +6,6 @@ export class PatternsInitializerService implements OnModuleInit {
   constructor(private readonly patternService: PatternsService) {}
 
   async onModuleInit() {
-    await this.patternService.createDefaultPatterns()
+    // await this.patternService.createDefaultPatterns()
   }
 }

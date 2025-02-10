@@ -12,4 +12,7 @@ export class DescriptionPatternGenericMethodDto {
 
   @ApiProperty()
   calibration_date: string
+
+  @ApiProperty()
+  patterns?: string[]
 }

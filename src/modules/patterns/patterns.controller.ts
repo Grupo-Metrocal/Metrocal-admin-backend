@@ -3,6 +3,8 @@ import { PatternsService } from './patterns.service'
 import { ApiTags } from '@nestjs/swagger'
 import { UseGuards } from '@nestjs/common'
 import { CreatePatternDto } from './dto/create-patter.dto'
+import { IMethods } from '../methods/entities/method.entity'
+import { Pattern } from './entities/pattern.entity'
 
 @ApiTags('patterns')
 @Controller('patterns')
@@ -14,7 +16,7 @@ export class PatternsController {
     return await this.patternsService.createPattern(pattern)
   }
 
-  @Put(':pattern_id')
+  @Delete('pattern_id/:pattern_id')
   async remove(@Param('pattern_id') pattern_id: number) {
     return await this.patternsService.remove(pattern_id)
   }
@@ -24,19 +26,19 @@ export class PatternsController {
     return await this.patternsService.findById(pattern_id)
   }
 
-  @Get(':pattern_code')
-  async findByCode(@Param('pattern_code') pattern_code: string) {
-    return await this.patternsService.findByCode(pattern_code)
+  @Get('calibration_method/:method')
+  async getAllPatternsByMethod(@Param('method') method: IMethods) {
+    return await this.patternsService.getAllPatternByMethod(method)
   }
 
-  @Put(':pattern_id')
-  async update(@Param('pattern_id') pattern_id: number, @Body() updatePatternDto: CreatePatternDto) {
-    return await this.patternsService.update(pattern_id, updatePatternDto)
+  @Post('update')
+  async update(@Body() updatePatternDto: Pattern) {
+    return await this.patternsService.update(updatePatternDto)
   }
 
-  @Delete('')
-  async removeAll() {
-    return await this.patternsService.deleteAllRecords()
+  @Get('update-status/pattern_id/:id')
+  async removeAll(@Param('id') id: number) {
+    return await this.patternsService.updateStatus(id)
   }
 
   @Get('')
@@ -44,4 +46,3 @@ export class PatternsController {
     return await this.patternsService.getAll()
   }
 }
-

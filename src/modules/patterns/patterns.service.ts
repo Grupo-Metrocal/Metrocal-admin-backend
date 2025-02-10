@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common'
-import { InjectRepository } from '@nestjs/typeorm'
+import { handleRetry, InjectRepository } from '@nestjs/typeorm'
 import { Pattern } from './entities/pattern.entity'
 import { Repository } from 'typeorm'
 import {
@@ -9,6 +9,7 @@ import {
 } from 'src/common/handleHttp'
 import { CreatePatternDto } from './dto/create-patter.dto'
 import * as PatternsJSON from './patterns.json'
+import { IMethods } from '../methods/entities/method.entity'
 
 @Injectable()
 export class PatternsService {
@@ -19,13 +20,11 @@ export class PatternsService {
 
   async remove(id: number) {
     const patternFound = await this.patternRepository.findOne({
-      where: {
-        id
-      }
+      where: { id },
     })
 
-    if (patternFound) {
-      return handleBadrequest(new Error('El patron ya existe'))
+    if (!patternFound) {
+      return handleBadrequest(new Error('El patrón no existe'))
     }
 
     try {
@@ -36,21 +35,21 @@ export class PatternsService {
     }
   }
 
-  async update(id: number, updatePatternDto: CreatePatternDto) {
-    const patternFound = await this.patternRepository.findOne({
-      where: {
-        id
-      }
-    })
-
-    if (!patternFound) {
-      return handleBadrequest(new Error('El patron no existe'))
-    }
-
+  async update(pattern: Pattern) {
     try {
-      const patternUpdated = this.patternRepository.merge(patternFound, updatePatternDto)
+      const patternFound = await this.patternRepository.findOne({
+        where: {
+          id: pattern.id,
+        },
+      })
+
+      if (!patternFound) {
+        return handleBadrequest(new Error('El patron no existe'))
+      }
+
+      const patternUpdated = this.patternRepository.merge(patternFound, pattern)
       const patternSaved = await this.patternRepository.save(patternUpdated)
-      handleOK(patternSaved)
+      return handleOK(patternSaved)
     } catch (error) {
       return handleInternalServerError(error.message)
     }
@@ -85,13 +84,15 @@ export class PatternsService {
     return handleOK(pattern)
   }
 
-  async findByCode(code: string) {
-    const pattern = await this.patternRepository.findOne({
-      where: { code },
+  async getAllPatternByMethod(method: IMethods) {
+    const pattern = await this.patternRepository.find({
+      where: { method },
     })
 
     if (!pattern) {
-      return handleBadrequest(new Error('El patron no existe, verifique el codigo'))
+      return handleBadrequest(
+        new Error('El metodo no existe, verifique porfavor'),
+      )
     }
 
     return handleOK(pattern)
@@ -169,13 +170,23 @@ export class PatternsService {
     }
   }
 
-  async deleteAllRecords() {
+  async updateStatus(id: number) {
     try {
-      await this.patternRepository.clear();
-      return handleOK('All records deleted');
+      const patternFound = await this.patternRepository.findOne({
+        where: { id },
+      })
+
+      if (!patternFound) {
+        return handleBadrequest(new Error('El patrón no existe'))
+      }
+
+      patternFound.status = !patternFound.status
+
+      const patternSaved = await this.patternRepository.save(patternFound)
+
+      return handleOK(patternSaved)
     } catch (error) {
-      return handleInternalServerError(error);
+      return handleInternalServerError(error)
     }
   }
-
 }

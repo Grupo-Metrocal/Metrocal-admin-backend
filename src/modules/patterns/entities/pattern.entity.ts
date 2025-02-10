@@ -1,5 +1,5 @@
 import { IMethods } from 'src/modules/methods/entities/method.entity'
-import { Column, Entity, PrimaryGeneratedColumn, OneToMany } from 'typeorm'
+import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm'
 
 @Entity('patterns')
 export class Pattern {
@@ -29,6 +29,9 @@ export class Pattern {
 
   @Column({ type: 'varchar', default: '' })
   brand: string
+
+  @Column({ default: true })
+  status: boolean
 
   @Column({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP' })
   created_at: Date
