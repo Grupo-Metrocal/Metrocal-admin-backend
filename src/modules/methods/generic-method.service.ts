@@ -34,6 +34,7 @@ import { CertificationDetailsDto } from './dto/NI_MCIT_P_01/certification_detail
 import { DescriptionPatternGenericMethodDto } from './dto/GENERIC METHOD/description_pattern.dto'
 import { QuotesService } from '../quotes/quotes.service'
 import { EquipmentQuoteRequest } from '../quotes/entities/equipment-quote-request.entity'
+import { EnginesService } from '../engines/engines.service'
 
 @Injectable()
 export class GENERIC_METHODService {
@@ -77,6 +78,9 @@ export class GENERIC_METHODService {
 
     @Inject(forwardRef(() => MethodsService))
     private readonly methodService: MethodsService,
+
+    @Inject(forwardRef(() => EnginesService))
+    private readonly enginesService: EnginesService,
   ) {}
 
   async create() {
@@ -390,10 +394,16 @@ export class GENERIC_METHODService {
     }
 
     try {
-      let filePath = path.join(
-        __dirname,
-        '../mail/templates/excels/method-generic.xlsx',
-      )
+      const enginePath =
+        await this.enginesService.getPathByCalibrationMethodAndPattern(
+          'GENERIC_METHOD',
+        )
+
+      const filePath = path.join(__dirname, enginePath)
+
+      if (!enginePath) {
+        return handleInternalServerError('No se encontró la ruta del motor')
+      }
 
       if (fs.existsSync(method.certificate_url)) {
         fs.unlinkSync(method.certificate_url)

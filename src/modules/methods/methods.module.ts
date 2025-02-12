@@ -94,6 +94,8 @@ import { NI_MCIT_FQ } from './entities/NI_MCIT_FQ/NI_MCIT_FQ.entity'
 import { NI_MCIT_H } from './entities/NI_MCIT_H/NI_MCIT_H.entity'
 import { NI_MCIT_VE } from './entities/NI_MCIT_VE/NI_MCIT_ve.entity'
 import { MethodsInitializerService } from './methods.initializer.services'
+import { EnginesService } from '../engines/engines.service'
+import { EnginesModule } from '../engines/engines.module'
 
 @Module({
   imports: [
@@ -178,6 +180,7 @@ import { MethodsInitializerService } from './methods.initializer.services'
     forwardRef(() => QuotesModule),
     forwardRef(() => CertificateModule),
     forwardRef(() => PatternsModule),
+    forwardRef(() => EnginesModule),
   ],
   controllers: [MethodsController],
   providers: [

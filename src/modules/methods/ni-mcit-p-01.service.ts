@@ -35,6 +35,7 @@ import {
 } from 'src/utils/formatNumberCertification'
 import { conversionTableToKPA } from 'src/common/converionTable'
 import { countDecimals } from 'src/utils/countDecimal'
+import { EnginesService } from '../engines/engines.service'
 
 @Injectable()
 export class NI_MCIT_P_01Service {
@@ -69,6 +70,9 @@ export class NI_MCIT_P_01Service {
 
     @Inject(forwardRef(() => MethodsService))
     private readonly methodService: MethodsService,
+
+    @Inject(forwardRef(() => EnginesService))
+    private readonly enginesService: EnginesService,
   ) {}
 
   async create() {
@@ -347,49 +351,52 @@ export class NI_MCIT_P_01Service {
       return handleInternalServerError('El método no existe')
     }
 
-    // const equipment = activity.quote_request.equipment_quote_request.filter(
-    //   async (equipment) => {
-    //     const stack = await this.methodsService.getMethodsID(equipment.id)
-
-    //     // IS BAD, FIX IT
-    //     if (stack.success) {
-    //       return stack.data.some((method) => method.id === methodID)
-    //     }
-    //   },
-    // )
-
-    // if (equipment.length === 0) {
-    //   return handleInternalServerError(
-    //     'El método no existe en la actividad seleccionada',
-    //   )
-    // }
-
     try {
+      // if (method.description_pattern.pattern === 'NI-MCPP-05') {
+      //   filePath = path.join(
+      //     __dirname,
+      //     '../mail/templates/excels/ni_mcit_p_01_5.xlsx',
+      //   )
+      // } else if (method.description_pattern.pattern === 'NI-MCPP-06') {
+      //   filePath = path.join(
+      //     __dirname,
+      //     '../mail/templates/excels/ni_mcit_p_01_06.xlsx',
+      //   )
+      // } else if (
+      //   method.description_pattern.pattern === 'NI-MCPP-13' ||
+      //   method.description_pattern.pattern === 'NI-MCPP-12'
+      // ) {
+      //   filePath = path.join(
+      //     __dirname,
+      //     '../mail/templates/excels/ni_mcit_p_01_13.xlsx',
+      //   )
+      // } else {
+      //   filePath = path.join(
+      //     __dirname,
+      //     '../mail/templates/excels/ni_mcit_p_01.xlsx',
+      //   )
+      // }
+
+      const allowedPatterns = [
+        'NI-MCPP-05',
+        'NI-MCPP-06',
+        'NI-MCPP-13',
+        'NI-MCPP-12',
+      ]
+
       let filePath = ''
 
-      if (method.description_pattern.pattern === 'NI-MCPP-05') {
-        filePath = path.join(
-          __dirname,
-          '../mail/templates/excels/ni_mcit_p_01_5.xlsx',
+      const enginePath =
+        await this.enginesService.getPathByCalibrationMethodAndPattern(
+          'NI-MCIT-P-01',
+          allowedPatterns.includes(method.description_pattern.pattern) &&
+            method.description_pattern.pattern,
         )
-      } else if (method.description_pattern.pattern === 'NI-MCPP-06') {
-        filePath = path.join(
-          __dirname,
-          '../mail/templates/excels/ni_mcit_p_01_06.xlsx',
-        )
-      } else if (
-        method.description_pattern.pattern === 'NI-MCPP-13' ||
-        method.description_pattern.pattern === 'NI-MCPP-12'
-      ) {
-        filePath = path.join(
-          __dirname,
-          '../mail/templates/excels/ni_mcit_p_01_13.xlsx',
-        )
-      } else {
-        filePath = path.join(
-          __dirname,
-          '../mail/templates/excels/ni_mcit_p_01.xlsx',
-        )
+
+      filePath = path.join(__dirname, enginePath)
+
+      if (!enginePath) {
+        return handleInternalServerError('No se encontró la ruta del motor')
       }
 
       if (fs.existsSync(method.certificate_url)) {

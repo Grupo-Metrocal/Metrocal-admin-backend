@@ -22,11 +22,6 @@ import * as XlsxPopulate from 'xlsx-populate'
 import { PdfService } from '../mail/pdf.service'
 import * as fs from 'fs'
 import * as path from 'path'
-
-import {
-  getPosition,
-  getPositionNominal,
-} from './dto/NI_MCIT_D_02/d02PositionBPDto'
 import { exec } from 'child_process'
 import { CertificateService } from '../certificate/certificate.service'
 import { formatDate } from 'src/utils/formatDate'
@@ -39,7 +34,7 @@ import {
 import { countDecimals } from 'src/utils/countDecimal'
 import { MethodsService } from './methods.service'
 import { formatCertCode, formatQuoteCode } from 'src/utils/generateCertCode'
-import { constrainedMemory } from 'process'
+import { EnginesService } from '../engines/engines.service'
 
 @Injectable()
 export class NI_MCIT_D_02Service {
@@ -74,6 +69,9 @@ export class NI_MCIT_D_02Service {
 
     @Inject(forwardRef(() => MethodsService))
     private readonly methodService: MethodsService,
+
+    @Inject(forwardRef(() => EnginesService))
+    private readonly enginesService: EnginesService,
   ) {}
 
   async create() {
@@ -480,10 +478,16 @@ export class NI_MCIT_D_02Service {
     // }
 
     //ni_mcit_d_02
-    const filePath = path.join(
-      __dirname,
-      `../mail/templates/excels/ni_mcit_d_02.xlsx`,
-    )
+    const enginePath =
+      await this.enginesService.getPathByCalibrationMethodAndPattern(
+        'NI-MCIT-D-02',
+      )
+
+    const filePath = path.join(__dirname, enginePath)
+
+    if (!enginePath) {
+      return handleInternalServerError('No se encontró la ruta del motor')
+    }
 
     try {
       if (fs.existsSync(method.certificate_url)) {

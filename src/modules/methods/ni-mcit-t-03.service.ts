@@ -32,6 +32,7 @@ import {
   formatSameNumberCertification,
 } from 'src/utils/formatNumberCertification'
 import { countDecimals } from 'src/utils/countDecimal'
+import { EnginesService } from '../engines/engines.service'
 
 @Injectable()
 export class NI_MCIT_T_03Service {
@@ -64,6 +65,9 @@ export class NI_MCIT_T_03Service {
     private readonly dataSource: DataSource,
     @Inject(forwardRef(() => ActivitiesService))
     private activitiesService: ActivitiesService,
+
+    @Inject(forwardRef(() => EnginesService))
+    private readonly enginesService: EnginesService,
   ) {}
 
   async create() {
@@ -442,10 +446,16 @@ export class NI_MCIT_T_03Service {
     }
 
     try {
-      const filePath = path.join(
-        __dirname,
-        '../mail/templates/excels/ni_mcit_t_03.xlsx',
-      )
+      const enginePath =
+        await this.enginesService.getPathByCalibrationMethodAndPattern(
+          'NI-MCIT-T-03',
+        )
+
+      const filePath = path.join(__dirname, enginePath)
+
+      if (!enginePath) {
+        return handleInternalServerError('No se encontró la ruta del motor')
+      }
 
       if (fs.existsSync(method.certificate_url)) {
         fs.unlinkSync(method.certificate_url)

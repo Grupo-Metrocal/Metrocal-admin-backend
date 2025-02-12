@@ -34,6 +34,7 @@ import {
   conversionMasasCMCG,
   conversionMasasCMCKG,
 } from 'src/common/converionTable'
+import { EnginesService } from '../engines/engines.service'
 
 @Injectable()
 export class NI_MCIT_M_01Service {
@@ -66,6 +67,9 @@ export class NI_MCIT_M_01Service {
     private readonly dataSource: DataSource,
     @Inject(forwardRef(() => ActivitiesService))
     private activitiesService: ActivitiesService,
+
+    @Inject(forwardRef(() => EnginesService))
+    private readonly enginesService: EnginesService,
   ) {}
 
   async create() {
@@ -444,10 +448,16 @@ export class NI_MCIT_M_01Service {
     }
 
     try {
-      const filePath = path.join(
-        __dirname,
-        '../mail/templates/excels/ni_mcit_M_01.xlsx',
-      )
+      const enginePath =
+        await this.enginesService.getPathByCalibrationMethodAndPattern(
+          'NI-MCIT-M-01',
+        )
+
+      const filePath = path.join(__dirname, enginePath)
+
+      if (!enginePath) {
+        return handleInternalServerError('No se encontró la ruta del motor')
+      }
 
       if (fs.existsSync(method.certificate_url)) {
         fs.unlinkSync(method.certificate_url)
@@ -464,7 +474,9 @@ export class NI_MCIT_M_01Service {
         const pointSkeep = (point.point_number - 1) * 17
         let indexPattern = 0
 
+        console.log({ point })
         for (let pattern of point.patterns) {
+          console.log({ pattern })
           sheet.cell(`C${14 + pointSkeep + indexPattern}`).value(pattern)
           indexPattern++
         }
