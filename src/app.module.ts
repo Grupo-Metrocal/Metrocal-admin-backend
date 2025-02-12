@@ -21,6 +21,7 @@ import { MethodsModule } from './modules/methods/methods.module'
 import { CertificateModule } from './modules/certificate/certificate.module'
 import { PatternsModule } from './modules/patterns/patterns.module'
 import { ImagesModule } from './modules/images/images.module'
+import { EnginesModule } from './modules/engines/engines.module'
 
 @Module({
   imports: [
@@ -42,6 +43,7 @@ import { ImagesModule } from './modules/images/images.module'
     CertificateModule,
     PatternsModule,
     ImagesModule,
+    EnginesModule,
   ],
   controllers: [AppController],
   providers: [AppService, ConfigInitializer],
