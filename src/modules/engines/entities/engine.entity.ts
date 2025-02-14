@@ -17,6 +17,9 @@ export class Engine {
   @Column({ nullable: true })
   pattern: string
 
+  @Column({ nullable: true })
+  file_name: string
+
   @Column({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP' })
   updated_at: Date
 }
