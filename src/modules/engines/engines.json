@@ -3,74 +3,89 @@
     "calibration_method": "NI-MCIT-P-01",
     "alternative_path": "",
     "default_path": "../mail/templates/excels/ni_mcit_p_01_5.xlsx",
+    "file_name": "ni_mcit_p_01_5",
     "pattern": "NI-MCPP-05"
   },
   {
     "calibration_method": "NI-MCIT-P-01",
     "alternative_path": "",
     "default_path": "../mail/templates/excels/ni_mcit_p_01_06.xlsx",
+    "file_name": "ni_mcit_p_01_06",
     "pattern": "NI-MCPP-06"
   },
   {
     "calibration_method": "NI-MCIT-P-01",
     "alternative_path": "",
     "default_path": "../mail/templates/excels/ni_mcit_p_01_13.xlsx",
+    "file_name": "ni_mcit_p_01_13",
     "pattern": "NI-MCPP-12"
   },
   {
     "calibration_method": "NI-MCIT-P-01",
     "alternative_path": "",
     "default_path": "../mail/templates/excels/ni_mcit_p_01_13.xlsx",
+    "file_name": "ni_mcit_p_01_13",
     "pattern": "NI-MCPP-13"
   },
   {
     "calibration_method": "NI-MCIT-P-01",
     "alternative_path": "",
-    "default_path": "../mail/templates/excels/ni_mcit_p_01.xlsx"
+    "default_path": "../mail/templates/excels/ni_mcit_p_01.xlsx",
+    "file_name": "ni_mcit_p_01",
+    "pattern": ""
   },
   {
     "calibration_method": "NI-MCIT-B-01",
     "alternative_path": "",
-    "default_path": "../mail/templates/excels/ni_mcit_b_01.xlsx"
+    "default_path": "../mail/templates/excels/ni_mcit_b_01.xlsx",
+    "file_name": "ni_mcit_b_01"
   },
   {
     "calibration_method": "NI-MCIT-D-01",
     "alternative_path": "",
-    "default_path": "../mail/templates/excels/ni_mcit_d_01.xlsx"
+    "default_path": "../mail/templates/excels/ni_mcit_d_01.xlsx",
+    "file_name": "ni_mcit_d_01"
   },
   {
     "calibration_method": "NI-MCIT-D-02",
     "alternative_path": "",
-    "default_path": "../mail/templates/excels/ni_mcit_d_02.xlsx"
+    "default_path": "../mail/templates/excels/ni_mcit_d_02.xlsx",
+    "file_name": "ni_mcit_d_02"
   },
   {
     "calibration_method": "NI-MCIT-M-01",
     "alternative_path": "",
-    "default_path": "../mail/templates/excels/ni_mcit_m_01.xlsx"
+    "default_path": "../mail/templates/excels/ni_mcit_m_01.xlsx",
+    "file_name": "ni_mcit_m_01"
   },
   {
     "calibration_method": "NI-MCIT-T-01",
     "alternative_path": "",
-    "default_path": "../mail/templates/excels/ni_mcit_t_01.xlsx"
+    "default_path": "../mail/templates/excels/ni_mcit_t_01.xlsx",
+    "file_name": "ni_mcit_t_01"
   },
   {
     "calibration_method": "NI-MCIT-T-03",
     "alternative_path": "",
-    "default_path": "../mail/templates/excels/ni_mcit_t_03.xlsx"
+    "default_path": "../mail/templates/excels/ni_mcit_t_03.xlsx",
+    "file_name": "ni_mcit_t_03"
   },
   {
     "calibration_method": "NI-MCIT-T-05",
     "alternative_path": "",
-    "default_path": "../mail/templates/excels/ni_mcit_t_05.xlsx"
+    "default_path": "../mail/templates/excels/ni_mcit_t_05.xlsx",
+    "file_name": "ni_mcit_t_05"
   },
   {
     "calibration_method": "NI-MCIT-V-01",
     "alternative_path": "",
-    "default_path": "../mail/templates/excels/ni_mcit_v_01.xlsx"
+    "default_path": "../mail/templates/excels/ni_mcit_v_01.xlsx",
+    "file_name": "ni_mcit_v_01"
   },
   {
     "calibration_method": "GENERIC_METHOD",
     "alternative_path": "",
-    "default_path": "../mail/templates/excels/method-generic.xlsx"
+    "default_path": "../mail/templates/excels/method-generic.xlsx",
+    "file_name": "method-generic"
   }
 ]
