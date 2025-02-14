@@ -443,8 +443,6 @@ export class NI_MCIT_V_01Service {
           'NI-MCIT-V-01',
         )
 
-      const filePath = path.join(__dirname, enginePath)
-
       if (!enginePath) {
         return handleInternalServerError('No se encontró la ruta del motor')
       }
@@ -453,7 +451,7 @@ export class NI_MCIT_V_01Service {
         fs.unlinkSync(method.certificate_url)
       }
 
-      fs.copyFileSync(filePath, method.certificate_url)
+      fs.copyFileSync(enginePath, method.certificate_url)
 
       const workbook = await XlsxPopulate.fromFileAsync(method.certificate_url)
 

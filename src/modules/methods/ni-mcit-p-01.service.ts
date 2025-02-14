@@ -352,31 +352,6 @@ export class NI_MCIT_P_01Service {
     }
 
     try {
-      // if (method.description_pattern.pattern === 'NI-MCPP-05') {
-      //   filePath = path.join(
-      //     __dirname,
-      //     '../mail/templates/excels/ni_mcit_p_01_5.xlsx',
-      //   )
-      // } else if (method.description_pattern.pattern === 'NI-MCPP-06') {
-      //   filePath = path.join(
-      //     __dirname,
-      //     '../mail/templates/excels/ni_mcit_p_01_06.xlsx',
-      //   )
-      // } else if (
-      //   method.description_pattern.pattern === 'NI-MCPP-13' ||
-      //   method.description_pattern.pattern === 'NI-MCPP-12'
-      // ) {
-      //   filePath = path.join(
-      //     __dirname,
-      //     '../mail/templates/excels/ni_mcit_p_01_13.xlsx',
-      //   )
-      // } else {
-      //   filePath = path.join(
-      //     __dirname,
-      //     '../mail/templates/excels/ni_mcit_p_01.xlsx',
-      //   )
-      // }
-
       const allowedPatterns = [
         'NI-MCPP-05',
         'NI-MCPP-06',
@@ -384,16 +359,13 @@ export class NI_MCIT_P_01Service {
         'NI-MCPP-12',
       ]
 
-      let filePath = ''
-
       const enginePath =
         await this.enginesService.getPathByCalibrationMethodAndPattern(
           'NI-MCIT-P-01',
-          allowedPatterns.includes(method.description_pattern.pattern) &&
-            method.description_pattern.pattern,
+          allowedPatterns.includes(method.description_pattern.pattern)
+            ? method.description_pattern.pattern
+            : '',
         )
-
-      filePath = path.join(__dirname, enginePath)
 
       if (!enginePath) {
         return handleInternalServerError('No se encontró la ruta del motor')
@@ -403,7 +375,7 @@ export class NI_MCIT_P_01Service {
         fs.unlinkSync(method.certificate_url)
       }
 
-      fs.copyFileSync(filePath, method.certificate_url)
+      fs.copyFileSync(enginePath, method.certificate_url)
 
       const workbook = await XlsxPopulate.fromFileAsync(method.certificate_url)
 
