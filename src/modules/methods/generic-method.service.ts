@@ -646,6 +646,22 @@ Este certificado de calibración no debe ser reproducido sin la aprobación del 
       description_pattern.push(environment_method_used.data)
     }
 
+    console.log(method.description_pattern.pattern)
+
+    const [selectedPattern, selectedMetod] =
+      method.description_pattern.pattern.split(' -> ')
+
+    const pattern = await this.patternsService.findByCodeAndMethod(
+      selectedPattern,
+      selectedMetod === 'Comp. Directa Trazable'
+        ? 'GENERIC_METHOD'
+        : selectedMetod,
+    )
+
+    if (pattern.success) {
+      description_pattern.push(pattern.data)
+    }
+
     return description_pattern
   }
 

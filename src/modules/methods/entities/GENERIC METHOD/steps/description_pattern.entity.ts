@@ -29,5 +29,5 @@ export class DescriptionPatternGENERIC_METHOD {
   calibration_date: string
 
   @Column({ nullable: true })
-  patterns: string
+  pattern: string
 }
