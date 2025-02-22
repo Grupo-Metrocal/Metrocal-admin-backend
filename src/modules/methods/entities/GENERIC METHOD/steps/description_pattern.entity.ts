@@ -28,6 +28,6 @@ export class DescriptionPatternGENERIC_METHOD {
   @Column({ nullable: true })
   calibration_date: string
 
-  @Column('text', { array: true, nullable: true })
-  patterns?: string[]
+  @Column({ nullable: true })
+  patterns: string
 }
