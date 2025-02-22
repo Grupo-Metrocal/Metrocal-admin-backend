@@ -625,7 +625,7 @@ export class NI_MCIT_T_05Service {
       let correction = []
       let uncertainty = []
 
-      for (let i = 0; i <= calibration_results.results.length; i++) {
+      for (let i = 0; i <= calibration_results.results.length - 1; i++) {
         const referenceTemperature = sheet.cell(`D${28 + i}`).value()
         reference_temperature.push(
           formatNumberCertification(
