@@ -7,6 +7,8 @@ import {
   Delete,
   Query,
   Res,
+  HttpException,
+  HttpStatus,
 } from '@nestjs/common'
 import { MethodsService } from './methods.service'
 import { ApiQuery, ApiTags } from '@nestjs/swagger'
@@ -205,7 +207,14 @@ export class MethodsController {
     )
 
     if (!certificateBuffer.success) {
-      return handleBadrequest(new Error('No se encontró el certificado'))
+      // return handleBadrequest(new Error('No se encontró el certificado'))
+      throw new HttpException(
+        {
+          message: 'No se encontró el certificado',
+          statusCode: HttpStatus.BAD_REQUEST,
+        },
+        HttpStatus.BAD_REQUEST,
+      )
     }
 
     res.setHeader('Content-Type', 'application/pdf')
