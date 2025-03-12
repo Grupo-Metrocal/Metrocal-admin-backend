@@ -86,6 +86,7 @@ export class QuotesService {
       alt_client_email: quoteRequestDto.alt_client_email,
       alt_client_phone: quoteRequestDto.alt_client_phone,
       alt_client_requested_by: quoteRequestDto.alt_client_requested_by,
+      currency_type: CurrencyType.NIO,
     })
 
     const equipmentQuoteRequest = quoteRequestDto.equipment_quote_request.map(
