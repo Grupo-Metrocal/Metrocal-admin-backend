@@ -1149,7 +1149,6 @@ export class ActivitiesService {
 
       return handlePaginate(data, totalActivitiesCount, limit, page)
     } catch (e) {
-      console.log({ e })
       return handleInternalServerError(e.message)
     }
   }

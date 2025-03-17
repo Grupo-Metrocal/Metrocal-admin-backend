@@ -472,9 +472,7 @@ export class NI_MCIT_M_01Service {
         const pointSkeep = (point.point_number - 1) * 17
         let indexPattern = 0
 
-        console.log({ point })
         for (let pattern of point.patterns) {
-          console.log({ pattern })
           sheet.cell(`C${14 + pointSkeep + indexPattern}`).value(pattern)
           indexPattern++
         }
