@@ -122,7 +122,6 @@ export class ActivitiesController {
     @Param('equipmentID') equipmentId: number,
     @Body() data: ReviewActivityDto,
   ) {
-    console.log({ equipmentId, activityId, data })
     return await this.activitiesService.reviewServiceActivity(
       activityId,
       equipmentId,

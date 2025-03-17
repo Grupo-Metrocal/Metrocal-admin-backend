@@ -143,7 +143,6 @@ export class ServiceOrderService {
 
       return handleOK(pdf)
     } catch (e) {
-      console.log({ e })
       return handleInternalServerError(e.message)
     }
   }
