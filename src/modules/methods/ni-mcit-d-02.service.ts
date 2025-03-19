@@ -35,6 +35,7 @@ import { countDecimals } from 'src/utils/countDecimal'
 import { MethodsService } from './methods.service'
 import { formatCertCode, formatQuoteCode } from 'src/utils/generateCertCode'
 import { EnginesService } from '../engines/engines.service'
+import { NI_MCIT_D_01 } from './entities/NI_MCIT_D_01/NI_MCIT_D_01.entity'
 
 @Injectable()
 export class NI_MCIT_D_02Service {
@@ -961,13 +962,13 @@ Este certificado de calibración no debe ser reproducido sin la aprobación del 
       })
       const currentYear = new Date().getFullYear()
 
-      const lastMethod = await this.NI_MCIT_D_02Repository.createQueryBuilder(
-        'NI_MCIT_D_02',
-      )
-        .where('EXTRACT(YEAR FROM NI_MCIT_D_02.created_at) = :currentYear', {
+      const lastMethod = await this.dataSource
+        .getRepository(NI_MCIT_D_01)
+        .createQueryBuilder('NI_MCIT_D_01')
+        .where('EXTRACT(YEAR FROM NI_MCIT_D_01.created_at) = :currentYear', {
           currentYear,
         })
-        .orderBy('NI_MCIT_D_02.last_record_index', 'DESC')
+        .orderBy('NI_MCIT_D_01.last_record_index', 'DESC')
         .getOne()
 
       if (!method) {
@@ -981,7 +982,7 @@ Este certificado de calibración no debe ser reproducido sin la aprobación del 
       await this.dataSource.transaction(async (manager) => {
         method.record_index = !lastMethod ? 1 : lastMethod.last_record_index + 1
 
-        await this.methodService.updateLastRecordIndex('NI_MCIT_D_02')
+        await this.methodService.updateLastRecordIndex('NI_MCIT_D_01')
 
         await manager.save(method)
       })
