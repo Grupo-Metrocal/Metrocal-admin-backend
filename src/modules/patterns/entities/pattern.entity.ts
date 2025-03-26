@@ -1,6 +1,11 @@
 import { IMethods } from 'src/modules/methods/entities/method.entity'
 import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm'
 
+enum PatternType {
+  Campo = 'campo',
+  Referencia = 'Referencia',
+}
+
 @Entity('patterns')
 export class Pattern {
   @PrimaryGeneratedColumn('increment', { type: 'int' })
@@ -29,6 +34,9 @@ export class Pattern {
 
   @Column({ type: 'varchar', default: '' })
   brand: string
+
+  @Column({ default: PatternType.Campo, enum: PatternType })
+  type: PatternType.Campo
 
   @Column({ default: true })
   status: boolean
