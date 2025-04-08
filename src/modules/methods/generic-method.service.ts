@@ -648,18 +648,19 @@ Este certificado de calibración no debe ser reproducido sin la aprobación del 
       description_pattern.push(environment_method_used.data)
     }
 
-    const [selectedPattern, selectedMetod] =
-      method.description_pattern.pattern.split(' -> ')
+    for (const pattern of method.description_pattern.patterns) {
+      const [selectedPattern, selectedMetod] = pattern.split(' -> ')
 
-    const pattern = await this.patternsService.findByCodeAndMethod(
-      selectedPattern,
-      selectedMetod === 'Comp. Directa Trazable'
-        ? 'GENERIC_METHOD'
-        : selectedMetod,
-    )
+      const response = await this.patternsService.findByCodeAndMethod(
+        selectedPattern,
+        selectedMetod === 'Comp. Directa Trazable'
+          ? 'GENERIC_METHOD'
+          : selectedMetod,
+      )
 
-    if (pattern.success) {
-      description_pattern.push(pattern.data)
+      if (response.success) {
+        description_pattern.push(response.data)
+      }
     }
 
     return description_pattern
