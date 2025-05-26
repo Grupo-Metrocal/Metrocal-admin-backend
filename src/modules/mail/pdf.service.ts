@@ -1,7 +1,8 @@
 import { Injectable } from '@nestjs/common'
 import { launch, executablePath } from 'puppeteer'
 import { compile } from 'handlebars'
-import { readFileSync } from 'fs'
+import { readFileSync, writeFileSync, unlinkSync } from 'fs'
+import { Recipe } from 'muhammara'
 import { join } from 'path'
 import axios from 'axios'
 import * as https from 'https'
@@ -163,7 +164,7 @@ export class PdfService {
         },
       })
 
-      return pdfBuffer
+      return await this.protectPdf(pdfBuffer)
     } catch (error) {
       console.error(error.message)
       return false
@@ -336,6 +337,42 @@ export class PdfService {
     } finally {
       await browser.close()
     }
+  }
+
+  async protectPdf(pdfBuffer: Buffer) {
+    const inputPath = join(__dirname, 'temp_input.pdf')
+    const outputPath = join(__dirname, 'temp_output.pdf')
+
+    writeFileSync(inputPath, pdfBuffer)
+
+    const pdfDoc = new Recipe(inputPath, outputPath)
+
+    pdfDoc
+      .encrypt({
+        ownerPassword: '123',
+        userProtectionFlag: 4,
+      })
+      .endPDF()
+
+    await this.sleep(500)
+
+    const protectedBuffer = readFileSync(outputPath)
+
+    try {
+      unlinkSync(inputPath)
+      unlinkSync(outputPath)
+    } catch (err) {
+      console.warn(
+        'No se pudieron borrar los archivos temporales:',
+        err.message,
+      )
+    }
+
+    return protectedBuffer
+  }
+
+  private sleep(ms: number) {
+    return new Promise((resolve) => setTimeout(resolve, ms))
   }
 
   async fetchImageAsBase64(url: string) {
