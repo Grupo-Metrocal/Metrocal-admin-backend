@@ -7,6 +7,7 @@ import { join } from 'path'
 import axios from 'axios'
 import * as https from 'https'
 import { PDFDocument } from 'pdf-lib'
+import { execSync } from 'child_process'
 
 @Injectable()
 export class PdfService {
@@ -339,34 +340,20 @@ export class PdfService {
     }
   }
 
-  async protectPdf(pdfBuffer: Buffer) {
+  async protectPdf(pdfBuffer: Buffer): Promise<Buffer> {
     const inputPath = join(__dirname, 'temp_input.pdf')
     const outputPath = join(__dirname, 'temp_output.pdf')
 
     writeFileSync(inputPath, pdfBuffer)
 
-    const pdfDoc = new Recipe(inputPath, outputPath)
-
-    pdfDoc
-      .encrypt({
-        ownerPassword: '123',
-        userProtectionFlag: 4,
-      })
-      .endPDF()
-
-    await this.sleep(500)
+    execSync(
+      `qpdf "${inputPath}" "${outputPath}" --encrypt "" owner123 256 --print=none --modify=none --extract=n --`,
+    )
 
     const protectedBuffer = readFileSync(outputPath)
 
-    try {
-      unlinkSync(inputPath)
-      unlinkSync(outputPath)
-    } catch (err) {
-      console.warn(
-        'No se pudieron borrar los archivos temporales:',
-        err.message,
-      )
-    }
+    unlinkSync(inputPath)
+    unlinkSync(outputPath)
 
     return protectedBuffer
   }
