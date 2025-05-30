@@ -347,7 +347,7 @@ export class PdfService {
     writeFileSync(inputPath, pdfBuffer)
 
     execSync(
-      `qpdf "${inputPath}" "${outputPath}" --encrypt "" owner123 256 --print=none --modify=none --extract=n --`,
+      `qpdf "${inputPath}" "${outputPath}" --encrypt "" owner123 256 --modify=none --extract=n --`,
     )
 
     const protectedBuffer = readFileSync(outputPath)
