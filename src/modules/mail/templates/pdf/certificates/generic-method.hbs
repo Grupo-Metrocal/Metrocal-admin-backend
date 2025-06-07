@@ -2,13 +2,13 @@
   .ni-mcit-t-01 { display: flex; flex-direction: column; gap: 25px; }
   .id_certificate { position: absolute; top: 8.6in; z-index: 100; }
   .equipment-information { display: flex; justify-content: space-between;
-  margin-top: 20px; } .equipment-information div { width: 50%; display: flex;
-  flex-direction: column; gap: 5px; } .equipment-information .labels {
-  font-weight: bold; } table { border-collapse: collapse; width: 100%; } th, td
-  { border: 1px solid #dddddd; text-align: center; } .table-title { border: 1px
-  solid #dddddd; text-align: center; } .enviromental-conditions { display: flex;
-  justify-content: space-between; } .enviromental-conditions div { display:
-  flex; flex-direction: column; gap: 10px; }
+  margin-top: 20px; height: 293px; } .equipment-information div { width: 50%;
+  display: flex; flex-direction: column; gap: 5px; } .equipment-information
+  .labels { font-weight: bold; } table { border-collapse: collapse; width: 100%;
+  } th, td { border: 1px solid #dddddd; text-align: center; } .table-title {
+  border: 1px solid #dddddd; text-align: center; } .enviromental-conditions {
+  display: flex; justify-content: space-between; } .enviromental-conditions div
+  { display: flex; flex-direction: column; gap: 10px; }
 </style>
 
 <div class='ni-mcit-t-01'>
@@ -26,9 +26,9 @@
       <span>Rango de medida:</span>
       <span>Intervalo de escala:</span>
       <span>Código de identificación:</span>
+      <span>Lugar de calibración:</span>
       <span>Solicitante:</span>
       <span>Dirección del solicitante:</span>
-      <span>Lugar de calibración:</span>
     </div>
     <div class='values'>
       <span
@@ -45,13 +45,13 @@
       <span>{{equipment_information.measurement_range}}</span>
       <span>{{equipment_information.scale_interval}}</span>
       <span>{{equipment_information.code}}</span>
+      <span>{{equipment_information.calibration_location}}</span>
       <span>{{equipment_information.applicant}}</span>
       <span>{{equipment_information.address}}</span>
-      <span>{{equipment_information.calibration_location}}</span>
     </div>
   </div>
 
-  <div class='calibration-result' style='min-height: 130px;'>
+  <div class='calibration-result' style='min-height: 130px'>
     <strong><span>Resultados de la calibración</span></strong>
     <br />
     <table>
@@ -80,35 +80,38 @@
   </div>
 
   {{!-- {{#if show_table_international_system_units}}
-    <div class='result_unid_system' style='min-height: 130px'>
-      <strong><span>Resultados en Unidad de Sistema Internacional de Unidades</span></strong>
-      <br />
-      <table>
-        <thead>
-          <caption class='table-title' colspan='5'>
-            Tabla de resultados de calibración
-          </caption>
-          <tr>
-            <th>Temperatura de referencia</th>
-            <th>Indicación del Termómetro</th>
-            <th>Corrección</th>
-            <th>Incertidumbre expandida K = 2</th>
-          </tr>
-        </thead>
-        <tbody>
-          {{#each calibration_results.result_unid_system as |data|}}
-            <tr>
-              <td>{{data.temperatureReference}}</td>
-              <td>{{data.thermometerIndication}}</td>
-              <td>{{data.correction}}</td>
-              <td>{{data.expandedUncertaintyK2}}</td>
-            </tr>
-          {{/each}}
-        </tbody>
-      </table>
-    </div>
+  <div class="result_unid_system" style="min-height: 130px">
+    <strong
+      ><span
+        >Resultados en Unidad de Sistema Internacional de Unidades</span
+      ></strong
+    >
+    <br />
+    <table>
+      <thead>
+        <caption class="table-title" colspan="5">
+          Tabla de resultados de calibración
+        </caption>
+        <tr>
+          <th>Temperatura de referencia</th>
+          <th>Indicación del Termómetro</th>
+          <th>Corrección</th>
+          <th>Incertidumbre expandida K = 2</th>
+        </tr>
+      </thead>
+      <tbody>
+        {{#each calibration_results.result_unid_system as |data|}}
+        <tr>
+          <td>{{data.temperatureReference}}</td>
+          <td>{{data.thermometerIndication}}</td>
+          <td>{{data.correction}}</td>
+          <td>{{data.expandedUncertaintyK2}}</td>
+        </tr>
+        {{/each}}
+      </tbody>
+    </table>
+  </div>
   {{/if}} --}}
-
   {{#if show_table_international_system_units}}
     {{#ifArrayEq calibration_results.result 9}}
       <br />
@@ -167,7 +170,7 @@
   <div class='uncertainty'>
     <strong><span>Incertidumbre de los datos</span></strong>
     <br />
-    <span style='text-align: justify;'>
+    <span style='text-align: justify'>
       La incertidumbre de las medición se obtuvo multiplicando la incertidumbre
       estándar combinada por un factor de cobertura k = 2, con el que se alcanza
       un nivel de confianza de al menos 95 %. La incertidumbre estándar de la
@@ -233,7 +236,7 @@
 
   <div class='observations'>
     <strong><span>Observaciones</span></strong>
-    <span style='white-space: pre-wrap; text-align: justify;'>
+    <span style='white-space: pre-wrap; text-align: justify'>
       {{observations}}
     </span>
   </div>
