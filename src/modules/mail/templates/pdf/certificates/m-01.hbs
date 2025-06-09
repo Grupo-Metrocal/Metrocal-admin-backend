@@ -24,9 +24,9 @@
       <span>No. Serie:</span>
       <span>Capacidad máxima:</span>
       <span>Código de identificación:</span>
+      <span>Lugar de calibración:</span>
       <span>Solicitante:</span>
       <span>Dirección del solicitante:</span>
-      <span>Lugar de calibración:</span>
     </div>
     <div class='values'>
       <span
@@ -41,13 +41,13 @@
       <span>{{equipment_information.serial_number}}</span>
       <span>{{equipment_information.maximum_capacity}}</span>
       <span>{{equipment_information.code}}</span>
+      <span>{{equipment_information.calibration_location}}</span>
       <span>{{equipment_information.applicant}}</span>
       <span>{{equipment_information.address}}</span>
-      <span>{{equipment_information.calibration_location}}</span>
     </div>
   </div>
 
-  <div class='calibration-result' style='min-height: 150px;'>
+  <div class='calibration-result' style='min-height: 150px'>
     <strong><span>Resultados de la calibración</span></strong>
     <br />
     <br />
@@ -114,30 +114,25 @@
   {{#ifArrayEq calibration_results 19}}
     <br />
   {{/ifArrayEq}}
-
   {{#ifArrayEq calibration_results 18}}
     <br />
     <br />
   {{/ifArrayEq}}
-
   {{#ifArrayEq calibration_results 17}}
     <br />
     <br />
   {{/ifArrayEq}}
-
   {{#ifArrayEq calibration_results 16}}
     <br />
     <br />
     <br />
   {{/ifArrayEq}}
-
   {{#ifArrayEq calibration_results 15}}
     <br />
     <br />
     <br />
     <br />
   {{/ifArrayEq}}
-
   {{#ifArrayEq calibration_results 14}}
     <br />
     <br />
@@ -147,7 +142,6 @@
     <br />
     <br />
   {{/ifArrayEq}}
-
   {{#ifArrayEq calibration_results 13}}
     <br />
     <br />
@@ -157,7 +151,6 @@
     <br />
     <br />
   {{/ifArrayEq}}
-
   {{#ifArrayEq calibration_results 12}}
     <br />
     <br />
@@ -172,7 +165,7 @@
     <strong><span>Incertidumbre de los datos</span></strong>
     <br />
     <br />
-    <span style='text-align: justify;'>
+    <span style='text-align: justify'>
       La incertidumbre de las medición se obtuvo multiplicando la incertidumbre
       estándar combinada por un factor de cobertura k = 2, con el que se alcanza
       un nivel de confianza de aproximadamente el 95 %. La incertidumbre
@@ -187,32 +180,27 @@
   {{#ifArrayEq calibration_results 11}}
     <br />
   {{/ifArrayEq}}
-
   {{#ifArrayEq calibration_results 10}}
     <br />
     <br />
   {{/ifArrayEq}}
-
   {{#ifArrayEq calibration_results 9}}
     <br />
     <br />
     <br />
   {{/ifArrayEq}}
-
   {{#ifArrayEq calibration_results 8}}
     <br />
     <br />
     <br />
     <br />
   {{/ifArrayEq}}
-
   {{#ifArrayEq calibration_results 7}}
     <br />
     <br />
     <br />
     <br />
   {{/ifArrayEq}}
-
   {{#ifArrayEq calibration_results 6}}
     <br />
     <br />
@@ -220,7 +208,6 @@
     <br />
     <br />
   {{/ifArrayEq}}
-
   {{#ifArrayEq calibration_results 5}}
     <br />
     <br />
@@ -258,7 +245,7 @@
 
   <div class='observations'>
     <strong><span>Observaciones</span></strong>
-    <span style='white-space: pre-wrap; text-align: justify;'>
+    <span style='white-space: pre-wrap; text-align: justify'>
       {{observations}}
     </span>
   </div>

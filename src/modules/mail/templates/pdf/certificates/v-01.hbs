@@ -2,13 +2,13 @@
   .ni-mcit-v-01 { display: flex; flex-direction: column; gap: 25px; }
   .id_certificate { position: absolute; top: 8.6in; z-index: 100; }
   .equipment-information { display: flex; justify-content: space-between;
-  margin-top: 20px; } .equipment-information div { width: 50%; display: flex;
-  flex-direction: column; gap: 5px; } .equipment-information .labels {
-  font-weight: bold; } table { border-collapse: collapse; width: 100%; } th, td
-  { border: 1px solid #dddddd; text-align: center; } .table-title { border: 1px
-  solid #dddddd; text-align: center; } .enviromental-conditions { display: flex;
-  justify-content: space-between; } .enviromental-conditions div { display:
-  flex; flex-direction: column; gap: 10px; }
+  margin-top: 20px; height: 293px; } .equipment-information div { width: 50%;
+  display: flex; flex-direction: column; gap: 5px; } .equipment-information
+  .labels { font-weight: bold; } table { border-collapse: collapse; width: 100%;
+  } th, td { border: 1px solid #dddddd; text-align: center; } .table-title {
+  border: 1px solid #dddddd; text-align: center; } .enviromental-conditions {
+  display: flex; justify-content: space-between; } .enviromental-conditions div
+  { display: flex; flex-direction: column; gap: 10px; }
 </style>
 
 <div class='ni-mcit-v-01'>
@@ -26,9 +26,9 @@
       <span>Cap. nominal/alcance:</span>
       <span>División de escala:</span>
       <span>Código de identificación:</span>
+      <span>Lugar de calibración:</span>
       <span>Solicitante:</span>
       <span>Dirección del solicitante:</span>
-      <span>Lugar de calibración:</span>
     </div>
     <div class='values'>
       <span
@@ -45,13 +45,13 @@
       <span>{{equipment_information.nominal_range}}</span>
       <span>{{equipment_information.scale_division}}</span>
       <span>{{equipment_information.code}}</span>
+      <span>{{equipment_information.calibration_location}}</span>
       <span>{{equipment_information.applicant}}</span>
       <span>{{equipment_information.address}}</span>
-      <span>{{equipment_information.calibration_location}}</span>
     </div>
   </div>
 
-  <div class='calibration-result' style='min-height: 100px;'>
+  <div class='calibration-result' style='min-height: 100px'>
     <strong><span>Resultados de la calibración</span></strong>
     <br />
     <br />
@@ -94,7 +94,7 @@
     <br />
     <br />
 
-    <span style='text-align: justify;'>Las pruebas se realizaron utilizando el
+    <span style='text-align: justify'>Las pruebas se realizaron utilizando el
       NI-MCIT-V-01 Instrucción para calibración de recipientes volumétricos por
       el método gravimétrico</span>
   </div>
@@ -113,7 +113,7 @@
     <strong><span>Incertidumbre de los datos</span></strong>
     <br />
     <br />
-    <span style='text-align: justify;'>
+    <span style='text-align: justify'>
       La incertidumbre de las medición se obtuvo multiplicando la incertidumbre
       estándar combinada por un factor de cobertura k = 2, con el que se alcanza
       un nivel de confianza de aproximadamente un 95 %. La incertidumbre
@@ -130,15 +130,12 @@
     <br />
     <br />
   {{/ifArrayEq}}
-
   {{#ifArrayEq calibration_results 4}}
     <br /><br />
   {{/ifArrayEq}}
-
   {{#ifArrayEq calibration_results 3}}
     <br /><br />
   {{/ifArrayEq}}
-
   {{#ifArrayEq calibration_results 2}}
     <br /><br />
     <br />
@@ -172,7 +169,7 @@
 
   <div class='observations'>
     <strong><span>Observaciones</span></strong>
-    <span style='white-space: pre-wrap; text-align: justify;'>
+    <span style='white-space: pre-wrap; text-align: justify'>
       {{observations}}
     </span>
   </div>
