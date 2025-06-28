@@ -596,21 +596,21 @@ export class GENERIC_METHODService {
           next_calibration_date: method?.description_pattern?.next_calibration
             ? formatDate(method?.description_pattern?.next_calibration)
             : 'No especificado',
-          object_calibrated: method.equipment_information.device || '---',
-          maker: method.equipment_information.maker || '---',
-          serial_number: method.equipment_information.serial_number || '---',
-          model: method.equipment_information.model || '---',
+          object_calibrated: method.equipment_information.device ?? 'NA',
+          maker: method.equipment_information.maker ?? 'NA',
+          serial_number: method.equipment_information.serial_number ?? 'NA',
+          model: method.equipment_information.model ?? 'NA',
           measurement_range: `${method.equipment_information.range_min} ${method.computer_data.unit_of_measurement} a ${method.equipment_information.range_max} ${method.computer_data.unit_of_measurement}`,
-          scale_interval:
-            `${method.equipment_information.scale_interval} ${method.computer_data.unit_of_measurement}` ||
-            '---',
-          code: method.equipment_information.code || '---',
+          scale_interval: method.equipment_information.scale_interval
+            ? `${method.equipment_information.scale_interval} ${method.computer_data.unit_of_measurement}`
+            : 'NA',
+          code: method.equipment_information.code || 'NA',
           applicant:
-            method?.applicant_name ||
+            method?.applicant_name ??
             activity.quote_request.client.company_name,
           address:
-            method?.applicant_address || activity.quote_request.client.address,
-          calibration_location: method.calibration_location || '---',
+            method?.applicant_address ?? activity.quote_request.client.address,
+          calibration_location: method.calibration_location ?? 'NA',
         },
         calibration_results,
         creditable: method.description_pattern.creditable,
