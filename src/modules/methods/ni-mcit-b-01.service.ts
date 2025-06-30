@@ -523,7 +523,8 @@ export class NI_MCIT_B_01Service {
       const linearityTest = method.linearity_test
       for (let i = 0; i < linearityTest.linearity_test.length; i++) {
         const test = linearityTest.linearity_test[i]
-        if (test.point === 1) {
+
+        if (Number(test.point) === 1) {
           sheetCalibración.cell('D24').value(test.indicationIL)
           sheetCalibración.cell('E24').value(test.noLoadInfdication)
           const punto = 'M'
@@ -534,7 +535,7 @@ export class NI_MCIT_B_01Service {
           })
         }
 
-        if (test.point === 2) {
+        if (Number(test.point) === 2) {
           sheetCalibración.cell('D25').value(test.indicationIL)
           sheetCalibración.cell('E25').value(test.noLoadInfdication)
           const punto = 'T'
@@ -545,7 +546,7 @@ export class NI_MCIT_B_01Service {
           })
         }
 
-        if (test.point === 3) {
+        if (Number(test.point) === 3) {
           sheetCalibración.cell('D26').value(test.indicationIL)
           sheetCalibración.cell('E26').value(test.noLoadInfdication)
           const punto = 'AA'
@@ -556,7 +557,7 @@ export class NI_MCIT_B_01Service {
           })
         }
 
-        if (test.point === 4) {
+        if (Number(test.point) === 4) {
           sheetCalibración.cell('D27').value(test.indicationIL)
           sheetCalibración.cell('E27').value(test.noLoadInfdication)
           const punto = 'AH'
@@ -567,7 +568,7 @@ export class NI_MCIT_B_01Service {
           })
         }
 
-        if (test.point === 5) {
+        if (Number(test.point) === 5) {
           sheetCalibración.cell('D28').value(test.indicationIL)
           sheetCalibración.cell('E28').value(test.noLoadInfdication)
           const punto = 'AO'
@@ -578,7 +579,7 @@ export class NI_MCIT_B_01Service {
           })
         }
 
-        if (test.point === 6) {
+        if (Number(test.point) === 6) {
           sheetCalibración.cell('D29').value(test.indicationIL)
           sheetCalibración.cell('E29').value(test.noLoadInfdication)
           const punto = 'AV'
@@ -589,7 +590,7 @@ export class NI_MCIT_B_01Service {
           })
         }
 
-        if (test.point === 7) {
+        if (Number(test.point) === 7) {
           sheetCalibración.cell('D30').value(test.indicationIL)
           sheetCalibración.cell('E30').value(test.noLoadInfdication)
           const punto = 'BC'
@@ -600,10 +601,10 @@ export class NI_MCIT_B_01Service {
           })
         }
 
-        if (test.point === 8) {
+        if (Number(test.point) === 8) {
           sheetCalibración.cell('D31').value(test.indicationIL)
           sheetCalibración.cell('E31').value(test.noLoadInfdication)
-          const punto = 'BI'
+          const punto = 'BJ'
           let fila8 = 5
           Object.entries(test.pointsComposition).forEach(([key, value]) => {
             sheetCalibración.cell(`${punto}${fila8}`).value(value)
@@ -611,7 +612,7 @@ export class NI_MCIT_B_01Service {
           })
         }
 
-        if (test.point === 9) {
+        if (Number(test.point) === 9) {
           sheetCalibración.cell('D32').value(test.indicationIL)
           sheetCalibración.cell('E32').value(test.noLoadInfdication)
           const punto = 'BQ'
@@ -622,7 +623,7 @@ export class NI_MCIT_B_01Service {
           })
         }
 
-        if (test.point === 10) {
+        if (Number(test.point) === 10) {
           sheetCalibración.cell('D33').value(test.indicationIL)
           sheetCalibración.cell('E33').value(test.noLoadInfdication)
           const punto = 'BX'
