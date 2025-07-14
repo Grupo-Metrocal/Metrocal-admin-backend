@@ -19,14 +19,16 @@ import { DescriptionPatternV01Dto } from './dto/NI_MCIT_V_01/description_pattern
 import { ActivitiesService } from '../activities/activities.service'
 
 import * as XlsxPopulate from 'xlsx-populate'
-import * as path from 'path'
 import { exec } from 'child_process'
 import * as fs from 'fs'
 import { Activity } from '../activities/entities/activities.entity'
 import { formatDate } from 'src/utils/formatDate'
 import { CertificationDetailsDto } from './dto/NI_MCIT_P_01/certification_details.dto'
 import { formatCertCode, formatQuoteCode } from 'src/utils/generateCertCode'
-import { formatNumberCertification } from 'src/utils/formatNumberCertification'
+import {
+  formatNumberCertification,
+  formatSameNumberCertification,
+} from 'src/utils/formatNumberCertification'
 import { countDecimals } from 'src/utils/countDecimal'
 import { EnginesService } from '../engines/engines.service'
 
@@ -718,7 +720,10 @@ export class NI_MCIT_V_01Service {
           nominal_range:
             `${method.equipment_information.nominal_range} ${method.equipment_information.unit}` ||
             '---',
-          scale_division: method.equipment_information.scale_division || '---',
+          scale_division:
+            formatSameNumberCertification(
+              Number(method.equipment_information.scale_division),
+            ) || '---',
           code: method.equipment_information.code || '---',
           applicant:
             method?.applicant_name ||
