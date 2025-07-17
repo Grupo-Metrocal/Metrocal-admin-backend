@@ -622,6 +622,7 @@ export class GENERIC_METHODService {
           humidity: `Humedad relativa: ${formatNumberCertification(sheet.cell('E58').value())} % ± ${formatNumberCertification(sheet.cell('G58').value())} %`,
         },
         observations: `
+${method.description_pattern.observation}
 Es responsabilidad del encargado del instrumento establecer la frecuencia del servicio de calibración.
 La corrección corresponde al valor del patrón menos las indicación del equipo.
 La indicación del patrón de referencia y del equipo corresponde al promedio de 3 mediciones.
