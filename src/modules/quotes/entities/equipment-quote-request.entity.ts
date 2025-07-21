@@ -41,7 +41,7 @@ export class EquipmentQuoteRequest {
   discount?: number
 
   @Column({ default: 'pending' })
-  status?: string // done, rejected, pending
+  status?: string // done, rejected, pending, disabled
 
   @Column({ type: 'varchar', nullable: true })
   comment?: string

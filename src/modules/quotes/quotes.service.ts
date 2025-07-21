@@ -1770,4 +1770,42 @@ export class QuotesService {
       return handleInternalServerError(error.message)
     }
   }
+
+  async disableQuoteService(quoteId: number, equipmentId: number) {
+    try {
+      const quote = await this.quoteRequestRepository.findOne({
+        where: { id: quoteId },
+        relations: ['equipment_quote_request'],
+      })
+
+      if (!quote) {
+        return handleBadrequest(new Error('La cotización no existe'))
+      }
+
+      const equipment = quote.equipment_quote_request.find(
+        (eq) => eq.id === equipmentId,
+      )
+
+      if (!equipment) {
+        return handleBadrequest(
+          new Error('El equipo no existe en la cotización'),
+        )
+      }
+
+      equipment.status = 'disabled'
+      equipment.price = 0
+      equipment.total = 0
+      equipment.discount = 0
+
+      await this.dataSource.transaction(async (manager) => {
+        await manager.save(equipment)
+      })
+
+      await this.recalculateQuoteRequestPrice(quoteId)
+
+      return handleOK('Equipo deshabilitado de la cotización')
+    } catch (error: any) {
+      return handleInternalServerError(error.message)
+    }
+  }
 }

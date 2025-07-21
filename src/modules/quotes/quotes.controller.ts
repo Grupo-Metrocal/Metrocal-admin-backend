@@ -12,6 +12,7 @@ import {
   Query,
   UseInterceptors,
   UploadedFile,
+  Put,
 } from '@nestjs/common'
 import { QuoteRequestDto } from './dto/quote-request.dto'
 import { updateEquipmentQuoteRequestDto } from './dto/update-equipment-quote-request.dto'
@@ -71,6 +72,7 @@ export class QuotesController {
   async getQuoteRequestById(@Param('id') id: number) {
     return await this.quotesService.getQuoteRequestById(id)
   }
+
   @Get('request/client/:id')
   async getQuoteRequestByClientId(@Param('id') id: number) {
     return await this.quotesService.getQuoteRequestByClientId(id)
@@ -85,6 +87,7 @@ export class QuotesController {
     )
   }
 
+  @UseGuards(JwtAuthGuard)
   @ApiQuery({ name: 'increase', required: false })
   @Post('request/update/')
   async updateStatusQuoteRequest(
@@ -140,6 +143,7 @@ export class QuotesController {
   }
 
   @Get('registered/all/:page/:limit/:no?')
+  @UseGuards(JwtAuthGuard)
   @ApiQuery({ name: 'quoteRequestType', required: false, type: 'string' })
   async getQuoteRequestRegister(
     @Param('page') page: number,
@@ -164,6 +168,7 @@ export class QuotesController {
   }
 
   @Delete(':id')
+  @UseGuards(JwtAuthGuard)
   async delete(@Param('id') id: number) {
     return await this.quotesService.deleteQuoteRequest(id)
   }
@@ -189,6 +194,7 @@ export class QuotesController {
     return await this.quotesService.getQuoteRequestByStatus(status)
   }
 
+  @UseGuards(JwtAuthGuard)
   @Get('recalculate/:id')
   async recalculateQuoteRequest(@Param('id') id: number) {
     return await this.quotesService.recalculateQuoteRequestPrice(id)
@@ -203,6 +209,7 @@ export class QuotesController {
   }
 
   @Get('request/client/:id/all/:page/:limit/:no?')
+  @UseGuards(JwtAuthGuard)
   async getAllQuoteRequestByClientId(
     @Param('id') id: number,
     @Param('page') page: number,
@@ -218,6 +225,7 @@ export class QuotesController {
   }
 
   @Get('get-fluctuation-statistic')
+  @UseGuards(JwtAuthGuard)
   async getFluctuationStatistic() {
     return await this.quotesService.getFluctuationStatistic()
   }
@@ -228,11 +236,13 @@ export class QuotesController {
   }
 
   @Get('equipment/resolved/:id')
+  @UseGuards(JwtAuthGuard)
   async markAsResolvedEquipment(@Param('id') id: number) {
     return await this.quotesService.markAsResolvedEquipment(id)
   }
 
   @Post('add-equipment/:id')
+  @UseGuards(JwtAuthGuard)
   async addEquipmentToQuoteRequest(
     @Param('id') id: number,
     @Body() equipment: EquipmentQuoteRequestDto,
@@ -241,6 +251,7 @@ export class QuotesController {
   }
 
   @Post('equipment/delete-from-quote')
+  @UseGuards(JwtAuthGuard)
   async deleteEquipmentFromQuote(
     @Body() { equipmentID, quoteID }: DeleteEquipmentFromQuoteDto,
   ) {
@@ -309,5 +320,14 @@ export class QuotesController {
   @UseInterceptors(FileInterceptor('file'))
   async uploadFile(@UploadedFile() file: Express.Multer.File) {
     return await this.quotesService.extractQuoteFromExcel(file)
+  }
+
+  @Post('disable-quote-service/:quoteId/:equipmentId')
+  @UseGuards(JwtAuthGuard)
+  async disableQuoteService(
+    @Param('quoteId') quoteId: number,
+    @Param('equipmentId') equipmentId: number,
+  ) {
+    return await this.quotesService.disableQuoteService(quoteId, +equipmentId)
   }
 }
