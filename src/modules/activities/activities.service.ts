@@ -459,6 +459,7 @@ export class ActivitiesService {
       activity.status = 'done'
       activity.updated_at = new Date()
       activity.progress = 100
+      activity.is_certificate = true
 
       if (!activity.finish_date) {
         activity.finish_date = new Date()

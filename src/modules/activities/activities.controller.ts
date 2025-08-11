@@ -85,7 +85,7 @@ export class ActivitiesController {
     return await this.activitiesService.getServicesByActivity(id)
   }
 
-  // @UseGuards(JwtAuthGuard)
+  @UseGuards(JwtAuthGuard)
   @Post('finished-activity/:id')
   async finishActivity(
     @Param('id') id: number,
@@ -99,7 +99,8 @@ export class ActivitiesController {
   async deleteActivity(@Param('id') id: number) {
     return await this.activitiesService.deleteActivity(id)
   }
-  // @UseGuards(JwtAuthGuard)
+
+  @UseGuards(JwtAuthGuard)
   @Post('client-signature/:activityID')
   async clientSignature(
     @Param('activityID') id: number,
