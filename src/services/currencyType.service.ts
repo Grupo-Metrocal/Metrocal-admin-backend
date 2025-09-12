@@ -59,11 +59,11 @@ export const getExchangeRateForDay = async (
 
 export const callGetExchangeRateForDay = async () => {
   const today = new Date()
-  const currency = await getExchangeRateForDay(
-    today.getFullYear(),
-    today.getMonth() + 1,
-    today.getDate(),
-  )
+  // const currency = await getExchangeRateForDay(
+  //   today.getFullYear(),
+  //   today.getMonth() + 1,
+  //   today.getDate(),
+  // )
 
   // return currency
   return 37
