@@ -23,6 +23,7 @@ import { TokenService } from '../auth/jwt/jwt.service'
 import { CertificateService } from '../certificate/certificate.service'
 import { PartialServiceOrderDto } from './dto/partial-service-order.dto'
 import { ServiceOrderService } from './service-order.service'
+import { UpdateCertificateFieldsDto } from './dto/updateCertificateFields.dto'
 
 @Injectable()
 export class ActivitiesService {
@@ -1166,6 +1167,46 @@ export class ActivitiesService {
       }
 
       return handleOK(activity)
+    } catch (e) {
+      return handleInternalServerError(e.message)
+    }
+  }
+
+  async updateCertificateFields(id: number, data: UpdateCertificateFieldsDto) {
+    try {
+      const activity = await this.activityRepository.findOne({
+        where: { id },
+      })
+
+      if (!activity) {
+        return handleBadrequest(new Error('Actividad no encontrada'))
+      }
+
+      const updateData: Partial<Activity> & { updated_at?: Date } = {}
+
+      Object.entries(data).forEach(([key, value]) => {
+        if (value !== undefined && value !== null) {
+          const activityKey = key as keyof Activity
+          if (activityKey in activity || key === 'updated_at') {
+            ;(updateData as Record<string, unknown>)[key] = value
+          }
+        }
+      })
+
+      if (Object.keys(updateData).length > 0) {
+        updateData.updated_at = new Date()
+        await this.activityRepository.update(id, updateData)
+
+        const updatedActivity = await this.activityRepository.findOne({
+          where: { id },
+        })
+
+        return handleOK(updatedActivity)
+      }
+
+      return handleBadrequest(
+        new Error('No se proporcionaron campos para actualizar'),
+      )
     } catch (e) {
       return handleInternalServerError(e.message)
     }

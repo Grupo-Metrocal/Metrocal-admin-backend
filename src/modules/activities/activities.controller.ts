@@ -1,4 +1,11 @@
-import { Controller, Delete, Param, Res, UseGuards } from '@nestjs/common'
+import {
+  Controller,
+  Delete,
+  Param,
+  Patch,
+  Res,
+  UseGuards,
+} from '@nestjs/common'
 import { ActivitiesService } from './activities.service'
 import { ApiTags } from '@nestjs/swagger'
 import { Get, Post, Body } from '@nestjs/common'
@@ -11,6 +18,7 @@ import { ReviewActivityDto } from './dto/review-activty.dto'
 import { AddSignatureDto } from './dto/add-signature.dto'
 import { Response } from 'express'
 import { PartialServiceOrderDto } from './dto/partial-service-order.dto'
+import { UpdateCertificateFieldsDto } from './dto/updateCertificateFields.dto'
 
 @ApiTags('activities')
 @Controller('activities')
@@ -188,5 +196,13 @@ export class ActivitiesController {
   @Get('service-order/:id')
   async getServicesOrderByActivityId(@Param('id') id: number) {
     return await this.activitiesService.getServicesOrderByActivityId(id)
+  }
+
+  @Post('/update-fields/certificate/:id')
+  async updateCertificate(
+    @Param('id') id: number,
+    @Body() data: UpdateCertificateFieldsDto,
+  ) {
+    return await this.activitiesService.updateCertificateFields(id, data)
   }
 }
