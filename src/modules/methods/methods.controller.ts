@@ -222,6 +222,42 @@ export class MethodsController {
     res.send(certificateBuffer.data)
   }
 
+  @Get('download-certificate-excel/:acitivty_id/:method_name/:methodID')
+  async downloadCertificateExcel(
+    @Param('method_name') method_name: string,
+    @Param('methodID') methodID: number,
+    @Param('acitivty_id') activityID: number,
+    @Res() res: Response,
+  ) {
+    const certificateBuffer =
+      await this.methodsService.downloadCertificateExcel(
+        activityID,
+        method_name,
+        methodID,
+      )
+
+    if (!certificateBuffer.success) {
+      throw new HttpException(
+        {
+          message:
+            certificateBuffer.message || 'No se encontró el certificado Excel',
+          statusCode: HttpStatus.BAD_REQUEST,
+        },
+        HttpStatus.BAD_REQUEST,
+      )
+    }
+
+    res.setHeader(
+      'Content-Type',
+      'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+    )
+    res.setHeader(
+      'Content-Disposition',
+      'attachment; filename=certificate.xlsx',
+    )
+    res.send(certificateBuffer.data)
+  }
+
   @Get('get-alternative-certification-code/:method_name')
   async getAlternativeRecordIndex(@Param('method_name') method_name: string) {
     return await this.methodsService.getAlternativeRecordIndex(method_name)

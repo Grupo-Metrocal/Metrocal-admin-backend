@@ -806,6 +806,41 @@ export class MethodsService {
     }
   }
 
+  async downloadCertificateExcel(
+    activity_id: number,
+    method_name: string,
+    method_id: number,
+  ) {
+    try {
+      const repository = `${method_name}Repository`
+      const method = await this[repository].findOne({
+        where: { id: method_id },
+      })
+
+      if (!method) {
+        return handleBadrequest(new Error('El método no existe'))
+      }
+
+      if (!method.certificate_url) {
+        return handleBadrequest(
+          new Error('El certificado Excel no ha sido generado'),
+        )
+      }
+
+      if (!fs.existsSync(method.certificate_url)) {
+        return handleBadrequest(
+          new Error('El archivo Excel no existe en la ruta especificada'),
+        )
+      }
+
+      const excelBuffer = fs.readFileSync(method.certificate_url)
+
+      return handleOK(excelBuffer)
+    } catch (error) {
+      return handleInternalServerError(error.message)
+    }
+  }
+
   getSignificantFigure(number: number) {
     const convertNumber = typeof number === 'string' ? Number(number) : number
 
