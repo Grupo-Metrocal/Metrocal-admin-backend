@@ -42,7 +42,11 @@ import { NI_MCIT_V_01Service } from './ni-mcit-v-01.service'
 
 import { GENERIC_METHOD } from './entities/GENERIC METHOD/GENERIC_METHOD.entity'
 import { GENERIC_METHODService } from './generic-method.service'
-import { formatCertCode, updateCertCode } from 'src/utils/generateCertCode'
+import {
+  formatCertCode,
+  updateCertCode,
+  updateCertCodeYear,
+} from 'src/utils/generateCertCode'
 import {
   formatNumberCertification,
   formatSameNumberCertification,
@@ -1025,9 +1029,12 @@ export class MethodsService {
           .where(`${method_name}.certificate_code IS NOT NULL`)
           .getOne()
 
+        const updatedCode = updateCertCode(exampleCode?.certificate_code, 1)
+        const updatedCodeWithYear = updateCertCodeYear(updatedCode)
+
         const newRecord = this[method].create({
           last_record_index: 1,
-          certificate_code: updateCertCode(exampleCode?.certificate_code, 1),
+          certificate_code: updatedCodeWithYear,
         })
 
         const savedRecord = await this[method].save(newRecord)
@@ -1038,9 +1045,11 @@ export class MethodsService {
         })
       }
 
+      const updatedCertCode = updateCertCodeYear(last_method.certificate_code)
+
       return handleOK({
         last_record_index: last_method.last_record_index + 1,
-        certificate_code: last_method.certificate_code,
+        certificate_code: updatedCertCode,
       })
     } catch (error) {
       return handleInternalServerError(error.message)

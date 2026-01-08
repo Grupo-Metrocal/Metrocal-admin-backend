@@ -51,3 +51,16 @@ export const getCertCodeId = (code: string) => {
 
   return id
 }
+
+export const updateCertCodeYear = (code: string) => {
+  if (!code) {
+    return code
+  }
+
+  const parts = code.split('-')
+  const currentYear = new Date().getFullYear()
+
+  parts[parts.length - 1] = currentYear.toString()
+
+  return parts.join('-')
+}
