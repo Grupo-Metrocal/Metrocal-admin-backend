@@ -81,7 +81,7 @@ export class GENERIC_METHODService {
 
     @Inject(forwardRef(() => EnginesService))
     private readonly enginesService: EnginesService,
-  ) {}
+  ) { }
 
   async create() {
     try {
@@ -548,18 +548,18 @@ export class GENERIC_METHODService {
           i === 0
             ? patternIndication[i]
             : formatNumberCertification(
-                convertToValidNumber(patternIndication[i]) -
-                  convertToValidNumber(instrumentIndication[i]),
-                countDecimals(method.computer_data.scale_division),
-              ),
+              convertToValidNumber(patternIndication[i]) -
+              convertToValidNumber(instrumentIndication[i]),
+              countDecimals(method.computer_data.scale_division),
+            ),
         )
 
         const uncertaintyValue = sheet.cell(`R${28 + i}`).value()
         uncertainty.push(
           typeof uncertaintyValue === 'number'
             ? this.methodService.getSignificantFigure(
-                Number(uncertaintyValue.toFixed(7)),
-              )
+              Number(uncertaintyValue.toFixed(7)),
+            )
             : uncertaintyValue,
         )
       }
@@ -743,7 +743,7 @@ Este certificado de calibración no debe ser reproducido sin la aprobación del 
               dataCertificate.data.calibration_results.result.correction[index],
             uncertainty:
               dataCertificate.data.calibration_results.result.uncertainty[
-                index
+              index
               ],
           }),
         )
@@ -807,7 +807,7 @@ Este certificado de calibración no debe ser reproducido sin la aprobación del 
         await this.dataSource.transaction(async (manager) => {
           method.record_index =
             !lastMethod ||
-            lastMethod.created_at.getFullYear() !==
+              lastMethod.created_at.getFullYear() !==
               method.created_at.getFullYear()
               ? 1
               : lastMethod.last_record_index + 1
@@ -885,6 +885,60 @@ Este certificado de calibración no debe ser reproducido sin la aprobación del 
       return handleOK('Certificado enviado con exito')
     } catch (error) {
       return handleInternalServerError(error.message)
+    }
+  }
+
+  async getAnnotationSheetData(methodID: number): Promise<any> {
+    try {
+      const method = await this.GENERIC_METHODRepository.findOne({
+        where: { id: methodID },
+        relations: [
+          'equipment_information',
+          'environmental_conditions',
+          'computer_data',
+          'result_medition',
+          'description_pattern',
+        ],
+      })
+
+      if (!method) {
+        throw new Error('El método no existe')
+      }
+
+      const processedPatterns = []
+      if (method.description_pattern?.patterns) {
+        for (const pattern of method.description_pattern.patterns) {
+          const [patternCode, methodName] = pattern.split(' -> ')
+          processedPatterns.push({
+            patternCode: patternCode || pattern,
+            method: methodName || '',
+          })
+        }
+      }
+
+      const measurementRange = method.equipment_information?.range_min !== undefined &&
+        method.equipment_information?.range_max !== undefined
+        ? `${method.equipment_information.range_min} ${method.computer_data?.unit_of_measurement || ''} a ${method.equipment_information.range_max} ${method.computer_data?.unit_of_measurement || ''}`
+        : 'N/A'
+
+      return {
+        ...method,
+        equipment_information: {
+          ...method.equipment_information,
+          measurement_range: measurementRange,
+          description: method.equipment_information?.device || 'N/A',
+        },
+        environmental_conditions: {
+          ...method.environmental_conditions,
+          humidity: method.environmental_conditions?.hr,
+        },
+        description_pattern: {
+          ...method.description_pattern,
+          processedPatterns,
+        },
+      }
+    } catch (error) {
+      throw new Error(error.message)
     }
   }
 }

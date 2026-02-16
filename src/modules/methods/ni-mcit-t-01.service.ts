@@ -67,7 +67,7 @@ export class NI_MCIT_T_01Service {
 
     @Inject(forwardRef(() => EnginesService))
     private readonly enginesService: EnginesService,
-  ) {}
+  ) { }
 
   async create() {
     try {
@@ -576,10 +576,10 @@ export class NI_MCIT_T_01Service {
           i === 0
             ? temperatureReference[i]
             : formatNumberCertification(
-                convertToValidNumber(temperatureReference[i]) -
-                  convertToValidNumber(thermometerIndication[i]),
-                countDecimals(method.equipment_information.resolution),
-              ),
+              convertToValidNumber(temperatureReference[i]) -
+              convertToValidNumber(thermometerIndication[i]),
+              countDecimals(method.equipment_information.resolution),
+            ),
         )
 
         const expandedUncertaintyK2Val = calibrationResultsSheet
@@ -595,9 +595,9 @@ export class NI_MCIT_T_01Service {
           temperatureReferenceInternationalSystemUnits.push(
             i !== 0
               ? formatNumberCertification(
-                  Number(reference),
-                  countDecimals(method.equipment_information.resolution),
-                )
+                Number(reference),
+                countDecimals(method.equipment_information.resolution),
+              )
               : reference,
           )
           const thermometer = calibrationResultsSheet.cell(`F${62 + i}`).value()
@@ -609,14 +609,14 @@ export class NI_MCIT_T_01Service {
           correctionInternationalSystemUnits.push(
             i !== 0
               ? formatNumberCertification(
-                  convertToValidNumber(
-                    temperatureReferenceInternationalSystemUnits[i],
-                  ) -
-                    convertToValidNumber(
-                      thermometerIndicationInternationalSystemUnits[i],
-                    ),
-                  countDecimals(method.equipment_information.resolution),
-                )
+                convertToValidNumber(
+                  temperatureReferenceInternationalSystemUnits[i],
+                ) -
+                convertToValidNumber(
+                  thermometerIndicationInternationalSystemUnits[i],
+                ),
+                countDecimals(method.equipment_information.resolution),
+              )
               : calibrationResultsSheet.cell(`L${62 + i}`).value(),
           )
 
@@ -998,6 +998,28 @@ Este certificado de calibración no debe ser reproducido sin la aprobación del 
       return handleOK('Certificado enviado con exito')
     } catch (error) {
       return handleInternalServerError(error.message)
+    }
+  }
+
+  async getAnnotationSheetData(methodID: number): Promise<NI_MCIT_T_01> {
+    try {
+      const method = await this.NI_MCIT_T_01Repository.findOne({
+        where: { id: methodID },
+        relations: [
+          'equipment_information',
+          'environmental_conditions',
+          'calibration_results',
+          'description_pattern',
+        ],
+      })
+
+      if (!method) {
+        throw new Error('El método no existe')
+      }
+
+      return method
+    } catch (error) {
+      throw new Error(error.message)
     }
   }
 }

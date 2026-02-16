@@ -60,6 +60,9 @@ import { NI_MCIT_FQ } from './entities/NI_MCIT_FQ/NI_MCIT_FQ.entity'
 import { NI_MCIT_H } from './entities/NI_MCIT_H/NI_MCIT_H.entity'
 import { NI_MCIT_VE } from './entities/NI_MCIT_VE/NI_MCIT_ve.entity'
 import { CertificateService } from '../certificate/certificate.service'
+import { PdfService } from '../mail/pdf.service'
+import { formatDate } from 'src/utils/formatDate'
+import { formatQuoteCode } from 'src/utils/generateCertCode'
 
 @Injectable()
 export class MethodsService {
@@ -124,7 +127,8 @@ export class MethodsService {
 
     @Inject(forwardRef(() => CertificateService))
     private readonly certificateService: CertificateService,
-  ) {}
+    private readonly pdfService: PdfService,
+  ) { }
 
   async createByDefaultGenericMethod() {
     try {
@@ -294,15 +298,16 @@ export class MethodsService {
           ...method,
           certificate_code: method.certificate_code
             ? formatCertCode(
-                method.certificate_code,
-                method.modification_number,
-              )
+              method.certificate_code,
+              method.modification_number,
+            )
             : '',
         }
       })
 
       return handleOK(methodsStack)
     } catch (error) {
+      console.log('error', { error })
       return handleInternalServerError(error.message)
     }
   }
@@ -692,7 +697,7 @@ export class MethodsService {
       const archive = archiver('zip', { zlib: { level: 9 } })
 
       output.on('close', () => {
-        ;`ZIP file created: ${archive.pointer()} total bytes`
+        ; `ZIP file created: ${archive.pointer()} total bytes`
       })
 
       archive.on('error', (err) => {
@@ -1097,5 +1102,155 @@ export class MethodsService {
     } catch (error) {
       return handleInternalServerError(error.message)
     }
+  }
+
+  async generateAnnotationSheet(
+    methodName: string,
+    activityID: number,
+    methodID: number,
+    stackId: number,
+  ) {
+    try {
+      const normalizedMethodName = methodName.toUpperCase().replace(/_/g, '-')
+
+      const methodConfig = {
+        'NI-MCIT-P-01': {
+          service: this.NI_MCIT_P_01Services,
+          template: '/annotation-sheets/p-01.hbs',
+        },
+        'NI-MCIT-T-01': {
+          service: this.NI_MCIT_T_01Services,
+          template: '/annotation-sheets/t-01.hbs',
+        },
+        'NI-MCIT-T-03': {
+          service: this.NI_MCIT_T_03Services,
+          template: '/annotation-sheets/t-03.hbs',
+        },
+        'NI-MCIT-T-05': {
+          service: this.NI_MCIT_T_05Services,
+          template: '/annotation-sheets/t-05.hbs',
+        },
+        'NI-MCIT-D-01': {
+          service: this.NI_MCIT_D_01Services,
+          template: '/annotation-sheets/d-01.hbs',
+        },
+        'NI-MCIT-D-02': {
+          service: this.NI_MCIT_D_02Services,
+          template: '/annotation-sheets/d-02.hbs',
+        },
+        'NI-MCIT-V-01': {
+          service: this.NI_MCIT_V_01Services,
+          template: '/annotation-sheets/v-01.hbs',
+        },
+        'NI-MCIT-M-01': {
+          service: this.NI_MCIT_M_01Services,
+          template: '/annotation-sheets/m-01.hbs',
+        },
+        'NI-MCIT-B-01': {
+          service: this.NI_MCIT_B_01Services,
+          template: '/annotation-sheets/b-01.hbs',
+        },
+        'GENERIC-METHOD': {
+          service: this.GENERIC_METHODServices,
+          template: '/annotation-sheets/generic.hbs',
+        },
+      }
+
+      const config = methodConfig[normalizedMethodName]
+
+      if (!config) {
+        return handleBadrequest(
+          new Error(`Método de calibración no soportado: ${methodName}`),
+        )
+      }
+
+      const activity = await this.activitiesService.getActivityById(activityID)
+
+      if (!activity.success) {
+        return handleInternalServerError('La actividad no existe')
+      }
+
+      const equipment = activity.data.quote_request.equipment_quote_request.find(
+        (equipment) => (equipment.method_id).toString() === stackId.toString(),
+      )
+
+      const annotationData = await config.service.getAnnotationSheetData(methodID)
+
+      const calibrationDate = annotationData.description_pattern?.calibration_date
+        ? formatDate(annotationData.description_pattern.calibration_date)
+        : formatDate(activity.data.quote_request.created_at || activity.data.created_at)
+
+      const quoteInfo = {
+        service_request_code: activity.data.quote_request.service_request_code,
+        method_name: this.getMethodName(equipment),
+        calibration_date: calibrationDate,
+      }
+
+      const reviewInfo = {
+        responsable: this.getReviewUser(activity.data.team_members, activity.data.responsable),
+        approved_by: activity.data?.quote_request?.approved_by?.username || 'N/A',
+      }
+
+
+      const certificateInfo = {
+        certification_code: annotationData?.certificate_code,
+        certificate_issue_date: annotationData?.certificate_issue_date ?? 'N/A',
+      }
+
+      const PDF = await this.pdfService.generateAnnotationSheetPdf(
+        config.template,
+        {
+          ...annotationData,
+          activity: activity.data,
+          method: {
+            name: normalizedMethodName,
+          },
+          quoteInfo,
+          reviewInfo,
+          certificateInfo,
+        },
+      )
+
+      return handleOK({
+        pdf: PDF,
+        fileName: `Hoja-Anotacion-${normalizedMethodName}-${annotationData.equipment_information?.device || annotationData.equipment_information?.object_calibrated || 'Equipo'}-${annotationData.service_code}.pdf`,
+      })
+    } catch (error) {
+      console.log('error', { error })
+      return handleInternalServerError(error.message)
+    }
+  }
+
+  private getMethodName(equipment: any): string {
+    if (!equipment) {
+      return 'N/A'
+    }
+
+    if (equipment.use_alternative_certificate_method) {
+      return equipment.use_alternative_certificate_method.split(' ')[0]
+    }
+
+    if (equipment.calibration_method) {
+      return equipment.calibration_method.split(' ')[0]
+    }
+
+    return 'N/A'
+  }
+
+  private getReviewUser(teamMembers: {
+    id: number,
+    username: string,
+    email: string,
+    imageURL: string | null,
+  }[], responsable: number): string {
+    const reviewUser = teamMembers.find(
+      (member) => member.id === responsable,
+    )
+
+    if (!reviewUser) {
+      return 'N/A'
+    }
+
+    return reviewUser.username
   }
 }

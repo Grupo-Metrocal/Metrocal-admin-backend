@@ -174,6 +174,79 @@ export class PdfService {
     }
   }
 
+  async generateAnnotationSheetPdf(template: string, data: any) {
+    const templatePath = join(__dirname, 'templates/pdf', template)
+    const templateContent = readFileSync(templatePath, 'utf-8')
+
+    const compiledTemplate = compile(templateContent)
+
+    const html = compiledTemplate(data)
+
+    const copileLayout = compile(
+      readFileSync(
+        join(__dirname, 'templates/pdf/annotation-sheets/layout.hbs'),
+        'utf-8',
+      ),
+    )
+
+    const finalHtml = copileLayout({ content: html })
+
+    const browser = await launch({
+      headless: 'new',
+      executablePath:
+        process.env.NODE_ENV === 'production'
+          ? process.env.PUPPETEER_EXEC_PATH
+          : executablePath(),
+    })
+    try {
+      const page = await browser.newPage()
+      data.metrocalLogo = await this.fetchImageAsBase64(
+        'https://app-grupometrocal.com/development/api/images/image/metrocal.webp',
+      )
+
+      // Agregar encabezado y pie de página para hojas de anotación
+      const headerTemplate = compile(
+        readFileSync(
+          join(__dirname, 'templates/pdf/annotation-sheets/header.hbs'),
+          'utf-8',
+        ),
+      )(data)
+
+      const footerTemplate = compile(
+        readFileSync(
+          join(__dirname, 'templates/pdf/annotation-sheets/footer.hbs'),
+          'utf-8',
+        ),
+      )(data)
+
+      await page.setContent(finalHtml)
+      await page.waitForTimeout(1000)
+
+      const pdfBuffer = await page.pdf({
+        format: 'A4',
+        printBackground: true,
+        displayHeaderFooter: true,
+        headerTemplate,
+        footerTemplate,
+        width: '8.5in',
+        height: '11in',
+        margin: {
+          top: '1.5in',
+          bottom: '1in',
+          left: '0.4in',
+          right: '0.4in',
+        },
+      })
+
+      return pdfBuffer
+    } catch (error) {
+      console.error(error.message)
+      return false
+    } finally {
+      await browser.close()
+    }
+  }
+
   async generateQuoteRequestPdf(data: any) {
     const templatePath = join(
       __dirname,

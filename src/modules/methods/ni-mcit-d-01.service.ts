@@ -1567,4 +1567,30 @@ Este certificado de calibración no debe ser reproducido sin la aprobación del 
       return handleInternalServerError(error.message)
     }
   }
+
+  async getAnnotationSheetData(methodID: number): Promise<NI_MCIT_D_01> {
+    try {
+      const method = await this.NI_MCIT_D_01Repository.findOne({
+        where: { id: methodID },
+        relations: [
+          'equipment_information',
+          'environmental_conditions',
+          'description_pattern',
+          'pre_installation_comment',
+          'instrument_zero_check',
+          'exterior_parallelism_measurement',
+          'interior_parallelism_measurement',
+          'exterior_measurement_accuracy',
+        ],
+      })
+
+      if (!method) {
+        throw new Error('El método no existe')
+      }
+
+      return method
+    } catch (error) {
+      throw new Error(error.message)
+    }
+  }
 }

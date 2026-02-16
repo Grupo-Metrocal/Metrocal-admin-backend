@@ -959,4 +959,26 @@ Este certificado de calibración no puede ser reproducido parcialmente excepto e
       return handleInternalServerError(error.message)
     }
   }
+
+  async getAnnotationSheetData(methodID: number): Promise<NI_MCIT_T_03> {
+    try {
+      const method = await this.NI_MCIT_T_03Repository.findOne({
+        where: { id: methodID },
+        relations: [
+          'equipment_information',
+          'environmental_conditions',
+          'calibration_results',
+          'description_pattern',
+        ],
+      })
+
+      if (!method) {
+        throw new Error('El método no existe')
+      }
+
+      return method
+    } catch (error) {
+      throw new Error(error.message)
+    }
+  }
 }

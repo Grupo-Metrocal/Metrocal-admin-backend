@@ -73,7 +73,7 @@ export class NI_MCIT_D_02Service {
 
     @Inject(forwardRef(() => EnginesService))
     private readonly enginesService: EnginesService,
-  ) {}
+  ) { }
 
   async create() {
     try {
@@ -1047,6 +1047,30 @@ Este certificado de calibración no debe ser reproducido sin la aprobación del 
       return handleOK('Certificado enviado con exito')
     } catch (error) {
       return handleInternalServerError(error.message)
+    }
+  }
+
+  async getAnnotationSheetData(methodID: number): Promise<NI_MCIT_D_02> {
+    try {
+      const method = await this.NI_MCIT_D_02Repository.findOne({
+        where: { id: methodID },
+        relations: [
+          'equipment_information',
+          'environmental_conditions',
+          'description_pattern',
+          'pre_installation_comment',
+          'instrument_zero_check',
+          'accuracy_test',
+        ],
+      })
+
+      if (!method) {
+        throw new Error('El método no existe')
+      }
+
+      return method
+    } catch (error) {
+      throw new Error(error.message)
     }
   }
 }

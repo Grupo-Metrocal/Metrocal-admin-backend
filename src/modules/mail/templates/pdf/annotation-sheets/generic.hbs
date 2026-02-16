@@ -1,0 +1,262 @@
+<div style="display: flex; flex-direction: column; gap: 20px; width: 100%; margin-top: 20px;">
+  <div style="display: flex; justify-content: space-between; border: 1px solid #333; padding: 4px; align-items: center;">
+    <div>
+      <span style="font-weight: semibold; border-right: 1px solid #333; padding: 5px;">Fecha:</span>
+      <span style="margin-left: 10px;">{{quoteInfo.calibration_date}}</span>
+    </div>
+    <div>
+      <span style="font-weight: semibold; border-right: 1px solid #333; border-left: 1px solid #333; padding: 5px;">Código de servicio:</span>
+      <span style="margin-left: 10px;">{{quoteInfo.service_request_code}}</span>
+    </div>
+  </div>
+
+  <section style="display: flex; flex-direction: column; gap: 25px;">
+
+    <div style="width: 100%;">
+      <p class="index index-1" style="display: flex; align-items: center; gap: 10px; font-weight: bold;">
+        <span class="index-number" style="font-weight: bold;">1.</span>
+        <span style="font-weight: bold;">INFORMACIÓN DEL CLIENTE</span>
+      </p>
+
+      <section style="display: flex; flex-direction: column; border: 1px solid #333;">
+        <div style="display: flex; border-bottom: 1px solid #333 ; align-items: center;">
+          <span style="font-weight: semibold; border-right: 1px solid #333; padding: 5px; width: 160px;">Empresa:</span>
+          <span style="margin-left: 10px;">{{activity.quote_request.client.company_name}}</span>
+        </div>
+        <div style="display: flex ; align-items: center;">
+          <span style="font-weight: semibold; border-right: 1px solid #333; padding: 5px; width: 160px;">Lugar de calibración:</span>
+          <span style="margin-left: 10px;">{{calibration_location}}</span>
+        </div>
+      </section>
+    </div>
+
+    <div style="width: 100%;">
+      <p class="index index-2" style="display: flex; align-items: center; gap: 10px; font-weight: bold;">
+        <span class="index-number" style="font-weight: bold;">2.</span>
+        <span style="font-weight: bold;">INFORMACIÓN DEL EQUIPO</span>
+      </p>
+
+      <section style="display: flex; flex-direction: column; border: 1px solid #333;">
+        <div style="display: flex; border-bottom: 1px solid #333 ; align-items: center;">
+          <span style="font-weight: semibold; border-right: 1px solid #333; padding: 5px; width: 160px;">Descripción del equipo:</span>
+          <span style="margin-left: 10px;">{{equipment_information.description}}</span>
+        </div>
+
+        <div style="display: flex; justify-content: space-between; align-items: center; padding: 5px;">
+          <div>
+            <span style="font-weight: semibold; border-right: 1px solid #333; padding: 6px 6px 6px 0px; ">Fabricante/Marca:</span>
+            <span style="margin-left: 10px;">{{equipment_information.maker}}</span>
+          </div>
+          <div>
+            <span style="font-weight: semibold; border-right: 1px solid #333; border-left: 1px solid #333; padding: 6px;">Modelo:</span>
+            <span style="margin-left: 10px;">{{equipment_information.model}}</span>
+          </div>
+        </div>
+
+        <div style="display: flex; justify-content: space-between; align-items: center; padding: 5px; border-top: 1px solid #333;">
+          <div>
+            <span style="font-weight: semibold; border-right: 1px solid #333; padding: 6px 6px 6px 0px; width: 160px;">Número de serie:</span>
+            <span style="margin-left: 10px;">{{equipment_information.serial_number}}</span>
+          </div>
+          <div>
+            <span style="font-weight: semibold; border-right: 1px solid #333; border-left: 1px solid #333; padding: 6px;">Código</span>
+            <span style="margin-left: 10px;">{{equipment_information.code}}</span>
+          </div>
+        </div>
+
+        <div style="display: flex; border-top: 1px solid #333 ; align-items: center; ">
+          <span style="font-weight: semibold; border-right: 1px solid #333; padding: 5px; width: 160px;">Rango de medición:</span>
+          <span style="margin-left: 10px;">{{equipment_information.measurement_range}}</span>
+        </div>
+        <div style="display: flex; border-top: 1px solid #333 ; align-items: center; ">
+          <span style="font-weight: semibold; border-right: 1px solid #333; padding: 5px; width: 160px;">Intervalo de escala:</span>
+          <span style="margin-left: 10px;">{{equipment_information.scale_interval}}</span>
+        </div>
+      </section>
+    </div>
+
+  <div style="width: 100%;">
+    <p class="index index-3" style="display: flex; align-items: center; gap: 10px; font-weight: bold;">
+      <span class="index-number" style="font-weight: bold;">3.</span>
+      <span style="font-weight: bold;">CONDICIONES AMBIENTALES</span>
+    </p>
+
+    <section style="display: flex; flex-direction: row; justify-content: space-between; border: 1px solid #333;">
+      <div style="display: flex; flex-direction: column; width: 33.33%;">
+        <div style="display: flex ; align-items: center;">
+          <span style="font-weight: semibold; border-right: 1px solid #333; padding: 5px;">T. A. (ºC):</span>
+          <span style="margin-left: 10px;">{{environmental_conditions.temperature}}</span>
+        </div>
+      </div>
+      <div style="display: flex; flex-direction: column; width: 33.33%;">
+        <div style="display: flex ; align-items: center;">
+          <span style="font-weight: semibold; border-right: 1px solid #333; border-left: 1px solid #333; padding: 5px;">H R (%):</span>
+          <span style="margin-left: 10px;">{{environmental_conditions.hr}}</span>
+        </div>
+      </div>
+      <div style="display: flex; flex-direction: column; width: 33.33%;">
+        <div style="display: flex ; align-items: center;">
+          <span style="font-weight: semibold; border-right: 1px solid #333; border-left: 1px solid #333; padding: 5px;">P. A.(hPa):</span>
+          <span style="margin-left: 10px;">N/A</span>
+        </div>
+      </div>
+    </section>
+  </div>
+
+  <div style="width: 100%;">
+    <p class="index index-4" style="display: flex; align-items: center; gap: 10px; font-weight: bold;">
+      <span class="index-number" style="font-weight: bold;">4.</span>
+      <span style="font-weight: bold;">RESULTADOS DE LA CALIBRACIÓN</span>
+    </p>
+
+    <table style="width: 100%; border-collapse: collapse; border: 1px solid #333;">
+      <thead>
+        <tr style="background-color: #e5e7eb;">
+          <th colspan="6" style="border: 1px solid #333; padding: 8px; text-align: center; font-weight: bold;">
+            Resultado de Medición
+          </th>
+        </tr>
+        <tr style="background-color: #e5e7eb;">
+          <th style="border: 1px solid #333; padding: 8px; background-color: #e5e7eb;">patrón</th>
+          <th style="border: 1px solid #333; padding: 8px; background-color: #e5e7eb;">Equipo</th>
+          <th style="border: 1px solid #333; padding: 8px; background-color: #e5e7eb;">patrón</th>
+          <th style="border: 1px solid #333; padding: 8px; background-color: #e5e7eb;">Equipo</th>
+          <th style="border: 1px solid #333; padding: 8px; background-color: #e5e7eb;">patrón</th>
+          <th style="border: 1px solid #333; padding: 8px; background-color: #e5e7eb;">Equipo</th>
+        </tr>
+      </thead>
+      <tbody style="background-color: white;">
+        {{#if result_medition.meditions}}
+          {{#each result_medition.meditions as |result|}}
+            <tr>
+              {{#each result.medition as |key|}}
+                <td style="border: 1px solid #333; padding: 8px; text-align: center;">
+                  <span>{{key.pattern}}</span>
+                </td>
+                <td style="border: 1px solid #333; padding: 8px; text-align: center;">
+                  <span>{{key.equipment}}</span>
+                </td>
+              {{/each}}
+            </tr>
+          {{/each}}
+        {{/if}}
+      </tbody>
+    </table>
+  </div>
+
+  <div style="width: 100%;">
+    <p class="index index-5" style="display: flex; align-items: center; gap: 10px; font-weight: bold;">
+      <span class="index-number" style="font-weight: bold;">5.</span>
+      <span style="font-weight: bold;">DESCRIPCIÓN DEL METODO</span>
+    </p>
+
+    <section style="display: flex; flex-direction: column;">
+      <div style="display: flex; border-top: 1px solid #333 ; align-items: center; border: 1px solid #333 ">
+        <span style="font-weight: semibold; border-right: 1px solid #333; padding: 5px;">Se utilizo el metodo de calibración:</span>
+        <span style="margin-left: 10px;">{{quoteInfo.method_name}}</span>
+      </div>
+    </section>
+  </div>
+
+  <div style="width: 100%;">
+    <p class="index index-6" style="display: flex; align-items: center; gap: 10px; font-weight: bold;">
+      <span class="index-number" style="font-weight: bold;">6.</span>
+      <span style="font-weight: bold;">DESCRIPCIÓN DE LOS PATRONES UTILIZADOS</span>
+    </p>
+
+    <table style="width: 100%; border-collapse: collapse; border: 1px solid #333;">
+      <thead>
+        <tr style="background-color: #e5e7eb;">
+          <th style="border: 1px solid #333; padding: 8px; text-align: center; font-weight: bold;">Patrón</th>
+          <th style="border: 1px solid #333; padding: 8px; text-align: center; font-weight: bold;">Método</th>
+        </tr>
+      </thead>
+      <tbody style="background-color: white;">
+          {{#if description_pattern.processedPatterns}}
+            {{#each description_pattern.processedPatterns as |pattern|}}
+              <tr>
+                <td style="border: 1px solid #333; padding: 8px; text-align: center;">
+                  <span>{{pattern.patternCode}}</span>
+                </td>
+                <td style="border: 1px solid #333; padding: 8px; text-align: center;">
+                  <span>{{pattern.method}}</span>
+                </td>
+              </tr>
+            {{/each}}
+          {{else}}
+            {{#if description_pattern.patterns}}
+              {{#each description_pattern.patterns as |pattern|}}
+                <tr>
+                  <td colspan="2" style="border: 1px solid #333; padding: 8px; text-align: center;">
+                    <span>{{pattern}}</span>
+                  </td>
+                </tr>
+              {{/each}}
+            {{/if}}
+          {{/if}}
+      </tbody>
+    </table>
+  </div>
+
+  <div style="width: 100%;">
+    <p class="index index-7" style="display: flex; align-items: center; gap: 10px; font-weight: bold;">
+      <span class="index-number" style="font-weight: bold;">7.</span>
+      <span style="font-weight: bold;">OBSERVACIONES</span>
+    </p>
+
+    <section style="display: flex; flex-direction: column;">
+      <div style="display: flex; border-top: 1px solid #333 ; align-items: center; border: 1px solid #333 ">
+        <span style="font-weight: semibold; border-right: 1px solid #333; padding: 5px;">Observaciones:</span>
+        <span style="margin-left: 10px;">{{description_pattern.observation}}</span>
+      </div>
+    </section>
+  </div>
+
+  <div style="width: 100%;">
+    <p class="index index-8" style="display: flex; align-items: center; gap: 10px; font-weight: bold;">
+      <span class="index-number" style="font-weight: bold;">8.</span>
+      <span style="font-weight: bold;">REVISIONES</span>
+    </p>
+
+    <section style="display: flex; flex-direction: column;">
+      <div style="display: flex; justify-content: space-between; align-items: center; padding: 5px; border: 1px solid #333;">
+          <div>
+            <span style="font-weight: semibold; border-right: 1px solid #333; padding: 6px 6px 6px 0px; ">Realizado por:</span>
+            <span style="margin-left: 10px;">{{reviewInfo.responsable}}</span>
+          </div>
+          <div>
+            <span style="font-weight: semibold; border-right: 1px solid #333; border-left: 1px solid #333; padding: 6px;">Revisado y aprobado por:</span>
+            <span style="margin-left: 10px;">{{reviewInfo.approved_by}}</span>
+          </div>
+        </div>
+    </section>
+  </div>
+
+  <div style="width: 100%;">
+    <p class="index index-9" style="display: flex; align-items: center; gap: 10px; font-weight: bold;">
+      <span class="index-number" style="font-weight: bold;">9.</span>
+      <span style="font-weight: bold;">CÓDIGO DE CERTIFICADO CORRESPONDIENTE Y QUIEN EMITIO</span>
+    </p>
+
+    <section style="display: flex; flex-direction: row; justify-content: space-between; border: 1px solid #333;">
+      <div style="display: flex; flex-direction: column; width: 33.33%;">
+        <div style="display: flex ; align-items: center;">
+          <span style="font-weight: semibold; border-right: 1px solid #333; padding: 5px;">Certificado:</span>
+          <span style="margin-left: 10px;">{{certificateInfo.certification_code}}</span>
+        </div>
+      </div>
+      <div style="display: flex; flex-direction: column; width: 33.33%;">
+        <div style="display: flex ; align-items: center;">
+          <span style="font-weight: semibold; border-right: 1px solid #333; border-left: 1px solid #333; padding: 5px;">Emitido por:</span>
+          <span style="margin-left: 10px;">{{reviewInfo.approved_by}}</span>
+        </div>
+      </div>
+      <div style="display: flex; flex-direction: column; width: 33.33%;">
+        <div style="display: flex ; align-items: center;">
+          <span style="font-weight: semibold; border-right: 1px solid #333; border-left: 1px solid #333; padding: 5px;">Fecha de emisión:</span>
+          <span style="margin-left: 10px;">{{certificateInfo.certificate_issue_date}}</span>
+        </div>
+      </div>
+    </section>
+  </div>
+</div>

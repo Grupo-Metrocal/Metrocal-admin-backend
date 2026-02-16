@@ -1,0 +1,70 @@
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { padding: 1em; }
+  header {
+    width: 8.5in;
+    font-size: 11px;
+    font-family: 'Montserrat', sans-serif;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0 20px;
+    position: absolute;
+  }
+
+  header > div {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    justify-content: center;
+    padding: 1em;
+    border: 1px solid #333;
+    height: 130px;
+  }
+
+  header > div:first-child {
+    flex: 0 0 auto;
+    width: 200px;
+    border-right: transparent 1px solid;
+  }
+  header > div:nth-child(2) {
+    flex: 1;
+    max-width: 500px;
+  }
+  header > div:last-child {
+    flex: 0 0 auto;
+    width: 200px;
+    border-left: transparent 1px solid;
+  }
+  header h1 {
+    font-size: 17px;
+    font-weight: bold;
+    margin-top: 5px;
+  }
+  header h2 {
+    font-size: 14px;
+    font-weight: 600;
+  }
+  header span {
+    font-size: 15px;
+  }
+  header img {
+    margin-bottom: 5px;
+  }
+</style>
+
+<header>
+  <div>
+    <img src='{{metrocalLogo}}' alt='metrocal logo' style='width: 80px; height: auto;' />
+    <span>Metrología Consultores de Nicaragua S.A.</span>
+  </div>
+  <div>
+    <h2>Nombre: FA</h2>
+    <h1>Hoja de Anotación de Resultados de Calibración (Calibración fuera del Alcance de Acreditación)</h1>
+  </div>
+  <div>
+    <span>Código:</span>
+    <span>No Aplica (NA)</span>
+  </div>
+</header>

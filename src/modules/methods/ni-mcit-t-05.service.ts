@@ -68,7 +68,7 @@ export class NI_MCIT_T_05Service {
 
     @Inject(forwardRef(() => EnginesService))
     private readonly enginesService: EnginesService,
-  ) {}
+  ) { }
 
   async create() {
     try {
@@ -789,7 +789,7 @@ Este certificado de calibración no debe ser reproducido sin la aprobación del 
             reference_temperature: indication,
             thermometer_indication:
               dataCertificate.data.calibration_results.thermometer_indication[
-                index
+              index
               ],
             correction:
               dataCertificate.data.calibration_results.correction[index],
@@ -838,6 +838,28 @@ Este certificado de calibración no debe ser reproducido sin la aprobación del 
       return handleOK('Certificado enviado con exito')
     } catch (error) {
       return handleInternalServerError(error.message)
+    }
+  }
+
+  async getAnnotationSheetData(methodID: number): Promise<NI_MCIT_T_05> {
+    try {
+      const method = await this.NI_MCIT_T_05Repository.findOne({
+        where: { id: methodID },
+        relations: [
+          'equipment_information',
+          'environmental_conditions',
+          'calibration_results',
+          'description_pattern',
+        ],
+      })
+
+      if (!method) {
+        throw new Error('El método no existe')
+      }
+
+      return method
+    } catch (error) {
+      throw new Error(error.message)
     }
   }
 }

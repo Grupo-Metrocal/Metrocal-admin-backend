@@ -73,7 +73,7 @@ export class NI_MCIT_P_01Service {
 
     @Inject(forwardRef(() => EnginesService))
     private readonly enginesService: EnginesService,
-  ) {}
+  ) { }
 
   async create() {
     try {
@@ -551,9 +551,9 @@ export class NI_MCIT_P_01Service {
         reference_pressure.push(
           typeof pressureValue === 'number'
             ? formatNumberCertification(
-                Number(pressureValue.toFixed(2)),
-                countDecimals(method.equipment_information.resolution),
-              )
+              Number(pressureValue.toFixed(2)),
+              countDecimals(method.equipment_information.resolution),
+            )
             : pressureValue,
         )
 
@@ -561,9 +561,9 @@ export class NI_MCIT_P_01Service {
         equipment_indication.push(
           typeof indicationValue === 'number'
             ? formatNumberCertification(
-                Number(indicationValue.toFixed(2)),
-                countDecimals(method.equipment_information.resolution),
-              )
+              Number(indicationValue.toFixed(2)),
+              countDecimals(method.equipment_information.resolution),
+            )
             : indicationValue,
         )
 
@@ -572,18 +572,18 @@ export class NI_MCIT_P_01Service {
           i === 0
             ? correctionValue
             : formatNumberCertification(
-                convertToValidNumber(reference_pressure[i]) -
-                  convertToValidNumber(equipment_indication[i]),
-                countDecimals(method.equipment_information.resolution),
-              ),
+              convertToValidNumber(reference_pressure[i]) -
+              convertToValidNumber(equipment_indication[i]),
+              countDecimals(method.equipment_information.resolution),
+            ),
         )
 
         const uncertaintyValue = sheetCER.cell(`R${27 + i}`).value()
         uncertainty.push(
           typeof uncertaintyValue === 'number'
             ? this.methodService.getSignificantFigure(
-                Number(uncertaintyValue.toFixed(7)),
-              )
+              Number(uncertaintyValue.toFixed(7)),
+            )
             : uncertaintyValue,
         )
 
@@ -591,9 +591,9 @@ export class NI_MCIT_P_01Service {
         reference_pressureSys.push(
           typeof pressureSysValue === 'number'
             ? formatNumberCertification(
-                Number(pressureSysValue.toFixed(1)),
-                countDecimals(method.equipment_information.resolution),
-              )
+              Number(pressureSysValue.toFixed(1)),
+              countDecimals(method.equipment_information.resolution),
+            )
             : pressureSysValue,
         )
 
@@ -601,9 +601,9 @@ export class NI_MCIT_P_01Service {
         equipment_indicationSys.push(
           typeof indicationSysValue === 'number'
             ? formatNumberCertification(
-                Number(indicationSysValue.toFixed(1)),
-                countDecimals(method.equipment_information.resolution),
-              )
+              Number(indicationSysValue.toFixed(1)),
+              countDecimals(method.equipment_information.resolution),
+            )
             : indicationSysValue,
         )
 
@@ -612,18 +612,18 @@ export class NI_MCIT_P_01Service {
           i === 0
             ? correctionSysValue
             : formatNumberCertification(
-                convertToValidNumber(reference_pressureSys[i]) -
-                  convertToValidNumber(equipment_indicationSys[i]),
-                countDecimals(method.equipment_information.resolution),
-              ),
+              convertToValidNumber(reference_pressureSys[i]) -
+              convertToValidNumber(equipment_indicationSys[i]),
+              countDecimals(method.equipment_information.resolution),
+            ),
         )
 
         const uncertaintySysValue = sheetCER.cell(`R${63 + i}`).value()
         uncertaintySys.push(
           typeof uncertaintySysValue === 'number'
             ? this.methodService.getSignificantFigure(
-                Number(uncertaintySysValue.toFixed(7)),
-              )
+              Number(uncertaintySysValue.toFixed(7)),
+            )
             : uncertaintySysValue,
         )
       }
@@ -1003,7 +1003,7 @@ De acuerdo a lo establecido en NTON 07-004-01 Norma Metrológica del Sistema Int
               dataCertificate.data.calibration_results.result.correction[index],
             uncertainty:
               dataCertificate.data.calibration_results.result.uncertainty[
-                index
+              index
               ],
           }),
         )
@@ -1067,6 +1067,28 @@ De acuerdo a lo establecido en NTON 07-004-01 Norma Metrológica del Sistema Int
       return handleOK('Certificado enviado con exito')
     } catch (error) {
       return handleInternalServerError(error.message)
+    }
+  }
+
+  async getAnnotationSheetData(methodID: number): Promise<NI_MCIT_P_01> {
+    try {
+      const method = await this.NI_MCIT_P_01Repository.findOne({
+        where: { id: methodID },
+        relations: [
+          'equipment_information',
+          'environmental_conditions',
+          'calibration_results',
+          'description_pattern',
+        ],
+      })
+
+      if (!method) {
+        throw new Error('El método no existe')
+      }
+
+      return method
+    } catch (error) {
+      throw new Error(error.message)
     }
   }
 }

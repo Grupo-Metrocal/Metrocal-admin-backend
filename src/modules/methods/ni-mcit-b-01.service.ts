@@ -77,7 +77,7 @@ export class NI_MCIT_B_01Service {
 
     @Inject(forwardRef(() => EnginesService))
     private readonly enginesService: EnginesService,
-  ) {}
+  ) { }
 
   async create() {
     try {
@@ -868,8 +868,8 @@ export class NI_MCIT_B_01Service {
           uncertainty_2.push(
             expanded_uncertaintyValue !== undefined
               ? this.methodService.getSignificantFigure(
-                  expanded_uncertaintyValue,
-                )
+                expanded_uncertaintyValue,
+              )
               : 0,
           )
 
@@ -993,7 +993,7 @@ export class NI_MCIT_B_01Service {
           countDecimals(
             convertToValidNumber(
               result_test_extra.uncertainty[
-                result_test_extra.uncertainty.length - 1
+              result_test_extra.uncertainty.length - 1
               ],
             ),
           ),
@@ -1004,7 +1004,7 @@ export class NI_MCIT_B_01Service {
           countDecimals(
             convertToValidNumber(
               result_test_extra.uncertainty[
-                result_test_extra.uncertainty.length - 1
+              result_test_extra.uncertainty.length - 1
               ],
             ),
           ),
@@ -1189,7 +1189,7 @@ Este certificado de calibración no debe ser reproducido sin la aprobación del 
                   .equipment_indication[index],
               error:
                 certificateData.data.calibration_results.result_test.error[
-                  index
+                index
                 ],
               uncertainty:
                 certificateData.data.calibration_results.result_test
@@ -1371,6 +1371,31 @@ Este certificado de calibración no debe ser reproducido sin la aprobación del 
       return handleOK(method)
     } catch (error) {
       return handleInternalServerError(error.message)
+    }
+  }
+
+  async getAnnotationSheetData(methodID: number): Promise<NI_MCIT_B_01> {
+    try {
+      const method = await this.NI_MCIT_B_01Repository.findOne({
+        where: { id: methodID },
+        relations: [
+          'equipment_information',
+          'environmental_conditions',
+          'calibration_results',
+          'description_pattern',
+          'eccentricity_test',
+          'repeatability_test',
+          'linearity_test',
+        ],
+      })
+
+      if (!method) {
+        throw new Error('El método no existe')
+      }
+
+      return method
+    } catch (error) {
+      throw new Error(error.message)
     }
   }
 }

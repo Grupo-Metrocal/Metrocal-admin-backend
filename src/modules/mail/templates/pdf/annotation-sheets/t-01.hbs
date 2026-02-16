@@ -1,0 +1,149 @@
+<style>
+  .ni-mcit-t-01-annotation { display: flex; flex-direction: column; gap: 20px; }
+  .document-title { text-align: center; font-weight: bold; font-size: 16px; margin: 20px 0; }
+  .equipment-information { display: flex; justify-content: space-between; margin-top: 20px; }
+  .equipment-information div { width: 50%; display: flex; flex-direction: column; gap: 5px; }
+  .equipment-information .labels { font-weight: bold; }
+  table { border-collapse: collapse; width: 100%; margin-top: 15px; }
+  th, td { border: 1px solid #333; text-align: center; padding: 8px; }
+  .table-title { border: 1px solid #333; text-align: center; font-weight: bold; background-color: #f0f0f0; }
+  .section-title { font-weight: bold; margin-top: 20px; margin-bottom: 10px; }
+  .environmental-conditions { display: flex; flex-direction: column; gap: 10px; margin-top: 15px; }
+</style>
+
+<div class='ni-mcit-t-01-annotation'>
+  <div class='document-title'>
+    HOJA DE ANOTACIÓN DE RESULTADOS DE CALIBRACIÓN
+    <br />
+    MÉTODO: NI-MCIT-T-01
+  </div>
+
+  <div class='equipment-information'>
+    <div class='labels'>
+      <span>Código de servicio:</span>
+      <span>Fecha de calibración:</span>
+      <span>Objeto de calibración:</span>
+      <span>Fabricante/Marca:</span>
+      <span>Serie:</span>
+      <span>Modelo:</span>
+      <span>Rango de medida:</span>
+      <span>Resolución:</span>
+      <span>Código de identificación:</span>
+      <span>Lugar de calibración:</span>
+      <span>Solicitante:</span>
+    </div>
+    <div class='values'>
+      <span>{{equipment_information.service_code}}</span>
+      <span>{{equipment_information.calibration_date}}</span>
+      <span>{{equipment_information.object_calibrated}}</span>
+      <span>{{equipment_information.manufacturer}}</span>
+      <span>{{equipment_information.no_series}}</span>
+      <span>{{equipment_information.model}}</span>
+      <span>{{equipment_information.measurement_range}}</span>
+      <span>{{equipment_information.resolution}}</span>
+      <span>{{equipment_information.code}}</span>
+      <span>{{equipment_information.calibration_location}}</span>
+      <span>{{equipment_information.applicant}}</span>
+    </div>
+  </div>
+
+  <div class='section-title'>Resultados de Medición</div>
+  <table>
+    <thead>
+      <tr class='table-title'>
+        <th>Punto de calibración</th>
+        <th>Temperatura de referencia</th>
+        <th>Indicación del termómetro</th>
+        <th>Corrección</th>
+        <th>Incertidumbre expandida K = 2</th>
+        <th>Observaciones</th>
+      </tr>
+    </thead>
+    <tbody>
+      {{#each calibration_results.result as |data index|}}
+        <tr>
+          <td>{{math index "+" 1}}</td>
+          <td>{{data.temperatureReference}}</td>
+          <td>{{data.thermometerIndication}}</td>
+          <td>{{data.correction}}</td>
+          <td>{{data.expandedUncertaintyK2}}</td>
+          <td></td>
+        </tr>
+      {{/each}}
+    </tbody>
+  </table>
+
+  {{#if show_table_international_system_units}}
+    <div class='section-title'>Resultados en Unidades del Sistema Internacional</div>
+    <table>
+      <thead>
+        <tr class='table-title'>
+          <th>Punto de calibración</th>
+          <th>Temperatura de referencia</th>
+          <th>Indicación del termómetro</th>
+          <th>Corrección</th>
+          <th>Incertidumbre expandida K = 2</th>
+          <th>Observaciones</th>
+        </tr>
+      </thead>
+      <tbody>
+        {{#each calibration_results.result_unid_system as |data index|}}
+          <tr>
+            <td>{{math index "+" 1}}</td>
+            <td>{{data.temperatureReference}}</td>
+            <td>{{data.thermometerIndication}}</td>
+            <td>{{data.correction}}</td>
+            <td>{{data.expandedUncertaintyK2}}</td>
+            <td></td>
+          </tr>
+        {{/each}}
+      </tbody>
+    </table>
+  {{/if}}
+
+  <div class='environmental-conditions'>
+    <div class='section-title'>Condiciones Ambientales</div>
+    <div>{{environmental_conditions.temperature}}</div>
+    <div>{{environmental_conditions.humidity}}</div>
+  </div>
+
+  <div class='section-title'>Patrones Utilizados</div>
+  <table>
+    <thead>
+      <tr class='table-title'>
+        <th>Descripción</th>
+        <th>Código</th>
+        <th>Trazabilidad</th>
+      </tr>
+    </thead>
+    <tbody>
+      {{#each description_pattern}}
+        <tr>
+          <td>{{this.pattern}}</td>
+          <td>{{this.code}}</td>
+          <td>{{this.certificate}}</td>
+        </tr>
+      {{/each}}
+    </tbody>
+  </table>
+
+  <div style='margin-top: 40px;'>
+    <div class='section-title'>Observaciones Generales</div>
+    <div style='min-height: 100px; border: 1px solid #333; padding: 10px;'>
+      {{observations}}
+    </div>
+  </div>
+
+  <div style='margin-top: 40px; display: flex; justify-content: space-between;'>
+    <div style='text-align: center; width: 40%;'>
+      <div style='border-top: 1px solid #333; margin-top: 50px; padding-top: 5px;'>
+        Técnico responsable
+      </div>
+    </div>
+    <div style='text-align: center; width: 40%;'>
+      <div style='border-top: 1px solid #333; margin-top: 50px; padding-top: 5px;'>
+        Fecha
+      </div>
+    </div>
+  </div>
+</div>

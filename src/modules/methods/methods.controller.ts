@@ -51,7 +51,7 @@ import { DescriptionPatternT_01Dto } from './dto/NI_MCIT_T_01/description_patter
 import { EnvironmentalConditionsT_01Dto } from './dto/NI_MCIT_T_01/environmental_condition.dto'
 import { CalibrationResultsT_01Dto } from './dto/NI_MCIT_T_01/calibraion_results.dto'
 
-import { handleBadrequest } from 'src/common/handleHttp'
+import { handleBadrequest, handleInternalServerError } from 'src/common/handleHttp'
 
 import { EquipmentInformationT_03Dto } from './dto/NI_MCIT_T_03/equipment-information.dto'
 import { DescriptionPatternDto as DescriptionPatternT_03Dto } from './dto/NI_MCIT_T_03/description_pattern.dto'
@@ -101,7 +101,7 @@ export class MethodsController {
     private readonly ni_mcit_t_05Service: NI_MCIT_T_05Service,
     private readonly ni_mcit_v_01Service: NI_MCIT_V_01Service,
     private readonly GenericMethodService: GENERIC_METHODService,
-  ) {}
+  ) { }
 
   @Get()
   async getAll() {
@@ -276,6 +276,53 @@ export class MethodsController {
       to_method_name,
       equipmentID,
     )
+  }
+
+  @Get('generate-annotation-sheet/:methodName/:idActivity/:idMethod/:stackId')
+  async generateAnnotationSheet(
+    @Param('methodName') methodName: string,
+    @Param('idActivity') idActivity: number,
+    @Param('idMethod') idMethod: number,
+    @Param('stackId') stackId: number,
+    @Res() res: Response,
+  ) {
+    try {
+      const annotationSheet =
+        await this.methodsService.generateAnnotationSheet(
+          methodName,
+          idActivity,
+          idMethod,
+          stackId,
+        )
+
+      if (!annotationSheet.success) {
+        throw new HttpException(
+          {
+            message:
+              annotationSheet.message || 'No se pudo generar la hoja de anotación',
+            statusCode: HttpStatus.BAD_REQUEST,
+          },
+          HttpStatus.BAD_REQUEST,
+        )
+      }
+
+      res.setHeader('Content-Type', 'application/pdf')
+      res.setHeader(
+        'Content-Disposition',
+        `attachment; filename=${annotationSheet.data.fileName}`,
+      )
+      res.send(annotationSheet.data.pdf)
+
+    } catch (error) {
+      console.log('error', { error })
+      throw new HttpException(
+        {
+          message: error.message,
+          statusCode: HttpStatus.INTERNAL_SERVER_ERROR,
+        },
+        HttpStatus.INTERNAL_SERVER_ERROR,
+      )
+    }
   }
 
   @Post('ni-mcit-p-01/calibration-location/:methodId')
@@ -1520,7 +1567,7 @@ export class MethodsController {
     @Param('idActivity') idActivity: number,
     @Param('idMethod') idMethod: number,
   ) {
-    return await this.ni_mcit_t_01Service.generatePDFCertificate(
+    return await this.GenericMethodService.generatePDFCertificate(
       idActivity,
       idMethod,
     )
