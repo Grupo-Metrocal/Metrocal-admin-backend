@@ -69,7 +69,7 @@ export class NI_MCIT_T_03Service {
 
     @Inject(forwardRef(() => EnginesService))
     private readonly enginesService: EnginesService,
-  ) {}
+  ) { }
 
   async create() {
     try {
@@ -619,10 +619,10 @@ export class NI_MCIT_T_03Service {
           i === 0
             ? correctionValue
             : formatNumberCertification(
-                convertToValidNumber(pattern_indication[i]) -
-                  convertToValidNumber(instrument_indication[i]),
-                countDecimals(method.equipment_information.resolution),
-              ),
+              convertToValidNumber(pattern_indication[i]) -
+              convertToValidNumber(instrument_indication[i]),
+              countDecimals(method.equipment_information.resolution),
+            ),
         )
 
         const uncertaintyValue = sheet.cell(`R${25 + i}`).value()
@@ -658,10 +658,10 @@ export class NI_MCIT_T_03Service {
             i === 0
               ? correctionValue
               : formatNumberCertification(
-                  convertToValidNumber(pattern_indication[i]) -
-                    convertToValidNumber(instrument_indication[i]),
-                  countDecimals(method.equipment_information.resolution),
-                ),
+                convertToValidNumber(pattern_indication[i]) -
+                convertToValidNumber(instrument_indication[i]),
+                countDecimals(method.equipment_information.resolution),
+              ),
           )
 
           const uncertaintyValue = sheet.cell(`R${25 + i}`).value()
@@ -870,8 +870,9 @@ Este certificado de calibración no puede ser reproducido parcialmente excepto e
       }
 
       let dataCertificate: any
+      const fileExists = method.certificate_url ? fs.existsSync(method.certificate_url) : false
 
-      if (!fs.existsSync(method.certificate_url) || generatePDF) {
+      if (!fileExists || generatePDF) {
         dataCertificate = await this.generateCertificate({
           activityID,
           methodID,
@@ -895,7 +896,7 @@ Este certificado de calibración no puede ser reproducido parcialmente excepto e
               dataCertificate.data.calibration_results.result.correction[index],
             uncertainty:
               dataCertificate.data.calibration_results.result.uncertainty[
-                index
+              index
               ],
           }),
         )

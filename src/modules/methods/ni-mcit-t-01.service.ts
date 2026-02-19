@@ -912,8 +912,9 @@ Este certificado de calibración no debe ser reproducido sin la aprobación del 
       }
 
       let dataCertificate: any
+      const fileExists = method.certificate_url ? fs.existsSync(method.certificate_url) : false
 
-      if (!fs.existsSync(method.certificate_url) || generatePDF) {
+      if (!fileExists || generatePDF) {
         dataCertificate = await this.generateCertificate({
           activityID,
           methodID,

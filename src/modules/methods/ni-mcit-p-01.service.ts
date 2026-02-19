@@ -978,8 +978,9 @@ De acuerdo a lo establecido en NTON 07-004-01 Norma Metrológica del Sistema Int
       }
 
       let dataCertificate: any
+      const fileExists = method.certificate_url ? fs.existsSync(method.certificate_url) : false
 
-      if (!fs.existsSync(method.certificate_url) || generatePDF) {
+      if (!fileExists || generatePDF) {
         dataCertificate = await this.generateCertificate({
           activityID,
           methodID,

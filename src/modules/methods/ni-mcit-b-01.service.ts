@@ -751,10 +751,19 @@ export class NI_MCIT_B_01Service {
         },
       ]
 
-      const sheetResultB01 = respWorkBook.sheet(
-        sheetByUnit.find((sheet) => sheet.unit === equipment_information.unit)
-          .sheetName,
-      )
+      const sheetConfig = sheetByUnit.find((sheet) => sheet.unit === equipment_information.unit)
+
+      if (!sheetConfig) {
+        return handleInternalServerError(`Unidad no soportada: ${equipment_information.unit}`)
+      }
+
+      let sheetResultB01
+      try {
+        sheetResultB01 = respWorkBook.sheet(sheetConfig.sheetName)
+      } catch (error) {
+        return handleInternalServerError(`No se encontró la hoja: ${sheetConfig.sheetName}`)
+      }
+
       //resultados
       // Resultados
 
@@ -1170,7 +1179,9 @@ Este certificado de calibración no debe ser reproducido sin la aprobación del 
       }
 
       let certificateData: any
-      if (!fs.existsSync(method.certificate_url) || generatePDF) {
+      const fileExists = method.certificate_url ? fs.existsSync(method.certificate_url) : false
+
+      if (!fileExists || generatePDF) {
         certificateData = await this.generateCertificateData({
           activityID,
           methodID,
@@ -1178,6 +1189,7 @@ Este certificado de calibración no debe ser reproducido sin la aprobación del 
       } else {
         certificateData = await this.getCertificateResult(methodID, activityID)
       }
+
 
       certificateData.data.calibration_results.result_test =
         certificateData.data.calibration_results.result_test.reference_mass.map(
