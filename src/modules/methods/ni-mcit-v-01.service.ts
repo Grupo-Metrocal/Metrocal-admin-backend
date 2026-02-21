@@ -19,6 +19,7 @@ import { DescriptionPatternV01Dto } from './dto/NI_MCIT_V_01/description_pattern
 import { ActivitiesService } from '../activities/activities.service'
 
 import * as XlsxPopulate from 'xlsx-populate'
+import * as path from 'path'
 import { exec } from 'child_process'
 import * as fs from 'fs'
 import { Activity } from '../activities/entities/activities.entity'
@@ -369,35 +370,58 @@ export class NI_MCIT_V_01Service {
 
   async autoSaveExcel(filePath: string) {
     return new Promise((resolve, reject) => {
-      // save excel file from powershell
+      // 1. Asegurar que la ruta sea absoluta y duplicar los slashes para que PowerShell los lea bien
+      const absolutePath = path.resolve(filePath).replace(/\\/g, '\\\\');
 
+      // 2. Usar un bloque Try/Catch/Finally en PowerShell y forzar el cierre de procesos
       const powershellCommand = `
-      $Excel = New-Object -ComObject Excel.Application
-      $Excel.Visible = $false
-      $Excel.DisplayAlerts = $false
-      $Workbook = $Excel.Workbooks.Open('${filePath}')
-      $Workbook.Save()
-      $Workbook.Close()
-      $Excel.Quit()
+      $Excel = $null
+      try {
+        # Desbloquear el archivo por si Windows lo puso en "Vista Protegida"
+        Unblock-File -Path "${absolutePath}" -ErrorAction SilentlyContinue
 
-      `
+        $Excel = New-Object -ComObject Excel.Application
+        $Excel.Visible = $false
+        $Excel.DisplayAlerts = $false
+
+        # Abrir el archivo
+        $Workbook = $Excel.Workbooks.Open("${absolutePath}")
+        
+        # Guardar y cerrar explícitamente guardando cambios
+        $Workbook.Save()
+        $Workbook.Close($true)
+        
+        Write-Output "Excel guardado correctamente"
+      } catch {
+        # Si algo falla, imprimir el error real de PowerShell
+        Write-Error $_.Exception.Message
+      } finally {
+        # 3. Limpieza extrema: Forzar que Excel se cierre pase lo que pase
+        if ($Excel -ne $null) {
+          $Excel.Quit()
+          [System.Runtime.Interopservices.Marshal]::ReleaseComObject($Excel) | Out-Null
+          [System.GC]::Collect()
+          [System.GC]::WaitForPendingFinalizers()
+        }
+      }
+    `;
 
       exec(
         powershellCommand,
         { shell: 'powershell.exe' },
         (error, stdout, stderr) => {
           if (error) {
-            console.error(`Error al ejecutar el comando: ${error.message}`)
-            reject(error)
+            console.error(`Error de ejecución: ${error.message}`);
+            reject(error);
           } else if (stderr) {
-            console.error(`Error en la salida estándar: ${stderr}`)
-            reject(new Error(stderr))
+            console.error(`Error en PowerShell: ${stderr}`);
+            reject(new Error(stderr));
           } else {
-            resolve(stdout)
+            resolve(stdout);
           }
         },
-      )
-    })
+      );
+    });
   }
 
   async generateCertificate({
@@ -523,7 +547,7 @@ export class NI_MCIT_V_01Service {
         }
       }
 
-      workbook.toFileAsync(method.certificate_url)
+      await workbook.toFileAsync(method.certificate_url)
       await this.autoSaveExcel(method.certificate_url)
 
       return await this.getCertificateResult(methodID, activityID)
