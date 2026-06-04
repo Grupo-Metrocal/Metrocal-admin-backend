@@ -3,6 +3,7 @@ import { ClientsService } from './clients.service'
 import { ApiTags } from '@nestjs/swagger'
 import { Post, Body, Get, Param, Delete } from '@nestjs/common'
 import { CreateClientDto } from './dto/client.dto'
+import { BulkEmailDto } from './dto/bulk-email.dto'
 import { handleBadrequest } from 'src/common/handleHttp'
 
 @ApiTags('clients')
@@ -51,6 +52,11 @@ export class ClientsController {
       limit,
       company_name,
     )
+  }
+
+  @Post('send-bulk-email')
+  async sendBulkEmail(@Body() dto: BulkEmailDto) {
+    return await this.clientsService.sendBulkEmail(dto)
   }
 
   @Post('update/:id')

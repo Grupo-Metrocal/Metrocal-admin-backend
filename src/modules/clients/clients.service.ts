@@ -12,6 +12,8 @@ import {
   handlePaginate,
 } from 'src/common/handleHttp'
 import { QuotesService } from '../quotes/quotes.service'
+import { MailService } from '../mail/mail.service'
+import { BulkEmailDto } from './dto/bulk-email.dto'
 
 @Injectable()
 export class ClientsService {
@@ -24,6 +26,7 @@ export class ClientsService {
     @Inject(forwardRef(() => QuotesService))
     private readonly quoteRequestService: QuotesService,
     private readonly dataSource: DataSource,
+    private readonly mailService: MailService,
   ) {}
 
   async createClient(client: CreateClientDto) {
@@ -179,6 +182,19 @@ export class ClientsService {
       })
 
       return handlePaginate(clients, total, limit, page)
+    } catch (error) {
+      return handleInternalServerError(error)
+    }
+  }
+
+  async sendBulkEmail({ emails, subject, body }: BulkEmailDto) {
+    try {
+      await Promise.all(
+        emails.map((email) =>
+          this.mailService.sendCustomEmail(email, subject, body),
+        ),
+      )
+      return handleOK({ sent: emails.length })
     } catch (error) {
       return handleInternalServerError(error)
     }

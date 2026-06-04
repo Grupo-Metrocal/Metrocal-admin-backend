@@ -7,6 +7,7 @@ import { QuoteRequest } from '../quotes/entities/quote-request.entity'
 import { EquipmentQuoteRequest } from '../quotes/entities/equipment-quote-request.entity'
 import { Activity } from '../activities/entities/activities.entity'
 import { QuotesModule } from '../quotes/quotes.module'
+import { MailModule } from '../mail/mail.module'
 
 @Module({
   imports: [
@@ -17,6 +18,7 @@ import { QuotesModule } from '../quotes/quotes.module'
       EquipmentQuoteRequest,
     ]),
     forwardRef(() => QuotesModule),
+    MailModule,
   ],
   controllers: [ClientsController],
   providers: [ClientsService],

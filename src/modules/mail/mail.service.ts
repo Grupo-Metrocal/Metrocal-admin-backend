@@ -149,6 +149,15 @@ export class MailService {
     })
   }
 
+  async sendCustomEmail(to: string, subject: string, body: string) {
+    await this.sendMail({
+      user: to,
+      subject,
+      template: 'custom_email',
+      context: { subject, body },
+    })
+  }
+
   async sendMailCollectionCertificate({
     user,
     linkRAR,
