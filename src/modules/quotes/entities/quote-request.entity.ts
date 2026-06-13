@@ -113,6 +113,12 @@ export class QuoteRequest {
   @Column({ nullable: true })
   alt_client_phone?: string
 
+  @Column({ nullable: true })
+  alt_client_company_name?: string
+
+  @Column({ nullable: true })
+  alt_client_address?: string
+
   @Column({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP' })
   created_at: Date
 

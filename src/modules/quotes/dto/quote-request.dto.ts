@@ -48,4 +48,10 @@ export class QuoteRequestDto {
 
   @ApiProperty()
   alt_client_phone?: string
+
+  @ApiProperty()
+  alt_client_company_name?: string
+
+  @ApiProperty()
+  alt_client_address?: string
 }

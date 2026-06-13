@@ -66,7 +66,7 @@ export class QuotesService {
     private readonly usersService: UsersService,
     @Inject(forwardRef(() => MethodsService))
     private readonly methodsService: MethodsService,
-  ) {}
+  ) { }
 
   async createQuoteRequest(quoteRequestDto: QuoteRequestDto) {
     const client = await this.clientsService.findById(quoteRequestDto.client_id)
@@ -86,6 +86,8 @@ export class QuotesService {
       alt_client_email: quoteRequestDto.alt_client_email,
       alt_client_phone: quoteRequestDto.alt_client_phone,
       alt_client_requested_by: quoteRequestDto.alt_client_requested_by,
+      alt_client_company_name: quoteRequestDto.alt_client_company_name,
+      alt_client_address: quoteRequestDto.alt_client_address,
       currency_type: CurrencyType.NIO,
     })
 
@@ -118,7 +120,7 @@ export class QuotesService {
       await this.dataSource.transaction(async (manager) => {
         quoteRequest.record_index =
           !lastQuote ||
-          lastQuote.created_at.getFullYear() !==
+            lastQuote.created_at.getFullYear() !==
             quoteRequest.created_at.getFullYear()
             ? 1
             : lastQuote.record_index + 1
@@ -403,7 +405,7 @@ export class QuotesService {
       approvedQuoteRequestDto['tax'] = formatPrice(
         ((subtotal - (subtotal * quote.general_discount) / 100) *
           (quote.tax || 0)) /
-          100,
+        100,
       )
       approvedQuoteRequestDto['total'] = formatPrice(quoteRequestDto.price)
       approvedQuoteRequestDto['client'] = quote.client
@@ -589,11 +591,11 @@ export class QuotesService {
     data['discount'] =
       quote.general_discount > 0
         ? formatPrice(
-            (subtotal * quote.general_discount) / 100,
-            currency,
-            quote.change_currency_type,
-            quote.currency_type,
-          )
+          (subtotal * quote.general_discount) / 100,
+          currency,
+          quote.change_currency_type,
+          quote.currency_type,
+        )
         : 'N/A'
     data['subtotal1'] = formatPrice(
       subtotal,
@@ -610,7 +612,7 @@ export class QuotesService {
     data['tax'] = formatPrice(
       ((subtotal - (subtotal * quote.general_discount) / 100) *
         (quote.tax || 0)) /
-        100,
+      100,
       currency,
       quote.change_currency_type,
       quote.currency_type,
@@ -634,6 +636,10 @@ export class QuotesService {
     data['alt_client_requested_by'] =
       quote.alt_client_requested_by || quote?.client?.requested_by
     data['alt_client_phone'] = quote.alt_client_phone || quote?.client?.phone
+    data['cert_company'] =
+      quote.alt_client_company_name || quote?.client?.company_name
+    data['cert_address'] = quote.alt_client_address || quote?.client?.address
+    data['cert_email'] = quote.alt_client_email || quote?.client?.email
     data['currency'] = quote.change_currency_type
 
     return await this.pdfService.generateQuoteRequestPdf(data)
@@ -1316,7 +1322,7 @@ export class QuotesService {
       await this.dataSource.transaction(async (manager) => {
         newQuote.record_index =
           !lastQuote ||
-          lastQuote.created_at.getFullYear() !==
+            lastQuote.created_at.getFullYear() !==
             newQuote.created_at.getFullYear()
             ? 1
             : lastQuote.record_index + 1
@@ -1420,10 +1426,10 @@ export class QuotesService {
     data['discount'] =
       quote.general_discount > 0
         ? formatPrice(
-            (subtotal * quote.general_discount) / 100,
-            currency,
-            quote.change_currency_type,
-          )
+          (subtotal * quote.general_discount) / 100,
+          currency,
+          quote.change_currency_type,
+        )
         : 'N/A'
     data['subtotal1'] = formatPrice(
       subtotal,
@@ -1440,7 +1446,7 @@ export class QuotesService {
     data['tax'] = formatPrice(
       ((subtotal - (subtotal * quote.general_discount) / 100) *
         (quote.tax || 0)) /
-        100,
+      100,
       currency,
       quote.change_currency_type,
       quote.currency_type,
@@ -1464,6 +1470,10 @@ export class QuotesService {
     data['alt_client_requested_by'] =
       quote.alt_client_requested_by || quote?.client?.requested_by
     data['alt_client_phone'] = quote.alt_client_phone || quote?.client?.phone
+    data['cert_company'] =
+      quote.alt_client_company_name || quote?.client?.company_name
+    data['cert_address'] = quote.alt_client_address || quote?.client?.address
+    data['cert_email'] = quote.alt_client_email || quote?.client?.email
     data['currency'] = quote.change_currency_type
 
     return await this.pdfService.generateQuoteRequestPdf(data)
@@ -1631,7 +1641,7 @@ export class QuotesService {
       await this.dataSource.transaction(async (manager) => {
         newQuote.record_index =
           !lastQuote ||
-          lastQuote.created_at.getFullYear() !==
+            lastQuote.created_at.getFullYear() !==
             newQuote.created_at.getFullYear()
             ? 1
             : lastQuote.record_index + 1
