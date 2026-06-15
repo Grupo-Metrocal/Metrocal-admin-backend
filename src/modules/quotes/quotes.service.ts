@@ -641,6 +641,7 @@ export class QuotesService {
     data['cert_address'] = quote.alt_client_address || quote?.client?.address
     data['cert_email'] = quote.alt_client_email || quote?.client?.email
     data['currency'] = quote.change_currency_type
+    data['observations'] = quote.observations || null
 
     return await this.pdfService.generateQuoteRequestPdf(data)
   }
@@ -1475,6 +1476,7 @@ export class QuotesService {
     data['cert_address'] = quote.alt_client_address || quote?.client?.address
     data['cert_email'] = quote.alt_client_email || quote?.client?.email
     data['currency'] = quote.change_currency_type
+    data['observations'] = quote.observations || null
 
     return await this.pdfService.generateQuoteRequestPdf(data)
   }

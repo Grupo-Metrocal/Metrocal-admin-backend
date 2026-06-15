@@ -222,6 +222,14 @@
                 <strong>{{total}}</strong>
               </td>
             </tr>
+            {{#if observations}}
+            <tr>
+              <td colspan="9" style="text-align: left; padding: 10px 6px; border-top: 2px solid #b8cce4;">
+                <strong style="display: block; margin-bottom: 4px;">OBSERVACIONES DEL SERVICIO:</strong>
+                <span style="font-weight: normal; white-space: pre-wrap;">{{observations}}</span>
+              </td>
+            </tr>
+            {{/if}}
           </tbody>
         </table>
 

@@ -119,6 +119,9 @@ export class QuoteRequest {
   @Column({ nullable: true })
   alt_client_address?: string
 
+  @Column({ type: 'text', nullable: true })
+  observations?: string
+
   @Column({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP' })
   created_at: Date
 

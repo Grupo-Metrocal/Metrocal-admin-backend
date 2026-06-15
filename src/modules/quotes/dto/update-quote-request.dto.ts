@@ -40,5 +40,8 @@ export class UpdateQuoteRequestDto {
   rejected_options?: string[]
 
   @ApiProperty()
+  observations?: string
+
+  @ApiProperty()
   modifiedQuote: QuoteRequest
 }
