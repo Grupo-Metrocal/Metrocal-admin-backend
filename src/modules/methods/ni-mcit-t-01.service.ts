@@ -590,8 +590,16 @@ export class NI_MCIT_T_01Service {
           this.methodService.getSignificantFigure(expandedUncertaintyK2Val),
         )
 
-        if (description_pattern.show_table_international_system_units) {
-          const reference = calibrationResultsSheet.cell(`D${62 + i}`).value()
+        if (description_pattern.conversion_unit || description_pattern.show_table_international_system_units) {
+          const conversionUnit = description_pattern.conversion_unit || 'K'
+          const conversionSheetName = this.getConversionSheetName(
+            equipment_information.unit,
+            conversionUnit,
+          )
+
+          const conversionSheet = reopnedWorkbook.sheet(conversionSheetName)
+
+          const reference = conversionSheet.cell(`D${62 + i}`).value()
           temperatureReferenceInternationalSystemUnits.push(
             i !== 0
               ? formatNumberCertification(
@@ -600,7 +608,7 @@ export class NI_MCIT_T_01Service {
               )
               : reference,
           )
-          const thermometer = calibrationResultsSheet.cell(`F${62 + i}`).value()
+          const thermometer = conversionSheet.cell(`F${62 + i}`).value()
           thermometerIndicationInternationalSystemUnits.push(
             i !== 0
               ? formatNumberCertification(Number(thermometer))
@@ -617,11 +625,10 @@ export class NI_MCIT_T_01Service {
                 ),
                 countDecimals(method.equipment_information.resolution),
               )
-              : calibrationResultsSheet.cell(`L${62 + i}`).value(),
+              : conversionSheet.cell(`L${62 + i}`).value(),
           )
 
-          const uncertainty = calibrationResultsSheet.cell(`R${62 + i}`).value()
-
+          const uncertainty = conversionSheet.cell(`R${62 + i}`).value()
           expandedUncertaintyK2InternationalSystemUnits.push(
             formatNumberCertification(
               this.methodService.getSignificantFigure(uncertainty),
@@ -696,7 +703,7 @@ export class NI_MCIT_T_01Service {
           thermometerIndication: thermometerIndicationInternationalSystemUnits,
           correction: correctionInternationalSystemUnits,
           expandedUncertaintyK2: this.methodService.formatUncertainty(
-            this.formatUncertaintyWithCMC(expandedUncertaintyK2, CMC),
+            this.formatUncertaintyWithCMC(expandedUncertaintyK2InternationalSystemUnits, CMC),
           ),
         },
       }
@@ -707,7 +714,9 @@ export class NI_MCIT_T_01Service {
           activity.quote_request?.alt_client_email ||
           activity.quote_request?.client.email,
         show_table_international_system_units:
-          description_pattern.show_table_international_system_units,
+          description_pattern.show_table_international_system_units ||
+          !!description_pattern.conversion_unit,
+        conversion_unit: description_pattern.conversion_unit || 'K',
         equipment_information: {
           certification_code: formatCertCode(
             method.certificate_code,
@@ -758,7 +767,7 @@ ${description_pattern.observation}
 Es responsabilidad del encargado del instrumento establecer la frecuencia del servicio de calibración.
 La corrección corresponde al valor del patrón menos las indicación del equipo.
 La indicación de temperatura de referencia y del equipo, corresponden al promedio de 3 mediciones.
-El factor de conversión al SI corresponde a T(K) = t(°C) + 273,15 De acuerdo a lo establecido en NTON 07-004-01 Norma Metrológica del Sistema Internacional de Unidades (SI).
+${this.getConversionObservation(equipment_information.unit, description_pattern.conversion_unit)}
 Los resultados emitidos en este certificado corresponden únicamente al objeto calibrado y a las magnitudes especificadas al momento de realizar el servicio.
 Este certificado de calibración no debe ser reproducido sin la aprobación del laboratorio, excepto cuando sereproduce en su totalidad.`,
       }
@@ -792,6 +801,37 @@ Este certificado de calibración no debe ser reproducido sin la aprobación del 
     }
 
     return description_pattern
+  }
+
+  private getConversionSheetName(equipmentUnit: string, conversionUnit: string): string {
+    const norm = (u: string) => u.replace('°', '').toUpperCase()
+    const from = norm(equipmentUnit)
+    const to = norm(conversionUnit)
+
+    if (from === 'C' && to === 'F') return 'DA unidad ºC toºF'
+
+    return 'DA Unidad-K (5 ptos)'
+  }
+
+  private getConversionObservation(equipmentUnit: string, conversionUnit?: string): string {
+    if (!conversionUnit) {
+      return 'El factor de conversión al SI corresponde a T(K) = t(°C) + 273,15 De acuerdo a lo establecido en NTON 07-004-01 Norma Metrológica del Sistema Internacional de Unidades (SI).'
+    }
+
+    const norm = (u: string) => u.replace('°', '').toUpperCase()
+    const from = norm(equipmentUnit)
+    const to = norm(conversionUnit)
+
+    const map: Record<string, string> = {
+      'C_K': 'El factor de conversión al SI corresponde a T(K) = t(°C) + 273,15 De acuerdo a lo establecido en NTON 07-004-01 Norma Metrológica del Sistema Internacional de Unidades (SI).',
+      'C_F': 'El factor de conversión corresponde a T(°F) = t(°C) × 9/5 + 32.',
+      'F_C': 'El factor de conversión corresponde a T(°C) = (t(°F) − 32) × 5/9.',
+      'F_K': 'El factor de conversión al SI corresponde a T(K) = (t(°F) − 32) × 5/9 + 273,15.',
+      'K_C': 'El factor de conversión corresponde a T(°C) = T(K) − 273,15.',
+      'K_F': 'El factor de conversión corresponde a T(°F) = (T(K) − 273,15) × 9/5 + 32.',
+    }
+
+    return map[`${from}_${to}`] || ''
   }
 
   formatUncertaintyWithCMC(uncertainty: any, cmc: any) {

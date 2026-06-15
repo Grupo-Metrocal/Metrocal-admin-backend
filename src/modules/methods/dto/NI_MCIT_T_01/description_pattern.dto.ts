@@ -18,4 +18,7 @@ export class DescriptionPatternT_01Dto {
 
   @ApiProperty()
   calibration_date: string
+
+  @ApiProperty()
+  conversion_unit?: string
 }

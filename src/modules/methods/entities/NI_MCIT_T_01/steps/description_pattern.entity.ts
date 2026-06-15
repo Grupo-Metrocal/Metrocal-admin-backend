@@ -33,4 +33,7 @@ export class DescriptionPatternNI_MCIT_T_01 {
 
   @Column({ nullable: true })
   calibration_date: string
+
+  @Column({ type: 'varchar', nullable: true })
+  conversion_unit?: string
 }
